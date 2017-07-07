@@ -1,0 +1,39 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion project.ANDROID_BUILD_COMPILE_SDK_VERSION as int
+    buildToolsVersion project.ANDROID_BUILD_TOOLS_VERSION
+
+    defaultConfig {
+        minSdkVersion project.ANDROID_BUILD_MIN_SDK_VERSION as int
+        targetSdkVersion project.ANDROID_BUILD_TARGET_SDK_VERSION as int
+        versionCode 1
+        versionName "1.0"
+        manifestPlaceholders = [qq_id: "你的qqid"]
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+def isCompiler = isCompiler.toBoolean();
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    compile rootProject.ext.support.appcompat_v7
+    compile rootProject.ext.support.gson
+    compile rootProject.ext.support.bolts
+
+    compile 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
+    if (isCompiler) {
+        compile files('libs/open_sdk_r5788_lite.jar')//QQ
+        compile files('libs/weiboSDKCore_3.1.4.jar')//sina
+    } else {
+        provided files('libs/open_sdk_r5788_lite.jar')//QQ
+        provided files('libs/weiboSDKCore_3.1.4.jar')//sina
+    }
+}
