@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.support.annotation.IntDef;
 
 import com.march.socialsdk.exception.SocialException;
+import com.march.socialsdk.helper.AuthTokenKeeper;
 import com.march.socialsdk.helper.PlatformLog;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.LoginResult;
@@ -44,6 +45,8 @@ public class LoginManager extends BaseManager {
      * @param loginListener 登陆监听
      */
     public static void login(Context context, @LoginTarget int loginTarget, OnLoginListener loginListener) {
+
+
         sOnLoginListener = loginListener;
         buildPlatform(context, loginTarget);
         if (!getPlatform().isInstall()) {
@@ -112,5 +115,15 @@ public class LoginManager extends BaseManager {
                 finishProcess(activity);
             }
         };
+    }
+
+    public void clearAllToken(Context context){
+        AuthTokenKeeper.clearToken(context,TARGET_QQ);
+        AuthTokenKeeper.clearToken(context,TARGET_WECHAT);
+        AuthTokenKeeper.clearToken(context,TARGET_SINA);
+    }
+
+    public void clearToken(Context context,@LoginTarget int loginTarget){
+        AuthTokenKeeper.clearToken(context,loginTarget);
     }
 }

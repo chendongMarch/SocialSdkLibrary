@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_check_qq"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="QQ"/>
+
+            <Button
+                android:id="@+id/btn_check_wx"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="微信"/>
+
+            <Button
+                android:id="@+id/btn_check_wb"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="微博"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:text="选中为分享到空间"
+            android:textColor="#000"/>
+
+        <Switch
+            android:id="@+id/switch_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"/>
+
+        <TextView
+            android:id="@+id/tv_info_display"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="当前是qq"
+            android:textColor="#000"/>
+
+        <Button
+            android:id="@+id/btn_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="登录"/>
+
+        <Button
+            android:id="@+id/btn_share_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="分享文字"/>
+
+        <Button
+            android:id="@+id/btn_share_img"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="分享本地图片"/>
+
+        <Button
+            android:id="@+id/btn_share_gif"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="分享本地gif图片"/>
+
+        <Button
+            android:id="@+id/btn_share_app"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="分享app"/>
+
+        <Button
+            android:id="@+id/btn_share_web"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="分享网页"/>
+
+        <Button
+            android:id="@+id/btn_share_music"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="分享音乐"/>
+
+        <Button
+            android:id="@+id/btn_share_video"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="分享视频"/>
+
+        <Button
+            android:id="@+id/btn_share_voice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="分享声音"/>
+    </LinearLayout>
+</ScrollView>

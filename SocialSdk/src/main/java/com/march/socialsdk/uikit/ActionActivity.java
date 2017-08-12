@@ -19,7 +19,7 @@ import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
 
 /**
  * CreateAt : 2017/1/8
- * Describe :
+ * Describe : 激活分享登陆的 通用 Activity
  *
  * @author chendong
  */

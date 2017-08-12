@@ -1,4 +1,4 @@
-package com.march.socialsdksample;
+package com.babypat;
 
 import android.app.Activity;
 import android.os.Bundle;

@@ -17,6 +17,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    sourceSets {
+        //定义编译时编译文件的路径
+        main {
+            res.srcDirs = ['src/main/res']
+            jniLibs.srcDirs = ['src/main/jniLibs']
+        }
+    }
 }
 
 def isCompiler = isCompiler.toBoolean();
@@ -29,6 +37,7 @@ dependencies {
     compile rootProject.ext.support.bolts
 
     compile 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
+
     if (isCompiler) {
         compile files('libs/open_sdk_r5788_lite.jar')//QQ
         compile files('libs/weiboSDKCore_3.1.4.jar')//sina
