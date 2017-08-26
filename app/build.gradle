@@ -2,6 +2,14 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
 android {
+    signingConfigs {
+        SignKey {
+            keyAlias 'sangular'
+            keyPassword 'sangular123'
+            storeFile file('/Users/march/AndroidPro/SocialSdkSample/app/sja.jks')
+            storePassword 'sangular123'
+        }
+    }
     compileSdkVersion 25
     buildToolsVersion "25.0.3"
     defaultConfig {
@@ -10,13 +18,31 @@ android {
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        manifestPlaceholders = [qq_id: "你的qqid"]
+
+        manifestPlaceholders = [qq_id: "1104910200"]
+        signingConfig signingConfigs.SignKey
     }
+
     buildTypes {
+        //release版本的正式签名
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //so文件过滤
+            ndk {
+                //release模式加载三种so文件,显示支持的ABIS
+                abiFilters "armeabi"
+            }
+        }
+        //debug版本也用正式签名调试
+        debug {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //so文件过滤
+            ndk {
+                //调试模式只加载armeabi中的so文件,显示支持的ABIS
+                abiFilters "armeabi"
+            }
         }
     }
 
@@ -31,13 +57,16 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+    //
     compile project(':SocialSdk')
-
+    //
     compile rootProject.ext.support.design
+    //
     compile rootProject.ext.support.appcompat_v7
-
+    //
     apt rootProject.ext.support.butterknife840_processor
+    //
     compile rootProject.ext.support.butterknife840
-
+    //
     compile rootProject.ext.support.devKit
 }

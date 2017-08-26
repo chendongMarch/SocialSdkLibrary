@@ -9,7 +9,7 @@ android {
         targetSdkVersion project.ANDROID_BUILD_TARGET_SDK_VERSION as int
         versionCode 1
         versionName "1.0"
-        manifestPlaceholders = [qq_id: "你的qqid"]
+        manifestPlaceholders = [qq_id: "1104910200"]
     }
     buildTypes {
         release {

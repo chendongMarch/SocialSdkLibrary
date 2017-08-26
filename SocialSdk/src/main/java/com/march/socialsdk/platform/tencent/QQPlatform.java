@@ -8,7 +8,7 @@ import android.text.TextUtils;
 
 import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.exception.SocialException;
-import com.march.socialsdk.helper.CommonHelper;
+import com.march.socialsdk.helper.OtherHelper;
 import com.march.socialsdk.helper.FileHelper;
 import com.march.socialsdk.helper.PlatformLog;
 import com.march.socialsdk.listener.OnLoginListener;
@@ -37,8 +37,9 @@ import java.util.ArrayList;
  */
 public class QQPlatform extends BasePlatform {
 
-    public static final String TAG                 = QQPlatform.class.getSimpleName();
-    public static final int    SHARE_TEXT_REQ_CODE = 0x123;
+    public static final String TAG = QQPlatform.class.getSimpleName();
+
+    public static final int SHARE_TEXT_REQ_CODE = 0x123;
 
     private Tencent         mTencentApi;
     private QQLoginHelper   mQQLoginHelper;
@@ -63,7 +64,7 @@ public class QQPlatform extends BasePlatform {
 
     @Override
     public boolean isInstall() {
-        return CommonHelper.isAppInstall(mContext, SocialConstants.QQ_PKG_NAME);
+        return OtherHelper.isAppInstall(mContext, SocialConstants.QQ_PKG_NAME);
     }
 
     @Override
@@ -108,7 +109,7 @@ public class QQPlatform extends BasePlatform {
 
     @Override
     protected void shareOpenApp(int shareTarget, Activity activity, ShareMediaObj obj) {
-        boolean rst = CommonHelper.openApp(mContext, SocialConstants.QQ_PKG_NAME);
+        boolean rst = OtherHelper.openApp(mContext, SocialConstants.QQ_PKG_NAME);
         if (rst) {
             mOnShareListener.onSuccess();
         } else {

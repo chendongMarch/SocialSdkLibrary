@@ -9,7 +9,7 @@ import com.march.socialsdk.common.ThumbDataContinuation;
 import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.exception.SocialException;
 import com.march.socialsdk.helper.BitmapHelper;
-import com.march.socialsdk.helper.CommonHelper;
+import com.march.socialsdk.helper.OtherHelper;
 import com.march.socialsdk.helper.FileHelper;
 import com.march.socialsdk.helper.PlatformLog;
 import com.march.socialsdk.listener.OnLoginListener;
@@ -264,7 +264,7 @@ public class SinaPlatform extends BasePlatform {
 
     @Override
     protected void shareOpenApp(int shareTarget, Activity activity, ShareMediaObj obj) {
-        boolean rst = CommonHelper.openApp(mContext, SocialConstants.SINA_WB_PKG_NAME);
+        boolean rst = OtherHelper.openApp(mContext, SocialConstants.SINA_WB_PKG_NAME);
         if (rst) {
             mOnShareListener.onSuccess();
         } else {

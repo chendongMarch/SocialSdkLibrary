@@ -1,7 +1,5 @@
 package com.march.socialsdk.listener;
 
-import android.content.Context;
-
 import com.march.socialsdk.exception.SocialException;
 import com.march.socialsdk.model.ShareMediaObj;
 
@@ -18,8 +16,9 @@ public interface OnShareListener {
 
     /**
      * 准备工作，在子线程执行
+     *
      * @param shareTarget 分享目标
-     * @param obj shareMediaObj
+     * @param obj         shareMediaObj
      */
     ShareMediaObj onPrepareInBackground(int shareTarget, ShareMediaObj obj) throws Exception;
 

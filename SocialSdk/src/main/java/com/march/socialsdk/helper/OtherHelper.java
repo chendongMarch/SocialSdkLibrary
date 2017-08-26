@@ -18,9 +18,9 @@ import java.util.List;
  * @author chendong
  */
 
-public class CommonHelper {
+public class OtherHelper {
 
-    public static final String TAG = CommonHelper.class.getSimpleName();
+    public static final String TAG = OtherHelper.class.getSimpleName();
 
     public static Long String2Long(String str) {
         Long data = 0L;
@@ -44,11 +44,17 @@ public class CommonHelper {
         return isEmpty;
     }
 
+
     public static boolean isAppInstall(Context context, String pkgName) {
         PackageManager pm = context.getPackageManager();
         if (pm == null) {
             return false;
         }
+//      try {
+//          context.getPackageManager().getPackageInfo(pkgName,PackageManager.GET_RESOLVED_FILTER)
+//      }catch (Exception e){
+//          e.printStackTrace();
+//      }
         List<PackageInfo> packages = pm.getInstalledPackages(0);
         boolean result = false;
         for (PackageInfo info : packages) {

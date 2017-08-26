@@ -5,7 +5,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.march.socialsdk.exception.SocialException;
-import com.march.socialsdk.helper.CommonHelper;
+import com.march.socialsdk.helper.OtherHelper;
 import com.march.socialsdk.helper.GsonHelper;
 import com.march.socialsdk.helper.PlatformLog;
 import com.march.socialsdk.listener.OnLoginListener;
@@ -49,7 +49,7 @@ public class SinaLoginHelper {
         //获取用户的信息
         UsersAPI mUsersAPI = new UsersAPI(context,
                 appId, mAccessToken);
-        mUsersAPI.show(CommonHelper.String2Long(mAccessToken.getUid()), new RequestListener() {
+        mUsersAPI.show(OtherHelper.String2Long(mAccessToken.getUid()), new RequestListener() {
             @Override
             public void onComplete(String response) {
                 if (!TextUtils.isEmpty(response)) {

@@ -19,7 +19,8 @@ import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 
 public class AuthTokenKeeper {
 
-    public static final String TOKEN_STORE      = "TOKEN_STORE";
+    public static final String TOKEN_STORE = "TOKEN_STORE";
+
     public static final String WECHAT_TOKEN_KEY = "WECHAT_TOKEN_KEY";
     public static final String SINA_TOKEN_KEY   = "SINA_TOKEN_KEY";
     public static final String QQ_TOKEN_KEY     = "QQ_TOKEN_KEY";

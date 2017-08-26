@@ -45,8 +45,6 @@ public class LoginManager extends BaseManager {
      * @param loginListener 登陆监听
      */
     public static void login(Context context, @LoginTarget int loginTarget, OnLoginListener loginListener) {
-
-
         sOnLoginListener = loginListener;
         buildPlatform(context, loginTarget);
         if (!getPlatform().isInstall()) {

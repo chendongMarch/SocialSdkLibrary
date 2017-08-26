@@ -20,7 +20,6 @@ public class BitmapHelper {
 
     public static final String TAG = BitmapHelper.class.getSimpleName();
 
-
     static class Size {
         int width;
         int height;
@@ -153,6 +152,7 @@ public class BitmapHelper {
         if (FileHelper.isPngFile(path)) format = Bitmap.CompressFormat.PNG;
         return getStaticSizeBitmapByteByBitmap(srcBitmap, maxSize, format);
     }
+
 
     public static Task<byte[]> getStaticSizeBitmapByteByPathTask(final String path, final int maxSize) {
         return Task.callInBackground(new Callable<byte[]>() {

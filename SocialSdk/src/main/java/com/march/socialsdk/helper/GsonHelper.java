@@ -25,12 +25,12 @@ public class GsonHelper {
         try {
             Gson gson = new Gson();
             t = gson.fromJson(jsonString, cls);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
         return t;
     }
+
 
     public static String getObject2Json(Object object) {
         GsonBuilder gsonBuilder = new GsonBuilder().registerTypeAdapter(Date.class, new JsonSerializer<Date>() {

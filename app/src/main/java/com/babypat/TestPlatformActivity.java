@@ -41,9 +41,6 @@ public class TestPlatformActivity extends BaseActivity {
     private String localVideoPath;
     private String netImagePath;
 
-    private Context  mContext;
-    private Activity mActivity;
-
     private ShareMediaObj   textObj;
     private ShareMediaObj   imageObj;
     private ShareMediaObj   imageGifObj;
@@ -198,7 +195,6 @@ public class TestPlatformActivity extends BaseActivity {
                      R.id.btn_share_video,
                      R.id.btn_share_voice})
     public void clickBtn(View view) {
-
         switch (view.getId()) {
             case R.id.btn_login:
                 LoginManager.login(mActivity, getLoginTargetTo(), mOnLoginListener);

@@ -18,10 +18,8 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * Project  : babyphoto_app
- * Package  : com.march.socialization.helper
  * CreateAt : 2016/12/22
- * Describe :
+ * Describe :  文件帮助
  *
  * @author chendong
  */
@@ -62,7 +60,7 @@ public class FileHelper {
             e.printStackTrace();
             throw e;
         } finally {
-            CommonHelper.closeStream(bos, bis);
+            OtherHelper.closeStream(bos, bis);
         }
 
     }
@@ -84,7 +82,7 @@ public class FileHelper {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            CommonHelper.closeStream(fis, baos);
+            OtherHelper.closeStream(fis, baos);
         }
         return baos;
     }
@@ -126,7 +124,7 @@ public class FileHelper {
 
     public static String getShareUrlMapLocalPath(String url) {
         // 映射文件名
-        String fileName = CommonHelper.getMD5(url) + FileHelper.getSuffix(url);
+        String fileName = OtherHelper.getMD5(url) + FileHelper.getSuffix(url);
         File saveFile = new File(SocialSdk.getConfig().getShareCacheDirPath(), fileName);
         return saveFile.getAbsolutePath();
     }
