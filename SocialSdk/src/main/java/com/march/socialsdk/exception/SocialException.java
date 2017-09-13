@@ -12,11 +12,12 @@ import com.tencent.tauth.UiError;
  */
 public class SocialException {
 
-    public static final int CODE_NOT_INSTALL     = 0;// 没有安装应用
-    public static final int CODE_VERSION_LOW     = 1;// 版本低
-    public static final int CODE_SHARE_OBJ_VALID = 2;// 分享的对象参数有问题
+    public static final int CODE_OK              = -1; // 成功
+    public static final int CODE_NOT_INSTALL     = 0; // 没有安装应用
+    public static final int CODE_VERSION_LOW     = 1; // 版本低
+    public static final int CODE_SHARE_OBJ_VALID = 2; // 分享的对象参数有问题
 
-    private int errorCode = -1;
+    private int errorCode = CODE_OK;
     private String errorMsg;
 
     private WeiboException mWeiboException;

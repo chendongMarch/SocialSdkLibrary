@@ -66,7 +66,7 @@ public class BitmapHelper {
      * @param bw      当前宽度
      * @param bh      当前高度
      * @param maxSize byte
-     * @return
+     * @return 大小
      */
     private static Size calculateSize(int bw, int bh, int maxSize) {
         Size size = new Size();
@@ -104,7 +104,7 @@ public class BitmapHelper {
      *
      * @param filePath path
      * @param maxSize  byte
-     * @return
+     * @return bitmap
      */
     public static Bitmap getBitmapByPath(String filePath, int maxSize) {
         //第一次采样
@@ -143,7 +143,7 @@ public class BitmapHelper {
      *
      * @param path    路径
      * @param maxSize kb
-     * @return
+     * @return byte[]
      */
     public static byte[] getStaticSizeBitmapByteByPath(String path, int maxSize) {
         Bitmap srcBitmap = getBitmapByPath(path, maxSize);

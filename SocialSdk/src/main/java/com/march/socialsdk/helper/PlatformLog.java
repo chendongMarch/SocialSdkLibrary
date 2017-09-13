@@ -3,10 +3,8 @@ package com.march.socialsdk.helper;
 import android.util.Log;
 
 /**
- * Project  : babyphoto_app
- * Package  : com.march.socialization.helper
  * CreateAt : 2016/12/22
- * Describe :
+ * Describe : log
  *
  * @author chendong
  */

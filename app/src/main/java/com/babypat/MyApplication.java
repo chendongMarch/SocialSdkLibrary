@@ -22,7 +22,6 @@ public class MyApplication extends Application {
 
     private void initSocialSDK() {
 
-
         String qqAppId = getString(R.string.QQ_APPID);
         String wxAppId = getString(R.string.WEICHAT_APPID);
         String wxSecretKey = getString(R.string.WEICHAT_APPKEY);

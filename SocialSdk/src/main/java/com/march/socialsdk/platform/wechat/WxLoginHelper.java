@@ -22,7 +22,7 @@ import com.tencent.mm.opensdk.openapi.IWXAPI;
  * @author chendong
  */
 
-public class WeChatLoginHelper {
+public class WxLoginHelper {
     /*
      * 流程：
      * 发起登录申请流程 : 发起登录申请 -> code -> 获取access_token -> 存储 -> 获取用户信息 -> 结束
@@ -39,7 +39,7 @@ public class WeChatLoginHelper {
      *
      */
 
-    public static final String TAG = WeChatLoginHelper.class.getSimpleName();
+    public static final String TAG = WxLoginHelper.class.getSimpleName();
 
     public static final String BASE_URL = "https://api.weixin.qq.com/sns";
 
@@ -52,7 +52,7 @@ public class WeChatLoginHelper {
     private OnLoginListener loginListener;
 
 
-    public WeChatLoginHelper(Context context, IWXAPI iwxapi, String appId) {
+    public WxLoginHelper(Context context, IWXAPI iwxapi, String appId) {
         this.context = context;
         this.iwxapi = iwxapi;
         this.appId = appId;

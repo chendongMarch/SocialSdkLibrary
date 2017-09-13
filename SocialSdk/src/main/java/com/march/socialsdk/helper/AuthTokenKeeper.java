@@ -63,8 +63,8 @@ public class AuthTokenKeeper {
     }
 
 
-    public static void clearToken(Context context,
-                                  @LoginManager.LoginTarget int platform) {
+    // 清理平台 token
+    public static void clearToken(Context context, @LoginManager.LoginTarget int platform) {
         String key = null;
         switch (platform) {
             case LoginManager.TARGET_QQ:
@@ -82,34 +82,4 @@ public class AuthTokenKeeper {
             edit.remove(key).apply();
         }
     }
-
-//
-//    private static final String KEY_UID           = "uid";
-//    private static final String KEY_ACCESS_TOKEN  = "access_token";
-//    private static final String KEY_EXPIRES_IN    = "expires_in";
-//    private static final String KEY_REFRESH_TOKEN = "refresh_token";
-//
-//    public static void saveWbToken(Context context, Oauth2AccessToken token) {
-//        if (null == context || null == token) {
-//            return;
-//        }
-//
-//        SharedPreferences sp = getSp(context);
-//        SharedPreferences.Editor editor = sp.edit();
-//        editor.putString(KEY_UID, token.getUid());
-//        editor.putString(KEY_ACCESS_TOKEN, token.getToken());
-//        editor.putString(KEY_REFRESH_TOKEN, token.getRefreshToken());
-//        editor.putLong(KEY_EXPIRES_IN, token.getExpiresTime());
-//        editor.apply();
-//    }
-//
-//    public static Oauth2AccessToken getWbToken(Context context) {
-//        Oauth2AccessToken token = new Oauth2AccessToken();
-//        SharedPreferences pref = getSp(context);
-//        token.setUid(pref.getString(KEY_UID, ""));
-//        token.setToken(pref.getString(KEY_ACCESS_TOKEN, ""));
-//        token.setRefreshToken(pref.getString(KEY_REFRESH_TOKEN, ""));
-//        token.setExpiresTime(pref.getLong(KEY_EXPIRES_IN, 0));
-//        return token;
-//    }
 }

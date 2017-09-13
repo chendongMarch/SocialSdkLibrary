@@ -8,13 +8,13 @@ import android.text.TextUtils;
 
 import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.exception.SocialException;
-import com.march.socialsdk.helper.OtherHelper;
 import com.march.socialsdk.helper.FileHelper;
+import com.march.socialsdk.helper.OtherHelper;
 import com.march.socialsdk.helper.PlatformLog;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.manager.ShareManager;
-import com.march.socialsdk.model.ShareMediaObj;
+import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.platform.BasePlatform;
 import com.tencent.connect.common.Constants;
 import com.tencent.connect.share.QQShare;
@@ -37,13 +37,13 @@ import java.util.ArrayList;
  */
 public class QQPlatform extends BasePlatform {
 
-    public static final String TAG = QQPlatform.class.getSimpleName();
-
-    public static final int SHARE_TEXT_REQ_CODE = 0x123;
+    public static final String TAG                 = QQPlatform.class.getSimpleName();
+    public static final int    SHARE_TEXT_REQ_CODE = 0x123;
+    public static final String JUMP_ACTIVITY       = "com.tencent.mobileqq.activity.JumpActivity";
 
     private Tencent         mTencentApi;
     private QQLoginHelper   mQQLoginHelper;
-    private ShareUiListener mShareUiListener;
+    private IUiListenerWrap mIUiListenerWrap;
 
     public QQPlatform(Context context, String appId, String appName) {
         super(context, appId, appName);
@@ -53,7 +53,7 @@ public class QQPlatform extends BasePlatform {
     @Override
     public void initOnShareListener(OnShareListener listener) {
         super.initOnShareListener(listener);
-        this.mShareUiListener = new ShareUiListener(listener);
+        this.mIUiListenerWrap = new IUiListenerWrap(listener);
     }
 
     @Override
@@ -67,13 +67,13 @@ public class QQPlatform extends BasePlatform {
         return OtherHelper.isAppInstall(mContext, SocialConstants.QQ_PKG_NAME);
     }
 
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Constants.REQUEST_QQ_SHARE || requestCode == Constants.REQUEST_QZONE_SHARE) {
-            if (mShareUiListener != null)
-                Tencent.handleResultData(data, mShareUiListener);
-        }
-        if (requestCode == Constants.REQUEST_LOGIN) {
+            if (mIUiListenerWrap != null)
+                Tencent.handleResultData(data, mIUiListenerWrap);
+        } else if (requestCode == Constants.REQUEST_LOGIN) {
             if (mQQLoginHelper != null)
                 mQQLoginHelper.handleResultData(data);
         }
@@ -108,7 +108,7 @@ public class QQPlatform extends BasePlatform {
     }
 
     @Override
-    protected void shareOpenApp(int shareTarget, Activity activity, ShareMediaObj obj) {
+    protected void shareOpenApp(int shareTarget, Activity activity, ShareObj obj) {
         boolean rst = OtherHelper.openApp(mContext, SocialConstants.QQ_PKG_NAME);
         if (rst) {
             mOnShareListener.onSuccess();
@@ -117,40 +117,41 @@ public class QQPlatform extends BasePlatform {
         }
     }
 
+
     @Override
-    public void shareText(int shareTarget, Activity activity, ShareMediaObj shareMediaObj) {
+    public void shareText(int shareTarget, Activity activity, ShareObj shareMediaObj) {
         if (shareTarget == ShareManager.TARGET_QQ_FRIENDS) {
             Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
             sendIntent.putExtra(Intent.EXTRA_TEXT, shareMediaObj.getSummary());
             sendIntent.setType("text/plain");
             try {
-                sendIntent.setClassName("com.tencent.mobileqq", "com.tencent.mobileqq.activity.JumpActivity");
-                Intent chooserIntent = Intent.createChooser(sendIntent, "选择分享途径");
+                sendIntent.setClassName(SocialConstants.QQ_PKG_NAME, JUMP_ACTIVITY);
+                Intent chooserIntent = Intent.createChooser(sendIntent, "请选择");
                 if (chooserIntent == null) {
                     return;
                 }
                 activity.startActivityForResult(chooserIntent, SHARE_TEXT_REQ_CODE);
             } catch (Exception e) {
                 e.printStackTrace();
-                this.mShareUiListener.onError(new UiError(100, e.getMessage(), e.getCause().toString()));
+                this.mIUiListenerWrap.onError(new UiError(100, e.getMessage(), e.getCause().toString()));
             }
         } else if (shareTarget == ShareManager.TARGET_QQ_ZONE) {
             final Bundle params = new Bundle();
             params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzonePublish.PUBLISH_TO_QZONE_TYPE_PUBLISHMOOD);
             params.putString(QzoneShare.SHARE_TO_QQ_SUMMARY, shareMediaObj.getSummary());
-            mTencentApi.publishToQzone(activity, params, mShareUiListener);
+            mTencentApi.publishToQzone(activity, params, mIUiListenerWrap);
         }
     }
 
     @Override
-    public void shareImage(int shareTarget, Activity activity, ShareMediaObj shareMediaObj) {
+    public void shareImage(int shareTarget, Activity activity, ShareObj shareMediaObj) {
         if (shareTarget == ShareManager.TARGET_QQ_FRIENDS) {
             // 可以兼容分享图片和gif
             Bundle params = buildCommonBundle("", shareMediaObj.getSummary(), "", shareTarget);
             params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_IMAGE);
             params.putString(QQShare.SHARE_TO_QQ_IMAGE_LOCAL_URL, shareMediaObj.getThumbImagePath());
-            mTencentApi.shareToQQ(activity, params, mShareUiListener);
+            mTencentApi.shareToQQ(activity, params, mIUiListenerWrap);
         } else if (shareTarget == ShareManager.TARGET_QQ_ZONE) {
             final Bundle params = new Bundle();
             params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzonePublish.PUBLISH_TO_QZONE_TYPE_PUBLISHMOOD);
@@ -158,18 +159,18 @@ public class QQPlatform extends BasePlatform {
             ArrayList<String> imageUrls = new ArrayList<>();
             imageUrls.add(shareMediaObj.getThumbImagePath());
             params.putStringArrayList(QzonePublish.PUBLISH_TO_QZONE_IMAGE_URL, imageUrls);
-            mTencentApi.publishToQzone(activity, params, mShareUiListener);
+            mTencentApi.publishToQzone(activity, params, mIUiListenerWrap);
         }
     }
 
     @Override
-    public void shareApp(int shareTarget, Activity activity, ShareMediaObj obj) {
+    public void shareApp(int shareTarget, Activity activity, ShareObj obj) {
         if (shareTarget == ShareManager.TARGET_QQ_FRIENDS) {
             Bundle params = buildCommonBundle(obj.getTitle(), obj.getSummary(), obj.getTargetUrl(), shareTarget);
             params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_APP);
             if (!TextUtils.isEmpty(obj.getThumbImagePath()))
                 params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL, obj.getThumbImagePath());
-            mTencentApi.shareToQQ(activity, params, mShareUiListener);
+            mTencentApi.shareToQQ(activity, params, mIUiListenerWrap);
         } else if (shareTarget == ShareManager.TARGET_QQ_ZONE) {
             shareWeb(shareTarget, activity, obj);
         }
@@ -177,7 +178,7 @@ public class QQPlatform extends BasePlatform {
 
 
     @Override
-    public void shareWeb(int shareTarget, Activity activity, ShareMediaObj obj) {
+    public void shareWeb(int shareTarget, Activity activity, ShareObj obj) {
         if (shareTarget == ShareManager.TARGET_QQ_FRIENDS) {
             // 分享图文
             final Bundle params = buildCommonBundle(obj.getTitle(), obj.getSummary(), obj.getTargetUrl(), shareTarget);
@@ -185,7 +186,7 @@ public class QQPlatform extends BasePlatform {
             // 本地或网络路径
             if (!TextUtils.isEmpty(obj.getThumbImagePath()))
                 params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL, obj.getThumbImagePath());
-            mTencentApi.shareToQQ(activity, params, mShareUiListener);
+            mTencentApi.shareToQQ(activity, params, mIUiListenerWrap);
         } else {
             final ArrayList<String> imageUrls = new ArrayList<>();
             final Bundle params = new Bundle();
@@ -196,26 +197,26 @@ public class QQPlatform extends BasePlatform {
             params.putString(QzoneShare.SHARE_TO_QQ_TARGET_URL, obj.getTargetUrl());
             imageUrls.add(obj.getThumbImagePath());
             params.putStringArrayList(QzoneShare.SHARE_TO_QQ_IMAGE_URL, imageUrls);
-            mTencentApi.shareToQzone(activity, params, mShareUiListener);
+            mTencentApi.shareToQzone(activity, params, mIUiListenerWrap);
         }
     }
 
     @Override
-    public void shareMusic(int shareTarget, Activity activity, ShareMediaObj obj) {
+    public void shareMusic(int shareTarget, Activity activity, ShareObj obj) {
         if (shareTarget == ShareManager.TARGET_QQ_FRIENDS) {
             Bundle params = buildCommonBundle(obj.getTitle(), obj.getSummary(), obj.getTargetUrl(), shareTarget);
             params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_AUDIO);
             if (!TextUtils.isEmpty(obj.getThumbImagePath()))
                 params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL, obj.getThumbImagePath());
             params.putString(QQShare.SHARE_TO_QQ_AUDIO_URL, obj.getMediaUrl());
-            mTencentApi.shareToQQ(activity, params, mShareUiListener);
+            mTencentApi.shareToQQ(activity, params, mIUiListenerWrap);
         } else if (shareTarget == ShareManager.TARGET_QQ_ZONE) {
             shareWeb(shareTarget, activity, obj);
         }
     }
 
     @Override
-    public void shareVideo(int shareTarget, Activity activity, ShareMediaObj obj) {
+    public void shareVideo(int shareTarget, Activity activity, ShareObj obj) {
         if (shareTarget == ShareManager.TARGET_QQ_FRIENDS) {
             PlatformLog.e(TAG, "qq不支持分享视频，使用web分享代替");
             obj.setTargetUrl(obj.getMediaUrl());
@@ -227,7 +228,7 @@ public class QQPlatform extends BasePlatform {
                 final Bundle params = new Bundle();
                 params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzonePublish.PUBLISH_TO_QZONE_TYPE_PUBLISHVIDEO);
                 params.putString(QzonePublish.PUBLISH_TO_QZONE_VIDEO_PATH, obj.getMediaUrl());
-                mTencentApi.publishToQzone(activity, params, mShareUiListener);
+                mTencentApi.publishToQzone(activity, params, mIUiListenerWrap);
             } else {
                 PlatformLog.e(TAG, "qq空间网络视频，使用web形式分享");
                 shareWeb(shareTarget, activity, obj);
@@ -236,22 +237,21 @@ public class QQPlatform extends BasePlatform {
     }
 
     @Override
-    public void shareVoice(int shareTarget, Activity activity, ShareMediaObj obj) {
+    public void shareVoice(int shareTarget, Activity activity, ShareObj obj) {
         PlatformLog.e(TAG, "qq,qzone不支持分享声音，使用web分享代替");
         obj.setTargetUrl(obj.getMediaUrl());
         shareWeb(shareTarget, activity, obj);
     }
 
 
-    private class ShareUiListener implements IUiListener {
+    private class IUiListenerWrap implements IUiListener {
 
         private OnShareListener listener;
 
-        ShareUiListener(OnShareListener listener) {
+        IUiListenerWrap(OnShareListener listener) {
             this.listener = listener;
         }
-
-
+        
         @Override
         public void onComplete(Object o) {
             if (listener != null)

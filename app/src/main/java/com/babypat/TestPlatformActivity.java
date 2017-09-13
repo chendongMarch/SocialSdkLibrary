@@ -1,7 +1,5 @@
 package com.babypat;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -19,7 +17,7 @@ import com.march.socialsdk.listener.impl.SimpleShareListener;
 import com.march.socialsdk.manager.LoginManager;
 import com.march.socialsdk.manager.ShareManager;
 import com.march.socialsdk.model.LoginResult;
-import com.march.socialsdk.model.ShareMediaObj;
+import com.march.socialsdk.model.ShareObj;
 
 import java.io.File;
 
@@ -41,14 +39,14 @@ public class TestPlatformActivity extends BaseActivity {
     private String localVideoPath;
     private String netImagePath;
 
-    private ShareMediaObj   textObj;
-    private ShareMediaObj   imageObj;
-    private ShareMediaObj   imageGifObj;
-    private ShareMediaObj   videoObj;
-    private ShareMediaObj   musicObj;
-    private ShareMediaObj   webObj;
-    private ShareMediaObj   appObj;
-    private ShareMediaObj   voiceObj;
+    private ShareObj        textObj;
+    private ShareObj        imageObj;
+    private ShareObj        imageGifObj;
+    private ShareObj        videoObj;
+    private ShareObj        musicObj;
+    private ShareObj        webObj;
+    private ShareObj        appObj;
+    private ShareObj        voiceObj;
     private OnShareListener mOnShareListener;
     private OnLoginListener mOnLoginListener;
 
@@ -76,14 +74,14 @@ public class TestPlatformActivity extends BaseActivity {
         netMusicPath = "http://mp3.haoduoge.com/sSocialSdkConfig/2017-05-19/1495207225.mp3";
         targetUrl = "http://bbs.csdn.net/topics/391545021";
 
-        textObj = ShareMediaObj.buildTextObj("分享文字", "summary");
-        imageObj = ShareMediaObj.buildImageObj(localImagePath);
-        imageGifObj = ShareMediaObj.buildImageObj(localGifPath);
-        appObj = ShareMediaObj.buildAppObj("分享app", "summary", localImagePath, targetUrl);
-        webObj = ShareMediaObj.buildWebObj("分享web", "summary", localImagePath, targetUrl);
-        videoObj = ShareMediaObj.buildVideoObj("分享视频", "summary", localImagePath, targetUrl, netVideoPath, 10);
-        musicObj = ShareMediaObj.buildMusicObj("分享音乐", "summary", localImagePath, targetUrl, netMusicPath, 10);
-        voiceObj = ShareMediaObj.buildVoiceObj("分享声音", "summary", localImagePath, targetUrl, netMusicPath, 10);
+        textObj = ShareObj.buildTextObj("分享文字", "summary");
+        imageObj = ShareObj.buildImageObj(localImagePath);
+        imageGifObj = ShareObj.buildImageObj(localGifPath);
+        appObj = ShareObj.buildAppObj("分享app", "summary", localImagePath, targetUrl);
+        webObj = ShareObj.buildWebObj("分享web", "summary", localImagePath, targetUrl);
+        videoObj = ShareObj.buildVideoObj("分享视频", "summary", localImagePath, targetUrl, netVideoPath, 10);
+        musicObj = ShareObj.buildMusicObj("分享音乐", "summary", localImagePath, targetUrl, netMusicPath, 10);
+        voiceObj = ShareObj.buildVoiceObj("分享声音", "summary", localImagePath, targetUrl, netMusicPath, 10);
 
 
         mOnShareListener = new SimpleShareListener() {

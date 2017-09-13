@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.march.socialsdk.helper.PlatformLog;
 import com.march.socialsdk.manager.BaseManager;
@@ -23,21 +22,19 @@ import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
  *
  * @author chendong
  */
-
 public class ActionActivity extends Activity
         implements IWeiboHandler.Response, IWXAPIEventHandler {
 
     public static final String TAG = ActionActivity.class.getSimpleName();
 
-    private int     actionType;
-    private boolean isNotFirstResume;
+    private boolean mIsNotFirstResume;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getPlatform() != null)
             getPlatform().onNewIntent(this);
-        actionType = getIntent().getIntExtra(BaseManager.KEY_ACTION_TYPE, -1);
+        int actionType = getIntent().getIntExtra(BaseManager.KEY_ACTION_TYPE, -1);
         if (actionType == -1) {
             PlatformLog.e(TAG, "actionType无效");
             checkFinish();
@@ -56,12 +53,12 @@ public class ActionActivity extends Activity
     @Override
     protected void onResume() {
         super.onResume();
-        if (isNotFirstResume) {
+        if (mIsNotFirstResume) {
             if (getPlatform() != null)
                 getPlatform().onNewIntent(this);
             checkFinish();
         } else {
-            isNotFirstResume = true;
+            mIsNotFirstResume = true;
         }
     }
 
@@ -95,14 +92,14 @@ public class ActionActivity extends Activity
         //从微信页面返回的数据
         if (getPlatform() != null)
             getPlatform().onResponse(resp);
-        Log.e(TAG, "onResp:" + "resp.getType():" + resp.getType() + "resp.errCode:" + resp.errCode + "resp.errStr:" + resp.errStr);
+        PlatformLog.e(TAG, "onResp:" + "resp.getType():" + resp.getType() + "resp.errCode:" + resp.errCode + "resp.errStr:" + resp.errStr);
         checkFinish();
     }
 
     @Override
     public void onReq(BaseReq baseReq) {
         // 发起微信请求将会经过的方法
-        Log.e(TAG, "onReq: " + baseReq.toString());
+        PlatformLog.e(TAG, "onReq: " + baseReq.toString());
     }
 
 

@@ -4,8 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-import com.march.socialsdk.helper.OtherHelper;
 import com.march.socialsdk.helper.FileHelper;
+import com.march.socialsdk.helper.OtherHelper;
 import com.march.socialsdk.helper.PlatformLog;
 import com.march.socialsdk.manager.ShareManager;
 
@@ -16,16 +16,18 @@ import com.march.socialsdk.manager.ShareManager;
  * @author chendong
  */
 
-public class ShareMediaObj implements Parcelable {
+public class ShareObj implements Parcelable {
 
-    public static final int SHARE_TYPE_TEXT  = 0x41;
-    public static final int SHARE_TYPE_IMAGE = 0x42;
-    public static final int SHARE_TYPE_APP   = 0x43;
-    public static final int SHARE_TYPE_WEB   = 0x44;
-    public static final int SHARE_TYPE_MUSIC = 0x45;
-    public static final int SHARE_TYPE_VIDEO = 0x46;
-    public static final int SHARE_TYPE_VOICE = 0x47;
-    public static final int SHARE_OPEN_APP   = 0x99;
+    public static final String TAG = ShareObj.class.getSimpleName();
+
+    public static final int SHARE_TYPE_TEXT  = 0x41; // 分享文字
+    public static final int SHARE_TYPE_IMAGE = 0x42; // 分享图片
+    public static final int SHARE_TYPE_APP   = 0x43; // 分享app
+    public static final int SHARE_TYPE_WEB   = 0x44; // 分享web
+    public static final int SHARE_TYPE_MUSIC = 0x45; // 分享音乐
+    public static final int SHARE_TYPE_VIDEO = 0x46; // 分享视频
+    public static final int SHARE_TYPE_VOICE = 0x47; // 分享声音
+    public static final int SHARE_OPEN_APP   = 0x99; // 打开 app
 
     // 分享对象的类型
     private int    shareObjType;
@@ -42,84 +44,85 @@ public class ShareMediaObj implements Parcelable {
     // 音视频时间
     private int duration = 10;
     // 附加信息
-    private Object extraTag;
+    private Parcelable extraTag;
     // 新浪分享带不带文字
     private boolean isSinaWithSummary = true;
     // 新浪分享带不带图片
     private boolean isSinaWithPicture = false;
 
-    public static ShareMediaObj buildOpenAppObj() {
-        ShareMediaObj shareMediaObj = new ShareMediaObj(SHARE_OPEN_APP);
-        return shareMediaObj;
+
+    public static ShareObj buildOpenAppObj() {
+        return new ShareObj(SHARE_OPEN_APP);
     }
 
-    public static ShareMediaObj buildTextObj(String title, String summary) {
-        ShareMediaObj shareMediaObj = new ShareMediaObj(SHARE_TYPE_TEXT);
+    public static ShareObj buildTextObj(String title, String summary) {
+        ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_TEXT);
         shareMediaObj.setTitle(title);
         shareMediaObj.setSummary(summary);
         return shareMediaObj;
     }
 
-    public static ShareMediaObj buildImageObj(String path) {
-        ShareMediaObj shareMediaObj = new ShareMediaObj(SHARE_TYPE_IMAGE);
+    public static ShareObj buildImageObj(String path) {
+        ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_IMAGE);
         shareMediaObj.setThumbImagePath(path);
         return shareMediaObj;
     }
-    public static ShareMediaObj buildImageObj(String path,String summary) {
-        ShareMediaObj shareMediaObj = new ShareMediaObj(SHARE_TYPE_IMAGE);
+
+    public static ShareObj buildImageObj(String path, String summary) {
+        ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_IMAGE);
         shareMediaObj.setThumbImagePath(path);
         shareMediaObj.setSummary(summary);
         return shareMediaObj;
     }
 
-    public static ShareMediaObj buildAppObj(String title, String summary
+    public static ShareObj buildAppObj(String title, String summary
             , String thumbImagePath, String targetUrl) {
-        ShareMediaObj shareMediaObj = new ShareMediaObj(SHARE_TYPE_APP);
-        shareMediaObj.initMediaObj(title, summary, thumbImagePath, targetUrl);
+        ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_APP);
+        shareMediaObj.init(title, summary, thumbImagePath, targetUrl);
         return shareMediaObj;
     }
 
-    public static ShareMediaObj buildWebObj(String title, String summary
+    public static ShareObj buildWebObj(String title, String summary
             , String thumbImagePath, String targetUrl) {
-        ShareMediaObj shareMediaObj = new ShareMediaObj(SHARE_TYPE_WEB);
-        shareMediaObj.initMediaObj(title, summary, thumbImagePath, targetUrl);
+        ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_WEB);
+        shareMediaObj.init(title, summary, thumbImagePath, targetUrl);
         return shareMediaObj;
     }
 
-    public static ShareMediaObj buildMusicObj(String title, String summary
+    public static ShareObj buildMusicObj(String title, String summary
             , String thumbImagePath, String targetUrl, String mediaUrl, int duration) {
-        ShareMediaObj shareMediaObj = new ShareMediaObj(SHARE_TYPE_MUSIC);
-        shareMediaObj.initMediaObj(title, summary, thumbImagePath, targetUrl);
+        ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_MUSIC);
+        shareMediaObj.init(title, summary, thumbImagePath, targetUrl);
         shareMediaObj.setMediaUrl(mediaUrl);
         shareMediaObj.setDuration(duration);
         return shareMediaObj;
     }
 
-    public static ShareMediaObj buildVideoObj(String title, String summary
+    public static ShareObj buildVideoObj(String title, String summary
             , String thumbImagePath, String targetUrl, String mediaUrl, int duration) {
-        ShareMediaObj shareMediaObj = new ShareMediaObj(SHARE_TYPE_VIDEO);
-        shareMediaObj.initMediaObj(title, summary, thumbImagePath, targetUrl);
+        ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_VIDEO);
+        shareMediaObj.init(title, summary, thumbImagePath, targetUrl);
         shareMediaObj.setMediaUrl(mediaUrl);
         shareMediaObj.setDuration(duration);
         return shareMediaObj;
     }
 
-    public static ShareMediaObj buildVoiceObj(String title, String summary
+    public static ShareObj buildVoiceObj(String title, String summary
             , String thumbImagePath, String targetUrl, String mediaUrl, int duration) {
-        ShareMediaObj shareMediaObj = new ShareMediaObj(SHARE_TYPE_VOICE);
-        shareMediaObj.initMediaObj(title, summary, thumbImagePath, targetUrl);
+        ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_VOICE);
+        shareMediaObj.init(title, summary, thumbImagePath, targetUrl);
         shareMediaObj.setMediaUrl(mediaUrl);
         shareMediaObj.setDuration(duration);
         return shareMediaObj;
     }
 
 
-    public ShareMediaObj(int shareObjType) {
+    public ShareObj(int shareObjType) {
         this.shareObjType = shareObjType;
     }
 
 
-    public void initMediaObj(String title, String summary, String thumbImagePath, String targetUrl) {
+    public void init(String title, String summary, String thumbImagePath, String targetUrl) {
         setTitle(title);
         setSummary(summary);
         setThumbImagePath(thumbImagePath);
@@ -134,7 +137,6 @@ public class ShareMediaObj implements Parcelable {
         return !OtherHelper.isEmpty(title, summary, targetUrl, mediaUrl) && isThumbLocalPathValid();
     }
 
-    public static final String TAG = ShareMediaObj.class.getSimpleName();
 
     public boolean isThumbLocalPathValid() {
         boolean exist = FileHelper.isExist(thumbImagePath);
@@ -144,11 +146,11 @@ public class ShareMediaObj implements Parcelable {
         return exist && picFile;
     }
 
-    public Object getExtraTag() {
-        return extraTag;
+    public <T extends Parcelable> T getExtraTag() {
+        return (T) extraTag;
     }
 
-    public void setExtraTag(Object extraTag) {
+    public void setExtraTag(Parcelable extraTag) {
         this.extraTag = extraTag;
     }
 
@@ -230,12 +232,11 @@ public class ShareMediaObj implements Parcelable {
         this.mediaUrl = mediaUrl;
     }
 
-
     public boolean isValid(int shareTarget) {
         switch (shareObjType) {
-            case ShareMediaObj.SHARE_TYPE_TEXT:
+            case ShareObj.SHARE_TYPE_TEXT:
                 return !OtherHelper.isEmpty(title, summary);
-            case ShareMediaObj.SHARE_TYPE_IMAGE:
+            case ShareObj.SHARE_TYPE_IMAGE:
                 if (shareTarget == ShareManager.TARGET_SINA_OPENAPI) {
                     boolean isSummaryValid = !OtherHelper.isEmpty(summary);
                     if (!isSummaryValid)
@@ -243,12 +244,12 @@ public class ShareMediaObj implements Parcelable {
                     return isThumbLocalPathValid() && isSummaryValid;
                 } else
                     return isThumbLocalPathValid();
-            case ShareMediaObj.SHARE_TYPE_APP:
-            case ShareMediaObj.SHARE_TYPE_WEB:
+            case ShareObj.SHARE_TYPE_APP:
+            case ShareObj.SHARE_TYPE_WEB:
                 return isAppOrWebObjValid();
-            case ShareMediaObj.SHARE_TYPE_MUSIC:
-            case ShareMediaObj.SHARE_TYPE_VIDEO:
-            case ShareMediaObj.SHARE_TYPE_VOICE:
+            case ShareObj.SHARE_TYPE_MUSIC:
+            case ShareObj.SHARE_TYPE_VIDEO:
+            case ShareObj.SHARE_TYPE_VOICE:
                 boolean musicVideoVoiceValid = isMusicVideoVoiceValid();
                 if (shareTarget == ShareManager.TARGET_QQ_ZONE) {
                     return musicVideoVoiceValid;
@@ -273,11 +274,12 @@ public class ShareMediaObj implements Parcelable {
         dest.writeString(this.targetUrl);
         dest.writeString(this.mediaUrl);
         dest.writeInt(this.duration);
+        dest.writeParcelable(this.extraTag, flags);
         dest.writeByte(this.isSinaWithSummary ? (byte) 1 : (byte) 0);
         dest.writeByte(this.isSinaWithPicture ? (byte) 1 : (byte) 0);
     }
 
-    protected ShareMediaObj(Parcel in) {
+    protected ShareObj(Parcel in) {
         this.shareObjType = in.readInt();
         this.title = in.readString();
         this.summary = in.readString();
@@ -285,19 +287,20 @@ public class ShareMediaObj implements Parcelable {
         this.targetUrl = in.readString();
         this.mediaUrl = in.readString();
         this.duration = in.readInt();
+        this.extraTag = in.readParcelable(Parcelable.class.getClassLoader());
         this.isSinaWithSummary = in.readByte() != 0;
         this.isSinaWithPicture = in.readByte() != 0;
     }
 
-    public static final Creator<ShareMediaObj> CREATOR = new Creator<ShareMediaObj>() {
+    public static final Creator<ShareObj> CREATOR = new Creator<ShareObj>() {
         @Override
-        public ShareMediaObj createFromParcel(Parcel source) {
-            return new ShareMediaObj(source);
+        public ShareObj createFromParcel(Parcel source) {
+            return new ShareObj(source);
         }
 
         @Override
-        public ShareMediaObj[] newArray(int size) {
-            return new ShareMediaObj[size];
+        public ShareObj[] newArray(int size) {
+            return new ShareObj[size];
         }
     };
 }

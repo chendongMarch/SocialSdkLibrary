@@ -14,7 +14,7 @@ import com.march.socialsdk.helper.FileHelper;
 import com.march.socialsdk.helper.PlatformLog;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.manager.ShareManager;
-import com.march.socialsdk.model.ShareMediaObj;
+import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.platform.BasePlatform;
 import com.march.socialsdk.platform.sina.extend.StatusesAPI;
 import com.sina.weibo.sdk.api.BaseMediaObject;
@@ -180,7 +180,7 @@ public class SinaPlatform extends BasePlatform {
 
     // 用openApi实现可以支持5M以下图片文件分享，微博应用名称点亮可点击
     // openApi分享本地图片
-    public void shareImageOpenApi(final Activity activity, final ShareMediaObj obj) {
+    public void shareImageOpenApi(final Activity activity, final ShareObj obj) {
         justAuth(activity, new Runnable() {
             @Override
             public void run() {
@@ -194,7 +194,7 @@ public class SinaPlatform extends BasePlatform {
     }
 
     // openApi分享图片
-    private void shareJpgPngOpenApi(final ShareMediaObj obj) {
+    private void shareJpgPngOpenApi(final ShareObj obj) {
         final Callable<Bitmap> getBitmapCallable = new Callable<Bitmap>() {
             @Override
             public Bitmap call() throws Exception {
@@ -218,7 +218,7 @@ public class SinaPlatform extends BasePlatform {
     }
 
     // openApi 分享gif
-    private void shareGifOpenApi(final ShareMediaObj obj) {
+    private void shareGifOpenApi(final ShareObj obj) {
         final Callable<ByteArrayOutputStream> getBaosCallable = new Callable<ByteArrayOutputStream>() {
             @Override
             public ByteArrayOutputStream call() throws Exception {
@@ -263,7 +263,7 @@ public class SinaPlatform extends BasePlatform {
     }
 
     @Override
-    protected void shareOpenApp(int shareTarget, Activity activity, ShareMediaObj obj) {
+    protected void shareOpenApp(int shareTarget, Activity activity, ShareObj obj) {
         boolean rst = OtherHelper.openApp(mContext, SocialConstants.SINA_WB_PKG_NAME);
         if (rst) {
             mOnShareListener.onSuccess();
@@ -273,7 +273,7 @@ public class SinaPlatform extends BasePlatform {
     }
 
     @Override
-    public void shareText(int shareTarget, Activity activity, final ShareMediaObj obj) {
+    public void shareText(int shareTarget, Activity activity, final ShareObj obj) {
         WeiboMultiMessage multiMessage = new WeiboMultiMessage();
         multiMessage.textObject = getTextObj(obj.getSummary());
         sendWeiboMultiMsg(activity, multiMessage);
@@ -281,7 +281,7 @@ public class SinaPlatform extends BasePlatform {
 
 
     @Override
-    public void shareImage(int shareTarget, final Activity activity, final ShareMediaObj obj) {
+    public void shareImage(int shareTarget, final Activity activity, final ShareObj obj) {
         if (shareTarget == ShareManager.TARGET_SINA_OPENAPI) {
             shareImageOpenApi(activity, obj);
         } else {
@@ -299,13 +299,13 @@ public class SinaPlatform extends BasePlatform {
     }
 
     @Override
-    public void shareApp(int shareTarget, Activity activity, ShareMediaObj obj) {
+    public void shareApp(int shareTarget, Activity activity, ShareObj obj) {
         PlatformLog.e(TAG, "sina不支持app分享，将以web形式分享");
         shareWeb(shareTarget, activity, obj);
     }
 
     @Override
-    public void shareWeb(int shareTarget, final Activity activity, final ShareMediaObj obj) {
+    public void shareWeb(int shareTarget, final Activity activity, final ShareObj obj) {
         BitmapHelper.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
                 .continueWith(new ThumbDataContinuation(TAG, "shareWeb", mOnShareListener) {
                     @Override
@@ -319,7 +319,7 @@ public class SinaPlatform extends BasePlatform {
     }
 
     @Override
-    public void shareMusic(int shareTarget, final Activity activity, final ShareMediaObj obj) {
+    public void shareMusic(int shareTarget, final Activity activity, final ShareObj obj) {
         BitmapHelper.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
                 .continueWith(new ThumbDataContinuation(TAG, "shareMusic", mOnShareListener) {
                     @Override
@@ -333,7 +333,7 @@ public class SinaPlatform extends BasePlatform {
     }
 
     @Override
-    public void shareVideo(int shareTarget, final Activity activity, final ShareMediaObj obj) {
+    public void shareVideo(int shareTarget, final Activity activity, final ShareObj obj) {
         BitmapHelper.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
                 .continueWith(new ThumbDataContinuation(TAG, "shareVideo", mOnShareListener) {
                     @Override
@@ -347,7 +347,7 @@ public class SinaPlatform extends BasePlatform {
     }
 
     @Override
-    public void shareVoice(int shareTarget, final Activity activity, final ShareMediaObj obj) {
+    public void shareVoice(int shareTarget, final Activity activity, final ShareObj obj) {
         BitmapHelper.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
                 .continueWith(new ThumbDataContinuation(TAG, "shareVoice", mOnShareListener) {
                     @Override
@@ -368,7 +368,7 @@ public class SinaPlatform extends BasePlatform {
      * @param multiMessage msg
      * @param obj          share
      */
-    private void checkAddTextAndImageObj(WeiboMultiMessage multiMessage, ShareMediaObj obj, byte[] thumbData) {
+    private void checkAddTextAndImageObj(WeiboMultiMessage multiMessage, ShareObj obj, byte[] thumbData) {
         if (obj.isSinaWithPicture())
             multiMessage.imageObject = getImageObj(obj.getThumbImagePath(), thumbData);
         if (obj.isSinaWithSummary())

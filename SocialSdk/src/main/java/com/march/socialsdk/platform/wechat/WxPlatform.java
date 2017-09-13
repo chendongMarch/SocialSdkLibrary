@@ -10,7 +10,7 @@ import com.march.socialsdk.helper.FileHelper;
 import com.march.socialsdk.helper.PlatformLog;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.manager.ShareManager;
-import com.march.socialsdk.model.ShareMediaObj;
+import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.platform.BasePlatform;
 import com.tencent.mm.opensdk.constants.ConstantsAPI;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
@@ -35,15 +35,15 @@ import bolts.Task;
  *
  * @author chendong
  */
-public class WeChatPlatform extends BasePlatform {
+public class WxPlatform extends BasePlatform {
 
-    public static final String TAG = WeChatPlatform.class.getSimpleName();
+    public static final String TAG = WxPlatform.class.getSimpleName();
 
-    private WeChatLoginHelper mWeChatLoginHelper;
-    private IWXAPI            mWxApi;
-    private String            mWxSecret;
+    private WxLoginHelper mWeChatLoginHelper;
+    private IWXAPI        mWxApi;
+    private String        mWxSecret;
 
-    public WeChatPlatform(Context context, String appId, String wxSecret, String appName) {
+    public WxPlatform(Context context, String appId, String wxSecret, String appName) {
         super(context, appId, appName);
         this.mWxSecret = wxSecret;
         mWxApi = WXAPIFactory.createWXAPI(context, appId, true);
@@ -118,7 +118,7 @@ public class WeChatPlatform extends BasePlatform {
             loginListener.onFailure(new SocialException(SocialException.CODE_VERSION_LOW));
             return;
         }
-        mWeChatLoginHelper = new WeChatLoginHelper(context, mWxApi, mAppId);
+        mWeChatLoginHelper = new WxLoginHelper(context, mWxApi, mAppId);
         mWeChatLoginHelper.login(mWxSecret, loginListener);
     }
 
@@ -152,7 +152,7 @@ public class WeChatPlatform extends BasePlatform {
     }
 
     @Override
-    protected void shareOpenApp(int shareTarget, Activity activity, ShareMediaObj obj) {
+    protected void shareOpenApp(int shareTarget, Activity activity, ShareObj obj) {
         boolean rst = mWxApi.openWXApp();
         if (rst) {
             mOnShareListener.onSuccess();
@@ -162,7 +162,7 @@ public class WeChatPlatform extends BasePlatform {
     }
 
     @Override
-    public void shareText(int shareTarget, Activity activity, ShareMediaObj obj) {
+    public void shareText(int shareTarget, Activity activity, ShareObj obj) {
         WXTextObject textObj = new WXTextObject();
         textObj.text = obj.getSummary();
         WXMediaMessage msg = new WXMediaMessage();
@@ -173,7 +173,7 @@ public class WeChatPlatform extends BasePlatform {
     }
 
     @Override
-    public void shareImage(final int shareTarget, final Activity activity, final ShareMediaObj obj) {
+    public void shareImage(final int shareTarget, final Activity activity, final ShareObj obj) {
         BitmapHelper.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
                 .continueWith(new ThumbDataContinuation(TAG, "shareImage", mOnShareListener) {
                     @Override
@@ -216,14 +216,14 @@ public class WeChatPlatform extends BasePlatform {
 
 
     @Override
-    public void shareApp(int shareTarget, Activity activity, ShareMediaObj obj) {
+    public void shareApp(int shareTarget, Activity activity, ShareObj obj) {
         PlatformLog.e(TAG, "微信不支持app分享，将以web形式分享");
         shareWeb(shareTarget, activity, obj);
     }
 
 
     @Override
-    public void shareWeb(final int shareTarget, Activity activity, final ShareMediaObj obj) {
+    public void shareWeb(final int shareTarget, Activity activity, final ShareObj obj) {
         BitmapHelper.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
                 .continueWith(new ThumbDataContinuation(TAG, "shareWeb", mOnShareListener) {
                     @Override
@@ -242,7 +242,7 @@ public class WeChatPlatform extends BasePlatform {
 
 
     @Override
-    public void shareMusic(final int shareTarget, Activity activity, final ShareMediaObj obj) {
+    public void shareMusic(final int shareTarget, Activity activity, final ShareObj obj) {
         BitmapHelper.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
                 .continueWith(new ThumbDataContinuation(TAG, "shareMusic", mOnShareListener) {
                     @Override
@@ -261,7 +261,7 @@ public class WeChatPlatform extends BasePlatform {
     }
 
     @Override
-    public void shareVideo(final int shareTarget, Activity activity, final ShareMediaObj obj) {
+    public void shareVideo(final int shareTarget, Activity activity, final ShareObj obj) {
         BitmapHelper.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
                 .continueWith(new ThumbDataContinuation(TAG, "shareVideo", mOnShareListener) {
                     @Override
@@ -279,7 +279,7 @@ public class WeChatPlatform extends BasePlatform {
     }
 
     @Override
-    public void shareVoice(int shareTarget, Activity activity, ShareMediaObj obj) {
+    public void shareVoice(int shareTarget, Activity activity, ShareObj obj) {
         PlatformLog.e(TAG, "微信不支持voice分享，将以web形式分享");
         shareWeb(shareTarget, activity, obj);
     }

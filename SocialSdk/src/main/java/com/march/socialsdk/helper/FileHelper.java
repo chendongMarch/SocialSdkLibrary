@@ -1,5 +1,8 @@
 package com.march.socialsdk.helper;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.text.TextUtils;
 
 import com.march.socialsdk.SocialSdk;
@@ -9,12 +12,12 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -34,6 +37,13 @@ public class FileHelper {
     public static final String POINT_PNG  = ".png";
 
 
+    /**
+     * 下载文件
+     *
+     * @param httpUrl 下载的链接
+     * @param path    本地存储路径
+     * @throws IOException
+     */
     public static void downloadFileSync(String httpUrl, String path) throws IOException {
         BufferedInputStream bis = null;
         BufferedOutputStream bos = null;
@@ -62,9 +72,15 @@ public class FileHelper {
         } finally {
             OtherHelper.closeStream(bos, bis);
         }
-
     }
 
+
+    /**
+     * 从文件中获取输出流
+     *
+     * @param path 路径
+     * @return 输出流
+     */
     public static ByteArrayOutputStream getOutputStreamFromFile(String path) {
         if (!FileHelper.isExist(path))
             return null;
@@ -87,50 +103,121 @@ public class FileHelper {
         return baos;
     }
 
+    /**
+     * 文件后缀
+     *
+     * @param path 路径
+     * @return 后缀名
+     */
     public static String getSuffix(String path) {
         return path.substring(path.lastIndexOf("."), path.length());
     }
 
+    /**
+     * @param path 路径
+     * @return 是否是 gif 文件
+     */
     public static boolean isGifFile(String path) {
         return path.toLowerCase().endsWith(POINT_GIF);
     }
 
+    /**
+     * @param path 路径
+     * @return 是不是 jpg || png
+     */
     public static boolean isJpgPngFile(String path) {
         return isJpgFile(path) || isPngFile(path);
     }
 
+    /**
+     * @param path 路径
+     * @return 是不是 jpg 文件
+     */
     public static boolean isJpgFile(String path) {
         return path.toLowerCase().endsWith(POINT_JPG) || path.toLowerCase().endsWith(POINT_JPEG);
     }
 
+    /**
+     * @param path 路径
+     * @return 是不是 png 文件
+     */
     public static boolean isPngFile(String path) {
         return path.toLowerCase().endsWith(POINT_PNG);
     }
 
+    /**
+     * @param path 路径
+     * @return 是不是 图片 文件
+     */
     public static boolean isPicFile(String path) {
         return isJpgPngFile(path) || isGifFile(path);
     }
 
-    public static boolean isExist(String thumbImagePath) {
-        if (TextUtils.isEmpty(thumbImagePath)) return false;
-        File file = new File(thumbImagePath);
+    /**
+     * @param path 路径
+     * @return 文件是否存在
+     */
+    public static boolean isExist(String path) {
+        if (TextUtils.isEmpty(path))
+            return false;
+        File file = new File(path);
         return file.exists() && file.length() > 0;
     }
 
+    /**
+     * @param path 路径
+     * @return 是不是 http 路径
+     */
     public static boolean isHttpPath(String path) {
         return path.toLowerCase().startsWith("http");
     }
 
-
-    public static String getShareUrlMapLocalPath(String url) {
+    /**
+     * 网络路径映射本地路径
+     *
+     * @param url 网络路径
+     * @return 映射的本地路径
+     */
+    public static String mapUrl2LocalPath(String url) {
         // 映射文件名
         String fileName = OtherHelper.getMD5(url) + FileHelper.getSuffix(url);
         File saveFile = new File(SocialSdk.getConfig().getShareCacheDirPath(), fileName);
         return saveFile.getAbsolutePath();
     }
 
+
+    /**
+     * 将资源图片映射到本地文件存储，同一张图片不必重复decode
+     *
+     * @param context ctx
+     * @param resId   资源ID
+     * @return 路径
+     */
+    public static String mapResId2LocalPath(Context context, int resId) {
+        String fileName = OtherHelper.getMD5(resId + "") + FileHelper.POINT_PNG;
+        File saveFile = new File(SocialSdk.getConfig().getShareCacheDirPath(), fileName);
+        if (saveFile.exists())
+            return saveFile.getAbsolutePath();
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resId);
+        try {
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(saveFile));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            BitmapHelper.recyclerBitmaps(bitmap);
+        }
+        return saveFile.getAbsolutePath();
+    }
+
+    /**
+     * 生成不重复文件名
+     *
+     * @param suffix 后缀
+     * @return 文件名
+     */
     public static String getFileUid(String suffix) {
-        String format = new SimpleDateFormat("yyyyMMddHHmmssSSS", Locale.CHINA).format(new Date(System.currentTimeMillis()));
+        String format = new SimpleDateFormat("yyyyMMddHHmmssSSS", Locale.CHINA).format(System.currentTimeMillis());
         return format + suffix;
     }
 }

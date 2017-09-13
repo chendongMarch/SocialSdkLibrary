@@ -17,19 +17,19 @@ public abstract class ThumbDataContinuation implements Continuation<byte[], Obje
 
     private String          tag;
     private String          msg;
-    private OnShareListener mOnShareListener;
+    private OnShareListener onShareListener;
 
     protected ThumbDataContinuation(String tag, String msg, OnShareListener onShareListener) {
         this.tag = tag;
         this.msg = msg;
-        mOnShareListener = onShareListener;
+        this.onShareListener = onShareListener;
     }
 
     @Override
     public Object then(Task<byte[]> task) throws Exception {
         if (task.isFaulted() || task.getResult() == null) {
             PlatformLog.e(tag, "图片压缩失败 -> " + msg);
-            mOnShareListener.onFailure(new SocialException(msg, task.getError()));
+            onShareListener.onFailure(new SocialException(msg, task.getError()));
         } else {
             onSuccess(task.getResult());
         }

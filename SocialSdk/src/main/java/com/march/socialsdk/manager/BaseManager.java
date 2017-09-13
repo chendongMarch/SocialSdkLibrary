@@ -9,7 +9,7 @@ import com.march.socialsdk.model.SocialSdkConfig;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.sina.SinaPlatform;
 import com.march.socialsdk.platform.tencent.QQPlatform;
-import com.march.socialsdk.platform.wechat.WeChatPlatform;
+import com.march.socialsdk.platform.wechat.WxPlatform;
 
 /**
  * CreateAt : 2017/5/19
@@ -74,7 +74,7 @@ public abstract class BaseManager {
     private static void initWxPlatform(Context context) {
         SocialSdkConfig config = SocialSdk.getConfig();
         if (!OtherHelper.isEmpty(config.getWxAppId(), config.getWxSecretKey()))
-            mPlatform = new WeChatPlatform(context, config.getWxAppId(), config.getWxSecretKey(), config.getAppName());
+            mPlatform = new WxPlatform(context, config.getWxAppId(), config.getWxSecretKey(), config.getAppName());
     }
 
     private static void initSinaPlatform(Context context) {

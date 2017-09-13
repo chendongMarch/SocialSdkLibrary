@@ -2,23 +2,23 @@ package com.march.socialsdk.listener.impl;
 
 import com.march.socialsdk.exception.SocialException;
 import com.march.socialsdk.listener.OnShareListener;
-import com.march.socialsdk.model.ShareMediaObj;
+import com.march.socialsdk.model.ShareObj;
 
 /**
  * CreateAt : 2017/5/22
- * Describe :
+ * Describe : 简化版本分享监听
  *
  * @author chendong
  */
 public class SimpleShareListener implements OnShareListener {
 
     @Override
-    public void onStart(int shareTarget, ShareMediaObj obj) {
+    public void onStart(int shareTarget, ShareObj obj) {
     }
 
     @Override
-    public ShareMediaObj onPrepareInBackground(int shareTarget, ShareMediaObj obj) throws Exception{
-        return null;
+    public ShareObj onPrepareInBackground(int shareTarget, ShareObj obj) throws Exception {
+        return obj;
     }
 
     @Override

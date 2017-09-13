@@ -12,7 +12,7 @@ import com.march.socialsdk.exception.SocialException;
 import com.march.socialsdk.helper.OtherHelper;
 import com.march.socialsdk.helper.PlatformLog;
 import com.march.socialsdk.listener.OnShareListener;
-import com.march.socialsdk.model.ShareMediaObj;
+import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.uikit.ActionActivity;
 
 import java.lang.annotation.Retention;
@@ -59,11 +59,11 @@ public class ShareManager extends BaseManager {
      * @param onShareListener 分享监听
      */
     public static void share(final Context context, @ShareTargetType final int shareTarget,
-                             final ShareMediaObj shareMediaObj, final OnShareListener onShareListener) {
-        Task.callInBackground(new Callable<ShareMediaObj>() {
+                             final ShareObj shareMediaObj, final OnShareListener onShareListener) {
+        Task.callInBackground(new Callable<ShareObj>() {
             @Override
-            public ShareMediaObj call() throws Exception {
-                ShareMediaObj temp = null;
+            public ShareObj call() throws Exception {
+                ShareObj temp = null;
                 try {
                     temp = onShareListener.onPrepareInBackground(shareTarget, shareMediaObj);
                 } catch (Exception e) {
@@ -75,9 +75,9 @@ public class ShareManager extends BaseManager {
                     return shareMediaObj;
                 }
             }
-        }).continueWith(new Continuation<ShareMediaObj, Object>() {
+        }).continueWith(new Continuation<ShareObj, Object>() {
             @Override
-            public Object then(Task<ShareMediaObj> task) throws Exception {
+            public Object then(Task<ShareObj> task) throws Exception {
                 if (task.isFaulted() || task.getResult() == null) {
                     if (onShareListener != null) {
                         SocialException exception = new SocialException("onPrepareInBackground error", task.getError());
@@ -93,7 +93,7 @@ public class ShareManager extends BaseManager {
 
 
     // 开始分享
-    private static boolean doShare(Context context, @ShareTargetType int shareTarget, ShareMediaObj shareMediaObj, OnShareListener onShareListener) {
+    private static boolean doShare(Context context, @ShareTargetType int shareTarget, ShareObj shareMediaObj, OnShareListener onShareListener) {
 
         if (!shareMediaObj.isValid(shareTarget)) {
             onShareListener.onFailure(new SocialException(SocialException.CODE_SHARE_OBJ_VALID));
@@ -125,7 +125,7 @@ public class ShareManager extends BaseManager {
         Intent intent = activity.getIntent();
         int actionType = intent.getIntExtra(KEY_ACTION_TYPE, INVALID_PARAM);
         int shareTarget = intent.getIntExtra(KEY_SHARE_TARGET, INVALID_PARAM);
-        ShareMediaObj shareMediaObj = intent.getParcelableExtra(KEY_SHARE_MEDIA_OBJ);
+        ShareObj shareMediaObj = intent.getParcelableExtra(KEY_SHARE_MEDIA_OBJ);
         if (actionType != ACTION_TYPE_SHARE)
             return;
         if (shareTarget == INVALID_PARAM) {
@@ -149,12 +149,12 @@ public class ShareManager extends BaseManager {
     private static OnShareListener getOnShareListenerWrap(final Activity activity) {
         return new OnShareListener() {
             @Override
-            public void onStart(int shareTarget, ShareMediaObj obj) {
+            public void onStart(int shareTarget, ShareObj obj) {
                 sOnShareListener.onStart(shareTarget, obj);
             }
 
             @Override
-            public ShareMediaObj onPrepareInBackground(int shareTarget, ShareMediaObj obj) throws Exception {
+            public ShareObj onPrepareInBackground(int shareTarget, ShareObj obj) throws Exception {
                 return sOnShareListener.onPrepareInBackground(shareTarget, obj);
             }
 

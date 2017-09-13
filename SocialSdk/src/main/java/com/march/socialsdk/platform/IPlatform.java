@@ -5,7 +5,7 @@ import android.app.Activity;
 import com.march.socialsdk.listener.PlatformLifeCircle;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.listener.OnShareListener;
-import com.march.socialsdk.model.ShareMediaObj;
+import com.march.socialsdk.model.ShareObj;
 
 /**
  * CreateAt : 2016/12/28
@@ -22,6 +22,6 @@ public interface IPlatform extends PlatformLifeCircle {
 
     void login(Activity activity, OnLoginListener onLoginListener);
 
-    void share(Activity activity, int shareTarget, ShareMediaObj shareMediaObj);
+    void share(Activity activity, int shareTarget, ShareObj shareMediaObj);
 
 }
