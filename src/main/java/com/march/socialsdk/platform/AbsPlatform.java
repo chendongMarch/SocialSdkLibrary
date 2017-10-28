@@ -15,9 +15,9 @@ import com.march.socialsdk.model.ShareObj;
  *
  * @author chendong
  */
-public abstract class BasePlatform implements IPlatform {
+public abstract class AbsPlatform implements IPlatform {
 
-    public static final String TAG = BasePlatform.class.getSimpleName();
+    public static final String TAG = AbsPlatform.class.getSimpleName();
 
     protected static final int THUMB_IMAGE_SIZE = 32 * 1024;
 
@@ -31,7 +31,7 @@ public abstract class BasePlatform implements IPlatform {
         this.mOnShareListener = listener;
     }
 
-    protected BasePlatform(Context context, String appId, String appName) {
+    protected AbsPlatform(Context context, String appId, String appName) {
         this.mAppId = appId;
         this.mAppName = appName;
         this.mContext = context;

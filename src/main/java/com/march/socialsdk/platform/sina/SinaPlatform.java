@@ -15,7 +15,7 @@ import com.march.socialsdk.helper.PlatformLog;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.manager.ShareManager;
 import com.march.socialsdk.model.ShareObj;
-import com.march.socialsdk.platform.BasePlatform;
+import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.sina.extend.StatusesAPI;
 import com.sina.weibo.sdk.api.BaseMediaObject;
 import com.sina.weibo.sdk.api.ImageObject;
@@ -52,7 +52,7 @@ import bolts.Task;
  *
  * @author chendong
  */
-public class SinaPlatform extends BasePlatform {
+public class SinaPlatform extends AbsPlatform {
 
     private static final String TAG = SinaPlatform.class.getSimpleName();
 

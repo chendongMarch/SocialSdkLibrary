@@ -15,7 +15,7 @@ import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.manager.ShareManager;
 import com.march.socialsdk.model.ShareObj;
-import com.march.socialsdk.platform.BasePlatform;
+import com.march.socialsdk.platform.AbsPlatform;
 import com.tencent.connect.common.Constants;
 import com.tencent.connect.share.QQShare;
 import com.tencent.connect.share.QzonePublish;
@@ -35,7 +35,7 @@ import java.util.ArrayList;
  *
  * @author chendong
  */
-public class QQPlatform extends BasePlatform {
+public class QQPlatform extends AbsPlatform {
 
     public static final String TAG                 = QQPlatform.class.getSimpleName();
     public static final int    SHARE_TEXT_REQ_CODE = 0x123;

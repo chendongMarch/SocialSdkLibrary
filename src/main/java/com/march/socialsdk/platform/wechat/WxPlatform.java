@@ -11,7 +11,7 @@ import com.march.socialsdk.helper.PlatformLog;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.manager.ShareManager;
 import com.march.socialsdk.model.ShareObj;
-import com.march.socialsdk.platform.BasePlatform;
+import com.march.socialsdk.platform.AbsPlatform;
 import com.tencent.mm.opensdk.constants.ConstantsAPI;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
@@ -35,7 +35,7 @@ import bolts.Task;
  *
  * @author chendong
  */
-public class WxPlatform extends BasePlatform {
+public class WxPlatform extends AbsPlatform {
 
     public static final String TAG = WxPlatform.class.getSimpleName();
 

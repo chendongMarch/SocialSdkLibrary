@@ -115,13 +115,13 @@ public class LoginManager extends BaseManager {
         };
     }
 
-    public void clearAllToken(Context context){
+    public static void clearAllToken(Context context){
         AuthTokenKeeper.clearToken(context,TARGET_QQ);
         AuthTokenKeeper.clearToken(context,TARGET_WECHAT);
         AuthTokenKeeper.clearToken(context,TARGET_SINA);
     }
 
-    public void clearToken(Context context,@LoginTarget int loginTarget){
+    public static void clearToken(Context context,@LoginTarget int loginTarget){
         AuthTokenKeeper.clearToken(context,loginTarget);
     }
 }

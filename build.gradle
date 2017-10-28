@@ -34,7 +34,7 @@ dependencies {
 
     compile rootProject.ext.support.appcompat_v7
     compile rootProject.ext.support.gson
-    compile rootProject.ext.support.bolts
+    compile rootProject.ext.support.bolts-status
 
     compile 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
 
