@@ -1,17 +1,23 @@
-
-
-> SocialSdk
-
+# SocialSdk
 
 `SocialSdk` 提供微博、微信、QQ的登陆分享功能支持，使用 微博、QQ、微信 原生 SDK 接入持续优化中...
 
 由于项目中想要接入的平台因人而异，第三方 SDK 更新也比较频繁，因此没有对类库进行发布操作，下载之后直接依赖 `module` 即可，开放源码，这样也方便问题修复。
 
 
-
 <!--more-->
 
-**SocialSdk** 主要对外开放三个类文件 `SocialSdk`，`ShareManager`，`LoginManager`。`SocialSdk` 用来完成基本配置的初始化操作，`ShareManager` 用来进行分享操作，`LoginManager` 用来进行登录操作。
+## 介绍
+
+使用 **SocialSdk** 只需要关注以下几个文件：
+
+> `SocialSdk` 结合 `SocialConfig` 用来进行授权信息的配置。
+
+>  `Target` 类是单独分离出来的常量类，指向了登录和分享的具体目标。
+
+> `LoginManager` 用来实现 qq、微信、微博第三方授权登录，内部存储 `accessToken`，无需多次授权，只要调用 `LoginManager.login()` 方法。
+
+> `ShareManager` 用来实现 9 种数据类型、3 大平台、7 个渠道的分享，只要调用 `ShareManager.share()` 方法。
 
 
 ## 初始化
@@ -40,10 +46,7 @@ SocialSdk.init(config);
 
 ## 登录功能
 
-> 快速唤醒登录 `LoginManager.login(mActivity, Target.LOGIN_QQ, mOnLoginListener);`
-
-
-登陆功能支持三个平台，qq，微信，微博；分别对应 类型 是：
+登陆功能支持三个平台，qq，微信，微博；
 
 ```java
 // 3个平台
@@ -93,9 +96,10 @@ LoginManager.login(mActivity, Target.LOGIN_QQ, mOnLoginListener);
 
 ## 分享功能
 
-> 快速使用分享功能 `ShareManager.share(mActivity, Target.SHARE_QQ_FRIENDS, imageObj, mOnShareListener);`
 
-分享支持 8 种类型的数据；如果某个平台不兼容某种类型的分享，将会使用 `web` 分享的方式代替；比如微信不支持 `app` 分享，分享出去之后时 `web` 分享的模式。支持的 8 种类型分别是：
+### 9 种数据支持
+
+分享支持 9 种类型的数据；如果某个平台不兼容某种类型的分享，将会使用 `web` 分享的方式代替；比如微信不支持 `app` 分享，分享出去之后时 `web` 分享的模式。支持的 9 种类型分别是：
 
 > 1. 开启渠道对用的 app。
 > 2. 分享文字。
@@ -104,21 +108,21 @@ LoginManager.login(mActivity, Target.LOGIN_QQ, mOnLoginListener);
 > 5. 分享 web。
 > 6. 分享 music。
 > 7. 分享 video。
-> 8. 分享 voice，(sina 专有，其他平台使用 web 分享)
+> 8. 分享本地 video，使用 Intent 方式唤醒，支持 qq、微信 好友分享。
+> 9. 分享 voice，(sina 专有，其他平台使用 web 分享)
 
-### 分享渠道
+### 7 个分享渠道
 
 ```java
 // 支持的分享渠道
-Target.SHARE_QQ_FRIENDS     ; // qq好友
-Target.SHARE_QQ_ZONE        ; // qq空间
-Target.SHARE_WX_FRIENDS ; // 微信好友
-Target.SHARE_WX_ZONE    ; // 微信朋友圈
+Target.SHARE_QQ_FRIENDS; // qq好友
+Target.SHARE_QQ_ZONE; // qq空间
+Target.SHARE_WX_FRIENDS; // 微信好友
+Target.SHARE_WX_ZONE; // 微信朋友圈
 Target.SHARE_WX_FAVORITE; // 微信收藏
-Target.SHARE_WB_NORMAL           ; // 新浪微博
-Target.SHARE_WB_OPENAPI   ; // 新浪微博openApi分享，使用该方法分享图片时微博后面会带一个小尾巴，可以点击进入官微
+Target.SHARE_WB_NORMAL; // 新浪微博
+Target.SHARE_WB_OPENAPI; // 新浪微博openApi分享，使用该方法分享图片时微博后面会带一个小尾巴，可以点击进入官微
 ```
-
 
 ### 创建分享数据
 
@@ -152,7 +156,6 @@ ShareMediaObj webObj = ShareMediaObj.buildWebObj("分享web", "summary", localIm
 ShareMediaObj videoObj = ShareMediaObj.buildVideoObj("分享视频", "summary", localImagePath, targetUrl, localVideoPath, 10);
 // 分享本地视频，使用 Intent 方式唤醒，支持 qq、微信 好友分享
 ShareMediaObj videoLocalObj = ShareObj.buildVideoObjByLocalPath(localVideoPath);
-
 // 分享音乐
 ShareMediaObj musicObj = ShareMediaObj.buildMusicObj("分享音乐", "summary", localImagePath, targetUrl, netMusicPath, 10);
 // 分享声音，微博特有，其他平台以web方式分享
@@ -192,34 +195,25 @@ public class SimpleShareListener implements OnShareListener{
 ### 发起分享
 
 ```java
-// 支持的分享渠道
-Target.SHARE_QQ_FRIENDS     ; // qq好友
-Target.SHARE_QQ_ZONE        ; // qq空间
-Target.SHARE_WX_FRIENDS ; // 微信好友
-Target.SHARE_WX_ZONE    ; // 微信朋友圈
-Target.SHARE_WX_FAVORITE; // 微信收藏
-Target.SHARE_WB_NORMAL           ; // 新浪微博
-Target.SHARE_WB_OPENAPI   ; // 新浪微博openApi分享，使用该方法分享图片时微博后面会带一个小尾巴，可以点击进入官微
-
 // 唤醒分享
 ShareManager.share(mActivity, Target.SHARE_QQ_FRIENDS, imageObj, mOnShareListener);
 ```
 
 ### 重写分享对象
 
-关于重写分享对象，其实是在分享之前对需要分享的 `ShareMediaObj` 进行处理返回新的 `ShareMediaObj` 的操作，比如可以用来解决网络图片无法分享，我们需要将它下载到本地，在进行分享，又比如图片分享出去之前加上 app 水印等操作。
+关于重写分享对象，其实提供一种能在分享之前对需要分享的 `ShareObj` 进行统一处理的机会，类似中间插一道自定义工序，比如可以用来解决网络图片无法分享，我们需要将它下载到本地，在进行分享，又比如图片分享出去之前加上 app 水印等操作。
 
-主要是重写 `OnShareListener` 的 `onPrepareInBackground` 方法，这个方法会在分享之前首先执行，如果返回不是 null，将会使用新创建的 `ShareMediaObj` 进行分享，另外由于考虑到可能进行耗时操作，这个方法是在子线程执行的。
+主要是重写 `OnShareListener` 的 `onPrepareInBackground` 方法，这个方法会在分享之前首先执行，如果返回不是 null，将会使用新创建的 `ShareObj` 进行分享，另外由于考虑到可能进行耗时操作，这个方法是在子线程执行的。
 
 ```java
 @Override
-public ShareMediaObj onPrepareInBackground(int shareTarget,ShareMediaObj obj) {
+public ShareObj onPrepareInBackground(int shareTarget,ShareObj obj) {
     // 重构分享对象，不需要时返回 null 即可
     return null;
 }
 ```
 
-看一个基本的实例，其中 `ShareObjHelper.prepareThumbImagePath(obj);` 是 SDK 内部下载文件的一个方法的封装，用来将网络图下载到本地然后更新 `ShareMediaObj` 指向的图片地址，你可以直接使用它。
+看一个基本的实例，其中 `ShareObjHelper.prepareThumbImagePath(obj);` 是 SDK 内部下载文件的一个方法的封装，用来将网络图下载到本地然后更新 `ShareObj` 指向的图片地址，你可以直接使用它。
 
 ```java
 public class MyShareListener extends SimpleShareListener {
