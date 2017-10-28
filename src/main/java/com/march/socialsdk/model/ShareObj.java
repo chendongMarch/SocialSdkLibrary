@@ -20,17 +20,17 @@ public class ShareObj implements Parcelable {
 
     public static final String TAG = ShareObj.class.getSimpleName();
 
-    public static final int SHARE_TYPE_TEXT  = 0x41; // 分享文字
+    public static final int SHARE_TYPE_TEXT = 0x41; // 分享文字
     public static final int SHARE_TYPE_IMAGE = 0x42; // 分享图片
-    public static final int SHARE_TYPE_APP   = 0x43; // 分享app
-    public static final int SHARE_TYPE_WEB   = 0x44; // 分享web
+    public static final int SHARE_TYPE_APP = 0x43; // 分享app
+    public static final int SHARE_TYPE_WEB = 0x44; // 分享web
     public static final int SHARE_TYPE_MUSIC = 0x45; // 分享音乐
     public static final int SHARE_TYPE_VIDEO = 0x46; // 分享视频
     public static final int SHARE_TYPE_VOICE = 0x47; // 分享声音
-    public static final int SHARE_OPEN_APP   = 0x99; // 打开 app
+    public static final int SHARE_OPEN_APP = 0x99; // 打开 app
 
     // 分享对象的类型
-    private int    shareObjType;
+    private int shareObjType;
     // title 标题，如果不设置为app name
     private String title;
     // 概要，描述，desc
@@ -40,7 +40,7 @@ public class ShareObj implements Parcelable {
     // 启动url，点击之后指向的url，启动新的网页
     private String targetUrl;
     // 资源url,音视频播放源
-    private String mediaUrl;
+    private String mediaPath;
     // 音视频时间
     private int duration = 10;
     // 附加信息
@@ -49,6 +49,7 @@ public class ShareObj implements Parcelable {
     private boolean isSinaWithSummary = true;
     // 新浪分享带不带图片
     private boolean isSinaWithPicture = false;
+    private boolean isShareByIntent = false;
 
 
     public static ShareObj buildOpenAppObj() {
@@ -90,28 +91,36 @@ public class ShareObj implements Parcelable {
     }
 
     public static ShareObj buildMusicObj(String title, String summary
-            , String thumbImagePath, String targetUrl, String mediaUrl, int duration) {
+            , String thumbImagePath, String targetUrl, String mediaPath, int duration) {
         ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_MUSIC);
         shareMediaObj.init(title, summary, thumbImagePath, targetUrl);
-        shareMediaObj.setMediaUrl(mediaUrl);
+        shareMediaObj.setMediaPath(mediaPath);
         shareMediaObj.setDuration(duration);
         return shareMediaObj;
     }
 
     public static ShareObj buildVideoObj(String title, String summary
-            , String thumbImagePath, String targetUrl, String mediaUrl, int duration) {
+            , String thumbImagePath, String targetUrl, String mediaPath, int duration) {
         ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_VIDEO);
         shareMediaObj.init(title, summary, thumbImagePath, targetUrl);
-        shareMediaObj.setMediaUrl(mediaUrl);
+        shareMediaObj.setMediaPath(mediaPath);
         shareMediaObj.setDuration(duration);
         return shareMediaObj;
     }
 
+    public static ShareObj buildVideoObjByLocalPath(String mediaPath) {
+        ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_VIDEO);
+        shareMediaObj.setMediaPath(mediaPath);
+        shareMediaObj.setShareByIntent(true);
+        return shareMediaObj;
+    }
+
+
     public static ShareObj buildVoiceObj(String title, String summary
-            , String thumbImagePath, String targetUrl, String mediaUrl, int duration) {
+            , String thumbImagePath, String targetUrl, String mediaPath, int duration) {
         ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_VOICE);
         shareMediaObj.init(title, summary, thumbImagePath, targetUrl);
-        shareMediaObj.setMediaUrl(mediaUrl);
+        shareMediaObj.setMediaPath(mediaPath);
         shareMediaObj.setDuration(duration);
         return shareMediaObj;
     }
@@ -134,7 +143,7 @@ public class ShareObj implements Parcelable {
     }
 
     public boolean isMusicVideoVoiceValid() {
-        return !OtherHelper.isEmpty(title, summary, targetUrl, mediaUrl) && isThumbLocalPathValid();
+        return !OtherHelper.isEmpty(title, summary, targetUrl, mediaPath) && isThumbLocalPathValid();
     }
 
 
@@ -196,7 +205,7 @@ public class ShareObj implements Parcelable {
 
     public String getTargetUrl() {
         if (TextUtils.isEmpty(targetUrl)) {
-            return mediaUrl;
+            return mediaPath;
         }
         return targetUrl;
     }
@@ -221,15 +230,23 @@ public class ShareObj implements Parcelable {
         this.duration = duration;
     }
 
-    public String getMediaUrl() {
-        if (TextUtils.isEmpty(mediaUrl)) {
-            return targetUrl;
-        }
-        return mediaUrl;
+    public boolean isShareByIntent() {
+        return isShareByIntent;
     }
 
-    public void setMediaUrl(String mediaUrl) {
-        this.mediaUrl = mediaUrl;
+    public void setShareByIntent(boolean shareByIntent) {
+        isShareByIntent = shareByIntent;
+    }
+
+    public String getMediaPath() {
+        if (TextUtils.isEmpty(mediaPath)) {
+            return targetUrl;
+        }
+        return mediaPath;
+    }
+
+    public void setMediaPath(String mediaPath) {
+        this.mediaPath = mediaPath;
     }
 
     public boolean isValid(int shareTarget) {
@@ -250,11 +267,13 @@ public class ShareObj implements Parcelable {
             case ShareObj.SHARE_TYPE_MUSIC:
             case ShareObj.SHARE_TYPE_VIDEO:
             case ShareObj.SHARE_TYPE_VOICE:
-                boolean musicVideoVoiceValid = isMusicVideoVoiceValid();
-                if (shareTarget == ShareManager.TARGET_QQ_ZONE) {
-                    return musicVideoVoiceValid;
-                } else
-                    return musicVideoVoiceValid && FileHelper.isHttpPath(mediaUrl);
+                if (isShareByIntent() && (shareTarget == ShareManager.TARGET_QQ_FRIENDS || shareTarget == ShareManager.TARGET_WECHAT_FRIENDS)) {
+                    return FileHelper.isExist(mediaPath);
+                } else if (shareTarget == ShareManager.TARGET_QQ_ZONE) {
+                    return isMusicVideoVoiceValid();
+                } else {
+                    return isMusicVideoVoiceValid() && FileHelper.isHttpPath(mediaPath);
+                }
             default:
                 return true;
         }
@@ -272,11 +291,12 @@ public class ShareObj implements Parcelable {
         dest.writeString(this.summary);
         dest.writeString(this.thumbImagePath);
         dest.writeString(this.targetUrl);
-        dest.writeString(this.mediaUrl);
+        dest.writeString(this.mediaPath);
         dest.writeInt(this.duration);
         dest.writeParcelable(this.extraTag, flags);
         dest.writeByte(this.isSinaWithSummary ? (byte) 1 : (byte) 0);
         dest.writeByte(this.isSinaWithPicture ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.isShareByIntent ? (byte) 1 : (byte) 0);
     }
 
     protected ShareObj(Parcel in) {
@@ -285,11 +305,12 @@ public class ShareObj implements Parcelable {
         this.summary = in.readString();
         this.thumbImagePath = in.readString();
         this.targetUrl = in.readString();
-        this.mediaUrl = in.readString();
+        this.mediaPath = in.readString();
         this.duration = in.readInt();
         this.extraTag = in.readParcelable(Parcelable.class.getClassLoader());
         this.isSinaWithSummary = in.readByte() != 0;
         this.isSinaWithPicture = in.readByte() != 0;
+        this.isShareByIntent = in.readByte() != 0;
     }
 
     public static final Creator<ShareObj> CREATOR = new Creator<ShareObj>() {

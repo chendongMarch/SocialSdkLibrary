@@ -8,9 +8,20 @@ package com.march.socialsdk.common;
  */
 public class SocialConstants {
 
-    public static final String QQ_PKG_NAME      = "com.tencent.mobileqq";
-    public static final String WECHAT_PKG_NAME  = "com.tencent.mm";
-    public static final String SINA_WB_PKG_NAME = "com.sina.weibo";
+    public static final String QQ_PKG     = "com.tencent.mobileqq";
+    public static final String WECHAT_PKG = "com.tencent.mm";
+    public static final String SINA_PKG   = "com.sina.weibo";
+
+
+    public static final String WX_FAVORITE_PAGE              = "com.tencent.mm.ui.tools.AddFavoriteUI";
+    public static final String WX_FRIEND_PAGE                = "com.tencent.mm.ui.tools.ShareImgUI";
+    public static final String WX_LAUNCH_PAGE                = "com.tencent.mm.ui.LauncherUI";
+    public static final String QQ_QZONE_PAGE                 = "com.qzonex.module.maxvideo.activity.QzonePublishVideoActivity";// qq空间app
+    public static final String QQ_BROWSER_FAST_TRANS_PAGE    = "com.tencent.mtt.browser.share.inhost.FastSpreadEntryActivity";//qq浏览器跨屏穿越
+    public static final String QQ_FRIENDS_PAGE               = "com.tencent.mobileqq.activity.JumpActivity";//qq选择好友、群、我的电脑
+    public static final String QQ_COMPUTER_FILE_PAGE         = "com.tencent.mobileqq.activity.qfileJumpActivity";// 发送到我的电脑
+    public static final String QQ_TRANSLATE_FACE_2_FACE_PAGE = "cooperation.qlink.QlinkShareJumpActivity";//qq面对面快传
+    public static final String QQ_FAVORITE_PAGE              = "cooperation.qqfav.widget.QfavJumpActivity";// 保存到qq收藏
 
     /**
      * 当前 DEMO 应用的回调页，第三方应用可以使用自己的回调页。

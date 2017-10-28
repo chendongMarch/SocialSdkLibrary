@@ -5,9 +5,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
+import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.model.ShareObj;
+import com.tencent.tauth.UiError;
 
 /**
  * CreateAt : 2016/12/3
@@ -113,4 +115,7 @@ public abstract class AbsPlatform implements IPlatform {
     public void recycle() {
 
     }
+
+
+
 }

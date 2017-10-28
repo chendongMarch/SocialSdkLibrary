@@ -264,7 +264,7 @@ public class SinaPlatform extends AbsPlatform {
 
     @Override
     protected void shareOpenApp(int shareTarget, Activity activity, ShareObj obj) {
-        boolean rst = OtherHelper.openApp(mContext, SocialConstants.SINA_WB_PKG_NAME);
+        boolean rst = OtherHelper.openApp(mContext, SocialConstants.SINA_PKG);
         if (rst) {
             mOnShareListener.onSuccess();
         } else {
@@ -326,7 +326,7 @@ public class SinaPlatform extends AbsPlatform {
                     public void onSuccess(byte[] thumbData) {
                         WeiboMultiMessage multiMessage = new WeiboMultiMessage();
                         checkAddTextAndImageObj(multiMessage, obj, thumbData);
-                        multiMessage.mediaObject = getMusicObj(obj.getTitle(), thumbData, obj.getTargetUrl(), obj.getSummary(), obj.getMediaUrl(), obj.getDuration());
+                        multiMessage.mediaObject = getMusicObj(obj.getTitle(), thumbData, obj.getTargetUrl(), obj.getSummary(), obj.getMediaPath(), obj.getDuration());
                         sendWeiboMultiMsg(activity, multiMessage);
                     }
                 }, Task.UI_THREAD_EXECUTOR);
@@ -340,7 +340,7 @@ public class SinaPlatform extends AbsPlatform {
                     public void onSuccess(byte[] thumbData) {
                         WeiboMultiMessage multiMessage = new WeiboMultiMessage();
                         checkAddTextAndImageObj(multiMessage, obj, thumbData);
-                        multiMessage.mediaObject = getVideoObj(obj.getTitle(), thumbData, obj.getTargetUrl(), obj.getSummary(), obj.getMediaUrl(), obj.getDuration());
+                        multiMessage.mediaObject = getVideoObj(obj.getTitle(), thumbData, obj.getTargetUrl(), obj.getSummary(), obj.getMediaPath(), obj.getDuration());
                         sendWeiboMultiMsg(activity, multiMessage);
                     }
                 }, Task.UI_THREAD_EXECUTOR);
@@ -354,7 +354,7 @@ public class SinaPlatform extends AbsPlatform {
                     public void onSuccess(byte[] thumbData) {
                         WeiboMultiMessage multiMessage = new WeiboMultiMessage();
                         checkAddTextAndImageObj(multiMessage, obj, thumbData);
-                        multiMessage.mediaObject = getVoiceObj(obj.getTitle(), thumbData, obj.getTargetUrl(), obj.getSummary(), obj.getMediaUrl(), obj.getDuration());
+                        multiMessage.mediaObject = getVoiceObj(obj.getTitle(), thumbData, obj.getTargetUrl(), obj.getSummary(), obj.getMediaPath(), obj.getDuration());
                         sendWeiboMultiMsg(activity, multiMessage);
                     }
                 }, Task.UI_THREAD_EXECUTOR);

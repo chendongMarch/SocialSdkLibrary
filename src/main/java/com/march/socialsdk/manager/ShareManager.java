@@ -225,16 +225,16 @@ public class ShareManager extends BaseManager {
         switch (target) {
             case TARGET_QQ_FRIENDS:
             case TARGET_QQ_ZONE:
-                pkgName = SocialConstants.QQ_PKG_NAME;
+                pkgName = SocialConstants.QQ_PKG;
                 break;
             case TARGET_WECHAT_FRIENDS:
             case TARGET_WECHAT_ZONE:
             case TARGET_WECHAT_FAVORITE:
-                pkgName = SocialConstants.WECHAT_PKG_NAME;
+                pkgName = SocialConstants.WECHAT_PKG;
                 break;
             case TARGET_SINA:
             case TARGET_SINA_OPENAPI:
-                pkgName = SocialConstants.SINA_WB_PKG_NAME;
+                pkgName = SocialConstants.SINA_PKG;
                 break;
         }
         return !TextUtils.isEmpty(pkgName) && OtherHelper.openApp(context, pkgName);

@@ -3,10 +3,12 @@ package com.march.socialsdk.platform.wechat;
 import android.app.Activity;
 import android.content.Context;
 
+import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.common.ThumbDataContinuation;
 import com.march.socialsdk.exception.SocialException;
 import com.march.socialsdk.helper.BitmapHelper;
 import com.march.socialsdk.helper.FileHelper;
+import com.march.socialsdk.helper.IntentShareHelper;
 import com.march.socialsdk.helper.PlatformLog;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.manager.ShareManager;
@@ -248,7 +250,7 @@ public class WxPlatform extends AbsPlatform {
                     @Override
                     public void onSuccess(byte[] thumbData) {
                         WXMusicObject music = new WXMusicObject();
-                        music.musicUrl = obj.getMediaUrl();
+                        music.musicUrl = obj.getMediaPath();
                         WXMediaMessage msg = new WXMediaMessage();
                         msg.mediaObject = music;
                         msg.title = obj.getTitle();
@@ -262,19 +264,27 @@ public class WxPlatform extends AbsPlatform {
 
     @Override
     public void shareVideo(final int shareTarget, Activity activity, final ShareObj obj) {
-        BitmapHelper.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
-                .continueWith(new ThumbDataContinuation(TAG, "shareVideo", mOnShareListener) {
-                    @Override
-                    public void onSuccess(byte[] thumbData) {
-                        WXVideoObject video = new WXVideoObject();
-                        video.videoUrl = obj.getMediaUrl();
-                        WXMediaMessage msg = new WXMediaMessage(video);
-                        msg.title = obj.getTitle();
-                        msg.description = obj.getSummary();
-                        msg.thumbData = thumbData;
-                        sendMsgToWx(msg, shareTarget, "video");
-                    }
-                }, Task.UI_THREAD_EXECUTOR);
+        if (obj.isShareByIntent() && shareTarget == ShareManager.TARGET_WECHAT_FRIENDS) {
+            try {
+                IntentShareHelper.shareVideo(activity, obj.getMediaPath(), SocialConstants.WECHAT_PKG, SocialConstants.WX_FRIEND_PAGE);
+            } catch (Exception e) {
+                this.mOnShareListener.onFailure(new SocialException(SocialException.CODE_SHARE_BY_INTENT_FAIL, e));
+            }
+        } else {
+            BitmapHelper.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
+                    .continueWith(new ThumbDataContinuation(TAG, "shareVideo", mOnShareListener) {
+                        @Override
+                        public void onSuccess(byte[] thumbData) {
+                            WXVideoObject video = new WXVideoObject();
+                            video.videoUrl = obj.getMediaPath();
+                            WXMediaMessage msg = new WXMediaMessage(video);
+                            msg.title = obj.getTitle();
+                            msg.description = obj.getSummary();
+                            msg.thumbData = thumbData;
+                            sendMsgToWx(msg, shareTarget, "video");
+                        }
+                    }, Task.UI_THREAD_EXECUTOR);
+        }
 
     }
 

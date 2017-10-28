@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.exception.SocialException;
 import com.march.socialsdk.helper.FileHelper;
+import com.march.socialsdk.helper.IntentShareHelper;
 import com.march.socialsdk.helper.OtherHelper;
 import com.march.socialsdk.helper.PlatformLog;
 import com.march.socialsdk.listener.OnLoginListener;
@@ -37,12 +38,10 @@ import java.util.ArrayList;
  */
 public class QQPlatform extends AbsPlatform {
 
-    public static final String TAG                 = QQPlatform.class.getSimpleName();
-    public static final int    SHARE_TEXT_REQ_CODE = 0x123;
-    public static final String JUMP_ACTIVITY       = "com.tencent.mobileqq.activity.JumpActivity";
+    public static final String TAG = QQPlatform.class.getSimpleName();
 
-    private Tencent         mTencentApi;
-    private QQLoginHelper   mQQLoginHelper;
+    private Tencent mTencentApi;
+    private QQLoginHelper mQQLoginHelper;
     private IUiListenerWrap mIUiListenerWrap;
 
     public QQPlatform(Context context, String appId, String appName) {
@@ -64,7 +63,7 @@ public class QQPlatform extends AbsPlatform {
 
     @Override
     public boolean isInstall() {
-        return OtherHelper.isAppInstall(mContext, SocialConstants.QQ_PKG_NAME);
+        return OtherHelper.isAppInstall(mContext, SocialConstants.QQ_PKG);
     }
 
 
@@ -109,7 +108,7 @@ public class QQPlatform extends AbsPlatform {
 
     @Override
     protected void shareOpenApp(int shareTarget, Activity activity, ShareObj obj) {
-        boolean rst = OtherHelper.openApp(mContext, SocialConstants.QQ_PKG_NAME);
+        boolean rst = OtherHelper.openApp(mContext, SocialConstants.QQ_PKG);
         if (rst) {
             mOnShareListener.onSuccess();
         } else {
@@ -121,20 +120,10 @@ public class QQPlatform extends AbsPlatform {
     @Override
     public void shareText(int shareTarget, Activity activity, ShareObj shareMediaObj) {
         if (shareTarget == ShareManager.TARGET_QQ_FRIENDS) {
-            Intent sendIntent = new Intent();
-            sendIntent.setAction(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, shareMediaObj.getSummary());
-            sendIntent.setType("text/plain");
             try {
-                sendIntent.setClassName(SocialConstants.QQ_PKG_NAME, JUMP_ACTIVITY);
-                Intent chooserIntent = Intent.createChooser(sendIntent, "请选择");
-                if (chooserIntent == null) {
-                    return;
-                }
-                activity.startActivityForResult(chooserIntent, SHARE_TEXT_REQ_CODE);
+                IntentShareHelper.shareText(activity, shareMediaObj.getTitle(), shareMediaObj.getSummary(),SocialConstants.QQ_PKG, SocialConstants.QQ_FRIENDS_PAGE);
             } catch (Exception e) {
-                e.printStackTrace();
-                this.mIUiListenerWrap.onError(new UiError(100, e.getMessage(), e.getCause().toString()));
+                this.mIUiListenerWrap.onError(new SocialException(SocialException.CODE_SHARE_BY_INTENT_FAIL, e));
             }
         } else if (shareTarget == ShareManager.TARGET_QQ_ZONE) {
             final Bundle params = new Bundle();
@@ -208,7 +197,7 @@ public class QQPlatform extends AbsPlatform {
             params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_AUDIO);
             if (!TextUtils.isEmpty(obj.getThumbImagePath()))
                 params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL, obj.getThumbImagePath());
-            params.putString(QQShare.SHARE_TO_QQ_AUDIO_URL, obj.getMediaUrl());
+            params.putString(QQShare.SHARE_TO_QQ_AUDIO_URL, obj.getMediaPath());
             mTencentApi.shareToQQ(activity, params, mIUiListenerWrap);
         } else if (shareTarget == ShareManager.TARGET_QQ_ZONE) {
             shareWeb(shareTarget, activity, obj);
@@ -218,16 +207,24 @@ public class QQPlatform extends AbsPlatform {
     @Override
     public void shareVideo(int shareTarget, Activity activity, ShareObj obj) {
         if (shareTarget == ShareManager.TARGET_QQ_FRIENDS) {
-            PlatformLog.e(TAG, "qq不支持分享视频，使用web分享代替");
-            obj.setTargetUrl(obj.getMediaUrl());
-            shareWeb(shareTarget, activity, obj);
+            if (obj.isShareByIntent()) {
+                try {
+                    IntentShareHelper.shareVideo(activity, obj.getMediaPath(), SocialConstants.QQ_PKG,SocialConstants.QQ_FRIENDS_PAGE);
+                } catch (Exception e) {
+                    this.mIUiListenerWrap.onError(new SocialException(SocialException.CODE_SHARE_BY_INTENT_FAIL, e));
+                }
+            } else {
+                PlatformLog.e(TAG, "qq不支持分享视频，使用web分享代替");
+                obj.setTargetUrl(obj.getMediaPath());
+                shareWeb(shareTarget, activity, obj);
+            }
         } else if (shareTarget == ShareManager.TARGET_QQ_ZONE) {
             // qq 空间支持本地文件发布
-            if (!FileHelper.isHttpPath(obj.getMediaUrl())) {
+            if (!FileHelper.isHttpPath(obj.getMediaPath())) {
                 PlatformLog.e(TAG, "qq空间本地视频分享");
                 final Bundle params = new Bundle();
                 params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzonePublish.PUBLISH_TO_QZONE_TYPE_PUBLISHVIDEO);
-                params.putString(QzonePublish.PUBLISH_TO_QZONE_VIDEO_PATH, obj.getMediaUrl());
+                params.putString(QzonePublish.PUBLISH_TO_QZONE_VIDEO_PATH, obj.getMediaPath());
                 mTencentApi.publishToQzone(activity, params, mIUiListenerWrap);
             } else {
                 PlatformLog.e(TAG, "qq空间网络视频，使用web形式分享");
@@ -239,7 +236,7 @@ public class QQPlatform extends AbsPlatform {
     @Override
     public void shareVoice(int shareTarget, Activity activity, ShareObj obj) {
         PlatformLog.e(TAG, "qq,qzone不支持分享声音，使用web分享代替");
-        obj.setTargetUrl(obj.getMediaUrl());
+        obj.setTargetUrl(obj.getMediaPath());
         shareWeb(shareTarget, activity, obj);
     }
 
@@ -251,7 +248,7 @@ public class QQPlatform extends AbsPlatform {
         IUiListenerWrap(OnShareListener listener) {
             this.listener = listener;
         }
-        
+
         @Override
         public void onComplete(Object o) {
             if (listener != null)
@@ -262,6 +259,11 @@ public class QQPlatform extends AbsPlatform {
         public void onError(UiError uiError) {
             if (listener != null)
                 listener.onFailure(new SocialException("分享失败", uiError));
+        }
+
+        public void onError(SocialException e) {
+            if (listener != null)
+                listener.onFailure(e);
         }
 
         @Override
