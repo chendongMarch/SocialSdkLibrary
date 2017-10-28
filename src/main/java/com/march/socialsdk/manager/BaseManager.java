@@ -7,7 +7,8 @@ import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.helper.OtherHelper;
 import com.march.socialsdk.model.SocialSdkConfig;
 import com.march.socialsdk.platform.IPlatform;
-import com.march.socialsdk.platform.sina.SinaPlatform;
+import com.march.socialsdk.platform.Target;
+import com.march.socialsdk.platform.weibo.WbPlatform;
 import com.march.socialsdk.platform.tencent.QQPlatform;
 import com.march.socialsdk.platform.wechat.WxPlatform;
 
@@ -35,20 +36,20 @@ public abstract class BaseManager {
     static IPlatform buildPlatform(Context activity, int shareTarget) {
         mPlatform = null;
         switch (shareTarget) {
-            case LoginManager.TARGET_QQ:
-            case ShareManager.TARGET_QQ_FRIENDS:
-            case ShareManager.TARGET_QQ_ZONE:
+            case Target.LOGIN_QQ:
+            case Target.SHARE_QQ_FRIENDS:
+            case Target.SHARE_QQ_ZONE:
                 initQQPlatform(activity);
                 break;
-            case LoginManager.TARGET_WECHAT:
-            case ShareManager.TARGET_WECHAT_FRIENDS:
-            case ShareManager.TARGET_WECHAT_ZONE:
-            case ShareManager.TARGET_WECHAT_FAVORITE:
+            case Target.LOGIN_WX:
+            case Target.SHARE_WX_FRIENDS:
+            case Target.SHARE_WX_ZONE:
+            case Target.SHARE_WX_FAVORITE:
                 initWxPlatform(activity);
                 break;
-            case LoginManager.TARGET_SINA:
-            case ShareManager.TARGET_SINA:
-            case ShareManager.TARGET_SINA_OPENAPI:
+            case Target.LOGIN_WB:
+            case Target.SHARE_WB_NORMAL:
+            case Target.SHARE_WB_OPENAPI:
                 initSinaPlatform(activity);
                 break;
             default:
@@ -81,7 +82,7 @@ public abstract class BaseManager {
         SocialSdkConfig config = SocialSdk.getConfig();
         if (!OtherHelper.isEmpty(config.getSinaAppId(), config.getAppName()
                 , config.getSinaRedirectUrl(), config.getSinaScope()))
-            mPlatform = new SinaPlatform(context, config.getSinaAppId(), config.getAppName()
+            mPlatform = new WbPlatform(context, config.getSinaAppId(), config.getAppName()
                     , config.getSinaRedirectUrl(), config.getSinaScope());
     }
 

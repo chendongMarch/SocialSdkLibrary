@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.march.socialsdk.platform.sina.extend;
+package com.march.socialsdk.platform.weibo.extend;
 
 import android.content.Context;
 import android.graphics.Bitmap;

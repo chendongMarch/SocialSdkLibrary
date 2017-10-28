@@ -12,7 +12,7 @@ import com.march.socialsdk.model.user.BaseUser;
 
 public class LoginResult {
 
-    // 登陆的类型，对应 LoginManager.TARGET_QQ 等。。。
+    // 登陆的类型，对应 Target.LOGIN_QQ 等。。。
     private int             type;
     // 返回的基本用户信息
     // 针对登录类型可强转为 WbUser,WxUser,QQUser 来获取更加丰富的信息

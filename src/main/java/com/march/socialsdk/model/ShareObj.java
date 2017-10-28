@@ -8,6 +8,7 @@ import com.march.socialsdk.helper.FileHelper;
 import com.march.socialsdk.helper.OtherHelper;
 import com.march.socialsdk.helper.PlatformLog;
 import com.march.socialsdk.manager.ShareManager;
+import com.march.socialsdk.platform.Target;
 
 /**
  * CreateAt : 2016/12/28
@@ -254,7 +255,7 @@ public class ShareObj implements Parcelable {
             case ShareObj.SHARE_TYPE_TEXT:
                 return !OtherHelper.isEmpty(title, summary);
             case ShareObj.SHARE_TYPE_IMAGE:
-                if (shareTarget == ShareManager.TARGET_SINA_OPENAPI) {
+                if (shareTarget == Target.SHARE_WB_OPENAPI) {
                     boolean isSummaryValid = !OtherHelper.isEmpty(summary);
                     if (!isSummaryValid)
                         PlatformLog.e(TAG, "Sina openApi分享必须有summary");
@@ -267,9 +268,9 @@ public class ShareObj implements Parcelable {
             case ShareObj.SHARE_TYPE_MUSIC:
             case ShareObj.SHARE_TYPE_VIDEO:
             case ShareObj.SHARE_TYPE_VOICE:
-                if (isShareByIntent() && (shareTarget == ShareManager.TARGET_QQ_FRIENDS || shareTarget == ShareManager.TARGET_WECHAT_FRIENDS)) {
+                if (isShareByIntent() && (shareTarget == Target.SHARE_QQ_FRIENDS || shareTarget == Target.SHARE_WX_FRIENDS)) {
                     return FileHelper.isExist(mediaPath);
-                } else if (shareTarget == ShareManager.TARGET_QQ_ZONE) {
+                } else if (shareTarget == Target.SHARE_QQ_ZONE) {
                     return isMusicVideoVoiceValid();
                 } else {
                     return isMusicVideoVoiceValid() && FileHelper.isHttpPath(mediaPath);

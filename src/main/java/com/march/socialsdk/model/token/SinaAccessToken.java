@@ -2,6 +2,7 @@ package com.march.socialsdk.model.token;
 
 import com.march.socialsdk.manager.LoginManager;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
+import com.march.socialsdk.platform.Target;
 
 /**
  * CreateAt : 2017/5/21
@@ -41,6 +42,6 @@ public class SinaAccessToken extends BaseAccessToken {
 
     @Override
     public int getLoginTarget() {
-        return LoginManager.TARGET_SINA;
+        return Target.LOGIN_WB;
     }
 }

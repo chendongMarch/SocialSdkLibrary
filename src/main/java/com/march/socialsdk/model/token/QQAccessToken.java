@@ -1,6 +1,7 @@
 package com.march.socialsdk.model.token;
 
 import com.march.socialsdk.manager.LoginManager;
+import com.march.socialsdk.platform.Target;
 
 /**
  * CreateAt : 2016/12/6
@@ -87,6 +88,6 @@ public class QQAccessToken extends BaseAccessToken {
 
     @Override
     public int getLoginTarget() {
-        return LoginManager.TARGET_QQ;
+        return Target.LOGIN_QQ;
     }
 }

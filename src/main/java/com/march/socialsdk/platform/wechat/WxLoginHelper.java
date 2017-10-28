@@ -12,6 +12,7 @@ import com.march.socialsdk.manager.LoginManager;
 import com.march.socialsdk.model.LoginResult;
 import com.march.socialsdk.model.token.WeChatAccessToken;
 import com.march.socialsdk.model.user.WxUser;
+import com.march.socialsdk.platform.Target;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 
@@ -56,7 +57,7 @@ public class WxLoginHelper {
         this.context = context;
         this.iwxapi = iwxapi;
         this.appId = appId;
-        this.loginType = LoginManager.TARGET_WECHAT;
+        this.loginType = Target.LOGIN_WX;
     }
 
     /**

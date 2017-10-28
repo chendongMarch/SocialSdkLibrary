@@ -1,4 +1,4 @@
-package com.march.socialsdk.platform.sina;
+package com.march.socialsdk.platform.weibo;
 
 import android.app.Activity;
 import android.content.Context;
@@ -16,7 +16,8 @@ import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.manager.ShareManager;
 import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.platform.AbsPlatform;
-import com.march.socialsdk.platform.sina.extend.StatusesAPI;
+import com.march.socialsdk.platform.Target;
+import com.march.socialsdk.platform.weibo.extend.StatusesAPI;
 import com.sina.weibo.sdk.api.BaseMediaObject;
 import com.sina.weibo.sdk.api.ImageObject;
 import com.sina.weibo.sdk.api.MusicObject;
@@ -52,9 +53,9 @@ import bolts.Task;
  *
  * @author chendong
  */
-public class SinaPlatform extends AbsPlatform {
+public class WbPlatform extends AbsPlatform {
 
-    private static final String TAG = SinaPlatform.class.getSimpleName();
+    private static final String TAG = WbPlatform.class.getSimpleName();
 
     private IWeiboShareAPI mWeiboShareAPI;
     private AuthInfo       mAuthInfo;
@@ -74,7 +75,7 @@ public class SinaPlatform extends AbsPlatform {
         }
     };
 
-    public SinaPlatform(Context context, String appId, String appName, String redirectUrl, String scope) {
+    public WbPlatform(Context context, String appId, String appName, String redirectUrl, String scope) {
         super(context, appId, appName);
         mWeiboShareAPI = WeiboShareSDK.createWeiboAPI(context, appId);
         mWeiboShareAPI.registerApp();
@@ -137,7 +138,7 @@ public class SinaPlatform extends AbsPlatform {
     public void login(Activity activity, OnLoginListener loginListener) {
         if (mSsoHandler == null)
             mSsoHandler = new SsoHandler(activity, mAuthInfo);
-        SinaLoginHelper mLoginHelper = new SinaLoginHelper(activity, mAppId);
+        WbLoginHelper mLoginHelper = new WbLoginHelper(activity, mAppId);
         mLoginHelper.login(activity, mSsoHandler, loginListener);
     }
 
@@ -157,7 +158,7 @@ public class SinaPlatform extends AbsPlatform {
             return;
         }
         mSsoHandler = new SsoHandler(activity, mAuthInfo);
-        SinaAuthHelper.auth(activity, mSsoHandler, new SinaAuthHelper.OnAuthOverListener() {
+        WbAuthHelper.auth(activity, mSsoHandler, new WbAuthHelper.OnAuthOverListener() {
             @Override
             public void onAuth(Oauth2AccessToken token) {
                 PlatformLog.e(TAG, token.toString());
@@ -282,7 +283,7 @@ public class SinaPlatform extends AbsPlatform {
 
     @Override
     public void shareImage(int shareTarget, final Activity activity, final ShareObj obj) {
-        if (shareTarget == ShareManager.TARGET_SINA_OPENAPI) {
+        if (shareTarget == Target.SHARE_WB_OPENAPI) {
             shareImageOpenApi(activity, obj);
         } else {
             BitmapHelper.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)

@@ -8,6 +8,7 @@ import com.march.socialsdk.manager.LoginManager;
 import com.march.socialsdk.model.token.QQAccessToken;
 import com.march.socialsdk.model.token.SinaAccessToken;
 import com.march.socialsdk.model.token.WeChatAccessToken;
+import com.march.socialsdk.platform.Target;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 
 /**
@@ -64,16 +65,16 @@ public class AuthTokenKeeper {
 
 
     // 清理平台 token
-    public static void clearToken(Context context, @LoginManager.LoginTarget int platform) {
+    public static void clearToken(Context context, @Target.LoginTarget int platform) {
         String key = null;
         switch (platform) {
-            case LoginManager.TARGET_QQ:
+            case Target.LOGIN_QQ:
                 key = QQ_TOKEN_KEY;
                 break;
-            case LoginManager.TARGET_SINA:
+            case Target.LOGIN_WB:
                 key = SINA_TOKEN_KEY;
                 break;
-            case LoginManager.TARGET_WECHAT:
+            case Target.LOGIN_WX:
                 key = WECHAT_TOKEN_KEY;
                 break;
         }

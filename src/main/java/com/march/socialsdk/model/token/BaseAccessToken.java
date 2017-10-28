@@ -1,6 +1,7 @@
 package com.march.socialsdk.model.token;
 
 import com.march.socialsdk.manager.LoginManager;
+import com.march.socialsdk.platform.Target;
 
 /**
  * CreateAt : 2017/5/21
@@ -16,14 +17,14 @@ public abstract class BaseAccessToken {
     private long   expires_in;//access_token接口调用凭证超时时间，单位（秒）。
 
     public boolean isValid() {
-        if (getLoginTarget() == LoginManager.TARGET_WECHAT) {
+        if (getLoginTarget() == Target.LOGIN_WX) {
             return getAccess_token() != null && getUnionid() != null;
         } else
             return getAccess_token() != null && getOpenid() != null;
     }
 
     public String getSocialId() {
-        if (getLoginTarget() == LoginManager.TARGET_WECHAT) {
+        if (getLoginTarget() == Target.LOGIN_WX) {
             return unionid;
         } else
             return openid;

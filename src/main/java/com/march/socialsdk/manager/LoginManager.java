@@ -10,6 +10,7 @@ import com.march.socialsdk.helper.AuthTokenKeeper;
 import com.march.socialsdk.helper.PlatformLog;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.LoginResult;
+import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.uikit.ActionActivity;
 
 import java.lang.annotation.Retention;
@@ -25,17 +26,7 @@ public class LoginManager extends BaseManager {
 
     public static final String TAG = LoginManager.class.getSimpleName();
 
-    public static final int TARGET_QQ     = 0x21;
-    public static final int TARGET_WECHAT = 0x22;
-    public static final int TARGET_SINA   = 0x23;
-
     private static OnLoginListener sOnLoginListener;
-
-    @IntDef({TARGET_QQ, TARGET_WECHAT, TARGET_SINA})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface LoginTarget {
-
-    }
 
     /**
      * 开始登陆，供外面使用
@@ -44,7 +35,7 @@ public class LoginManager extends BaseManager {
      * @param loginTarget   登陆类型
      * @param loginListener 登陆监听
      */
-    public static void login(Context context, @LoginTarget int loginTarget, OnLoginListener loginListener) {
+    public static void login(Context context, @Target.LoginTarget int loginTarget, OnLoginListener loginListener) {
         sOnLoginListener = loginListener;
         buildPlatform(context, loginTarget);
         if (!getPlatform().isInstall()) {
@@ -115,13 +106,13 @@ public class LoginManager extends BaseManager {
         };
     }
 
-    public static void clearAllToken(Context context){
-        AuthTokenKeeper.clearToken(context,TARGET_QQ);
-        AuthTokenKeeper.clearToken(context,TARGET_WECHAT);
-        AuthTokenKeeper.clearToken(context,TARGET_SINA);
+    public static void clearAllToken(Context context) {
+        AuthTokenKeeper.clearToken(context, Target.LOGIN_QQ);
+        AuthTokenKeeper.clearToken(context, Target.LOGIN_WX);
+        AuthTokenKeeper.clearToken(context, Target.LOGIN_WB);
     }
 
-    public static void clearToken(Context context,@LoginTarget int loginTarget){
-        AuthTokenKeeper.clearToken(context,loginTarget);
+    public static void clearToken(Context context, @Target.LoginTarget int loginTarget) {
+        AuthTokenKeeper.clearToken(context, loginTarget);
     }
 }

@@ -12,6 +12,7 @@ import com.march.socialsdk.manager.LoginManager;
 import com.march.socialsdk.model.LoginResult;
 import com.march.socialsdk.model.token.QQAccessToken;
 import com.march.socialsdk.model.user.QQUser;
+import com.march.socialsdk.platform.Target;
 import com.tencent.connect.UserInfo;
 import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
@@ -43,7 +44,7 @@ public class QQLoginHelper {
         this.activity = activity;
         this.mTencentApi = mTencentApi;
         this.onLoginListener = onQQLoginListener;
-        this.loginType = LoginManager.TARGET_QQ;
+        this.loginType = Target.LOGIN_QQ;
     }
 
     public void handleResultData(Intent data) {

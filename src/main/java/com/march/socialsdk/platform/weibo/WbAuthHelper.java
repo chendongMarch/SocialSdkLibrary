@@ -1,4 +1,4 @@
-package com.march.socialsdk.platform.sina;
+package com.march.socialsdk.platform.weibo;
 
 import android.app.Activity;
 import android.content.Context;
@@ -21,9 +21,9 @@ import com.sina.weibo.sdk.exception.WeiboException;
  * @author chendong
  */
 
-public class SinaAuthHelper {
+public class WbAuthHelper {
 
-    public static final String TAG = SinaAuthHelper.class.getSimpleName();
+    public static final String TAG = WbAuthHelper.class.getSimpleName();
 
     public interface OnAuthOverListener {
         void onAuth(Oauth2AccessToken token);

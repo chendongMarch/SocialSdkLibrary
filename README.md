@@ -40,23 +40,23 @@ SocialSdk.init(config);
 
 ## 登录功能
 
-> 快速唤醒登录 `LoginManager.login(mActivity, LoginManager.TARGET_QQ, mOnLoginListener);`
+> 快速唤醒登录 `LoginManager.login(mActivity, Target.LOGIN_QQ, mOnLoginListener);`
 
 
 登陆功能支持三个平台，qq，微信，微博；分别对应 类型 是：
 
 ```java
 // 3个平台
-LoginManager.TARGET_QQ;
-LoginManager.TARGET_WECHAT;
-LoginManager.TARGET_SINA;
+Target.LOGIN_QQ;
+Target.LOGIN_WX;
+Target.LOGIN_WB;
 ```
 
 使用 `OnLoginListener` 监听登录返回结果，返回的 `LoginResult` 中主要包括登录类型，基本用户信息，令牌信息 3 部分。
 
 ```java
 public class LoginResult {
-    // 登陆的类型，对应 LoginManager.TARGET_QQ 等。。。
+    // 登陆的类型，对应 Target.LOGIN_QQ 等。。。
     private int             type;
     // 返回的基本用户信息
     // 针对登录类型可强转为 WbUser,WxUser,QQUser 来获取更加丰富的信息
@@ -82,18 +82,18 @@ mOnLoginListener = new OnLoginListener() {
 };
 
 // 3个平台
-LoginManager.TARGET_QQ;
-LoginManager.TARGET_WECHAT;
-LoginManager.TARGET_SINA;
+Target.LOGIN_QQ;
+Target.LOGIN_WX;
+Target.LOGIN_WB;
 
 // 唤醒登陆
-LoginManager.login(mActivity, LoginManager.TARGET_QQ, mOnLoginListener);
+LoginManager.login(mActivity, Target.LOGIN_QQ, mOnLoginListener);
 ```
 
 
 ## 分享功能
 
-> 快速使用分享功能 `ShareManager.share(mActivity, ShareManager.TARGET_QQ_FRIENDS, imageObj, mOnShareListener);`
+> 快速使用分享功能 `ShareManager.share(mActivity, Target.SHARE_QQ_FRIENDS, imageObj, mOnShareListener);`
 
 分享支持 8 种类型的数据；如果某个平台不兼容某种类型的分享，将会使用 `web` 分享的方式代替；比如微信不支持 `app` 分享，分享出去之后时 `web` 分享的模式。支持的 8 种类型分别是：
 
@@ -110,13 +110,13 @@ LoginManager.login(mActivity, LoginManager.TARGET_QQ, mOnLoginListener);
 
 ```java
 // 支持的分享渠道
-ShareManager.TARGET_QQ_FRIENDS     ; // qq好友
-ShareManager.TARGET_QQ_ZONE        ; // qq空间
-ShareManager.TARGET_WECHAT_FRIENDS ; // 微信好友
-ShareManager.TARGET_WECHAT_ZONE    ; // 微信朋友圈
-ShareManager.TARGET_WECHAT_FAVORITE; // 微信收藏
-ShareManager.TARGET_SINA           ; // 新浪微博
-ShareManager.TARGET_SINA_OPENAPI   ; // 新浪微博openApi分享，使用该方法分享图片时微博后面会带一个小尾巴，可以点击进入官微
+Target.SHARE_QQ_FRIENDS     ; // qq好友
+Target.SHARE_QQ_ZONE        ; // qq空间
+Target.SHARE_WX_FRIENDS ; // 微信好友
+Target.SHARE_WX_ZONE    ; // 微信朋友圈
+Target.SHARE_WX_FAVORITE; // 微信收藏
+Target.SHARE_WB_NORMAL           ; // 新浪微博
+Target.SHARE_WB_OPENAPI   ; // 新浪微博openApi分享，使用该方法分享图片时微博后面会带一个小尾巴，可以点击进入官微
 ```
 
 
@@ -150,6 +150,9 @@ ShareMediaObj appObj = ShareMediaObj.buildAppObj("分享app", "summary", localIm
 ShareMediaObj webObj = ShareMediaObj.buildWebObj("分享web", "summary", localImagePath, targetUrl);
 // 分享视频
 ShareMediaObj videoObj = ShareMediaObj.buildVideoObj("分享视频", "summary", localImagePath, targetUrl, localVideoPath, 10);
+// 分享本地视频，使用 Intent 方式唤醒，支持 qq、微信 好友分享
+ShareMediaObj videoLocalObj = ShareObj.buildVideoObjByLocalPath(localVideoPath);
+
 // 分享音乐
 ShareMediaObj musicObj = ShareMediaObj.buildMusicObj("分享音乐", "summary", localImagePath, targetUrl, netMusicPath, 10);
 // 分享声音，微博特有，其他平台以web方式分享
@@ -190,16 +193,16 @@ public class SimpleShareListener implements OnShareListener{
 
 ```java
 // 支持的分享渠道
-ShareManager.TARGET_QQ_FRIENDS     ; // qq好友
-ShareManager.TARGET_QQ_ZONE        ; // qq空间
-ShareManager.TARGET_WECHAT_FRIENDS ; // 微信好友
-ShareManager.TARGET_WECHAT_ZONE    ; // 微信朋友圈
-ShareManager.TARGET_WECHAT_FAVORITE; // 微信收藏
-ShareManager.TARGET_SINA           ; // 新浪微博
-ShareManager.TARGET_SINA_OPENAPI   ; // 新浪微博openApi分享，使用该方法分享图片时微博后面会带一个小尾巴，可以点击进入官微
+Target.SHARE_QQ_FRIENDS     ; // qq好友
+Target.SHARE_QQ_ZONE        ; // qq空间
+Target.SHARE_WX_FRIENDS ; // 微信好友
+Target.SHARE_WX_ZONE    ; // 微信朋友圈
+Target.SHARE_WX_FAVORITE; // 微信收藏
+Target.SHARE_WB_NORMAL           ; // 新浪微博
+Target.SHARE_WB_OPENAPI   ; // 新浪微博openApi分享，使用该方法分享图片时微博后面会带一个小尾巴，可以点击进入官微
 
 // 唤醒分享
-ShareManager.share(mActivity, ShareManager.TARGET_QQ_FRIENDS, imageObj, mOnShareListener);
+ShareManager.share(mActivity, Target.SHARE_QQ_FRIENDS, imageObj, mOnShareListener);
 ```
 
 ### 重写分享对象

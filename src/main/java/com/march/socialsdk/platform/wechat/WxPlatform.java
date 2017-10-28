@@ -14,6 +14,7 @@ import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.manager.ShareManager;
 import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.platform.AbsPlatform;
+import com.march.socialsdk.platform.Target;
 import com.tencent.mm.opensdk.constants.ConstantsAPI;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
@@ -128,13 +129,13 @@ public class WxPlatform extends AbsPlatform {
     private int getShareToWhere(int shareTarget) {
         int where = SendMessageToWX.Req.WXSceneSession;
         switch (shareTarget) {
-            case ShareManager.TARGET_WECHAT_FRIENDS:
+            case Target.SHARE_WX_FRIENDS:
                 where = SendMessageToWX.Req.WXSceneSession;
                 break;
-            case ShareManager.TARGET_WECHAT_ZONE:
+            case Target.SHARE_WX_ZONE:
                 where = SendMessageToWX.Req.WXSceneTimeline;
                 break;
-            case ShareManager.TARGET_WECHAT_FAVORITE:
+            case Target.SHARE_WX_FAVORITE:
                 where = SendMessageToWX.Req.WXSceneFavorite;
                 break;
         }
@@ -187,7 +188,7 @@ public class WxPlatform extends AbsPlatform {
 
 
     private void shareImage(final int shareTarget, String desc, final String localPath, byte[] thumbData) {
-        if (shareTarget == ShareManager.TARGET_WECHAT_FRIENDS) {
+        if (shareTarget == Target.SHARE_WX_FRIENDS) {
             if (FileHelper.isGifFile(localPath)) {
                 PlatformLog.e(TAG, "发送给朋友时 Gif 文件以emoji格式分享");
                 WXEmojiObject emoji = new WXEmojiObject();
@@ -264,7 +265,7 @@ public class WxPlatform extends AbsPlatform {
 
     @Override
     public void shareVideo(final int shareTarget, Activity activity, final ShareObj obj) {
-        if (obj.isShareByIntent() && shareTarget == ShareManager.TARGET_WECHAT_FRIENDS) {
+        if (obj.isShareByIntent() && shareTarget == Target.SHARE_WX_FRIENDS) {
             try {
                 IntentShareHelper.shareVideo(activity, obj.getMediaPath(), SocialConstants.WECHAT_PKG, SocialConstants.WX_FRIEND_PAGE);
             } catch (Exception e) {

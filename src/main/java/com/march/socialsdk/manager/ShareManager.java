@@ -13,6 +13,7 @@ import com.march.socialsdk.helper.OtherHelper;
 import com.march.socialsdk.helper.PlatformLog;
 import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.model.ShareObj;
+import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.uikit.ActionActivity;
 
 import java.lang.annotation.Retention;
@@ -32,23 +33,9 @@ public class ShareManager extends BaseManager {
 
     public static final String TAG = ShareManager.class.getSimpleName();
 
-    public static final int TARGET_QQ_FRIENDS      = 0x31;// qq好友
-    public static final int TARGET_QQ_ZONE         = 0x32;// qq空间
-    public static final int TARGET_WECHAT_FRIENDS  = 0x33;// 微信好友
-    public static final int TARGET_WECHAT_ZONE     = 0x34;// 微信朋友圈
-    public static final int TARGET_WECHAT_FAVORITE = 0x35;// 微信收藏
-    public static final int TARGET_SINA            = 0x36;// 新浪微博
-    public static final int TARGET_SINA_OPENAPI    = 0x37;// 新浪微博openApi分享，暂不支持
-
     private static OnShareListener sOnShareListener;
 
-    @IntDef({TARGET_QQ_FRIENDS, TARGET_QQ_ZONE,
-                    TARGET_WECHAT_FRIENDS, TARGET_WECHAT_ZONE, TARGET_WECHAT_FAVORITE,
-                    TARGET_SINA, TARGET_SINA_OPENAPI})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface ShareTargetType {
 
-    }
 
     /**
      * 开始分享，供外面调用
@@ -58,8 +45,8 @@ public class ShareManager extends BaseManager {
      * @param shareMediaObj   分享对象
      * @param onShareListener 分享监听
      */
-    public static void share(final Context context, @ShareTargetType final int shareTarget,
-                             final ShareObj shareMediaObj, final OnShareListener onShareListener) {
+    public static void share(final Context context, @Target.ShareTarget final int shareTarget,
+            final ShareObj shareMediaObj, final OnShareListener onShareListener) {
         Task.callInBackground(new Callable<ShareObj>() {
             @Override
             public ShareObj call() throws Exception {
@@ -93,7 +80,7 @@ public class ShareManager extends BaseManager {
 
 
     // 开始分享
-    private static boolean doShare(Context context, @ShareTargetType int shareTarget, ShareObj shareMediaObj, OnShareListener onShareListener) {
+    private static boolean doShare(Context context, @Target.ShareTarget int shareTarget, ShareObj shareMediaObj, OnShareListener onShareListener) {
 
         if (!shareMediaObj.isValid(shareTarget)) {
             onShareListener.onFailure(new SocialException(SocialException.CODE_SHARE_OBJ_VALID));
@@ -181,9 +168,10 @@ public class ShareManager extends BaseManager {
 
     /**
      * 发送短信分享
+     *
      * @param context ctx
-     * @param phone 手机号
-     * @param msg 内容
+     * @param phone   手机号
+     * @param msg     内容
      */
     public static void sendSms(Context context, String phone, String msg) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -198,10 +186,11 @@ public class ShareManager extends BaseManager {
 
     /**
      * 发送邮件分享
+     *
      * @param context ctx
-     * @param mailto email
+     * @param mailto  email
      * @param subject 主题
-     * @param msg 内容
+     * @param msg     内容
      */
     public static void sendEmail(Context context, String mailto, String subject, String msg) {
         Intent intent = new Intent(Intent.ACTION_SENDTO);
@@ -216,24 +205,25 @@ public class ShareManager extends BaseManager {
 
     /**
      * 打开平台 app
+     *
      * @param context ctx
-     * @param target 平台
+     * @param target  平台
      * @return 是否成功打开
      */
-    public static boolean openApp(Context context, @ShareTargetType int target) {
+    public static boolean openApp(Context context, @Target.ShareTarget int target) {
         String pkgName = null;
         switch (target) {
-            case TARGET_QQ_FRIENDS:
-            case TARGET_QQ_ZONE:
+            case Target.SHARE_QQ_FRIENDS:
+            case Target.SHARE_QQ_ZONE:
                 pkgName = SocialConstants.QQ_PKG;
                 break;
-            case TARGET_WECHAT_FRIENDS:
-            case TARGET_WECHAT_ZONE:
-            case TARGET_WECHAT_FAVORITE:
+            case Target.SHARE_WX_FRIENDS:
+            case Target.SHARE_WX_ZONE:
+            case Target.SHARE_WX_FAVORITE:
                 pkgName = SocialConstants.WECHAT_PKG;
                 break;
-            case TARGET_SINA:
-            case TARGET_SINA_OPENAPI:
+            case Target.SHARE_WB_NORMAL:
+            case Target.SHARE_WB_OPENAPI:
                 pkgName = SocialConstants.SINA_PKG;
                 break;
         }

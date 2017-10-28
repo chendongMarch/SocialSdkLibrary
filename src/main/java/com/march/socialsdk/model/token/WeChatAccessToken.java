@@ -1,6 +1,7 @@
 package com.march.socialsdk.model.token;
 
 import com.march.socialsdk.manager.LoginManager;
+import com.march.socialsdk.platform.Target;
 
 /**
  * CreateAt : 2016/12/3
@@ -60,7 +61,7 @@ public class WeChatAccessToken extends BaseAccessToken {
 
     @Override
     public int getLoginTarget() {
-        return LoginManager.TARGET_WECHAT;
+        return Target.LOGIN_WX;
     }
 
 }
