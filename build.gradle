@@ -1,25 +1,20 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion project.ANDROID_BUILD_COMPILE_SDK_VERSION as int
-    buildToolsVersion project.ANDROID_BUILD_TOOLS_VERSION
+    compileSdkVersion 25
+    // 升级到 gradle3.0 不需要使用buildToolsVersion
+    // buildToolsVersion 25
 
     defaultConfig {
-        minSdkVersion project.ANDROID_BUILD_MIN_SDK_VERSION as int
-        targetSdkVersion project.ANDROID_BUILD_TARGET_SDK_VERSION as int
+        minSdkVersion 15
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
-        manifestPlaceholders = [qq_id: "1104910200"]
-    }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
+        // 占位
+        manifestPlaceholders.qq_id = "1104910200"
     }
 
     sourceSets {
-        //定义编译时编译文件的路径
         main {
             res.srcDirs = ['src/main/res']
             jniLibs.srcDirs = ['src/main/jniLibs']
@@ -27,22 +22,18 @@ android {
     }
 }
 
-def isCompiler = isCompiler.toBoolean();
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    compile rootProject.ext.support.appcompat_v7
-    compile rootProject.ext.support.gson
-    compile rootProject.ext.support.bolts-status
+    // 依赖管理，在 project/build.gradle 顶部加入
+    // apply from: "https://raw.githubusercontent.com/chendongMarch/Resource/master/android/dependence.gradle"
+    // 进行依赖，或者根据链接中类库自行依赖
 
-    compile 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
+    compile rootProject.ext.google.appcompat_v7
+    compile rootProject.ext.libs.gson
+    compile rootProject.ext.libs.bolts
 
-    if (isCompiler) {
-        compile files('libs/open_sdk_r5788_lite.jar')//QQ
-        compile files('libs/weiboSDKCore_3.1.4.jar')//sina
-    } else {
-        provided files('libs/open_sdk_r5788_lite.jar')//QQ
-        provided files('libs/weiboSDKCore_3.1.4.jar')//sina
-    }
+    compile 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:1.4.0' // 微信
+    compile files('libs/open_sdk_r5923_lite.jar') // QQ
+    compile files('libs/weiboSDKCore_3.1.4.jar') // sina
 }

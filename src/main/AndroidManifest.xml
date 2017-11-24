@@ -6,8 +6,10 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
     <application>
 
+        <!--用于发起请求和接受数据，同步生命周期-->
         <activity
             android:name="com.march.socialsdk.uikit.ActionActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar">
@@ -26,7 +28,6 @@
             android:screenOrientation="portrait"
             android:targetActivity="com.march.socialsdk.uikit.ActionActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"/>
-
 
         <!-- QQ、Qzone平台 -->
         <activity
@@ -49,14 +50,12 @@
             </intent-filter>
         </activity>
 
-
         <!-- 新浪平台 -->
         <activity
             android:name="com.sina.weibo.sdk.component.WeiboSdkBrowser"
             android:configChanges="keyboardHidden|orientation"
             android:exported="false"
             android:windowSoftInputMode="adjustResize"/>
-
 
     </application>
 

@@ -18,7 +18,7 @@ import com.tencent.mm.opensdk.openapi.IWXAPI;
 
 /**
  * CreateAt : 2016/12/3
- * Describe : 为你登陆辅助
+ * Describe : 微信登陆辅助
  *
  * @author chendong
  */
@@ -42,7 +42,7 @@ public class WxLoginHelper {
 
     public static final String TAG = WxLoginHelper.class.getSimpleName();
 
-    public static final String BASE_URL = "https://api.weixin.qq.com/sns";
+    private static final String BASE_URL = "https://api.weixin.qq.com/sns";
 
     private int     loginType;
     private Context context;
@@ -53,7 +53,7 @@ public class WxLoginHelper {
     private OnLoginListener loginListener;
 
 
-    public WxLoginHelper(Context context, IWXAPI iwxapi, String appId) {
+    WxLoginHelper(Context context, IWXAPI iwxapi, String appId) {
         this.context = context;
         this.iwxapi = iwxapi;
         this.appId = appId;
