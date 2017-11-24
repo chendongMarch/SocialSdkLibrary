@@ -21,10 +21,8 @@ import com.tencent.tauth.UiError;
 import org.json.JSONObject;
 
 /**
- * Project  : Reaper
- * Package  : com.march.socialization.tencent
  * CreateAt : 2016/12/6
- * Describe :
+ * Describe : qq 登录辅助
  *
  * @author chendong
  */
@@ -40,17 +38,20 @@ public class QQLoginHelper {
     private LoginUiListener loginUiListener;
 
 
-    public QQLoginHelper(Activity activity, Tencent mTencentApi, OnLoginListener onQQLoginListener) {
+    QQLoginHelper(Activity activity, Tencent mTencentApi, OnLoginListener onQQLoginListener) {
         this.activity = activity;
         this.mTencentApi = mTencentApi;
         this.onLoginListener = onQQLoginListener;
         this.loginType = Target.LOGIN_QQ;
     }
 
-    public void handleResultData(Intent data) {
+
+    // 接受登录结果
+    void handleResultData(Intent data) {
         Tencent.handleResultData(data, this.loginUiListener);
     }
 
+    // 登录
     public void login() {
         QQAccessToken qqToken = AuthTokenKeeper.getQQToken(activity);
         if (qqToken != null) {
@@ -68,6 +69,7 @@ public class QQLoginHelper {
         }
     }
 
+    // 登录监听包装类
     private class LoginUiListener implements IUiListener {
         @Override
         public void onComplete(Object o) {
@@ -95,6 +97,7 @@ public class QQLoginHelper {
         }
     }
 
+    // 获取用户信息
     private void getUserInfo(final QQAccessToken qqToken) {
         UserInfo info = new UserInfo(activity, mTencentApi.getQQToken());
         info.getUserInfo(new IUiListener() {

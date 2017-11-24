@@ -13,10 +13,8 @@ import com.sina.weibo.sdk.auth.sso.SsoHandler;
 import com.sina.weibo.sdk.exception.WeiboException;
 
 /**
- * Project  : Reaper
- * Package  : com.march.socialization.weibo
  * CreateAt : 2016/12/5
- * Describe :
+ * Describe : 微博授权辅助，实现 auth 授权操作
  *
  * @author chendong
  */
