@@ -1,13 +1,23 @@
 # SocialSdk
 
-`SocialSdk` 提供微博、微信、QQ的登陆分享功能支持，使用 微博、QQ、微信 原生 SDK 接入持续优化中...
 
-由于项目中想要接入的平台因人而异，第三方 SDK 更新也比较频繁，因此没有对类库进行发布操作，下载之后直接依赖 `module` 即可，开放源码，这样也方便问题修复。
+「`SocialSdk`」 提供微博、微信、QQ的登陆分享功能支持，使用 微博、QQ、微信 原生 SDK 接入，持续优化中...
 
+由于项目中想要接入的平台因人而异，第三方 SDK 更新也比较频繁，因此没有对类库进行发布操作，下载之后直接依赖 `module` 即可，这样也方便问题修复。
 
 <!--more-->
 
 ## 介绍
+
+简单：只需要关注几个管理类和相关数据的构造，不需要考虑复杂的授权逻辑。
+
+轻量：除了必须的第三方 sdk 之外，本项目只依赖了一个简单的异步任务的框架-bolts，后续会考虑也剔除掉，不引入无用依赖，保证与宿主项目统一。
+
+全面：内部存储授权 token，避免多次授权；对qq、微信、微博做了完善的支持，同时兼容了各平台分享数据类型的差异，还对本地视频这种原本不支持分享的类型使用本地分享进行了内部扩展。
+
+扩展性：项目以功能进行划分，各个平台之间互相独立，如果想仅支持部分平台，只需要删除某个平台的具体实现即可。
+
+功能性：针对实际项目需求进行扩展，例如在分享前统一对分享数据提供一次重新构造的机会。
 
 使用 **SocialSdk** 只需要关注以下几个文件：
 
@@ -20,12 +30,32 @@
 > `ShareManager` 用来实现 9 种数据类型、3 大平台、7 个渠道的分享，只要调用 `ShareManager.share()` 方法。
 
 
+## gradle 配置
+
+针对多方 `SDK` 的要求，对权限、和必要的界面、服务都已经在类库中进行了配置，当依赖该类库时，会自动合并，不过仍然还需要在项目的 `app/build.gradle` 中配置对应的 `qqId` 的 `manifestPlaceholders`，代码如下：
+
+```gradle
+defaultConfig {
+	manifestPlaceholders = [qq_id: "11049xxxxx"]
+}
+```
+关于 `manifestPlaceholders` 的使用
+
+```bash
+当使用 manifestPlaceholders = [qq_id: "11049xxxxx"] 的方式时，之前声明的所有 manifestPlaceholders 都会被替换掉，只保留最后的。
+
+当使用 manifestPlaceholders.qq_id = "11049xxxxx" 的方式时，会在原来的 manifestPlaceholders 中追加新的，同时也保留以前的。
+
+建议的方式是，在 defaultConfig 中使用直接赋值的方式，而在 buildTypes 和 Favors 中使用追加的方式，避免将之前的覆盖掉。
+```
+
+
 ## 初始化
 
 你需要在使用 SDK 之前进行初始化操作，建议放在 `Applicaton` 中进行。
 
-为了减轻类库的体积，兼容不同的 json 解析方案，将 json 解析使用接口的方式注入，你需要实现 `IJsonAdapter` 接口，
-根据项目中具体使用的 `json` 解析库进行数据的解析。
+为了减轻类库的体积，兼容不同的 `json` 解析方案，将 `json` 解析使用接口的方式注入，你需要实现 `IJsonAdapter` 接口，
+根据项目中具体使用的 `json` 解析库进行数据的解析。提供一个 `Gson` 的实现作为参考 [GsonJsonAdapter.java](https://github.com/chendongMarch/SocialSdkLibrary/blob/master/sample/GsonJsonAdapter.java)
 
 ```java
 String qqAppId = getString(R.string.QQ_APPID);
@@ -44,8 +74,9 @@ SocialSdkConfig config = new SocialSdkConfig(this)
         .sinaRedirectUrl("http://open.manfenmm.cxxxxxxx")
         // 配置Sina授权scope,有默认值，默认值 all
         .sinaScope(SocialConstants.SCOPE);
-
+// 添加自定义的json解析，必须
 SocialSdk.addJsonAdapter(new GsonJsonAdapter());
+
 SocialSdk.init(config);
 ```
 
