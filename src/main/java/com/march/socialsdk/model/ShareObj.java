@@ -50,6 +50,7 @@ public class ShareObj implements Parcelable {
     private boolean isSinaWithSummary = true;
     // 新浪分享带不带图片
     private boolean isSinaWithPicture = false;
+    // 使用本地 intent 打开，分享本地视频用
     private boolean isShareByIntent = false;
 
 
@@ -115,7 +116,6 @@ public class ShareObj implements Parcelable {
         shareMediaObj.setShareByIntent(true);
         return shareMediaObj;
     }
-
 
     public static ShareObj buildVoiceObj(String title, String summary
             , String thumbImagePath, String targetUrl, String mediaPath, int duration) {

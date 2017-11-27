@@ -24,6 +24,9 @@
 
 你需要在使用 SDK 之前进行初始化操作，建议放在 `Applicaton` 中进行。
 
+为了减轻类库的体积，兼容不同的 json 解析方案，将 json 解析使用接口的方式注入，你需要实现 `IJsonAdapter` 接口，
+根据项目中具体使用的 `json` 解析库进行数据的解析。
+
 ```java
 String qqAppId = getString(R.string.QQ_APPID);
 String wxAppId = getString(R.string.WEICHAT_APPID);
@@ -41,6 +44,8 @@ SocialSdkConfig config = new SocialSdkConfig(this)
         .sinaRedirectUrl("http://open.manfenmm.cxxxxxxx")
         // 配置Sina授权scope,有默认值，默认值 all
         .sinaScope(SocialConstants.SCOPE);
+
+SocialSdk.addJsonAdapter(new GsonJsonAdapter());
 SocialSdk.init(config);
 ```
 

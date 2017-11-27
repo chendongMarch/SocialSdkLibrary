@@ -5,10 +5,9 @@ import android.content.Intent;
 
 import com.march.socialsdk.exception.SocialException;
 import com.march.socialsdk.helper.AuthTokenKeeper;
-import com.march.socialsdk.helper.GsonHelper;
+import com.march.socialsdk.helper.JsonHelper;
 import com.march.socialsdk.helper.PlatformLog;
 import com.march.socialsdk.listener.OnLoginListener;
-import com.march.socialsdk.manager.LoginManager;
 import com.march.socialsdk.model.LoginResult;
 import com.march.socialsdk.model.token.QQAccessToken;
 import com.march.socialsdk.model.user.QQUser;
@@ -74,7 +73,7 @@ public class QQLoginHelper {
         @Override
         public void onComplete(Object o) {
             JSONObject jsonResponse = (JSONObject) o;
-            QQAccessToken qqToken = GsonHelper.getObject(jsonResponse.toString(), QQAccessToken.class);
+            QQAccessToken qqToken = JsonHelper.getObject(jsonResponse.toString(), QQAccessToken.class);
             PlatformLog.e(TAG, "获取到 qq token = " + qqToken.toString());
             // 保存token
             AuthTokenKeeper.saveQQToken(activity, qqToken);
@@ -104,7 +103,7 @@ public class QQLoginHelper {
             @Override
             public void onComplete(Object object) {
                 PlatformLog.e(TAG, "qq 获取到用户信息 = " + object);
-                QQUser qqUserInfo = GsonHelper.getObject(object.toString(), QQUser.class);
+                QQUser qqUserInfo = JsonHelper.getObject(object.toString(), QQUser.class);
                 qqUserInfo.setOpenId(mTencentApi.getOpenId());
                 if (onLoginListener != null) {
                     onLoginListener.onLoginSucceed(new LoginResult(loginType, qqUserInfo, qqToken));

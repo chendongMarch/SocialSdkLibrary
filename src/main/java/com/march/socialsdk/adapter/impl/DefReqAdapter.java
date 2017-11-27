@@ -1,13 +1,15 @@
-package com.march.socialsdk.helper;
+package com.march.socialsdk.adapter.impl;
 
-import android.os.AsyncTask;
 import android.text.TextUtils;
-import android.util.Log;
+
+import com.march.socialsdk.adapter.IReqAdapter;
+import com.march.socialsdk.helper.HttpsRequestHelper;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.security.SecureRandom;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import javax.net.ssl.HostnameVerifier;
@@ -22,24 +24,38 @@ import bolts.Continuation;
 import bolts.Task;
 
 /**
- * CreateAt : 2016/12/3
- * Describe : wx发送http请求。获取token
+ * CreateAt : 2017/11/25
+ * Describe :
  *
  * @author chendong
  */
-public class HttpsRequestHelper {
+public class DefReqAdapter implements IReqAdapter {
 
-    public static void sendHttpsRequest(final String url, final OnResultListener onResultListener) {
+    private boolean isInitSuccess;
+
+    public DefReqAdapter() {
+        try {
+            SSLContext sc = SSLContext.getInstance("TLS");
+            sc.init(null, new TrustManager[]{new MyTrustManager()}, new SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            HttpsURLConnection.setDefaultHostnameVerifier(new MyHostnameVerifier());
+        } catch (Exception e) {
+            e.printStackTrace();
+            isInitSuccess = false;
+        }
+    }
+
+
+
+
+    @Override
+    public void sendRequest(final String url, Map<String, String> params, final OnResultListener listener) {
+        if (!isInitSuccess)
+            return;
         final Capture<HttpsURLConnection> capture = new Capture<>();
         Task.callInBackground(new Callable<String>() {
             @Override
             public String call() throws Exception {
-                SSLContext sc = SSLContext.getInstance("TLS");
-                sc.init(null, new TrustManager[]{new MyTrustManager()}, new SecureRandom());
-
-                HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-
-                HttpsURLConnection.setDefaultHostnameVerifier(new MyHostnameVerifier());
                 HttpsURLConnection conn = (HttpsURLConnection) new URL(url).openConnection();
                 capture.set(conn);
                 conn.setDoOutput(true);
@@ -53,7 +69,6 @@ public class HttpsRequestHelper {
                     sb.append(line);
                 }
                 return sb.toString();
-
             }
         }).continueWith(new Continuation<String, Void>() {
             @Override
@@ -61,11 +76,11 @@ public class HttpsRequestHelper {
                 if (capture.get() != null) {
                     capture.get().disconnect();
                 }
-                if (onResultListener != null) {
+                if (listener != null) {
                     if (task.isFaulted() || TextUtils.isEmpty(task.getResult())) {
-                        onResultListener.onFailure(task.getError());
+                        listener.onFailure(task.getError());
                     } else {
-                        onResultListener.onSuccess(task.getResult());
+                        listener.onSuccess(task.getResult());
                     }
                 }
                 return null;
@@ -73,11 +88,6 @@ public class HttpsRequestHelper {
         },Task.UI_THREAD_EXECUTOR);
     }
 
-    public interface OnResultListener {
-        void onSuccess(String result);
-
-        void onFailure(Exception exception);
-    }
 
     private static class MyHostnameVerifier implements HostnameVerifier {
 

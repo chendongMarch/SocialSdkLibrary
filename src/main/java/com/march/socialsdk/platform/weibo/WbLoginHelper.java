@@ -6,10 +6,9 @@ import android.text.TextUtils;
 
 import com.march.socialsdk.exception.SocialException;
 import com.march.socialsdk.helper.OtherHelper;
-import com.march.socialsdk.helper.GsonHelper;
+import com.march.socialsdk.helper.JsonHelper;
 import com.march.socialsdk.helper.PlatformLog;
 import com.march.socialsdk.listener.OnLoginListener;
-import com.march.socialsdk.manager.LoginManager;
 import com.march.socialsdk.model.LoginResult;
 import com.march.socialsdk.model.token.SinaAccessToken;
 import com.march.socialsdk.model.user.SinaUser;
@@ -55,7 +54,7 @@ public class WbLoginHelper {
             public void onComplete(String response) {
                 if (!TextUtils.isEmpty(response)) {
                     PlatformLog.e(TAG,response);
-                    SinaUser sinaUser = GsonHelper.getObject(response, SinaUser.class);
+                    SinaUser sinaUser = JsonHelper.getObject(response, SinaUser.class);
                     loginListener.onLoginSucceed(new LoginResult(loginType,sinaUser,new SinaAccessToken(mAccessToken)));
                 }
             }

@@ -208,13 +208,16 @@ public class QQPlatform extends AbsPlatform {
     @Override
     public void shareVideo(int shareTarget, Activity activity, ShareObj obj) {
         if (shareTarget == Target.SHARE_QQ_FRIENDS) {
+
             if (obj.isShareByIntent()) {
+                // 使用 intent 打开，本地视频等
                 try {
                     IntentShareHelper.shareVideo(activity, obj.getMediaPath(), SocialConstants.QQ_PKG,SocialConstants.QQ_FRIENDS_PAGE);
                 } catch (Exception e) {
                     this.mIUiListenerWrap.onError(new SocialException(SocialException.CODE_SHARE_BY_INTENT_FAIL, e));
                 }
             } else {
+                // 使用 web 格式分享
                 PlatformLog.e(TAG, "qq不支持分享视频，使用web分享代替");
                 obj.setTargetUrl(obj.getMediaPath());
                 shareWeb(shareTarget, activity, obj);

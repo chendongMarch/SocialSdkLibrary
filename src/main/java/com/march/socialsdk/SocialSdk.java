@@ -1,5 +1,6 @@
 package com.march.socialsdk;
 
+import com.march.socialsdk.adapter.IJsonAdapter;
 import com.march.socialsdk.model.SocialSdkConfig;
 
 /**
@@ -11,6 +12,7 @@ import com.march.socialsdk.model.SocialSdkConfig;
 public class SocialSdk {
 
     private static SocialSdkConfig sSocialSdkConfig;
+    private static IJsonAdapter sJsonAdapter;
 
     public static SocialSdkConfig getConfig() {
         return sSocialSdkConfig;
@@ -18,5 +20,13 @@ public class SocialSdk {
 
     public static void init(SocialSdkConfig config) {
         sSocialSdkConfig = config;
+    }
+
+    public static IJsonAdapter getJsonAdapter() {
+        return sJsonAdapter;
+    }
+
+    public static void addJsonAdapter(IJsonAdapter jsonAdapter) {
+        sJsonAdapter = jsonAdapter;
     }
 }

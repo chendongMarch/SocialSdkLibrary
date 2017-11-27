@@ -30,7 +30,6 @@ dependencies {
     // 进行依赖，或者根据链接中类库自行依赖
 
     compile rootProject.ext.google.appcompat_v7
-    compile rootProject.ext.libs.gson
     compile rootProject.ext.libs.bolts
 
     compile 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:1.4.0' // 微信

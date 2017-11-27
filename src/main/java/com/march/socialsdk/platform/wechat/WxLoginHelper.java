@@ -4,11 +4,10 @@ import android.content.Context;
 
 import com.march.socialsdk.exception.SocialException;
 import com.march.socialsdk.helper.AuthTokenKeeper;
-import com.march.socialsdk.helper.GsonHelper;
+import com.march.socialsdk.helper.JsonHelper;
 import com.march.socialsdk.helper.HttpsRequestHelper;
 import com.march.socialsdk.helper.PlatformLog;
 import com.march.socialsdk.listener.OnLoginListener;
-import com.march.socialsdk.manager.LoginManager;
 import com.march.socialsdk.model.LoginResult;
 import com.march.socialsdk.model.token.WeChatAccessToken;
 import com.march.socialsdk.model.user.WxUser;
@@ -94,12 +93,12 @@ public class WxLoginHelper {
      */
     private void refreshToken(final WeChatAccessToken token) {
         PlatformLog.e(TAG, "token失效，开始刷新token");
-        HttpsRequestHelper.getHttps(buildRefreshTokenUrl(token),
+        HttpsRequestHelper.sendHttpsRequest(buildRefreshTokenUrl(token),
                 new HttpsRequestHelper.OnResultListener() {
                     @Override
                     public void onSuccess(String result) {
                         // 获取到access_token
-                        WeChatAccessToken newToken = GsonHelper.getObject(result, WeChatAccessToken.class);
+                        WeChatAccessToken newToken = JsonHelper.getObject(result, WeChatAccessToken.class);
                         if (newToken.isNoError()) {
                             PlatformLog.e(TAG, "刷新token成功 token = " + newToken);
                             AuthTokenKeeper.saveWxToken(context, newToken);
@@ -127,12 +126,12 @@ public class WxLoginHelper {
      */
     public void getAccessTokenByCode(String code) {
         PlatformLog.e(TAG, "使用code获取access_token " + code);
-        HttpsRequestHelper.getHttps(buildGetTokenUrl(code),
+        HttpsRequestHelper.sendHttpsRequest(buildGetTokenUrl(code),
                 new HttpsRequestHelper.OnResultListener() {
                     @Override
                     public void onSuccess(String result) {
                         // 获取到access_token
-                        WeChatAccessToken resp = GsonHelper.getObject(result, WeChatAccessToken.class);
+                        WeChatAccessToken resp = JsonHelper.getObject(result, WeChatAccessToken.class);
                         if (resp.isNoError()) {
                             AuthTokenKeeper.saveWxToken(context, resp);
                             getUserInfoByValidToken(resp);
@@ -158,12 +157,12 @@ public class WxLoginHelper {
      */
     private void checkAccessTokenValid(final WeChatAccessToken token) {
         PlatformLog.e(TAG, "本地存了token,开始检测有效性" + token.toString());
-        HttpsRequestHelper.getHttps(buildCheckAccessTokenValidUrl(token),
+        HttpsRequestHelper.sendHttpsRequest(buildCheckAccessTokenValidUrl(token),
                 new HttpsRequestHelper.OnResultListener() {
                     @Override
                     public void onSuccess(String result) {
                         // 检测是否有效
-                        TokenValidResp resp = GsonHelper.getObject(result, TokenValidResp.class);
+                        TokenValidResp resp = JsonHelper.getObject(result, TokenValidResp.class);
                         PlatformLog.e(TAG, "检测token结束，结果 = " + result);
                         if (resp.isNoError()) {
                             // access_token有效。开始获取用户信息
@@ -190,12 +189,12 @@ public class WxLoginHelper {
      */
     private void getUserInfoByValidToken(final WeChatAccessToken token) {
         PlatformLog.e(TAG, "access_token有效，开始获取用户信息");
-        HttpsRequestHelper.getHttps(buildFetchUserInfoUrl(token),
+        HttpsRequestHelper.sendHttpsRequest(buildFetchUserInfoUrl(token),
                 new HttpsRequestHelper.OnResultListener() {
                     @Override
                     public void onSuccess(String result) {
                         PlatformLog.e(TAG, "获取到用户信息" + result);
-                        WxUser wxUserInfo = GsonHelper.getObject(result, WxUser.class);
+                        WxUser wxUserInfo = JsonHelper.getObject(result, WxUser.class);
                         if (wxUserInfo.isNoError()) {
                             loginListener.onLoginSucceed(new LoginResult(loginType, wxUserInfo, token));
                         } else {
