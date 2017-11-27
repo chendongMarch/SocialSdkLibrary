@@ -86,6 +86,7 @@ public class ShareManager extends BaseManager {
             onShareListener.onFailure(new SocialException(SocialException.CODE_SHARE_OBJ_VALID));
             return true;
         }
+
         sOnShareListener = onShareListener;
         buildPlatform(context, shareTarget);
         if (!getPlatform().isInstall()) {

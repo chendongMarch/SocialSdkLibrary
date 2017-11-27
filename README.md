@@ -135,6 +135,17 @@ LoginManager.login(mActivity, Target.LOGIN_QQ, mOnLoginListener);
 ## 分享功能
 
 
+### 扩展支持
+
+```java
+// 发短信
+ShareManager.sendSms(mActivity,"13612391817","msg body");
+// 发邮件
+ShareManager.sendEmail(mActivity,"1101873740@qq.com","subject","msg body");
+// 打开渠道对应应用
+ShareManager.openApp(mActivity,Target.SHARE_QQ_FRIENDS);
+```
+
 ### 9 种数据支持
 
 分享支持 9 种类型的数据；如果某个平台不兼容某种类型的分享，将会使用 `web` 分享的方式代替；比如微信不支持 `app` 分享，分享出去之后时 `web` 分享的模式。支持的 9 种类型分别是：
@@ -148,6 +159,7 @@ LoginManager.login(mActivity, Target.LOGIN_QQ, mOnLoginListener);
 > 7. 分享 video。
 > 8. 分享本地 video，使用 Intent 方式唤醒，支持 qq、微信 好友分享。
 > 9. 分享 voice，(sina 专有，其他平台使用 web 分享)
+
 
 ### 7 个分享渠道
 
@@ -164,7 +176,7 @@ Target.SHARE_WB_OPENAPI; // 新浪微博openApi分享，使用该方法分享图
 
 ### 创建分享数据
 
-分享时，我们首先要构造分享用的数据，`ShareMediaObj` 对象提供了多种静态方法用来快速创建对应分享的类型的对象。
+分享时，我们首先要构造分享用的数据，`ShareObj` 对象提供了多种静态方法用来快速创建对应分享的类型的对象。
 
 ```java
 // 测试用的路径
@@ -179,25 +191,25 @@ targetUrl = "http://bbs.csdn.net/topics/391545021";
 
 
 // 打开渠道对应app
-ShareMediaObj shareMediaObj = ShareMediaObj.buildOpenAppObj();
+ShareObj shareMediaObj = ShareObj.buildOpenAppObj();
 // 分享文字
-ShareMediaObj textObj = ShareMediaObj.buildTextObj("分享文字", "summary");
+ShareObj textObj = ShareObj.buildTextObj("分享文字", "summary");
 // 分享图片
-ShareMediaObj imageObj = ShareMediaObj.buildImageObj("分享图片", "summary", localImagePath);
+ShareObj imageObj = ShareObj.buildImageObj("分享图片", "summary", localImagePath);
 // 分享gif
-ShareMediaObj imageGifObj = ShareMediaObj.buildImageObj("分享图片", "summary", localGifPath);
+ShareObj imageGifObj = ShareObj.buildImageObj("分享图片", "summary", localGifPath);
 // 分享app
-ShareMediaObj appObj = ShareMediaObj.buildAppObj("分享app", "summary", localImagePath, targetUrl);
+ShareObj appObj = ShareObj.buildAppObj("分享app", "summary", localImagePath, targetUrl);
 // 分享web
-ShareMediaObj webObj = ShareMediaObj.buildWebObj("分享web", "summary", localImagePath, targetUrl);
+ShareObj webObj = ShareObj.buildWebObj("分享web", "summary", localImagePath, targetUrl);
 // 分享视频
-ShareMediaObj videoObj = ShareMediaObj.buildVideoObj("分享视频", "summary", localImagePath, targetUrl, localVideoPath, 10);
+ShareObj videoObj = ShareObj.buildVideoObj("分享视频", "summary", localImagePath, targetUrl, localVideoPath, 10);
 // 分享本地视频，使用 Intent 方式唤醒，支持 qq、微信 好友分享
-ShareMediaObj videoLocalObj = ShareObj.buildVideoObjByLocalPath(localVideoPath);
+ShareObj videoLocalObj = ShareObj.buildVideoObjByLocalPath(localVideoPath);
 // 分享音乐
-ShareMediaObj musicObj = ShareMediaObj.buildMusicObj("分享音乐", "summary", localImagePath, targetUrl, netMusicPath, 10);
+ShareObj musicObj = ShareObj.buildMusicObj("分享音乐", "summary", localImagePath, targetUrl, netMusicPath, 10);
 // 分享声音，微博特有，其他平台以web方式分享
-ShareMediaObj voiceObj = ShareMediaObj.buildVoiceObj("分享声音", "summary", localImagePath, targetUrl, netMusicPath, 10);
+ShareObj voiceObj = ShareObj.buildVoiceObj("分享声音", "summary", localImagePath, targetUrl, netMusicPath, 10);
 ```
 
 ### 分享监听
@@ -207,11 +219,11 @@ ShareMediaObj voiceObj = ShareMediaObj.buildVoiceObj("分享声音", "summary", 
 ```
 public class SimpleShareListener implements OnShareListener{
     @Override
-    public void onStart(int shareTarget, ShareMediaObj obj) {
+    public void onStart(int shareTarget, ShareObj obj) {
         // 分享开始
     }
     @Override
-    public ShareMediaObj onPrepareInBackground(int shareTarget, ShareMediaObj obj) {
+    public ShareObj onPrepareInBackground(int shareTarget, ShareObj obj) {
         // 重构分享对象，不需要时返回 null 即可
         return null;
     }
@@ -267,17 +279,17 @@ public class MyShareListener extends SimpleShareListener {
     }
 
     @Override
-    public void onStart(int shareTarget, ShareMediaObj obj) {
+    public void onStart(int shareTarget, ShareObj obj) {
         if (mLoadingDialog != null)
             mLoadingDialog.show();
     }
 
     @Override
-    public ShareMediaObj onPrepareInBackground(int shareTarget, ShareMediaObj obj) throws Exception{
+    public ShareObj onPrepareInBackground(int shareTarget, ShareObj obj) throws Exception{
         // 网络路径，先进行文件下载进行文件下载
         ShareObjHelper.prepareThumbImagePath(obj);
         // 分享照片且不是gif时加水印
-        if (obj.getShareObjType() == ShareMediaObj.SHARE_TYPE_IMAGE
+        if (obj.getShareObjType() == ShareObj.SHARE_TYPE_IMAGE
                 && !FileHelper.isGifFile(obj.getThumbImagePath())) {
             File thumbImageFile = new File(obj.getThumbImagePath());
             File saveFile = new File(Constants.THUMB_IMAGE_PATH, thumbImageFile.getName());

@@ -139,12 +139,16 @@ public class ShareObj implements Parcelable {
         setTargetUrl(targetUrl);
     }
 
+    public boolean isUrlValid() {
+        return !OtherHelper.isEmpty(targetUrl) && FileHelper.isHttpPath(mediaPath);
+    }
+
     public boolean isAppOrWebObjValid() {
-        return !OtherHelper.isEmpty(title, summary, targetUrl) && isThumbLocalPathValid();
+        return isUrlValid() && !OtherHelper.isEmpty(title, summary, targetUrl) && isThumbLocalPathValid();
     }
 
     public boolean isMusicVideoVoiceValid() {
-        return !OtherHelper.isEmpty(title, summary, targetUrl, mediaPath) && isThumbLocalPathValid();
+        return isUrlValid() && !OtherHelper.isEmpty(title, summary, targetUrl, mediaPath) && isThumbLocalPathValid();
     }
 
 
