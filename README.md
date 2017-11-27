@@ -5,6 +5,8 @@
 
 由于项目中想要接入的平台因人而异，第三方 SDK 更新也比较频繁，因此没有对类库进行发布操作，下载之后直接依赖 `module` 即可，这样也方便问题修复。
 
+项目地址 : [GitHub - SocialSdkLibrary](https://github.com/chendongMarch/SocialSdkLibrary)
+
 <!--more-->
 
 ## 介绍
