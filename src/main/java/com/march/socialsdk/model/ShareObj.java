@@ -272,6 +272,7 @@ public class ShareObj implements Parcelable {
             case ShareObj.SHARE_TYPE_MUSIC:
             case ShareObj.SHARE_TYPE_VIDEO:
             case ShareObj.SHARE_TYPE_VOICE:
+                // 本地视频分享，仅qq好友和微信好友支持
                 if (isShareByIntent() && (shareTarget == Target.SHARE_QQ_FRIENDS || shareTarget == Target.SHARE_WX_FRIENDS)) {
                     return FileHelper.isExist(mediaPath);
                 } else if (shareTarget == Target.SHARE_QQ_ZONE) {
