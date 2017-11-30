@@ -21,6 +21,8 @@
 
 功能性：针对实际项目需求进行扩展，例如在分享前统一对分享数据提供一次重新构造的机会。
 
+
+
 使用 **SocialSdk** 只需要关注以下几个文件：
 
 > `SocialSdk` 结合 `SocialConfig` 用来进行授权信息的配置。
@@ -76,9 +78,10 @@ SocialSdkConfig config = new SocialSdkConfig(this)
         .sinaRedirectUrl("http://open.manfenmm.cxxxxxxx")
         // 配置Sina授权scope,有默认值，默认值 all
         .sinaScope(SocialConstants.SCOPE);
-// 添加自定义的json解析，必须
-SocialSdk.addJsonAdapter(new GsonJsonAdapter());
 
+// 👮 添加自定义的 json 解析，必须
+SocialSdk.addJsonAdapter(new GsonJsonAdapter());
+// 👮 添加 config 数据，必须
 SocialSdk.init(config);
 ```
 
