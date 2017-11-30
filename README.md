@@ -9,7 +9,9 @@
 
 <!--more-->
 
-## 介绍
+## 优点
+
+写的不好，还在优化中...
 
 简单：只需要关注几个管理类和相关数据的构造，不需要考虑复杂的授权逻辑。
 
@@ -22,16 +24,17 @@
 功能性：针对实际项目需求进行扩展，例如在分享前统一对分享数据提供一次重新构造的机会。
 
 
+## 主要类文件
 
 使用 **SocialSdk** 只需要关注以下几个文件：
 
-> `SocialSdk` 结合 `SocialConfig` 用来进行授权信息的配置。
+➡️ `SocialSdk` 结合 `SocialConfig` 用来进行授权信息的配置。
 
->  `Target` 类是单独分离出来的常量类，指向了登录和分享的具体目标。
+➡️ `Target` 类是单独分离出来的常量类，指向了登录和分享的具体目标。
 
-> `LoginManager` 用来实现 qq、微信、微博第三方授权登录，内部存储 `accessToken`，无需多次授权，只要调用 `LoginManager.login()` 方法。
+➡️ `LoginManager` 用来实现 qq、微信、微博第三方授权登录，内部存储 `accessToken`，无需多次授权，只要调用 `LoginManager.login()` 方法。
 
-> `ShareManager` 用来实现 9 种数据类型、3 大平台、7 个渠道的分享，只要调用 `ShareManager.share()` 方法。
+➡️ `ShareManager` 用来实现 9 种数据类型、3 大平台、7 个渠道的分享，只要调用 `ShareManager.share()` 方法。
 
 
 ## gradle 配置
