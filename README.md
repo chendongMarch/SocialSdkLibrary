@@ -1,5 +1,7 @@
 # SocialSdk
 
+![登录分享](http://olx4t2q6z.bkt.clouddn.com/17-12-1/62754706.jpg)
+
 「`SocialSdk`」 提供微博、微信、QQ的登陆分享功能支持，使用 微博、QQ、微信 原生 SDK 接入，持续优化中...
 
 由于项目中想要接入的平台因人而异，第三方 SDK 更新也比较频繁，因此没有对类库进行发布操作，下载之后直接依赖 `module` 即可，这样也方便问题修复。
@@ -327,4 +329,3 @@ public class MyShareListener extends SimpleShareListener {
     }
 }
 ```
-
