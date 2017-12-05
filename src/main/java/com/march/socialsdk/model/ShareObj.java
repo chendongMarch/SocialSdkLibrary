@@ -119,13 +119,15 @@ public class ShareObj implements Parcelable {
         return shareMediaObj;
     }
 
-    public static ShareObj buildVideoObjByLocalPath(String mediaPath) {
+    // 本地视频
+    public static ShareObj buildVideoObj(String mediaPath) {
         ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_VIDEO);
         shareMediaObj.setMediaPath(mediaPath);
         shareMediaObj.setShareByIntent(true);
         return shareMediaObj;
     }
 
+    // 声音，仅微博支持，其他平台使用web支持
     public static ShareObj buildVoiceObj(String title, String summary
             , String thumbImagePath, String targetUrl, String mediaPath, int duration) {
         ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_VOICE);
@@ -134,7 +136,6 @@ public class ShareObj implements Parcelable {
         shareMediaObj.setDuration(duration);
         return shareMediaObj;
     }
-
 
     public ShareObj(int shareObjType) {
         this.shareObjType = shareObjType;
@@ -149,7 +150,11 @@ public class ShareObj implements Parcelable {
     }
 
     public boolean isUrlValid() {
-        return !CommonHelper.isAnyEmpty(targetUrl) && FileHelper.isHttpPath(mediaPath);
+        boolean urlValid =  !CommonHelper.isAnyEmpty(targetUrl) && FileHelper.isHttpPath(mediaPath);
+        if(!urlValid){
+            PlatformLog.e(TAG, "url : " + targetUrl + "  不能为空，且必须带有http协议头");
+        }
+        return urlValid;
     }
 
     public boolean isAppOrWebObjValid() {
@@ -282,7 +287,7 @@ public class ShareObj implements Parcelable {
             case ShareObj.SHARE_TYPE_VIDEO:
             case ShareObj.SHARE_TYPE_VOICE:
                 // 本地视频分享，仅qq好友和微信好友支持
-                if (isShareByIntent() && (shareTarget == Target.SHARE_QQ_FRIENDS || shareTarget == Target.SHARE_WX_FRIENDS)) {
+                if (isShareByIntent() && (shareTarget == Target.SHARE_WB_NORMAL|| shareTarget == Target.SHARE_QQ_FRIENDS || shareTarget == Target.SHARE_WX_FRIENDS)) {
                     return FileHelper.isExist(mediaPath);
                 } else if (shareTarget == Target.SHARE_QQ_ZONE) {
                     return isMusicVideoVoiceValid();

@@ -35,7 +35,7 @@ public class SocialException {
                 errorMsg = "应用版本低,需要更高版本";
                 break;
             case CODE_SHARE_OBJ_VALID:
-                errorMsg = "分享的对象参数有问题";
+                errorMsg = "分享的对象参数有问题，请检查输出的log，会有具体的提示";
                 break;
         }
     }
