@@ -16,12 +16,19 @@ import com.march.socialsdk.model.ShareObj;
 
 public interface IPlatform extends PlatformLifeCircle {
 
+    // 检测参数配置
+    boolean checkPlatformConfig();
+
+    // 初始化分享监听
     void initOnShareListener(OnShareListener listener);
 
+    // 是否安装
     boolean isInstall();
 
+    // 发起登录
     void login(Activity activity, OnLoginListener onLoginListener);
 
+    // 发起分享
     void share(Activity activity, int shareTarget, ShareObj shareMediaObj);
 
 }

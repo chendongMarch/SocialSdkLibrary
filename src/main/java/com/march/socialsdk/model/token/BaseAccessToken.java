@@ -1,6 +1,5 @@
 package com.march.socialsdk.model.token;
 
-import com.march.socialsdk.manager.LoginManager;
 import com.march.socialsdk.platform.Target;
 
 /**

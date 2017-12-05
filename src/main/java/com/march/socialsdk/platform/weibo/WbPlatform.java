@@ -335,6 +335,7 @@ public class WbPlatform extends AbsPlatform {
 
     @Override
     public void shareVideo(int shareTarget, final Activity activity, final ShareObj obj) {
+        if(obj.isShareByIntent())
         BitmapHelper.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
                 .continueWith(new ThumbDataContinuation(TAG, "shareVideo", mOnShareListener) {
                     @Override

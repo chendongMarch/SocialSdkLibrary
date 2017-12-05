@@ -26,16 +26,19 @@ public abstract class BaseManager {
     public static final int ACTION_TYPE_SHARE = 1;
 
     public static final String KEY_SHARE_MEDIA_OBJ = "KEY_SHARE_MEDIA_OBJ"; // media obj key
-    public static final String KEY_ACTION_TYPE     = "KEY_ACTION_TYPE"; // action type
+    public static final String KEY_ACTION_TYPE = "KEY_ACTION_TYPE"; // action type
 
     public static final String KEY_SHARE_TARGET = "KEY_SHARE_TARGET"; // share target
     public static final String KEY_LOGIN_TARGET = "KEY_LOGIN_TARGET"; // login target
 
     private static IPlatform mPlatform;
 
-    static IPlatform buildPlatform(Context activity, int shareTarget) {
+    static IPlatform buildPlatform(Context activity, int target) {
+        if (SocialSdk.getConfig() == null) {
+            throw new IllegalArgumentException(Target.toDesc(target) + " SocialSdl.init() request");
+        }
         mPlatform = null;
-        switch (shareTarget) {
+        switch (target) {
             case Target.LOGIN_QQ:
             case Target.SHARE_QQ_FRIENDS:
             case Target.SHARE_QQ_ZONE:
@@ -57,7 +60,7 @@ public abstract class BaseManager {
                 break;
         }
         if (mPlatform == null) {
-            throw new IllegalArgumentException(shareTarget + "  创建platform失败，请检查参数");
+            throw new IllegalArgumentException(Target.toDesc(target) + "  创建platform失败，请检查参数 " + SocialSdk.getConfig().toString());
         }
         return mPlatform;
     }
@@ -99,4 +102,6 @@ public abstract class BaseManager {
             activity.finish();
         }
     }
+
+
 }

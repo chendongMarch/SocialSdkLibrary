@@ -27,6 +27,7 @@ public class SocialSdkConfig {
     private String sinaScope       = SocialConstants.SCOPE;
     private String shareCacheDirPath;
 
+
     public SocialSdkConfig(Context context) {
         this.appName = context.getString(R.string.app_name);
         File shareDir = new File(context.getExternalCacheDir(), SHARE_CACHE_DIR_NAME);
@@ -91,5 +92,19 @@ public class SocialSdkConfig {
 
     public String getSinaScope() {
         return sinaScope;
+    }
+
+    @Override
+    public String toString() {
+        return "SocialSdkConfig{" +
+                "appName='" + appName + '\'' +
+                ", wxAppId='" + wxAppId + '\'' +
+                ", wxSecretKey='" + wxSecretKey + '\'' +
+                ", qqAppId='" + qqAppId + '\'' +
+                ", sinaAppId='" + sinaAppId + '\'' +
+                ", sinaRedirectUrl='" + sinaRedirectUrl + '\'' +
+                ", sinaScope='" + sinaScope + '\'' +
+                ", shareCacheDirPath='" + shareCacheDirPath + '\'' +
+                '}';
     }
 }

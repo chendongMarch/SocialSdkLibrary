@@ -41,4 +41,42 @@ public class Target {
     public @interface LoginTarget {
 
     }
+
+
+    public static String toDesc(int target) {
+        String result = " ";
+        switch (target) {
+            case Target.LOGIN_QQ:
+                result = "qq登录";
+                break;
+            case Target.LOGIN_WX:
+                result = "微信登录";
+                break;
+            case Target.LOGIN_WB:
+                result = "微博登录";
+                break;
+            case Target.SHARE_QQ_FRIENDS:
+                result = "qq好友分享";
+                break;
+            case Target.SHARE_QQ_ZONE:
+                result = "qq空间分享";
+                break;
+            case Target.SHARE_WX_FRIENDS:
+                result = "微信好友分享";
+                break;
+            case Target.SHARE_WX_ZONE:
+                result = "微信空间分享";
+                break;
+            case Target.SHARE_WB_NORMAL:
+                result = "微博普通分享";
+                break;
+            case Target.SHARE_WB_OPENAPI:
+                result = "微博 open api 分享";
+                break;
+            default:
+                result = "未知类型";
+                break;
+        }
+        return result;
+    }
 }

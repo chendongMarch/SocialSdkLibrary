@@ -54,10 +54,12 @@ public class ShareObj implements Parcelable {
     private boolean isShareByIntent = false;
 
 
+    // 直接打开对应app
     public static ShareObj buildOpenAppObj() {
         return new ShareObj(SHARE_OPEN_APP);
     }
 
+    // 分享文字，qq 好友原本不支持，使用intent兼容
     public static ShareObj buildTextObj(String title, String summary) {
         ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_TEXT);
         shareMediaObj.setTitle(title);
@@ -65,12 +67,14 @@ public class ShareObj implements Parcelable {
         return shareMediaObj;
     }
 
+    // 分享图片
     public static ShareObj buildImageObj(String path) {
         ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_IMAGE);
         shareMediaObj.setThumbImagePath(path);
         return shareMediaObj;
     }
 
+    // 分享图片，带描述，qq微信好友会分为两条消息发送
     public static ShareObj buildImageObj(String path, String summary) {
         ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_IMAGE);
         shareMediaObj.setThumbImagePath(path);
@@ -78,6 +82,7 @@ public class ShareObj implements Parcelable {
         return shareMediaObj;
     }
 
+    // 应用分享，qq支持，其他平台使用 web 分享兼容
     public static ShareObj buildAppObj(String title, String summary
             , String thumbImagePath, String targetUrl) {
         ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_APP);
@@ -85,6 +90,7 @@ public class ShareObj implements Parcelable {
         return shareMediaObj;
     }
 
+    // 分享web，打开链接
     public static ShareObj buildWebObj(String title, String summary
             , String thumbImagePath, String targetUrl) {
         ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_WEB);
@@ -92,6 +98,7 @@ public class ShareObj implements Parcelable {
         return shareMediaObj;
     }
 
+    // 分享音乐,qq空间不支持，使用web分享
     public static ShareObj buildMusicObj(String title, String summary
             , String thumbImagePath, String targetUrl, String mediaPath, int duration) {
         ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_MUSIC);
@@ -101,6 +108,9 @@ public class ShareObj implements Parcelable {
         return shareMediaObj;
     }
 
+    // 分享视频，
+    // 微信好友和朋友圈：本地视频使用 intent 兼容，支持网络视频链接分享，
+    // 微博支持视频类型qq空间支持本地视频发布，其他平台需要使用网络视频链接
     public static ShareObj buildVideoObj(String title, String summary
             , String thumbImagePath, String targetUrl, String mediaPath, int duration) {
         ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_VIDEO);

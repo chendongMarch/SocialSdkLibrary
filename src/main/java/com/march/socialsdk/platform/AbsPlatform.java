@@ -4,6 +4,7 @@ package com.march.socialsdk.platform;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 
 import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.listener.OnLoginListener;
@@ -24,14 +25,9 @@ public abstract class AbsPlatform implements IPlatform {
     protected static final int THUMB_IMAGE_SIZE = 32 * 1024;
 
     protected OnShareListener mOnShareListener;
-    protected String mAppId   = "";
+    protected String mAppId = "";
     protected String mAppName = null;
     protected Context mContext;
-
-    @Override
-    public void initOnShareListener(OnShareListener listener) {
-        this.mOnShareListener = listener;
-    }
 
     protected AbsPlatform(Context context, String appId, String appName) {
         this.mAppId = appId;
@@ -39,7 +35,23 @@ public abstract class AbsPlatform implements IPlatform {
         this.mContext = context;
     }
 
-    public void login(Activity activity, OnLoginListener loginListener) {
+    @Override
+    public boolean checkPlatformConfig() {
+        return !TextUtils.isEmpty(mAppId) && !TextUtils.isEmpty(mAppName) && mContext != null;
+    }
+
+    @Override
+    public void initOnShareListener(OnShareListener listener) {
+        this.mOnShareListener = listener;
+    }
+
+    @Override
+    public boolean isInstall() {
+        return false;
+    }
+
+    @Override
+    public void login(Activity activity, OnLoginListener onLoginListener) {
 
     }
 
@@ -115,7 +127,5 @@ public abstract class AbsPlatform implements IPlatform {
     public void recycle() {
 
     }
-
-
 
 }

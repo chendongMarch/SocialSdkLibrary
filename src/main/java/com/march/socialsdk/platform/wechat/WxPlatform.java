@@ -2,6 +2,7 @@ package com.march.socialsdk.platform.wechat;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.common.ThumbDataContinuation;
@@ -51,6 +52,11 @@ public class WxPlatform extends AbsPlatform {
         this.mWxSecret = wxSecret;
         mWxApi = WXAPIFactory.createWXAPI(context, appId, true);
         mWxApi.registerApp(appId);
+    }
+
+    @Override
+    public boolean checkPlatformConfig() {
+        return super.checkPlatformConfig() && !TextUtils.isEmpty(mWxSecret);
     }
 
     @Override
