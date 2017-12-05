@@ -64,7 +64,9 @@ public class LoginManager extends BaseManager {
             PlatformLog.e(TAG, "actionType无效");
             return;
         }
-        if (actionType != ACTION_TYPE_LOGIN) return;
+        if (actionType != ACTION_TYPE_LOGIN) {
+            return;
+        }
         if (loginTarget == INVALID_PARAM) {
             PlatformLog.e(TAG, "shareTargetType无效");
             return;
