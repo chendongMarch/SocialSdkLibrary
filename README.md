@@ -164,7 +164,7 @@ ShareManager.openApp(mActivity,Target.SHARE_QQ_FRIENDS);
 > 5. 分享 web。
 > 6. 分享 music。
 > 7. 分享 video。
-> 8. 分享本地 video，使用 Intent 方式唤醒，支持 qq、微信 好友分享。
+> 8. 分享本地 video，使用 Intent 方式唤醒。
 > 9. 分享 voice，(sina 专有，其他平台使用 web 分享)
 
 

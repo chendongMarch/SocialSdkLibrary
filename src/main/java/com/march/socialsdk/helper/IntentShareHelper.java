@@ -2,12 +2,15 @@ package com.march.socialsdk.helper;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.text.TextUtils;
 
 import com.march.socialsdk.common.SocialConstants;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * CreateAt : 28/10/2017
@@ -45,6 +48,7 @@ public class IntentShareHelper {
         shareIntent.putExtra(Intent.EXTRA_STREAM, videoUri);
         // shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList);
         shareIntent.setType("video/*");
+        printActivitySupport(activity,shareIntent);
         activeShare(activity, shareIntent, pkg, targetActivity);
     }
 
@@ -59,6 +63,7 @@ public class IntentShareHelper {
             if (chooserIntent == null) {
                 return;
             }
+
             activity.startActivityForResult(chooserIntent, SHARE_REQ_CODE);
         } catch (Exception e) {
             e.printStackTrace();
@@ -67,4 +72,12 @@ public class IntentShareHelper {
     }
 
 
+
+    public static void printActivitySupport(Activity activity,Intent intent){
+        List<ResolveInfo> resolveInfos = activity.getPackageManager()
+                .queryIntentActivities(intent,PackageManager.GET_RESOLVED_FILTER);
+        for (ResolveInfo resolveInfo : resolveInfos) {
+            PlatformLog.e(resolveInfo.activityInfo.packageName + " - " + resolveInfo.activityInfo.name);
+        }
+    }
 }

@@ -207,7 +207,6 @@ public class QQPlatform extends AbsPlatform {
     @Override
     public void shareVideo(int shareTarget, Activity activity, ShareObj obj) {
         if (shareTarget == Target.SHARE_QQ_FRIENDS) {
-
             if (obj.isShareByIntent()) {
                 // 使用 intent 打开，本地视频等
                 try {

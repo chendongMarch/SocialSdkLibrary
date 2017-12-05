@@ -44,8 +44,8 @@ public class WxPlatform extends AbsPlatform {
     public static final String TAG = WxPlatform.class.getSimpleName();
 
     private WxLoginHelper mWeChatLoginHelper;
-    private IWXAPI        mWxApi;
-    private String        mWxSecret;
+    private IWXAPI mWxApi;
+    private String mWxSecret;
 
     public WxPlatform(Context context, String appId, String wxSecret, String appName) {
         super(context, appId, appName);
@@ -79,7 +79,9 @@ public class WxPlatform extends AbsPlatform {
 
     @Override
     public void onResponse(Object resp) {
-        if (!(resp instanceof BaseResp)) return;
+        if (!(resp instanceof BaseResp)) {
+            return;
+        }
         BaseResp baseResp = (BaseResp) resp;
         if (baseResp.getType() == ConstantsAPI.COMMAND_SENDAUTH) {
             // 登录
@@ -98,7 +100,9 @@ public class WxPlatform extends AbsPlatform {
                     break;
             }
         } else if (baseResp.getType() == ConstantsAPI.COMMAND_SENDMESSAGE_TO_WX) {
-            if (mOnShareListener == null) return;
+            if (mOnShareListener == null) {
+                return;
+            }
             // 分享
             switch (baseResp.errCode) {
                 case BaseResp.ErrCode.ERR_OK:

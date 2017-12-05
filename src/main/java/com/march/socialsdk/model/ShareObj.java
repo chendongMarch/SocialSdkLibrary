@@ -108,8 +108,8 @@ public class ShareObj implements Parcelable {
     }
 
     // 分享视频，
-    // 微信好友和朋友圈：本地视频使用 intent 兼容，支持网络视频链接分享，
-    // 微博支持视频类型qq空间支持本地视频发布，其他平台需要使用网络视频链接
+    // 本地视频使用 intent 兼容，qq 空间本身支持本地视频发布
+    // 支持网络视频
     public static ShareObj buildVideoObj(String title, String summary
             , String thumbImagePath, String targetUrl, String mediaPath, int duration) {
         ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_VIDEO);

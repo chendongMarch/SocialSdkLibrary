@@ -11,6 +11,7 @@ import com.march.socialsdk.exception.SocialException;
 import com.march.socialsdk.helper.BitmapHelper;
 import com.march.socialsdk.helper.CommonHelper;
 import com.march.socialsdk.helper.FileHelper;
+import com.march.socialsdk.helper.IntentShareHelper;
 import com.march.socialsdk.helper.PlatformLog;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.ShareObj;
@@ -57,9 +58,9 @@ public class WbPlatform extends AbsPlatform {
     private static final String TAG = WbPlatform.class.getSimpleName();
 
     private IWeiboShareAPI mWeiboShareAPI;
-    private AuthInfo       mAuthInfo;
-    private SsoHandler     mSsoHandler;
-    private StatusesAPI    mStatusesAPI;
+    private AuthInfo mAuthInfo;
+    private SsoHandler mSsoHandler;
+    private StatusesAPI mStatusesAPI;
 
     // open Api分享时的监听
     private RequestListener requestListener = new RequestListener() {
@@ -334,17 +335,24 @@ public class WbPlatform extends AbsPlatform {
 
     @Override
     public void shareVideo(int shareTarget, final Activity activity, final ShareObj obj) {
-        if(obj.isShareByIntent())
-        BitmapHelper.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
-                .continueWith(new ThumbDataContinuation(TAG, "shareVideo", mOnShareListener) {
-                    @Override
-                    public void onSuccess(byte[] thumbData) {
-                        WeiboMultiMessage multiMessage = new WeiboMultiMessage();
-                        checkAddTextAndImageObj(multiMessage, obj, thumbData);
-                        multiMessage.mediaObject = getVideoObj(obj.getTitle(), thumbData, obj.getTargetUrl(), obj.getSummary(), obj.getMediaPath(), obj.getDuration());
-                        sendWeiboMultiMsg(activity, multiMessage);
-                    }
-                }, Task.UI_THREAD_EXECUTOR);
+        if (obj.isShareByIntent()) {
+            try {
+                IntentShareHelper.shareVideo(activity, obj.getMediaPath(), SocialConstants.SINA_PKG, SocialConstants.WB_COMPOSER_PAGE);
+            } catch (Exception e) {
+                this.mOnShareListener.onFailure(new SocialException(SocialException.CODE_SHARE_BY_INTENT_FAIL, e));
+            }
+        } else {
+            BitmapHelper.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
+                    .continueWith(new ThumbDataContinuation(TAG, "shareVideo", mOnShareListener) {
+                        @Override
+                        public void onSuccess(byte[] thumbData) {
+                            WeiboMultiMessage multiMessage = new WeiboMultiMessage();
+                            checkAddTextAndImageObj(multiMessage, obj, thumbData);
+                            multiMessage.mediaObject = getVideoObj(obj.getTitle(), thumbData, obj.getTargetUrl(), obj.getSummary(), obj.getMediaPath(), obj.getDuration());
+                            sendWeiboMultiMsg(activity, multiMessage);
+                        }
+                    }, Task.UI_THREAD_EXECUTOR);
+        }
     }
 
     @Override
