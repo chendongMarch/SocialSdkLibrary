@@ -4,20 +4,17 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.IntDef;
 import android.text.TextUtils;
 
 import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.exception.SocialException;
-import com.march.socialsdk.helper.OtherHelper;
+import com.march.socialsdk.helper.CommonHelper;
 import com.march.socialsdk.helper.PlatformLog;
 import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.uikit.ActionActivity;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.Callable;
 
 import bolts.Continuation;
@@ -228,6 +225,6 @@ public class ShareManager extends BaseManager {
                 pkgName = SocialConstants.SINA_PKG;
                 break;
         }
-        return !TextUtils.isEmpty(pkgName) && OtherHelper.openApp(context, pkgName);
+        return !TextUtils.isEmpty(pkgName) && CommonHelper.openApp(context, pkgName);
     }
 }

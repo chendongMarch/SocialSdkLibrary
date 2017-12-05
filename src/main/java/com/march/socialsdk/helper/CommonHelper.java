@@ -18,10 +18,11 @@ import java.util.List;
  * @author chendong
  */
 
-public class OtherHelper {
+public class CommonHelper {
 
-    public static final String TAG = OtherHelper.class.getSimpleName();
+    public static final String TAG = CommonHelper.class.getSimpleName();
 
+    // string 转 long
     public static Long String2Long(String str) {
         Long data = 0L;
         try {
@@ -32,8 +33,8 @@ public class OtherHelper {
         return data;
     }
 
-
-    public static boolean isEmpty(String... strings) {
+    // 任何一个为空 返回true
+    public static boolean isAnyEmpty(String... strings) {
         boolean isEmpty = false;
         for (String string : strings) {
             if (TextUtils.isEmpty(string)) {
@@ -44,17 +45,12 @@ public class OtherHelper {
         return isEmpty;
     }
 
-
+    // app 是否安装
     public static boolean isAppInstall(Context context, String pkgName) {
         PackageManager pm = context.getPackageManager();
         if (pm == null) {
             return false;
         }
-//      try {
-//          context.getPackageManager().getPackageInfo(pkgName,PackageManager.GET_RESOLVED_FILTER)
-//      }catch (Exception e){
-//          e.printStackTrace();
-//      }
         List<PackageInfo> packages = pm.getInstalledPackages(0);
         boolean result = false;
         for (PackageInfo info : packages) {
@@ -66,7 +62,7 @@ public class OtherHelper {
         return result;
     }
 
-
+    // 根据包名，打开对应app
     public static boolean openApp(Context context, String pkgName) {
         try {
             Intent intent = context.getPackageManager().getLaunchIntentForPackage(pkgName);
@@ -78,7 +74,7 @@ public class OtherHelper {
         }
     }
 
-
+    // 关闭流
     public static void closeStream(Closeable... closeables) {
         for (Closeable closeable : closeables) {
             if (closeable != null) {
@@ -92,6 +88,7 @@ public class OtherHelper {
     }
 
 
+    // 获取 md5
     public static String getMD5(String info) {
         try {
             MessageDigest md5 = MessageDigest.getInstance("MD5");

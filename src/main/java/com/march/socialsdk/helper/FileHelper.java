@@ -70,7 +70,7 @@ public class FileHelper {
             e.printStackTrace();
             throw e;
         } finally {
-            OtherHelper.closeStream(bos, bis);
+            CommonHelper.closeStream(bos, bis);
         }
     }
 
@@ -98,7 +98,7 @@ public class FileHelper {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            OtherHelper.closeStream(fis, baos);
+            CommonHelper.closeStream(fis, baos);
         }
         return baos;
     }
@@ -180,7 +180,7 @@ public class FileHelper {
      */
     public static String mapUrl2LocalPath(String url) {
         // 映射文件名
-        String fileName = OtherHelper.getMD5(url) + FileHelper.getSuffix(url);
+        String fileName = CommonHelper.getMD5(url) + FileHelper.getSuffix(url);
         File saveFile = new File(SocialSdk.getConfig().getShareCacheDirPath(), fileName);
         return saveFile.getAbsolutePath();
     }
@@ -194,7 +194,7 @@ public class FileHelper {
      * @return 路径
      */
     public static String mapResId2LocalPath(Context context, int resId) {
-        String fileName = OtherHelper.getMD5(resId + "") + FileHelper.POINT_PNG;
+        String fileName = CommonHelper.getMD5(resId + "") + FileHelper.POINT_PNG;
         File saveFile = new File(SocialSdk.getConfig().getShareCacheDirPath(), fileName);
         if (saveFile.exists())
             return saveFile.getAbsolutePath();

@@ -5,9 +5,8 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 
 import com.march.socialsdk.helper.FileHelper;
-import com.march.socialsdk.helper.OtherHelper;
+import com.march.socialsdk.helper.CommonHelper;
 import com.march.socialsdk.helper.PlatformLog;
-import com.march.socialsdk.manager.ShareManager;
 import com.march.socialsdk.platform.Target;
 
 /**
@@ -150,15 +149,15 @@ public class ShareObj implements Parcelable {
     }
 
     public boolean isUrlValid() {
-        return !OtherHelper.isEmpty(targetUrl) && FileHelper.isHttpPath(mediaPath);
+        return !CommonHelper.isAnyEmpty(targetUrl) && FileHelper.isHttpPath(mediaPath);
     }
 
     public boolean isAppOrWebObjValid() {
-        return isUrlValid() && !OtherHelper.isEmpty(title, summary, targetUrl) && isThumbLocalPathValid();
+        return isUrlValid() && !CommonHelper.isAnyEmpty(title, summary, targetUrl) && isThumbLocalPathValid();
     }
 
     public boolean isMusicVideoVoiceValid() {
-        return isUrlValid() && !OtherHelper.isEmpty(title, summary, targetUrl, mediaPath) && isThumbLocalPathValid();
+        return isUrlValid() && !CommonHelper.isAnyEmpty(title, summary, targetUrl, mediaPath) && isThumbLocalPathValid();
     }
 
 
@@ -267,10 +266,10 @@ public class ShareObj implements Parcelable {
     public boolean isValid(int shareTarget) {
         switch (shareObjType) {
             case ShareObj.SHARE_TYPE_TEXT:
-                return !OtherHelper.isEmpty(title, summary);
+                return !CommonHelper.isAnyEmpty(title, summary);
             case ShareObj.SHARE_TYPE_IMAGE:
                 if (shareTarget == Target.SHARE_WB_OPENAPI) {
-                    boolean isSummaryValid = !OtherHelper.isEmpty(summary);
+                    boolean isSummaryValid = !CommonHelper.isAnyEmpty(summary);
                     if (!isSummaryValid)
                         PlatformLog.e(TAG, "Sina openApi分享必须有summary");
                     return isThumbLocalPathValid() && isSummaryValid;

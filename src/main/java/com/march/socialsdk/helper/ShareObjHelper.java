@@ -19,7 +19,7 @@ public class ShareObjHelper {
      * @return 是否可用
      */
     public static boolean checkThumbImagePathValid(ShareObj obj) {
-        if (OtherHelper.isEmpty(obj.getThumbImagePath()))
+        if (CommonHelper.isAnyEmpty(obj.getThumbImagePath()))
             return false;
         String thumbImagePath = obj.getThumbImagePath();
         // 文件是不是存在

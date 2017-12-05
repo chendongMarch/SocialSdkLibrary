@@ -10,11 +10,10 @@ import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.exception.SocialException;
 import com.march.socialsdk.helper.FileHelper;
 import com.march.socialsdk.helper.IntentShareHelper;
-import com.march.socialsdk.helper.OtherHelper;
+import com.march.socialsdk.helper.CommonHelper;
 import com.march.socialsdk.helper.PlatformLog;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.listener.OnShareListener;
-import com.march.socialsdk.manager.ShareManager;
 import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.Target;
@@ -64,7 +63,7 @@ public class QQPlatform extends AbsPlatform {
 
     @Override
     public boolean isInstall() {
-        return OtherHelper.isAppInstall(mContext, SocialConstants.QQ_PKG);
+        return CommonHelper.isAppInstall(mContext, SocialConstants.QQ_PKG);
     }
 
 
@@ -109,7 +108,7 @@ public class QQPlatform extends AbsPlatform {
 
     @Override
     protected void shareOpenApp(int shareTarget, Activity activity, ShareObj obj) {
-        boolean rst = OtherHelper.openApp(mContext, SocialConstants.QQ_PKG);
+        boolean rst = CommonHelper.openApp(mContext, SocialConstants.QQ_PKG);
         if (rst) {
             mOnShareListener.onSuccess();
         } else {

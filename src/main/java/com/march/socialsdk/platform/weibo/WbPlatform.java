@@ -9,11 +9,10 @@ import com.march.socialsdk.common.ThumbDataContinuation;
 import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.exception.SocialException;
 import com.march.socialsdk.helper.BitmapHelper;
-import com.march.socialsdk.helper.OtherHelper;
+import com.march.socialsdk.helper.CommonHelper;
 import com.march.socialsdk.helper.FileHelper;
 import com.march.socialsdk.helper.PlatformLog;
 import com.march.socialsdk.listener.OnLoginListener;
-import com.march.socialsdk.manager.ShareManager;
 import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.Target;
@@ -265,7 +264,7 @@ public class WbPlatform extends AbsPlatform {
 
     @Override
     protected void shareOpenApp(int shareTarget, Activity activity, ShareObj obj) {
-        boolean rst = OtherHelper.openApp(mContext, SocialConstants.SINA_PKG);
+        boolean rst = CommonHelper.openApp(mContext, SocialConstants.SINA_PKG);
         if (rst) {
             mOnShareListener.onSuccess();
         } else {
