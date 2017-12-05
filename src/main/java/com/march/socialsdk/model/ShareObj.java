@@ -120,10 +120,12 @@ public class ShareObj implements Parcelable {
     }
 
     // 本地视频
-    public static ShareObj buildVideoObj(String mediaPath) {
+    public static ShareObj buildVideoObj(String title,String summary,String mediaPath) {
         ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_VIDEO);
         shareMediaObj.setMediaPath(mediaPath);
         shareMediaObj.setShareByIntent(true);
+        shareMediaObj.setTitle(title);
+        shareMediaObj.setSummary(summary);
         return shareMediaObj;
     }
 
@@ -147,31 +149,6 @@ public class ShareObj implements Parcelable {
         setSummary(summary);
         setThumbImagePath(thumbImagePath);
         setTargetUrl(targetUrl);
-    }
-
-    public boolean isUrlValid() {
-        boolean urlValid =  !CommonHelper.isAnyEmpty(targetUrl) && FileHelper.isHttpPath(targetUrl);
-        if(!urlValid){
-            PlatformLog.e(TAG, "url : " + targetUrl + "  不能为空，且必须带有http协议头");
-        }
-        return urlValid;
-    }
-
-    public boolean isAppOrWebObjValid() {
-        return isUrlValid() && !CommonHelper.isAnyEmpty(title, summary, targetUrl) && isThumbLocalPathValid();
-    }
-
-    public boolean isMusicVideoVoiceValid() {
-        return isUrlValid() && !CommonHelper.isAnyEmpty(title, summary, targetUrl, mediaPath) && isThumbLocalPathValid();
-    }
-
-
-    public boolean isThumbLocalPathValid() {
-        boolean exist = FileHelper.isExist(thumbImagePath);
-        boolean picFile = FileHelper.isPicFile(thumbImagePath);
-        if (!exist || !picFile)
-            PlatformLog.e(TAG, "path : " + thumbImagePath + "  " + (exist ? "" : "文件不存在") + (picFile ? "" : "不是图片文件"));
-        return exist && picFile;
     }
 
     public <T extends Parcelable> T getExtraTag() {
@@ -268,36 +245,6 @@ public class ShareObj implements Parcelable {
         this.mediaPath = mediaPath;
     }
 
-    public boolean isValid(int shareTarget) {
-        switch (shareObjType) {
-            case ShareObj.SHARE_TYPE_TEXT:
-                return !CommonHelper.isAnyEmpty(title, summary);
-            case ShareObj.SHARE_TYPE_IMAGE:
-                if (shareTarget == Target.SHARE_WB_OPENAPI) {
-                    boolean isSummaryValid = !CommonHelper.isAnyEmpty(summary);
-                    if (!isSummaryValid)
-                        PlatformLog.e(TAG, "Sina openApi分享必须有summary");
-                    return isThumbLocalPathValid() && isSummaryValid;
-                } else
-                    return isThumbLocalPathValid();
-            case ShareObj.SHARE_TYPE_APP:
-            case ShareObj.SHARE_TYPE_WEB:
-                return isAppOrWebObjValid();
-            case ShareObj.SHARE_TYPE_MUSIC:
-            case ShareObj.SHARE_TYPE_VIDEO:
-            case ShareObj.SHARE_TYPE_VOICE:
-                // 本地视频分享，仅qq好友和微信好友支持
-                if (isShareByIntent() && (shareTarget == Target.SHARE_WB_NORMAL|| shareTarget == Target.SHARE_QQ_FRIENDS || shareTarget == Target.SHARE_WX_FRIENDS)) {
-                    return FileHelper.isExist(mediaPath);
-                } else if (shareTarget == Target.SHARE_QQ_ZONE) {
-                    return isMusicVideoVoiceValid();
-                } else {
-                    return isMusicVideoVoiceValid() && FileHelper.isHttpPath(mediaPath);
-                }
-            default:
-                return true;
-        }
-    }
 
     @Override
     public int describeContents() {

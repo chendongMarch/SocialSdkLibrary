@@ -1,8 +1,11 @@
 package com.march.socialsdk.platform.tencent;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 
@@ -63,7 +66,7 @@ public class QQPlatform extends AbsPlatform {
 
     @Override
     public boolean isInstall() {
-        return CommonHelper.isAppInstall(mContext, SocialConstants.QQ_PKG);
+        return mTencentApi.isQQInstalled(mContext);
     }
 
 
@@ -120,11 +123,7 @@ public class QQPlatform extends AbsPlatform {
     @Override
     public void shareText(int shareTarget, Activity activity, ShareObj shareMediaObj) {
         if (shareTarget == Target.SHARE_QQ_FRIENDS) {
-            try {
-                IntentShareHelper.shareText(activity, shareMediaObj.getTitle(), shareMediaObj.getSummary(),SocialConstants.QQ_PKG, SocialConstants.QQ_FRIENDS_PAGE);
-            } catch (Exception e) {
-                this.mIUiListenerWrap.onError(new SocialException(SocialException.CODE_SHARE_BY_INTENT_FAIL, e));
-            }
+            shareTextByIntent(activity, shareMediaObj, SocialConstants.QQ_PKG, SocialConstants.QQ_FRIENDS_PAGE);
         } else if (shareTarget == Target.SHARE_QQ_ZONE) {
             final Bundle params = new Bundle();
             params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzonePublish.PUBLISH_TO_QZONE_TYPE_PUBLISHMOOD);
@@ -158,7 +157,7 @@ public class QQPlatform extends AbsPlatform {
             Bundle params = buildCommonBundle(obj.getTitle(), obj.getSummary(), obj.getTargetUrl(), shareTarget);
             params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_APP);
             if (!TextUtils.isEmpty(obj.getThumbImagePath()))
-                params.putString(QQShare.SHARE_TO_QQ_IMAGE_LOCAL_URL, obj.getThumbImagePath());
+                params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL, obj.getThumbImagePath());
             mTencentApi.shareToQQ(activity, params, mIUiListenerWrap);
         } else if (shareTarget == Target.SHARE_QQ_ZONE) {
             shareWeb(shareTarget, activity, obj);
@@ -208,12 +207,7 @@ public class QQPlatform extends AbsPlatform {
     public void shareVideo(int shareTarget, Activity activity, ShareObj obj) {
         if (shareTarget == Target.SHARE_QQ_FRIENDS) {
             if (obj.isShareByIntent()) {
-                // 使用 intent 打开，本地视频等
-                try {
-                    IntentShareHelper.shareVideo(activity, obj.getMediaPath(), SocialConstants.QQ_PKG,SocialConstants.QQ_FRIENDS_PAGE);
-                } catch (Exception e) {
-                    this.mIUiListenerWrap.onError(new SocialException(SocialException.CODE_SHARE_BY_INTENT_FAIL, e));
-                }
+                shareVideoByIntent(activity, obj, SocialConstants.QQ_PKG, SocialConstants.QQ_FRIENDS_PAGE);
             } else {
                 // 使用 web 格式分享
                 PlatformLog.e(TAG, "qq不支持分享视频，使用web分享代替");
@@ -224,6 +218,11 @@ public class QQPlatform extends AbsPlatform {
             // qq 空间支持本地文件发布
             if (!FileHelper.isHttpPath(obj.getMediaPath())) {
                 PlatformLog.e(TAG, "qq空间本地视频分享");
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                        && activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+                    this.mIUiListenerWrap.onError(new SocialException("没有获取到读存储卡的权限，qq 空间分享本地视频功能无法继续"));
+                    return;
+                }
                 final Bundle params = new Bundle();
                 params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzonePublish.PUBLISH_TO_QZONE_TYPE_PUBLISHVIDEO);
                 params.putString(QzonePublish.PUBLISH_TO_QZONE_VIDEO_PATH, obj.getMediaPath());

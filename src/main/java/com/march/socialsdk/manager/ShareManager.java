@@ -1,9 +1,12 @@
 package com.march.socialsdk.manager;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.text.TextUtils;
 
 import com.march.socialsdk.SocialSdk;
@@ -12,6 +15,7 @@ import com.march.socialsdk.exception.SocialException;
 import com.march.socialsdk.helper.CommonHelper;
 import com.march.socialsdk.helper.FileHelper;
 import com.march.socialsdk.helper.PlatformLog;
+import com.march.socialsdk.helper.ShareObjHelper;
 import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.platform.Target;
@@ -41,25 +45,25 @@ public class ShareManager extends BaseManager {
      *
      * @param context         context
      * @param shareTarget     分享目标
-     * @param shareMediaObj   分享对象
+     * @param shareObj   分享对象
      * @param onShareListener 分享监听
      */
     public static void share(final Context context, @Target.ShareTarget final int shareTarget,
-            final ShareObj shareMediaObj, final OnShareListener onShareListener) {
+            final ShareObj shareObj, final OnShareListener onShareListener) {
         Task.callInBackground(new Callable<ShareObj>() {
             @Override
             public ShareObj call() throws Exception {
-                prepareImage(shareMediaObj);
+                prepareImage(shareObj);
                 ShareObj temp = null;
                 try {
-                    temp = onShareListener.onPrepareInBackground(shareTarget, shareMediaObj);
+                    temp = onShareListener.onPrepareInBackground(shareTarget, shareObj);
                 } catch (Exception e) {
                     PlatformLog.t(e);
                 }
                 if (temp != null) {
                     return temp;
                 } else {
-                    return shareMediaObj;
+                    return shareObj;
                 }
             }
         }).continueWith(new Continuation<ShareObj, Boolean>() {
@@ -102,8 +106,8 @@ public class ShareManager extends BaseManager {
 
 
     // 开始分享
-    private static boolean doShare(Context context, @Target.ShareTarget int shareTarget, ShareObj shareMediaObj, OnShareListener onShareListener) {
-        if (!shareMediaObj.isValid(shareTarget)) {
+    private static boolean doShare(Context context, @Target.ShareTarget int shareTarget, ShareObj shareObj, OnShareListener onShareListener) {
+        if (!ShareObjHelper.checkObjValid(shareObj,shareTarget)) {
             onShareListener.onFailure(new SocialException(SocialException.CODE_SHARE_OBJ_VALID));
             return true;
         }
@@ -116,7 +120,7 @@ public class ShareManager extends BaseManager {
         }
         Intent intent = new Intent(context, ActionActivity.class);
         intent.putExtra(KEY_ACTION_TYPE, ACTION_TYPE_SHARE);
-        intent.putExtra(KEY_SHARE_MEDIA_OBJ, shareMediaObj);
+        intent.putExtra(KEY_SHARE_MEDIA_OBJ, shareObj);
         intent.putExtra(KEY_SHARE_TARGET, shareTarget);
         context.startActivity(intent);
         if (context instanceof Activity)
@@ -134,25 +138,30 @@ public class ShareManager extends BaseManager {
         Intent intent = activity.getIntent();
         int actionType = intent.getIntExtra(KEY_ACTION_TYPE, INVALID_PARAM);
         int shareTarget = intent.getIntExtra(KEY_SHARE_TARGET, INVALID_PARAM);
-        ShareObj shareMediaObj = intent.getParcelableExtra(KEY_SHARE_MEDIA_OBJ);
+        ShareObj shareObj = intent.getParcelableExtra(KEY_SHARE_MEDIA_OBJ);
         if (actionType != ACTION_TYPE_SHARE)
             return;
         if (shareTarget == INVALID_PARAM) {
             PlatformLog.e(TAG, "shareTargetType无效");
             return;
         }
-        if (shareMediaObj == null) {
-            PlatformLog.e(TAG, "shareMediaObj == null");
+        if (shareObj == null) {
+            PlatformLog.e(TAG, "shareObj == null");
             return;
         }
         if (sOnShareListener == null) {
             PlatformLog.e(TAG, "请设置 OnShareListener");
             return;
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+            PlatformLog.e(TAG, "没有获取到读存储卡的权限，这可能导致某些分享不能进行");
+        }
+
         if (getPlatform() == null)
             return;
         getPlatform().initOnShareListener(getOnShareListenerWrap(activity));
-        getPlatform().share(activity, shareTarget, shareMediaObj);
+        getPlatform().share(activity, shareTarget, shareObj);
     }
 
     private static OnShareListener getOnShareListenerWrap(final Activity activity) {

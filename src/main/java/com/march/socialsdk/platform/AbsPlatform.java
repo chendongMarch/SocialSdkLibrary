@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.text.TextUtils;
 
 import com.march.socialsdk.common.SocialConstants;
+import com.march.socialsdk.exception.SocialException;
+import com.march.socialsdk.helper.IntentShareHelper;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.model.ShareObj;
@@ -83,6 +85,26 @@ public abstract class AbsPlatform implements IPlatform {
             case ShareObj.SHARE_TYPE_VOICE:
                 shareVoice(shareTarget, activity, shareMediaObj);
                 break;
+        }
+    }
+
+    protected void shareVideoByIntent(Activity activity, ShareObj obj, String pkg, String page) {
+        try {
+            IntentShareHelper.shareVideo(activity, obj.getMediaPath(), pkg, page);
+        } catch (Exception e) {
+            if (this.mOnShareListener != null) {
+                this.mOnShareListener.onFailure(new SocialException(SocialException.CODE_SHARE_BY_INTENT_FAIL, e));
+            }
+        }
+    }
+
+    protected void shareTextByIntent(Activity activity, ShareObj obj, String pkg, String page) {
+        try {
+            IntentShareHelper.shareText(activity, obj.getTitle(), obj.getSummary(), pkg, page);
+        } catch (Exception e) {
+            if (this.mOnShareListener != null) {
+                this.mOnShareListener.onFailure(new SocialException(SocialException.CODE_SHARE_BY_INTENT_FAIL, e));
+            }
         }
     }
 

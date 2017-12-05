@@ -15,6 +15,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -38,40 +39,27 @@ public class FileHelper {
 
 
     /**
-     * 下载文件
+     * 打开一个网络流
      *
-     * @param httpUrl 下载的链接
-     * @param path    本地存储路径
-     * @throws IOException
+     * @param httpUrl 网络连接
+     * @return 流
+     * @throws IOException error
      */
-    public static void downloadFileSync(String httpUrl, String path) throws IOException {
-        BufferedInputStream bis = null;
-        BufferedOutputStream bos = null;
-        try {
-            //连接地址
-            URL url = new URL(httpUrl);
-            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-            httpURLConnection.setRequestMethod("GET");
-            httpURLConnection.connect();
-            if (httpURLConnection.getResponseCode() != 200)
-                return;
-            final long lengthOfFile = httpURLConnection.getContentLength();
-            bis = new BufferedInputStream(httpURLConnection.getInputStream());
-            bos = new BufferedOutputStream(new FileOutputStream(path));
-            int size;
-            long total = 0;
-            byte[] temp = new byte[8 * 1024];
-            while ((size = bis.read(temp, 0, temp.length)) != -1) {
-                total += size;
-                bos.write(temp, 0, size);
-            }
-            bos.flush();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        } finally {
-            CommonHelper.closeStream(bos, bis);
-        }
+    public static InputStream downloadFileSync(String httpUrl) throws IOException {
+        HttpURLConnection conn = (HttpURLConnection) new URL(httpUrl).openConnection();
+        conn.setRequestMethod("GET");
+        conn.setReadTimeout(3_000);
+        conn.setConnectTimeout(3_000);
+        conn.setDoOutput(false);
+        conn.setDoInput(true);
+        // 设置通用的请求属性
+        conn.setRequestProperty("accept", "*/*");
+        conn.setRequestProperty("connection", "Keep-Alive");
+        conn.setRequestProperty("user-agent",
+                "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)");
+        // 发起连接
+        conn.connect();
+        return conn.getInputStream();
     }
 
 
@@ -101,6 +89,33 @@ public class FileHelper {
             CommonHelper.closeStream(fis, baos);
         }
         return baos;
+    }
+
+    public static File saveStreamToFile(File file, InputStream is) {
+
+        BufferedInputStream bis = null;
+        BufferedOutputStream bos = null;
+        byte[] bs;
+        try {
+            bis = new BufferedInputStream(is);
+            bos = new BufferedOutputStream(new FileOutputStream(file));
+            bs = new byte[1024 * 10];
+            int len;
+            while ((len = bis.read(bs)) != -1) {
+                bos.write(bs, 0, len);
+                bos.flush();
+            }
+            bis.close();
+            bos.close();
+            bs = null;
+        } catch (Exception e) {
+            PlatformLog.t(e);
+            return null;
+        } finally {
+            CommonHelper.closeStream(bis, bos);
+            bs = null;
+        }
+        return file;
     }
 
     /**
