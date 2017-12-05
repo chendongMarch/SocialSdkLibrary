@@ -6,15 +6,18 @@ import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.exception.SocialException;
 import com.march.socialsdk.helper.CommonHelper;
+import com.march.socialsdk.helper.FileHelper;
 import com.march.socialsdk.helper.PlatformLog;
 import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.uikit.ActionActivity;
 
+import java.io.File;
 import java.util.concurrent.Callable;
 
 import bolts.Continuation;
@@ -33,7 +36,6 @@ public class ShareManager extends BaseManager {
     private static OnShareListener sOnShareListener;
 
 
-
     /**
      * 开始分享，供外面调用
      *
@@ -47,11 +49,12 @@ public class ShareManager extends BaseManager {
         Task.callInBackground(new Callable<ShareObj>() {
             @Override
             public ShareObj call() throws Exception {
+                prepareImage(shareMediaObj);
                 ShareObj temp = null;
                 try {
                     temp = onShareListener.onPrepareInBackground(shareTarget, shareMediaObj);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    PlatformLog.t(e);
                 }
                 if (temp != null) {
                     return temp;
@@ -59,9 +62,9 @@ public class ShareManager extends BaseManager {
                     return shareMediaObj;
                 }
             }
-        }).continueWith(new Continuation<ShareObj, Object>() {
+        }).continueWith(new Continuation<ShareObj, Boolean>() {
             @Override
-            public Object then(Task<ShareObj> task) throws Exception {
+            public Boolean then(Task<ShareObj> task) throws Exception {
                 if (task.isFaulted() || task.getResult() == null) {
                     if (onShareListener != null) {
                         SocialException exception = new SocialException("onPrepareInBackground error", task.getError());
@@ -70,15 +73,36 @@ public class ShareManager extends BaseManager {
                     return null;
                 }
                 doShare(context, shareTarget, task.getResult(), onShareListener);
+                return true;
+            }
+        }, Task.UI_THREAD_EXECUTOR).continueWith(new Continuation<Boolean, Void>() {
+            @Override
+            public Void then(Task<Boolean> task) throws Exception {
+                if(task.isFaulted()){
+                    SocialException exception = new SocialException("ShareManager.share() error", task.getError());
+                    onShareListener.onFailure(exception);
+                }
                 return null;
             }
-        }, Task.UI_THREAD_EXECUTOR);
+        });
+    }
+
+
+    // 如果是网络图片先下载
+    private static void prepareImage(ShareObj shareObj) {
+        String thumbImagePath = shareObj.getThumbImagePath();
+        // 路径不为空 & 是网络路径
+        if (!TextUtils.isEmpty(thumbImagePath) && FileHelper.isHttpPath(thumbImagePath)) {
+            File file = SocialSdk.getImageConvertAdapter().convertImage(thumbImagePath);
+            if (FileHelper.isExist(file)) {
+                shareObj.setThumbImagePath(file.getAbsolutePath());
+            }
+        }
     }
 
 
     // 开始分享
     private static boolean doShare(Context context, @Target.ShareTarget int shareTarget, ShareObj shareMediaObj, OnShareListener onShareListener) {
-
         if (!shareMediaObj.isValid(shareTarget)) {
             onShareListener.onFailure(new SocialException(SocialException.CODE_SHARE_OBJ_VALID));
             return true;

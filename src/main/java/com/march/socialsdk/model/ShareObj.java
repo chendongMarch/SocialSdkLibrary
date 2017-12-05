@@ -150,7 +150,7 @@ public class ShareObj implements Parcelable {
     }
 
     public boolean isUrlValid() {
-        boolean urlValid =  !CommonHelper.isAnyEmpty(targetUrl) && FileHelper.isHttpPath(mediaPath);
+        boolean urlValid =  !CommonHelper.isAnyEmpty(targetUrl) && FileHelper.isHttpPath(targetUrl);
         if(!urlValid){
             PlatformLog.e(TAG, "url : " + targetUrl + "  不能为空，且必须带有http协议头");
         }

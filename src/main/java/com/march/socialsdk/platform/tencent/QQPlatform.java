@@ -158,7 +158,7 @@ public class QQPlatform extends AbsPlatform {
             Bundle params = buildCommonBundle(obj.getTitle(), obj.getSummary(), obj.getTargetUrl(), shareTarget);
             params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_APP);
             if (!TextUtils.isEmpty(obj.getThumbImagePath()))
-                params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL, obj.getThumbImagePath());
+                params.putString(QQShare.SHARE_TO_QQ_IMAGE_LOCAL_URL, obj.getThumbImagePath());
             mTencentApi.shareToQQ(activity, params, mIUiListenerWrap);
         } else if (shareTarget == Target.SHARE_QQ_ZONE) {
             shareWeb(shareTarget, activity, obj);

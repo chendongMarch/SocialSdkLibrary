@@ -1,6 +1,8 @@
 package com.march.socialsdk;
 
+import com.march.socialsdk.adapter.IImageConvertAdapter;
 import com.march.socialsdk.adapter.IJsonAdapter;
+import com.march.socialsdk.adapter.impl.DefImageConvertAdapter;
 import com.march.socialsdk.model.SocialSdkConfig;
 
 /**
@@ -13,6 +15,8 @@ public class SocialSdk {
 
     private static SocialSdkConfig sSocialSdkConfig;
     private static IJsonAdapter sJsonAdapter;
+    private static IImageConvertAdapter sImageConvertAdapter;
+
 
     public static SocialSdkConfig getConfig() {
         if (sSocialSdkConfig == null) {
@@ -25,7 +29,6 @@ public class SocialSdk {
         sSocialSdkConfig = config;
     }
 
-
     public static IJsonAdapter getJsonAdapter() {
         if (sJsonAdapter == null) {
             throw new IllegalStateException("invoke addJsonAdapter() to add Json Parser");
@@ -33,8 +36,20 @@ public class SocialSdk {
         return sJsonAdapter;
     }
 
-
     public static void addJsonAdapter(IJsonAdapter jsonAdapter) {
         sJsonAdapter = jsonAdapter;
     }
+
+    public static IImageConvertAdapter getImageConvertAdapter() {
+        if (sImageConvertAdapter == null) {
+            sImageConvertAdapter = new DefImageConvertAdapter();
+        }
+        return sImageConvertAdapter;
+    }
+
+    public static void addJsonAdapter(IImageConvertAdapter imageConvertAdapter) {
+        sImageConvertAdapter = imageConvertAdapter;
+    }
+
+
 }

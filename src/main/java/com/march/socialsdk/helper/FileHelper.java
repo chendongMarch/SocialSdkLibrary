@@ -31,10 +31,10 @@ public class FileHelper {
 
     public static final String TAG = FileHelper.class.getSimpleName();
 
-    public static final String POINT_GIF  = ".gif";
-    public static final String POINT_JPG  = ".jpg";
+    public static final String POINT_GIF = ".gif";
+    public static final String POINT_JPG = ".jpg";
     public static final String POINT_JPEG = ".jpeg";
-    public static final String POINT_PNG  = ".png";
+    public static final String POINT_PNG = ".png";
 
 
     /**
@@ -162,6 +162,14 @@ public class FileHelper {
             return false;
         File file = new File(path);
         return file.exists() && file.length() > 0;
+    }
+
+    /**
+     * @param file 文件
+     * @return 文件是否存在
+     */
+    public static boolean isExist(File file) {
+        return file != null && isExist(file.getAbsolutePath());
     }
 
     /**
