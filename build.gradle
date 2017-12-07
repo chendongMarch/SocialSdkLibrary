@@ -25,9 +25,9 @@ android {
 
 dependencies {
 
-    // 依赖管理，在 project/build.gradle 顶部加入
-    // apply from: "https://raw.githubusercontent.com/chendongMarch/Resource/master/android/dependence.gradle"
-    // 进行依赖，或者根据链接中类库自行依赖
+    // 我本地依赖是统一管理的，可能编译无法通过，clone 后请使用下面的依赖
+    // compile 'com.parse.bolts:bolts-tasks:1.4.0'
+    // compile "com.android.support:appcompat-v7:25.3.0"
 
     compile rootProject.ext.google.appcompat_v7
     compile rootProject.ext.libs.bolts
