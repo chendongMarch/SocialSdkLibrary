@@ -1,4 +1,4 @@
-package com.march.socialsdk.helper;
+package com.march.socialsdk.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -31,34 +31,34 @@ public class AuthTokenKeeper {
 
     public static WeChatAccessToken getWxToken(Context context) {
         SharedPreferences sp = getSp(context);
-        return JsonHelper.getObject(sp.getString(WECHAT_TOKEN_KEY, null), WeChatAccessToken.class);
+        return JsonUtils.getObject(sp.getString(WECHAT_TOKEN_KEY, null), WeChatAccessToken.class);
     }
 
     public static void saveWxToken(Context context, WeChatAccessToken wxResponse) {
         SharedPreferences sp = getSp(context);
-        String tokenJson = JsonHelper.getObject2Json(wxResponse);
+        String tokenJson = JsonUtils.getObject2Json(wxResponse);
         sp.edit().putString(WECHAT_TOKEN_KEY, tokenJson).apply();
     }
 
     public static QQAccessToken getQQToken(Context context) {
         SharedPreferences sp = getSp(context);
-        return JsonHelper.getObject(sp.getString(QQ_TOKEN_KEY, null), QQAccessToken.class);
+        return JsonUtils.getObject(sp.getString(QQ_TOKEN_KEY, null), QQAccessToken.class);
     }
 
     public static void saveQQToken(Context context, QQAccessToken qqAccessToken) {
         SharedPreferences sp = getSp(context);
-        String tokenJson = JsonHelper.getObject2Json(qqAccessToken);
+        String tokenJson = JsonUtils.getObject2Json(qqAccessToken);
         sp.edit().putString(QQ_TOKEN_KEY, tokenJson).apply();
     }
 
     public static Oauth2AccessToken getWbToken(Context context) {
         SharedPreferences sp = getSp(context);
-        return JsonHelper.getObject(sp.getString(SINA_TOKEN_KEY, null), Oauth2AccessToken.class);
+        return JsonUtils.getObject(sp.getString(SINA_TOKEN_KEY, null), Oauth2AccessToken.class);
     }
 
     public static void saveWbToken(Context context, Oauth2AccessToken token) {
         SharedPreferences sp = getSp(context);
-        String tokenJson = JsonHelper.getObject2Json(new SinaAccessToken(token));
+        String tokenJson = JsonUtils.getObject2Json(new SinaAccessToken(token));
         sp.edit().putString(SINA_TOKEN_KEY, tokenJson).apply();
     }
 

@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 
-import com.march.socialsdk.helper.PlatformLog;
+import com.march.socialsdk.utils.LogUtils;
 import com.march.socialsdk.manager.BaseManager;
 import com.march.socialsdk.manager.LoginManager;
 import com.march.socialsdk.manager.ShareManager;
@@ -36,7 +36,7 @@ public class ActionActivity extends Activity
             getPlatform().onNewIntent(this);
         int actionType = getIntent().getIntExtra(BaseManager.KEY_ACTION_TYPE, -1);
         if (actionType == -1) {
-            PlatformLog.e(TAG, "actionType无效");
+            LogUtils.e(TAG, "onCreate actionType无效");
             checkFinish();
             return;
         }
@@ -92,14 +92,14 @@ public class ActionActivity extends Activity
         //从微信页面返回的数据
         if (getPlatform() != null)
             getPlatform().onResponse(resp);
-        PlatformLog.e(TAG, "onResp:" + "resp.getType():" + resp.getType() + "resp.errCode:" + resp.errCode + "resp.errStr:" + resp.errStr);
+        LogUtils.e(TAG, "onResp:" + "resp.getType():" + resp.getType() + " resp.errCode:" + resp.errCode + " resp.errStr:" + resp.errStr);
         checkFinish();
     }
 
     @Override
     public void onReq(BaseReq baseReq) {
         // 发起微信请求将会经过的方法
-        PlatformLog.e(TAG, "onReq: " + baseReq.toString());
+        LogUtils.e(TAG, "onReq: " + baseReq.toString());
     }
 
 
@@ -121,7 +121,7 @@ public class ActionActivity extends Activity
     private IPlatform getPlatform() {
         IPlatform platform = BaseManager.getPlatform();
         if (platform == null) {
-            PlatformLog.e(TAG, "platform is null");
+            LogUtils.e(TAG, "platform is null");
             checkFinish();
             return null;
         } else

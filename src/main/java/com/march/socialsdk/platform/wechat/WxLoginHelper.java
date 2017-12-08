@@ -1,12 +1,12 @@
 package com.march.socialsdk.platform.wechat;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.march.socialsdk.exception.SocialException;
-import com.march.socialsdk.helper.AuthTokenKeeper;
-import com.march.socialsdk.helper.JsonHelper;
-import com.march.socialsdk.helper.HttpsRequestHelper;
-import com.march.socialsdk.helper.PlatformLog;
+import com.march.socialsdk.utils.AuthTokenKeeper;
+import com.march.socialsdk.utils.JsonUtils;
+import com.march.socialsdk.utils.LogUtils;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.LoginResult;
 import com.march.socialsdk.model.token.WeChatAccessToken;
@@ -43,11 +43,11 @@ public class WxLoginHelper {
 
     private static final String BASE_URL = "https://api.weixin.qq.com/sns";
 
-    private int     loginType;
+    private int loginType;
     private Context context;
-    private IWXAPI  iwxapi;
-    private String  appId;
-    private String  secretKey;
+    private IWXAPI iwxapi;
+    private String appId;
+    private String secretKey;
 
     private OnLoginListener loginListener;
 
@@ -79,7 +79,7 @@ public class WxLoginHelper {
      * 发起申请
      */
     private void sendAuthReq() {
-        PlatformLog.e(TAG, "本地没有token,发起登录");
+        LogUtils.e(TAG, "本地没有token,发起登录");
         SendAuth.Req req = new SendAuth.Req();
         req.scope = "snsapi_userinfo";
         req.state = "carjob_wx_login";
@@ -92,31 +92,28 @@ public class WxLoginHelper {
      * @param token 用来放 refresh_token
      */
     private void refreshToken(final WeChatAccessToken token) {
-        PlatformLog.e(TAG, "token失效，开始刷新token");
-        HttpsRequestHelper.sendHttpsRequest(buildRefreshTokenUrl(token),
-                new HttpsRequestHelper.OnResultListener() {
-                    @Override
-                    public void onSuccess(String result) {
-                        // 获取到access_token
-                        WeChatAccessToken newToken = JsonHelper.getObject(result, WeChatAccessToken.class);
-                        if (newToken.isNoError()) {
-                            PlatformLog.e(TAG, "刷新token成功 token = " + newToken);
-                            AuthTokenKeeper.saveWxToken(context, newToken);
-                            // 刷新完成，获取用户信息
-                            getUserInfoByValidToken(token);
-                        } else {
-                            PlatformLog.e(TAG, "coed = " + newToken.getErrcode() + "  ,msg = " + newToken.getErrmsg());
-                            sendAuthReq();
-                        }
-                    }
+        LogUtils.e(TAG, "token失效，开始刷新token");
+        JsonUtils.startJsonRequest(buildRefreshTokenUrl(token), WeChatAccessToken.class, new JsonUtils.Callback<WeChatAccessToken>() {
+            @Override
+            public void onSuccess(@NonNull WeChatAccessToken newToken) {
+                // 获取到access_token
+                if (newToken.isNoError()) {
+                    LogUtils.e(TAG, "刷新token成功 token = " + newToken);
+                    AuthTokenKeeper.saveWxToken(context, newToken);
+                    // 刷新完成，获取用户信息
+                    getUserInfoByValidToken(token);
+                } else {
+                    LogUtils.e(TAG, "code = " + newToken.getErrcode() + "  ,msg = " + newToken.getErrmsg());
+                    sendAuthReq();
+                }
+            }
 
-                    @Override
-                    public void onFailure(Exception exception) {
-                        // 刷新token失败
-                        exception.printStackTrace();
-                        loginListener.onFailure(new SocialException(exception.getMessage()));
-                    }
-                });
+            @Override
+            public void onFailure(SocialException e) {
+                // 刷新token失败
+                loginListener.onFailure(e.append("refreshToken fail"));
+            }
+        });
     }
 
     /**
@@ -125,28 +122,26 @@ public class WxLoginHelper {
      * @param code code
      */
     public void getAccessTokenByCode(String code) {
-        PlatformLog.e(TAG, "使用code获取access_token " + code);
-        HttpsRequestHelper.sendHttpsRequest(buildGetTokenUrl(code),
-                new HttpsRequestHelper.OnResultListener() {
-                    @Override
-                    public void onSuccess(String result) {
-                        // 获取到access_token
-                        WeChatAccessToken resp = JsonHelper.getObject(result, WeChatAccessToken.class);
-                        if (resp.isNoError()) {
-                            AuthTokenKeeper.saveWxToken(context, resp);
-                            getUserInfoByValidToken(resp);
-                        } else {
-                            SocialException exception = new SocialException("获取access_token失败 code = " + resp.getErrcode() + "  msg = " + resp.getErrmsg());
-                            loginListener.onFailure(exception);
-                        }
-                    }
+        LogUtils.e(TAG, "使用code获取access_token " + code);
+        JsonUtils.startJsonRequest(buildGetTokenUrl(code), WeChatAccessToken.class, new JsonUtils.Callback<WeChatAccessToken>() {
+            @Override
+            public void onSuccess(@NonNull WeChatAccessToken token) {
+                // 获取到access_token
+                if (token.isNoError()) {
+                    AuthTokenKeeper.saveWxToken(context, token);
+                    getUserInfoByValidToken(token);
+                } else {
+                    SocialException exception = new SocialException("获取access_token失败 code = " + token.getErrcode() + "  msg = " + token.getErrmsg());
+                    loginListener.onFailure(exception);
+                }
+            }
 
-                    @Override
-                    public void onFailure(Exception exception) {
-                        // 获取access_token失败
-                        loginListener.onFailure(new SocialException("获取access_token失败", exception));
-                    }
-                });
+            @Override
+            public void onFailure(SocialException e) {
+                // 获取access_token失败
+                loginListener.onFailure(e.append("getAccessTokenByCode fail"));
+            }
+        });
     }
 
 
@@ -156,30 +151,28 @@ public class WxLoginHelper {
      * @param token 用来拿access_token
      */
     private void checkAccessTokenValid(final WeChatAccessToken token) {
-        PlatformLog.e(TAG, "本地存了token,开始检测有效性" + token.toString());
-        HttpsRequestHelper.sendHttpsRequest(buildCheckAccessTokenValidUrl(token),
-                new HttpsRequestHelper.OnResultListener() {
-                    @Override
-                    public void onSuccess(String result) {
-                        // 检测是否有效
-                        TokenValidResp resp = JsonHelper.getObject(result, TokenValidResp.class);
-                        PlatformLog.e(TAG, "检测token结束，结果 = " + result);
-                        if (resp.isNoError()) {
-                            // access_token有效。开始获取用户信息
-                            getUserInfoByValidToken(token);
-                        } else {
-                            // access_token失效，刷新或者获取新的
-                            refreshToken(token);
-                        }
-                    }
+        LogUtils.e(TAG, "本地存了token,开始检测有效性" + token.toString());
+        JsonUtils.startJsonRequest(buildCheckAccessTokenValidUrl(token), TokenValidResp.class, new JsonUtils.Callback<TokenValidResp>() {
+            @Override
+            public void onSuccess(@NonNull TokenValidResp resp) {
+                // 检测是否有效
+                LogUtils.e(TAG, "检测token结束，结果 = " + resp.toString());
+                if (resp.isNoError()) {
+                    // access_token有效。开始获取用户信息
+                    getUserInfoByValidToken(token);
+                } else {
+                    // access_token失效，刷新或者获取新的
+                    refreshToken(token);
+                }
+            }
 
-                    @Override
-                    public void onFailure(Exception exception) {
-                        // 检测access_token有效性失败
-                        PlatformLog.e(TAG, "检测access_token失败");
-                        loginListener.onFailure(new SocialException("检测access_token有效性失败", exception));
-                    }
-                });
+            @Override
+            public void onFailure(SocialException e) {
+                // 检测access_token有效性失败
+                LogUtils.e(TAG, "检测access_token失败");
+                loginListener.onFailure(e.append("checkAccessTokenValid fail"));
+            }
+        });
     }
 
     /**
@@ -188,26 +181,24 @@ public class WxLoginHelper {
      * @param token 用来拿access_token
      */
     private void getUserInfoByValidToken(final WeChatAccessToken token) {
-        PlatformLog.e(TAG, "access_token有效，开始获取用户信息");
-        HttpsRequestHelper.sendHttpsRequest(buildFetchUserInfoUrl(token),
-                new HttpsRequestHelper.OnResultListener() {
-                    @Override
-                    public void onSuccess(String result) {
-                        PlatformLog.e(TAG, "获取到用户信息" + result);
-                        WxUser wxUserInfo = JsonHelper.getObject(result, WxUser.class);
-                        if (wxUserInfo.isNoError()) {
-                            loginListener.onLoginSucceed(new LoginResult(loginType, wxUserInfo, token));
-                        } else {
-                            loginListener.onFailure(new SocialException("wx_login code = " + wxUserInfo.getErrcode() + " ,msg = " + wxUserInfo.getErrmsg()));
-                        }
-                    }
+        LogUtils.e(TAG, "access_token有效，开始获取用户信息");
+        JsonUtils.startJsonRequest(buildFetchUserInfoUrl(token), WxUser.class, new JsonUtils.Callback<WxUser>() {
+            @Override
+            public void onSuccess(@NonNull WxUser wxUserInfo) {
+                LogUtils.e(TAG, "获取到用户信息" + wxUserInfo.toString());
+                if (wxUserInfo.isNoError()) {
+                    loginListener.onLoginSucceed(new LoginResult(loginType, wxUserInfo, token));
+                } else {
+                    loginListener.onFailure(new SocialException("wx_login code = " + wxUserInfo.getErrcode() + " ,msg = " + wxUserInfo.getErrmsg()));
+                }
+            }
 
-                    @Override
-                    public void onFailure(Exception exception) {
-                        // 获取用户信息失败
-                        loginListener.onFailure(new SocialException(exception.getMessage()));
-                    }
-                });
+            @Override
+            public void onFailure(SocialException e) {
+                // 获取用户信息失败
+                loginListener.onFailure(e.append("getUserInfoByValidToken fail"));
+            }
+        });
     }
 
     private String buildRefreshTokenUrl(WeChatAccessToken token) {
@@ -245,8 +236,8 @@ public class WxLoginHelper {
     /**
      * 检测token有效性的resp
      */
-    private class TokenValidResp {
-        private int    errcode;
+    private static class TokenValidResp {
+        private int errcode;
         private String errmsg;
 
         public boolean isNoError() {
@@ -267,6 +258,14 @@ public class WxLoginHelper {
 
         public void setErrmsg(String errmsg) {
             this.errmsg = errmsg;
+        }
+
+        @Override
+        public String toString() {
+            return "TokenValidResp{" +
+                    "errcode=" + errcode +
+                    ", errmsg='" + errmsg + '\'' +
+                    '}';
         }
     }
 

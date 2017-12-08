@@ -1,4 +1,4 @@
-package com.march.socialsdk.helper;
+package com.march.socialsdk.utils;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,7 +6,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.text.TextUtils;
 
-import java.io.Closeable;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -18,9 +17,9 @@ import java.util.List;
  * @author chendong
  */
 
-public class CommonHelper {
+public class CommonUtils {
 
-    public static final String TAG = CommonHelper.class.getSimpleName();
+    public static final String TAG = CommonUtils.class.getSimpleName();
 
     // string 转 long
     public static Long String2Long(String str) {
@@ -71,19 +70,6 @@ public class CommonHelper {
         } catch (Exception e) {
             e.printStackTrace();
             return false;
-        }
-    }
-
-    // 关闭流
-    public static void closeStream(Closeable... closeables) {
-        for (Closeable closeable : closeables) {
-            if (closeable != null) {
-                try {
-                    closeable.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 

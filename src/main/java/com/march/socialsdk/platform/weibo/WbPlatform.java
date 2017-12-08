@@ -8,11 +8,11 @@ import android.graphics.Bitmap;
 import com.march.socialsdk.common.ThumbDataContinuation;
 import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.exception.SocialException;
-import com.march.socialsdk.helper.BitmapHelper;
-import com.march.socialsdk.helper.CommonHelper;
-import com.march.socialsdk.helper.FileHelper;
-import com.march.socialsdk.helper.IntentShareHelper;
-import com.march.socialsdk.helper.PlatformLog;
+import com.march.socialsdk.utils.BitmapUtils;
+import com.march.socialsdk.utils.CommonUtils;
+import com.march.socialsdk.utils.FileUtils;
+import com.march.socialsdk.utils.IntentShareUtils;
+import com.march.socialsdk.utils.LogUtils;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.platform.AbsPlatform;
@@ -105,7 +105,7 @@ public class WbPlatform extends AbsPlatform {
         // 来接收微博客户端返回的数据；执行成功，返回 true，并调用
         // {@link IWeiboHandler.Response#onResponse}；失败返回 false，不调用上述回调
         if (!(activity instanceof IWeiboHandler.Response)) {
-            PlatformLog.e(TAG, "微博接受回调的IWeiboHandler.Response必须是发起分享的Activity");
+            LogUtils.e(TAG, "微博接受回调的IWeiboHandler.Response必须是发起分享的Activity");
             return;
         }
         IWeiboHandler.Response shareResponse = (IWeiboHandler.Response) activity;
@@ -161,7 +161,7 @@ public class WbPlatform extends AbsPlatform {
         WbAuthHelper.auth(activity, mSsoHandler, new WbAuthHelper.OnAuthOverListener() {
             @Override
             public void onAuth(Oauth2AccessToken token) {
-                PlatformLog.e(TAG, token.toString());
+                LogUtils.e(TAG, token.toString());
                 mStatusesAPI = new StatusesAPI(activity, mAppId, token);
                 if (runnable != null)
                     runnable.run();
@@ -185,7 +185,7 @@ public class WbPlatform extends AbsPlatform {
         justAuth(activity, new Runnable() {
             @Override
             public void run() {
-                if (FileHelper.isGifFile(obj.getThumbImagePath())) {
+                if (FileUtils.isGifFile(obj.getThumbImagePath())) {
                     shareGifOpenApi(obj);
                 } else {
                     shareJpgPngOpenApi(obj);
@@ -199,7 +199,7 @@ public class WbPlatform extends AbsPlatform {
         final Callable<Bitmap> getBitmapCallable = new Callable<Bitmap>() {
             @Override
             public Bitmap call() throws Exception {
-                return BitmapHelper.getBitmapByPath(obj.getThumbImagePath(), 5 * 1024 * 1024);
+                return BitmapUtils.getBitmapByPath(obj.getThumbImagePath(), 5 * 1024 * 1024);
             }
         };
         final Continuation<Bitmap, Object> shareImageContinuation = new Continuation<Bitmap, Object>() {
@@ -223,7 +223,7 @@ public class WbPlatform extends AbsPlatform {
         final Callable<ByteArrayOutputStream> getBaosCallable = new Callable<ByteArrayOutputStream>() {
             @Override
             public ByteArrayOutputStream call() throws Exception {
-                return FileHelper.getOutputStreamFromFile(obj.getThumbImagePath());
+                return FileUtils.getOutputStreamFromFile(obj.getThumbImagePath());
             }
         };
         final Continuation<ByteArrayOutputStream, Object> shareGifContinuation = new Continuation<ByteArrayOutputStream, Object>() {
@@ -265,7 +265,7 @@ public class WbPlatform extends AbsPlatform {
 
     @Override
     protected void shareOpenApp(int shareTarget, Activity activity, ShareObj obj) {
-        boolean rst = CommonHelper.openApp(mContext, SocialConstants.SINA_PKG);
+        boolean rst = CommonUtils.openApp(mContext, SocialConstants.SINA_PKG);
         if (rst) {
             mOnShareListener.onSuccess();
         } else {
@@ -286,7 +286,7 @@ public class WbPlatform extends AbsPlatform {
         if (shareTarget == Target.SHARE_WB_OPENAPI) {
             shareImageOpenApi(activity, obj);
         } else {
-            BitmapHelper.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
+            BitmapUtils.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
                     .continueWith(new ThumbDataContinuation(TAG, "shareImage", mOnShareListener) {
                         @Override
                         public void onSuccess(byte[] thumbData) {
@@ -301,13 +301,13 @@ public class WbPlatform extends AbsPlatform {
 
     @Override
     public void shareApp(int shareTarget, Activity activity, ShareObj obj) {
-        PlatformLog.e(TAG, "sina不支持app分享，将以web形式分享");
+        LogUtils.e(TAG, "sina不支持app分享，将以web形式分享");
         shareWeb(shareTarget, activity, obj);
     }
 
     @Override
     public void shareWeb(int shareTarget, final Activity activity, final ShareObj obj) {
-        BitmapHelper.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
+        BitmapUtils.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
                 .continueWith(new ThumbDataContinuation(TAG, "shareWeb", mOnShareListener) {
                     @Override
                     public void onSuccess(byte[] thumbData) {
@@ -321,7 +321,7 @@ public class WbPlatform extends AbsPlatform {
 
     @Override
     public void shareMusic(int shareTarget, final Activity activity, final ShareObj obj) {
-        BitmapHelper.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
+        BitmapUtils.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
                 .continueWith(new ThumbDataContinuation(TAG, "shareMusic", mOnShareListener) {
                     @Override
                     public void onSuccess(byte[] thumbData) {
@@ -337,12 +337,12 @@ public class WbPlatform extends AbsPlatform {
     public void shareVideo(int shareTarget, final Activity activity, final ShareObj obj) {
         if (obj.isShareByIntent()) {
             try {
-                IntentShareHelper.shareVideo(activity, obj.getMediaPath(), SocialConstants.SINA_PKG, SocialConstants.WB_COMPOSER_PAGE);
+                IntentShareUtils.shareVideo(activity, obj.getMediaPath(), SocialConstants.SINA_PKG, SocialConstants.WB_COMPOSER_PAGE);
             } catch (Exception e) {
                 this.mOnShareListener.onFailure(new SocialException(SocialException.CODE_SHARE_BY_INTENT_FAIL, e));
             }
         } else {
-            BitmapHelper.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
+            BitmapUtils.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
                     .continueWith(new ThumbDataContinuation(TAG, "shareVideo", mOnShareListener) {
                         @Override
                         public void onSuccess(byte[] thumbData) {
@@ -357,7 +357,7 @@ public class WbPlatform extends AbsPlatform {
 
     @Override
     public void shareVoice(int shareTarget, final Activity activity, final ShareObj obj) {
-        BitmapHelper.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
+        BitmapUtils.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
                 .continueWith(new ThumbDataContinuation(TAG, "shareVoice", mOnShareListener) {
                     @Override
                     public void onSuccess(byte[] thumbData) {

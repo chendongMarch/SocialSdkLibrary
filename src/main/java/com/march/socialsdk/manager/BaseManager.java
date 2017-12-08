@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 
 import com.march.socialsdk.SocialSdk;
-import com.march.socialsdk.helper.CommonHelper;
+import com.march.socialsdk.utils.CommonUtils;
 import com.march.socialsdk.model.SocialSdkConfig;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.Target;
@@ -71,19 +71,19 @@ public abstract class BaseManager {
 
     private static void initQQPlatform(Context context) {
         SocialSdkConfig config = SocialSdk.getConfig();
-        if (!CommonHelper.isAnyEmpty(config.getQqAppId(), config.getAppName()))
+        if (!CommonUtils.isAnyEmpty(config.getQqAppId(), config.getAppName()))
             mPlatform = new QQPlatform(context, config.getQqAppId(), config.getAppName());
     }
 
     private static void initWxPlatform(Context context) {
         SocialSdkConfig config = SocialSdk.getConfig();
-        if (!CommonHelper.isAnyEmpty(config.getWxAppId(), config.getWxSecretKey()))
+        if (!CommonUtils.isAnyEmpty(config.getWxAppId(), config.getWxSecretKey()))
             mPlatform = new WxPlatform(context, config.getWxAppId(), config.getWxSecretKey(), config.getAppName());
     }
 
     private static void initSinaPlatform(Context context) {
         SocialSdkConfig config = SocialSdk.getConfig();
-        if (!CommonHelper.isAnyEmpty(config.getSinaAppId(), config.getAppName()
+        if (!CommonUtils.isAnyEmpty(config.getSinaAppId(), config.getAppName()
                 , config.getSinaRedirectUrl(), config.getSinaScope()))
             mPlatform = new WbPlatform(context, config.getSinaAppId(), config.getAppName()
                     , config.getSinaRedirectUrl(), config.getSinaScope());

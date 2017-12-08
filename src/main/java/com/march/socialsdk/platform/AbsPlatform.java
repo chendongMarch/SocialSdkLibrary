@@ -6,13 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.exception.SocialException;
-import com.march.socialsdk.helper.IntentShareHelper;
+import com.march.socialsdk.utils.IntentShareUtils;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.model.ShareObj;
-import com.tencent.tauth.UiError;
 
 /**
  * CreateAt : 2016/12/3
@@ -90,7 +88,7 @@ public abstract class AbsPlatform implements IPlatform {
 
     protected void shareVideoByIntent(Activity activity, ShareObj obj, String pkg, String page) {
         try {
-            IntentShareHelper.shareVideo(activity, obj.getMediaPath(), pkg, page);
+            IntentShareUtils.shareVideo(activity, obj.getMediaPath(), pkg, page);
         } catch (Exception e) {
             if (this.mOnShareListener != null) {
                 this.mOnShareListener.onFailure(new SocialException(SocialException.CODE_SHARE_BY_INTENT_FAIL, e));
@@ -100,7 +98,7 @@ public abstract class AbsPlatform implements IPlatform {
 
     protected void shareTextByIntent(Activity activity, ShareObj obj, String pkg, String page) {
         try {
-            IntentShareHelper.shareText(activity, obj.getTitle(), obj.getSummary(), pkg, page);
+            IntentShareUtils.shareText(activity, obj.getTitle(), obj.getSummary(), pkg, page);
         } catch (Exception e) {
             if (this.mOnShareListener != null) {
                 this.mOnShareListener.onFailure(new SocialException(SocialException.CODE_SHARE_BY_INTENT_FAIL, e));

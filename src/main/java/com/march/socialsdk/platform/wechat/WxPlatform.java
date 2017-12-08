@@ -7,12 +7,11 @@ import android.text.TextUtils;
 import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.common.ThumbDataContinuation;
 import com.march.socialsdk.exception.SocialException;
-import com.march.socialsdk.helper.BitmapHelper;
-import com.march.socialsdk.helper.FileHelper;
-import com.march.socialsdk.helper.IntentShareHelper;
-import com.march.socialsdk.helper.PlatformLog;
+import com.march.socialsdk.utils.BitmapUtils;
+import com.march.socialsdk.utils.FileUtils;
+import com.march.socialsdk.utils.IntentShareUtils;
+import com.march.socialsdk.utils.LogUtils;
 import com.march.socialsdk.listener.OnLoginListener;
-import com.march.socialsdk.manager.ShareManager;
 import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.Target;
@@ -187,7 +186,7 @@ public class WxPlatform extends AbsPlatform {
 
     @Override
     public void shareImage(final int shareTarget, final Activity activity, final ShareObj obj) {
-        BitmapHelper.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
+        BitmapUtils.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
                 .continueWith(new ThumbDataContinuation(TAG, "shareImage", mOnShareListener) {
                     @Override
                     public void onSuccess(byte[] thumbData) {
@@ -199,8 +198,8 @@ public class WxPlatform extends AbsPlatform {
 
     private void shareImage(final int shareTarget, String desc, final String localPath, byte[] thumbData) {
         if (shareTarget == Target.SHARE_WX_FRIENDS) {
-            if (FileHelper.isGifFile(localPath)) {
-                PlatformLog.e(TAG, "发送给朋友时 Gif 文件以emoji格式分享");
+            if (FileUtils.isGifFile(localPath)) {
+                LogUtils.e(TAG, "发送给朋友时 Gif 文件以emoji格式分享");
                 WXEmojiObject emoji = new WXEmojiObject();
                 emoji.emojiPath = localPath;
                 WXMediaMessage msg = new WXMediaMessage();
@@ -230,14 +229,14 @@ public class WxPlatform extends AbsPlatform {
 
     @Override
     public void shareApp(int shareTarget, Activity activity, ShareObj obj) {
-        PlatformLog.e(TAG, "微信不支持app分享，将以web形式分享");
+        LogUtils.e(TAG, "微信不支持app分享，将以web形式分享");
         shareWeb(shareTarget, activity, obj);
     }
 
 
     @Override
     public void shareWeb(final int shareTarget, Activity activity, final ShareObj obj) {
-        BitmapHelper.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
+        BitmapUtils.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
                 .continueWith(new ThumbDataContinuation(TAG, "shareWeb", mOnShareListener) {
                     @Override
                     public void onSuccess(byte[] thumbData) {
@@ -256,7 +255,7 @@ public class WxPlatform extends AbsPlatform {
 
     @Override
     public void shareMusic(final int shareTarget, Activity activity, final ShareObj obj) {
-        BitmapHelper.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
+        BitmapUtils.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
                 .continueWith(new ThumbDataContinuation(TAG, "shareMusic", mOnShareListener) {
                     @Override
                     public void onSuccess(byte[] thumbData) {
@@ -277,12 +276,12 @@ public class WxPlatform extends AbsPlatform {
     public void shareVideo(final int shareTarget, Activity activity, final ShareObj obj) {
         if (obj.isShareByIntent() && shareTarget == Target.SHARE_WX_FRIENDS) {
             try {
-                IntentShareHelper.shareVideo(activity, obj.getMediaPath(), SocialConstants.WECHAT_PKG, SocialConstants.WX_FRIEND_PAGE);
+                IntentShareUtils.shareVideo(activity, obj.getMediaPath(), SocialConstants.WECHAT_PKG, SocialConstants.WX_FRIEND_PAGE);
             } catch (Exception e) {
                 this.mOnShareListener.onFailure(new SocialException(SocialException.CODE_SHARE_BY_INTENT_FAIL, e));
             }
         } else {
-            BitmapHelper.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
+            BitmapUtils.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
                     .continueWith(new ThumbDataContinuation(TAG, "shareVideo", mOnShareListener) {
                         @Override
                         public void onSuccess(byte[] thumbData) {
@@ -301,7 +300,7 @@ public class WxPlatform extends AbsPlatform {
 
     @Override
     public void shareVoice(int shareTarget, Activity activity, ShareObj obj) {
-        PlatformLog.e(TAG, "微信不支持voice分享，将以web形式分享");
+        LogUtils.e(TAG, "微信不支持voice分享，将以web形式分享");
         shareWeb(shareTarget, activity, obj);
     }
 

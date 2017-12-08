@@ -5,9 +5,9 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.march.socialsdk.exception.SocialException;
-import com.march.socialsdk.helper.CommonHelper;
-import com.march.socialsdk.helper.JsonHelper;
-import com.march.socialsdk.helper.PlatformLog;
+import com.march.socialsdk.utils.CommonUtils;
+import com.march.socialsdk.utils.JsonUtils;
+import com.march.socialsdk.utils.LogUtils;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.LoginResult;
 import com.march.socialsdk.model.token.SinaAccessToken;
@@ -49,12 +49,12 @@ public class WbLoginHelper {
         //获取用户的信息
         UsersAPI mUsersAPI = new UsersAPI(context,
                 appId, mAccessToken);
-        mUsersAPI.show(CommonHelper.String2Long(mAccessToken.getUid()), new RequestListener() {
+        mUsersAPI.show(CommonUtils.String2Long(mAccessToken.getUid()), new RequestListener() {
             @Override
             public void onComplete(String response) {
                 if (!TextUtils.isEmpty(response)) {
-                    PlatformLog.e(TAG,response);
-                    SinaUser sinaUser = JsonHelper.getObject(response, SinaUser.class);
+                    LogUtils.e(TAG,response);
+                    SinaUser sinaUser = JsonUtils.getObject(response, SinaUser.class);
                     loginListener.onLoginSucceed(new LoginResult(loginType,sinaUser,new SinaAccessToken(mAccessToken)));
                 }
             }

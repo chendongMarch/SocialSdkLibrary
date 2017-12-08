@@ -4,11 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-import com.march.socialsdk.helper.FileHelper;
-import com.march.socialsdk.helper.CommonHelper;
-import com.march.socialsdk.helper.PlatformLog;
-import com.march.socialsdk.platform.Target;
-
 /**
  * CreateAt : 2016/12/28
  * Describe :  多元化分享的对象，用于app|网页|视频|音频|声音 分享

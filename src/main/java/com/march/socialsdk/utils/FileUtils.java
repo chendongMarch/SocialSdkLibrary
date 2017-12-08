@@ -1,4 +1,4 @@
-package com.march.socialsdk.helper;
+package com.march.socialsdk.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -7,17 +7,11 @@ import android.text.TextUtils;
 
 import com.march.socialsdk.SocialSdk;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
@@ -28,39 +22,14 @@ import java.util.Locale;
  * @author chendong
  */
 
-public class FileHelper {
+public class FileUtils {
 
-    public static final String TAG = FileHelper.class.getSimpleName();
+    public static final String TAG = FileUtils.class.getSimpleName();
 
     public static final String POINT_GIF = ".gif";
     public static final String POINT_JPG = ".jpg";
     public static final String POINT_JPEG = ".jpeg";
     public static final String POINT_PNG = ".png";
-
-
-    /**
-     * 打开一个网络流
-     *
-     * @param httpUrl 网络连接
-     * @return 流
-     * @throws IOException error
-     */
-    public static InputStream downloadFileSync(String httpUrl) throws IOException {
-        HttpURLConnection conn = (HttpURLConnection) new URL(httpUrl).openConnection();
-        conn.setRequestMethod("GET");
-        conn.setReadTimeout(3_000);
-        conn.setConnectTimeout(3_000);
-        conn.setDoOutput(false);
-        conn.setDoInput(true);
-        // 设置通用的请求属性
-        conn.setRequestProperty("accept", "*/*");
-        conn.setRequestProperty("connection", "Keep-Alive");
-        conn.setRequestProperty("user-agent",
-                "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)");
-        // 发起连接
-        conn.connect();
-        return conn.getInputStream();
-    }
 
 
     /**
@@ -70,7 +39,7 @@ public class FileHelper {
      * @return 输出流
      */
     public static ByteArrayOutputStream getOutputStreamFromFile(String path) {
-        if (!FileHelper.isExist(path))
+        if (!FileUtils.isExist(path))
             return null;
         FileInputStream fis = null;
         ByteArrayOutputStream baos = null;
@@ -86,36 +55,9 @@ public class FileHelper {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            CommonHelper.closeStream(fis, baos);
+            StreamUtils.closeStream(fis, baos);
         }
         return baos;
-    }
-
-    public static File saveStreamToFile(File file, InputStream is) {
-
-        BufferedInputStream bis = null;
-        BufferedOutputStream bos = null;
-        byte[] bs;
-        try {
-            bis = new BufferedInputStream(is);
-            bos = new BufferedOutputStream(new FileOutputStream(file));
-            bs = new byte[1024 * 10];
-            int len;
-            while ((len = bis.read(bs)) != -1) {
-                bos.write(bs, 0, len);
-                bos.flush();
-            }
-            bis.close();
-            bos.close();
-            bs = null;
-        } catch (Exception e) {
-            PlatformLog.t(e);
-            return null;
-        } finally {
-            CommonHelper.closeStream(bis, bos);
-            bs = null;
-        }
-        return file;
     }
 
     /**
@@ -203,7 +145,7 @@ public class FileHelper {
      */
     public static String mapUrl2LocalPath(String url) {
         // 映射文件名
-        String fileName = CommonHelper.getMD5(url) + FileHelper.getSuffix(url);
+        String fileName = CommonUtils.getMD5(url) + FileUtils.getSuffix(url);
         File saveFile = new File(SocialSdk.getConfig().getShareCacheDirPath(), fileName);
         return saveFile.getAbsolutePath();
     }
@@ -217,7 +159,7 @@ public class FileHelper {
      * @return 路径
      */
     public static String mapResId2LocalPath(Context context, int resId) {
-        String fileName = CommonHelper.getMD5(resId + "") + FileHelper.POINT_PNG;
+        String fileName = CommonUtils.getMD5(resId + "") + FileUtils.POINT_PNG;
         File saveFile = new File(SocialSdk.getConfig().getShareCacheDirPath(), fileName);
         if (saveFile.exists())
             return saveFile.getAbsolutePath();
@@ -228,7 +170,7 @@ public class FileHelper {
             e.printStackTrace();
             return null;
         } finally {
-            BitmapHelper.recyclerBitmaps(bitmap);
+            BitmapUtils.recyclerBitmaps(bitmap);
         }
         return saveFile.getAbsolutePath();
     }

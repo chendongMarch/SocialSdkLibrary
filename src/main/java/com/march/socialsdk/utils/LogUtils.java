@@ -1,4 +1,4 @@
-package com.march.socialsdk.helper;
+package com.march.socialsdk.utils;
 
 import android.os.Looper;
 import android.util.Log;
@@ -12,7 +12,7 @@ import com.march.socialsdk.BuildConfig;
  * @author chendong
  */
 
-public class PlatformLog {
+public class LogUtils {
 
     public static final String TAG = "social-sdk";
     public static boolean DEBUG = BuildConfig.DEBUG;
@@ -56,7 +56,7 @@ public class PlatformLog {
             int lineNumber;
             for (lineNumber = 0; lineNumber < var4; ++lineNumber) {
                 StackTraceElement traceElement = stackTrace[lineNumber];
-                if (traceElement.getClassName().equals(PlatformLog.class.getName())) {
+                if (traceElement.getClassName().equals(LogUtils.class.getName())) {
                     next = false;
                 } else if (!next) {
                     destStackTraceElement = traceElement;

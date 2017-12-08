@@ -3,18 +3,14 @@ package com.march.socialsdk.manager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.IntDef;
 
 import com.march.socialsdk.exception.SocialException;
-import com.march.socialsdk.helper.AuthTokenKeeper;
-import com.march.socialsdk.helper.PlatformLog;
+import com.march.socialsdk.utils.AuthTokenKeeper;
+import com.march.socialsdk.utils.LogUtils;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.LoginResult;
 import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.uikit.ActionActivity;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * CreateAt : 2017/5/19
@@ -61,18 +57,18 @@ public class LoginManager extends BaseManager {
         int actionType = intent.getIntExtra(KEY_ACTION_TYPE, INVALID_PARAM);
         int loginTarget = intent.getIntExtra(KEY_LOGIN_TARGET, INVALID_PARAM);
         if (actionType == INVALID_PARAM) {
-            PlatformLog.e(TAG, "actionType无效");
+            LogUtils.e(TAG, "_actionLogin actionType无效");
             return;
         }
         if (actionType != ACTION_TYPE_LOGIN) {
             return;
         }
         if (loginTarget == INVALID_PARAM) {
-            PlatformLog.e(TAG, "shareTargetType无效");
+            LogUtils.e(TAG, "shareTargetType无效");
             return;
         }
         if (sOnLoginListener == null) {
-            PlatformLog.e(TAG, "请设置 OnLoginListener");
+            LogUtils.e(TAG, "请设置 OnLoginListener");
         }
         if (getPlatform() == null) {
             return;

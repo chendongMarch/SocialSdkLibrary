@@ -1,6 +1,6 @@
 package com.march.socialsdk.exception;
 
-import com.march.socialsdk.helper.PlatformLog;
+import com.march.socialsdk.utils.LogUtils;
 import com.sina.weibo.sdk.exception.WeiboException;
 import com.tencent.tauth.UiError;
 
@@ -12,9 +12,9 @@ import com.tencent.tauth.UiError;
  */
 public class SocialException {
 
-    public static final int CODE_OK              = -1; // 成功
-    public static final int CODE_NOT_INSTALL     = 0; // 没有安装应用
-    public static final int CODE_VERSION_LOW     = 1; // 版本低
+    public static final int CODE_OK = -1; // 成功
+    public static final int CODE_NOT_INSTALL = 0; // 没有安装应用
+    public static final int CODE_VERSION_LOW = 1; // 版本低
     public static final int CODE_SHARE_OBJ_VALID = 2; // 分享的对象参数有问题
     public static final int CODE_SHARE_BY_INTENT_FAIL = 3; // 使用 Intent 分享失败
 
@@ -22,8 +22,8 @@ public class SocialException {
     private String errorMsg;
 
     private WeiboException mWeiboException;
-    private UiError        mUiError;
-    private Exception      mException;
+    private UiError mUiError;
+    private Exception mException;
 
     public SocialException(int errorCode) {
         this.errorCode = errorCode;
@@ -95,7 +95,7 @@ public class SocialException {
     public static final String TAG = SocialException.class.getSimpleName();
 
     public void printStackTrace() {
-        PlatformLog.e(TAG, toString());
+        LogUtils.e(TAG, toString());
     }
 
     @Override
@@ -104,7 +104,7 @@ public class SocialException {
                 .append("errCode = ").append(errorCode)
                 .append("   ,errMsg = ").append(errorMsg).append("\n");
         if (mException != null) {
-            sb.append("其他错误 : ").append(mWeiboException.getMessage());
+            sb.append("其他错误 : ").append(mException.getMessage());
             mException.printStackTrace();
         }
         if (mWeiboException != null) {
@@ -118,5 +118,10 @@ public class SocialException {
                     .append(mUiError.errorDetail).append("\n");
         }
         return sb.toString();
+    }
+
+    public SocialException append(String msg) {
+        this.errorMsg = String.valueOf(errorMsg) + " + " + msg;
+        return this;
     }
 }

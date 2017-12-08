@@ -1,4 +1,4 @@
-package com.march.socialsdk.helper;
+package com.march.socialsdk.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,9 +16,9 @@ import bolts.Task;
  * @author chendong
  */
 
-public class BitmapHelper {
+public class BitmapUtils {
 
-    public static final String TAG = BitmapHelper.class.getSimpleName();
+    public static final String TAG = BitmapUtils.class.getSimpleName();
 
     static class Size {
         int width;
@@ -41,7 +41,7 @@ public class BitmapHelper {
         srcBitmap.compress(format, 100, output);
         // 如果进行了上面的压缩后，依旧大于32K，就进行小范围的微调压缩
         byte[] bytes = output.toByteArray();
-        PlatformLog.e(TAG, "压缩之前 = " + bytes.length);
+        LogUtils.e(TAG, "压缩之前 = " + bytes.length);
         while (bytes.length > maxSize) {
             matrix.setScale(0.9f, 0.9f);//每次缩小 1/10
             tempBitmap = srcBitmap;
@@ -52,9 +52,9 @@ public class BitmapHelper {
             output.reset();
             srcBitmap.compress(format, 100, output);
             bytes = output.toByteArray();
-            PlatformLog.e(TAG, "压缩一次 = " + bytes.length);
+            LogUtils.e(TAG, "压缩一次 = " + bytes.length);
         }
-        PlatformLog.e(TAG, "压缩后的图片输出大小 = " + bytes.length);
+        LogUtils.e(TAG, "压缩后的图片输出大小 = " + bytes.length);
         recyclerBitmaps(srcBitmap);
         return bytes;
     }
@@ -133,7 +133,7 @@ public class BitmapHelper {
         options.inMutable = true;
         //加载图片并返回
         Bitmap bitmap = BitmapFactory.decodeFile(filePath, options);
-        PlatformLog.e(TAG, "sample size = " + sampleSize + "  bitmap大小 = " + bitmap.getByteCount());
+        LogUtils.e(TAG, "sample size = " + sampleSize + "  bitmap大小 = " + bitmap.getByteCount());
         return bitmap;
     }
 
@@ -149,7 +149,7 @@ public class BitmapHelper {
         Bitmap srcBitmap = getBitmapByPath(path, maxSize);
 //        Bitmap largeRangeScale = getLargeScaleBitmap(srcBitmap, maxSize);
         Bitmap.CompressFormat format = Bitmap.CompressFormat.JPEG;
-        if (FileHelper.isPngFile(path)) format = Bitmap.CompressFormat.PNG;
+        if (FileUtils.isPngFile(path)) format = Bitmap.CompressFormat.PNG;
         return getStaticSizeBitmapByteByBitmap(srcBitmap, maxSize, format);
     }
 
@@ -160,7 +160,7 @@ public class BitmapHelper {
             public byte[] call() throws Exception {
                 Bitmap srcBitmap = getBitmapByPath(path, maxSize);
                 Bitmap.CompressFormat format = Bitmap.CompressFormat.JPEG;
-                if (FileHelper.isPngFile(path)) format = Bitmap.CompressFormat.PNG;
+                if (FileUtils.isPngFile(path)) format = Bitmap.CompressFormat.PNG;
                 return getStaticSizeBitmapByteByBitmap(srcBitmap, maxSize, format);
             }
         });

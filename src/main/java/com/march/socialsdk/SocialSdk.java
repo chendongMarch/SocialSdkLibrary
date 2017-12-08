@@ -1,8 +1,8 @@
 package com.march.socialsdk;
 
-import com.march.socialsdk.adapter.IImageConvertAdapter;
 import com.march.socialsdk.adapter.IJsonAdapter;
-import com.march.socialsdk.adapter.impl.DefImageConvertAdapter;
+import com.march.socialsdk.adapter.IRequestAdapter;
+import com.march.socialsdk.adapter.impl.RequestAdapterImpl;
 import com.march.socialsdk.model.SocialSdkConfig;
 
 /**
@@ -15,8 +15,7 @@ public class SocialSdk {
 
     private static SocialSdkConfig sSocialSdkConfig;
     private static IJsonAdapter sJsonAdapter;
-    private static IImageConvertAdapter sImageConvertAdapter;
-
+    private static IRequestAdapter sRequestAdapter;
 
     public static SocialSdkConfig getConfig() {
         if (sSocialSdkConfig == null) {
@@ -29,27 +28,26 @@ public class SocialSdk {
         sSocialSdkConfig = config;
     }
 
+
     public static IJsonAdapter getJsonAdapter() {
         if (sJsonAdapter == null) {
-            throw new IllegalStateException("invoke addJsonAdapter() to add Json Parser");
+            throw new IllegalStateException("为了不引入其他的json解析依赖，特地将这部分放出去，必须添加一个对应的 json 解析工具，参考代码 sample/GsonJsonAdapter.java");
         }
         return sJsonAdapter;
     }
 
-    public static void addJsonAdapter(IJsonAdapter jsonAdapter) {
+    public static void setJsonAdapter(IJsonAdapter jsonAdapter) {
         sJsonAdapter = jsonAdapter;
     }
 
-    public static IImageConvertAdapter getImageConvertAdapter() {
-        if (sImageConvertAdapter == null) {
-            sImageConvertAdapter = new DefImageConvertAdapter();
+    public static IRequestAdapter getRequestAdapter() {
+        if (sRequestAdapter == null) {
+            sRequestAdapter = new RequestAdapterImpl();
         }
-        return sImageConvertAdapter;
+        return sRequestAdapter;
     }
 
-    public static void addJsonAdapter(IImageConvertAdapter imageConvertAdapter) {
-        sImageConvertAdapter = imageConvertAdapter;
+    public static void setRequestAdapter(IRequestAdapter requestAdapter) {
+        sRequestAdapter = requestAdapter;
     }
-
-
 }

@@ -1,7 +1,7 @@
 package com.march.socialsdk.common;
 
 import com.march.socialsdk.exception.SocialException;
-import com.march.socialsdk.helper.PlatformLog;
+import com.march.socialsdk.utils.LogUtils;
 import com.march.socialsdk.listener.OnShareListener;
 
 import bolts.Continuation;
@@ -28,7 +28,7 @@ public abstract class ThumbDataContinuation implements Continuation<byte[], Obje
     @Override
     public Object then(Task<byte[]> task) throws Exception {
         if (task.isFaulted() || task.getResult() == null) {
-            PlatformLog.e(tag, "图片压缩失败 -> " + msg);
+            LogUtils.e(tag, "图片压缩失败 -> " + msg);
             onShareListener.onFailure(new SocialException(msg, task.getError()));
         } else {
             onSuccess(task.getResult());

@@ -12,10 +12,10 @@ import android.text.TextUtils;
 import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.exception.SocialException;
-import com.march.socialsdk.helper.CommonHelper;
-import com.march.socialsdk.helper.FileHelper;
-import com.march.socialsdk.helper.PlatformLog;
-import com.march.socialsdk.helper.ShareObjHelper;
+import com.march.socialsdk.utils.CommonUtils;
+import com.march.socialsdk.utils.FileUtils;
+import com.march.socialsdk.utils.LogUtils;
+import com.march.socialsdk.utils.ShareObjCheckUtils;
 import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.platform.Target;
@@ -45,7 +45,7 @@ public class ShareManager extends BaseManager {
      *
      * @param context         context
      * @param shareTarget     分享目标
-     * @param shareObj   分享对象
+     * @param shareObj        分享对象
      * @param onShareListener 分享监听
      */
     public static void share(final Context context, @Target.ShareTarget final int shareTarget,
@@ -53,12 +53,12 @@ public class ShareManager extends BaseManager {
         Task.callInBackground(new Callable<ShareObj>() {
             @Override
             public ShareObj call() throws Exception {
-                prepareImage(shareObj);
+                prepareImageInBackground(shareObj);
                 ShareObj temp = null;
                 try {
                     temp = onShareListener.onPrepareInBackground(shareTarget, shareObj);
                 } catch (Exception e) {
-                    PlatformLog.t(e);
+                    LogUtils.t(e);
                 }
                 if (temp != null) {
                     return temp;
@@ -79,26 +79,26 @@ public class ShareManager extends BaseManager {
                 doShare(context, shareTarget, task.getResult(), onShareListener);
                 return true;
             }
-        }, Task.UI_THREAD_EXECUTOR).continueWith(new Continuation<Boolean, Void>() {
+        }, Task.UI_THREAD_EXECUTOR).continueWith(new Continuation<Boolean, Boolean>() {
             @Override
-            public Void then(Task<Boolean> task) throws Exception {
-                if(task.isFaulted()){
+            public Boolean then(Task<Boolean> task) throws Exception {
+                if (task.isFaulted()) {
                     SocialException exception = new SocialException("ShareManager.share() error", task.getError());
                     onShareListener.onFailure(exception);
                 }
-                return null;
+                return true;
             }
         });
     }
 
 
     // 如果是网络图片先下载
-    private static void prepareImage(ShareObj shareObj) {
+    private static void prepareImageInBackground(ShareObj shareObj) {
         String thumbImagePath = shareObj.getThumbImagePath();
         // 路径不为空 & 是网络路径
-        if (!TextUtils.isEmpty(thumbImagePath) && FileHelper.isHttpPath(thumbImagePath)) {
-            File file = SocialSdk.getImageConvertAdapter().convertImage(thumbImagePath);
-            if (FileHelper.isExist(file)) {
+        if (!TextUtils.isEmpty(thumbImagePath) && FileUtils.isHttpPath(thumbImagePath)) {
+            File file = SocialSdk.getRequestAdapter().getFile(thumbImagePath);
+            if (FileUtils.isExist(file)) {
                 shareObj.setThumbImagePath(file.getAbsolutePath());
             }
         }
@@ -107,7 +107,7 @@ public class ShareManager extends BaseManager {
 
     // 开始分享
     private static boolean doShare(Context context, @Target.ShareTarget int shareTarget, ShareObj shareObj, OnShareListener onShareListener) {
-        if (!ShareObjHelper.checkObjValid(shareObj,shareTarget)) {
+        if (!ShareObjCheckUtils.checkObjValid(shareObj, shareTarget)) {
             onShareListener.onFailure(new SocialException(SocialException.CODE_SHARE_OBJ_VALID));
             return true;
         }
@@ -142,20 +142,20 @@ public class ShareManager extends BaseManager {
         if (actionType != ACTION_TYPE_SHARE)
             return;
         if (shareTarget == INVALID_PARAM) {
-            PlatformLog.e(TAG, "shareTargetType无效");
+            LogUtils.e(TAG, "shareTargetType无效");
             return;
         }
         if (shareObj == null) {
-            PlatformLog.e(TAG, "shareObj == null");
+            LogUtils.e(TAG, "shareObj == null");
             return;
         }
         if (sOnShareListener == null) {
-            PlatformLog.e(TAG, "请设置 OnShareListener");
+            LogUtils.e(TAG, "请设置 OnShareListener");
             return;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-            PlatformLog.e(TAG, "没有获取到读存储卡的权限，这可能导致某些分享不能进行");
+            LogUtils.e(TAG, "没有获取到读存储卡的权限，这可能导致某些分享不能进行");
         }
 
         if (getPlatform() == null)
@@ -258,6 +258,6 @@ public class ShareManager extends BaseManager {
                 pkgName = SocialConstants.SINA_PKG;
                 break;
         }
-        return !TextUtils.isEmpty(pkgName) && CommonHelper.openApp(context, pkgName);
+        return !TextUtils.isEmpty(pkgName) && CommonUtils.openApp(context, pkgName);
     }
 }
