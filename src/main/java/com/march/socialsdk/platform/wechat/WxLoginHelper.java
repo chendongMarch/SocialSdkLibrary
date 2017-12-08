@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.march.socialsdk.exception.SocialException;
-import com.march.socialsdk.utils.AuthTokenKeeper;
+import com.march.socialsdk.utils.TokenStoreUtils;
 import com.march.socialsdk.utils.JsonUtils;
 import com.march.socialsdk.utils.LogUtils;
 import com.march.socialsdk.listener.OnLoginListener;
@@ -66,7 +66,7 @@ public class WxLoginHelper {
         this.loginListener = loginListener;
         this.secretKey = secretKey;
         // 检测本地token的机制
-        WeChatAccessToken storeToken = AuthTokenKeeper.getWxToken(context);
+        WeChatAccessToken storeToken = TokenStoreUtils.getWxToken(context);
         if (storeToken != null && storeToken.isValid()) {
             checkAccessTokenValid(storeToken);
         } else {
@@ -99,7 +99,7 @@ public class WxLoginHelper {
                 // 获取到access_token
                 if (newToken.isNoError()) {
                     LogUtils.e(TAG, "刷新token成功 token = " + newToken);
-                    AuthTokenKeeper.saveWxToken(context, newToken);
+                    TokenStoreUtils.saveWxToken(context, newToken);
                     // 刷新完成，获取用户信息
                     getUserInfoByValidToken(token);
                 } else {
@@ -128,7 +128,7 @@ public class WxLoginHelper {
             public void onSuccess(@NonNull WeChatAccessToken token) {
                 // 获取到access_token
                 if (token.isNoError()) {
-                    AuthTokenKeeper.saveWxToken(context, token);
+                    TokenStoreUtils.saveWxToken(context, token);
                     getUserInfoByValidToken(token);
                 } else {
                     SocialException exception = new SocialException("获取access_token失败 code = " + token.getErrcode() + "  msg = " + token.getErrmsg());

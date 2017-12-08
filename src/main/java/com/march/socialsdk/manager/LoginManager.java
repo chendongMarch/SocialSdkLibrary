@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.march.socialsdk.exception.SocialException;
-import com.march.socialsdk.utils.AuthTokenKeeper;
+import com.march.socialsdk.utils.TokenStoreUtils;
 import com.march.socialsdk.utils.LogUtils;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.LoginResult;
@@ -105,12 +105,12 @@ public class LoginManager extends BaseManager {
     }
 
     public static void clearAllToken(Context context) {
-        AuthTokenKeeper.clearToken(context, Target.LOGIN_QQ);
-        AuthTokenKeeper.clearToken(context, Target.LOGIN_WX);
-        AuthTokenKeeper.clearToken(context, Target.LOGIN_WB);
+        TokenStoreUtils.clearToken(context, Target.LOGIN_QQ);
+        TokenStoreUtils.clearToken(context, Target.LOGIN_WX);
+        TokenStoreUtils.clearToken(context, Target.LOGIN_WB);
     }
 
     public static void clearToken(Context context, @Target.LoginTarget int loginTarget) {
-        AuthTokenKeeper.clearToken(context, loginTarget);
+        TokenStoreUtils.clearToken(context, loginTarget);
     }
 }

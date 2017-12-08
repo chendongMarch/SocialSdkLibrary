@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 
 import com.march.socialsdk.exception.SocialException;
-import com.march.socialsdk.utils.AuthTokenKeeper;
+import com.march.socialsdk.utils.TokenStoreUtils;
 import com.march.socialsdk.utils.JsonUtils;
 import com.march.socialsdk.utils.LogUtils;
 import com.march.socialsdk.listener.OnLoginListener;
@@ -52,7 +52,7 @@ public class QQLoginHelper {
 
     // 登录
     public void login() {
-        QQAccessToken qqToken = AuthTokenKeeper.getQQToken(activity);
+        QQAccessToken qqToken = TokenStoreUtils.getQQToken(activity);
         if (qqToken != null) {
             mTencentApi.setAccessToken(qqToken.getAccess_token(), qqToken.getExpires_in() + "");
             mTencentApi.setOpenId(qqToken.getOpenid());
@@ -76,7 +76,7 @@ public class QQLoginHelper {
             QQAccessToken qqToken = JsonUtils.getObject(jsonResponse.toString(), QQAccessToken.class);
             LogUtils.e(TAG, "获取到 qq token = " + qqToken.toString());
             // 保存token
-            AuthTokenKeeper.saveQQToken(activity, qqToken);
+            TokenStoreUtils.saveQQToken(activity, qqToken);
 
             mTencentApi.setAccessToken(qqToken.getAccess_token(), qqToken.getExpires_in() + "");
             mTencentApi.setOpenId(qqToken.getOpenid());

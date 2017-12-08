@@ -28,7 +28,6 @@ public class SocialSdk {
         sSocialSdkConfig = config;
     }
 
-
     public static IJsonAdapter getJsonAdapter() {
         if (sJsonAdapter == null) {
             throw new IllegalStateException("为了不引入其他的json解析依赖，特地将这部分放出去，必须添加一个对应的 json 解析工具，参考代码 sample/GsonJsonAdapter.java");

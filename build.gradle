@@ -2,15 +2,10 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 25
-    // 升级到 gradle3.0 不需要使用buildToolsVersion
-    // buildToolsVersion 25
-
+    buildToolsVersion '25.3.0'
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
-        // 占位
+        targetSdkVersion 23
         manifestPlaceholders.qq_id = "1104910200"
     }
 
