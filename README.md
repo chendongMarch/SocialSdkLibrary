@@ -2,29 +2,33 @@
 
 ![登录分享](http://olx4t2q6z.bkt.clouddn.com/17-12-1/62754706.jpg)
 
+🎉  2017.12.12 对代码进行简单重构并测试，发布第一个稳定版本 1.0.0
+
 「`SocialSdk`」 提供微博、微信、QQ的登陆分享功能支持，使用 微博、QQ、微信 原生 SDK 接入，持续优化中...
 
-由于项目中想要接入的平台因人而异，第三方 SDK 更新也比较频繁，因此没有对类库进行发布操作，下载之后直接依赖 `module` 即可，这样也方便问题修复。
+由于项目中想要接入的平台因人而异，第三方 SDK 更新也比较频繁，因此没有对类库进行发布操作，本项目是个 `Library Module`，测试代码的 `sample` 我没有发不上来，下载之后直接依赖这个 `module` 即可，这样也方便问题修复。
 
 项目地址 : [GitHub - SocialSdkLibrary](https://github.com/chendongMarch/SocialSdkLibrary)
 
 推荐阅读 ：[文章地址](http://cdevlab.top/article/3067853428/)
 
+<!--more-->
+
 ## 优点
 
 写的不好，还在优化中...
 
-🔥 简单：只需要关注几个管理类和相关数据的构造，不需要考虑复杂的授权逻辑。
+🔥 简单：只需要关注几个管理类和相关数据的构造即可实现所需功能，不需要考虑复杂的授权和分享逻辑。
 
-🔥 轻量：除了必须的第三方 sdk 之外，本项目只依赖了一个简单的异步任务的框架-bolts，后续会考虑也剔除掉，不引入无用依赖，保证与宿主项目统一。
+🔥 轻量：除了必须的第三方 sdk 之外，本项目只依赖了一个简单的异步任务的框架-bolts (38k)，后续会考虑也剔除掉，不引入无用依赖，保证与宿主项目高度统一。
 
-🔥 全面：内部存储授权 token，避免多次授权；对qq、微信、微博做了完善的支持，同时兼容了各平台分享数据类型的差异，还对本地视频这种原本不支持分享的类型使用本地分享进行了内部扩展。
+🔥 全面：内部存储授权 token，避免多次授权；对qq、微信、微博做了完善的支持；
 
-🔥 扩展性：项目以功能进行划分，各个平台之间互相独立，如果想仅支持部分平台，只需要删除某个平台的具体实现即可。
+🔥 扩展性：项目以功能进行划分，各个平台之间互相独立，如果想仅支持部分平台，只需要删除某个平台的具体实现即可。可从外部注入代理，对一些功能进行自定义的扩展。
 
 🔥 功能性：针对实际项目需求进行扩展，例如在分享前统一对分享数据提供一次重新构造的机会。
 
-🔥 兼容性：为多个平台提供外观一致的分享接口，若不支持，使用 web 分享兼容。支持直接使用网络图片分享，内置自动下载功能。使用 Intent 兼容不支持的数据模式,支持本地视频分享。
+🔥 兼容性：为多个平台提供外观一致的分享接口，若不支持，使用 web 分享兼容。支持直接使用网络图片分享，内置自动下载功能。使用 Intent 兼容不支持的数据模式，如支持本地视频分享，qq 的纯文字分享等等。
 
 ## 主要类文件
 
@@ -63,8 +67,6 @@ defaultConfig {
 
 你需要在使用 SDK 之前进行初始化操作，建议放在 `Applicaton` 中进行。
 
-为了减轻类库的体积，兼容不同的 `json` 解析方案，将 `json` 解析使用接口的方式注入，你需要实现 `IJsonAdapter` 接口，
-根据项目中具体使用的 `json` 解析库进行数据的解析。提供一个 `Gson` 的实现作为参考 [GsonJsonAdapter.java](https://github.com/chendongMarch/SocialSdkLibrary/blob/master/sample/GsonJsonAdapter.java)
 
 ```java
 String qqAppId = getString(R.string.QQ_APPID);
@@ -89,6 +91,14 @@ SocialSdk.addJsonAdapter(new GsonJsonAdapter());
 // 👮 添加 config 数据，必须
 SocialSdk.init(config);
 ```
+
+## adapter
+
+使用 `adapter` 这种模式主要参照了一些成熟的类库，目的是为了对外提供更好的扩展性，这部分内容可以关注 `SocialSdk.java`.
+
+- `IJsonAdapter`，负责 `Json` 解析，为了保持和宿主项目 `json` 解析框架的统一，是必须自定义添加的（没有内置一个实现是因为使用自带的 `JsonObject` 解析实在麻烦，又不想内置一个三方库进来，采取的这种折衷方案），提供一个 `Gson` 下的实现仅供参考 - [GsonJsonAdapter.java](https://github.com/chendongMarch/SocialSdkLibrary/blob/master/sample/GsonJsonAdapter.java)
+
+- `IRequestAdapter`，负责请求数据，目前微信的 `OAuth2` 授权和图片下载的相关请求都是使用 `IRequestAdapter` 代理，已经使用 `URLConnection` 内置了一个实现，如果你有自己的需求可以重写这部分，注意 `https` 请求的兼容，可以参考 - [RequestAdapterImpl.java](https://github.com/chendongMarch/SocialSdkLibrary/blob/master/src/main/java/com/march/socialsdk/adapter/impl/RequestAdapterImpl.java)
 
 ## 登录功能
 
@@ -139,6 +149,16 @@ Target.LOGIN_WB;
 LoginManager.login(mActivity, Target.LOGIN_QQ, mOnLoginListener);
 ```
 
+清除授权 `token`，为了避免每次登录都要求用户打开授权界面重新点击授权的不好体验，类库里面对 `token` 进行了持久化的存储，当本地 `token` 没有过期时，直接使用这个 `token` 去请求用户信息，同时提供了清除本地 `token` 的方法。
+
+```java
+LoginManager.java
+
+// 清除全部平台的 token
+public static void clearAllToken(Context context)
+// 清除指定平台的 token
+public static void clearToken(Context context, @Target.LoginTarget int loginTarget)
+```
 
 ## 分享功能
 
