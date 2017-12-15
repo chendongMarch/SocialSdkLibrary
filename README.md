@@ -96,7 +96,7 @@ SocialSdk.init(config);
 
 使用 `adapter` 这种模式主要参照了一些成熟的类库，目的是为了对外提供更好的扩展性，这部分内容可以关注 `SocialSdk.java`.
 
-- `IJsonAdapter`，负责 `Json` 解析，为了保持和宿主项目 `json` 解析框架的统一，是必须自定义添加的（没有内置一个实现是因为使用自带的 `JsonObject` 解析实在麻烦，又不想内置一个三方库进来，采取的这种折衷方案），提供一个 `Gson` 下的实现仅供参考 - [GsonJsonAdapter.java](https://github.com/chendongMarch/SocialSdkLibrary/blob/master/sample/GsonJsonAdapter.java)
+- `IJsonAdapter`，负责 `Json` 解析，为了保持和宿主项目 `json` 解析框架的统一，是必须自定义添加的（没有内置一个实现是因为使用自带的 `JsonObject` 解析实在麻烦，又不想内置一个三方库进来，采取的这种折衷方案），提供一个 `Gson` 下的实现仅供参考 - [GsonJsonAdapter.java](https://github.com/chendongMarch/SocialSdkLibrary/blob/master/temp/GsonJsonAdapter.java)
 
 - `IRequestAdapter`，负责请求数据，目前微信的 `OAuth2` 授权和图片下载的相关请求都是使用 `IRequestAdapter` 代理，已经使用 `URLConnection` 内置了一个实现，如果你有自己的需求可以重写这部分，注意 `https` 请求的兼容，可以参考 - [RequestAdapterImpl.java](https://github.com/chendongMarch/SocialSdkLibrary/blob/master/src/main/java/com/march/socialsdk/adapter/impl/RequestAdapterImpl.java)
 
