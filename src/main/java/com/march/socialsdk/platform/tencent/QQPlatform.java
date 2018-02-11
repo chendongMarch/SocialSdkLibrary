@@ -250,12 +250,7 @@ public class QQPlatform extends AbsPlatform {
         }
     }
 
-    @Override
-    public void shareVoice(int shareTarget, Activity activity, ShareObj obj) {
-        LogUtils.e(TAG, "qq,qzone不支持分享声音，使用web分享代替");
-        obj.setTargetUrl(obj.getMediaPath());
-        shareWeb(shareTarget, activity, obj);
-    }
+
 
 
     private class IUiListenerWrap implements IUiListener {

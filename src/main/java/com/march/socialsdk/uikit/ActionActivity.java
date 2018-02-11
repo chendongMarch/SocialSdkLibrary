@@ -81,11 +81,20 @@ public class ActionActivity extends Activity
         checkFinish();
     }
 
+    public void onRespCommon(Object resp) {
+        IPlatform platform = getPlatform();
+        if (platform != null) {
+            platform.onResponse(resp);
+        }
+        checkFinish();
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // 微博
+    ///////////////////////////////////////////////////////////////////////////
     @Override
     public void onResponse(BaseResponse baseResponse) {
-        if (getPlatform() != null)
-            getPlatform().onResponse(baseResponse);
-        checkFinish();
+        onRespCommon(baseResponse);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -94,10 +103,7 @@ public class ActionActivity extends Activity
     @Override
     //从微信页面返回的数据
     public void onResp(BaseResp resp) {
-        if (getPlatform() != null)
-            getPlatform().onResponse(resp);
-        LogUtils.e(TAG, "onResp:" + "resp.getType():" + resp.getType() + " resp.errCode:" + resp.errCode + " resp.errStr:" + resp.errStr);
-        checkFinish();
+        onRespCommon(resp);
     }
 
     @Override
@@ -117,11 +123,7 @@ public class ActionActivity extends Activity
 
     @Override
     public void onResp(com.android.dingtalk.share.ddsharemodule.message.BaseResp baseResp) {
-        IPlatform platform = getPlatform();
-        if (platform != null) {
-            platform.onResponse(baseResp);
-        }
-        checkFinish();
+        onRespCommon(baseResp);
     }
 
 

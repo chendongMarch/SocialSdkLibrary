@@ -80,9 +80,6 @@ public abstract class AbsPlatform implements IPlatform {
             case ShareObj.SHARE_TYPE_VIDEO:
                 shareVideo(shareTarget, activity, shareMediaObj);
                 break;
-            case ShareObj.SHARE_TYPE_VOICE:
-                shareVoice(shareTarget, activity, shareMediaObj);
-                break;
         }
     }
 
@@ -119,8 +116,6 @@ public abstract class AbsPlatform implements IPlatform {
     protected abstract void shareMusic(int shareTarget, Activity activity, ShareObj obj);
 
     protected abstract void shareVideo(int shareTarget, Activity activity, ShareObj obj);
-
-    protected abstract void shareVoice(int shareTarget, Activity activity, ShareObj obj);
 
 
     ///////////////////////////////////////////////////////////////////////////

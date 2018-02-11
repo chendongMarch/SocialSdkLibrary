@@ -19,14 +19,18 @@ public class SocialSdkConfig {
     public static final String SHARE_CACHE_DIR_NAME = "toShare";
 
     private String appName = "应用";
+
     private String wxAppId;
     private String wxSecretKey;
+
     private String qqAppId;
+
     private String sinaAppId;
     private String sinaRedirectUrl = SocialConstants.REDIRECT_URL;
     private String sinaScope       = SocialConstants.SCOPE;
     private String shareCacheDirPath;
 
+    private String ddAppId;
 
     public SocialSdkConfig(Context context) {
         this.appName = context.getString(R.string.app_name);
@@ -39,6 +43,10 @@ public class SocialSdkConfig {
         return shareCacheDirPath;
     }
 
+    public SocialSdkConfig dd(String ddAppId){
+        this.ddAppId = ddAppId;
+        return this;
+    }
     public SocialSdkConfig qq(String qqAppId) {
         this.qqAppId = qqAppId;
         return this;
@@ -76,6 +84,10 @@ public class SocialSdkConfig {
 
     public String getWxSecretKey() {
         return wxSecretKey;
+    }
+
+    public String getDdAppId() {
+        return ddAppId;
     }
 
     public String getQqAppId() {
