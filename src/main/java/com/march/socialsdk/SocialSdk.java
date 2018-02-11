@@ -1,9 +1,21 @@
 package com.march.socialsdk;
 
+import android.content.Context;
+import android.util.SparseArray;
+
 import com.march.socialsdk.adapter.IJsonAdapter;
 import com.march.socialsdk.adapter.IRequestAdapter;
 import com.march.socialsdk.adapter.impl.RequestAdapterImpl;
 import com.march.socialsdk.model.SocialSdkConfig;
+import com.march.socialsdk.platform.IPlatform;
+import com.march.socialsdk.platform.PlatformCreator;
+import com.march.socialsdk.platform.Target;
+import com.march.socialsdk.platform.tencent.QQPlatform;
+import com.march.socialsdk.platform.wechat.WxPlatform;
+import com.march.socialsdk.platform.weibo.WbPlatform;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * CreateAt : 2017/5/19
@@ -16,6 +28,7 @@ public class SocialSdk {
     private static SocialSdkConfig sSocialSdkConfig;
     private static IJsonAdapter sJsonAdapter;
     private static IRequestAdapter sRequestAdapter;
+    private static SparseArray<PlatformCreator> sPlatformCreatorMap;
 
     public static SocialSdkConfig getConfig() {
         if (sSocialSdkConfig == null) {
@@ -26,7 +39,31 @@ public class SocialSdk {
 
     public static void init(SocialSdkConfig config) {
         sSocialSdkConfig = config;
+        sPlatformCreatorMap = new SparseArray<>();
+        registerPlatform(new QQPlatform.Creator(), Target.LOGIN_QQ, Target.SHARE_QQ_FRIENDS, Target.SHARE_QQ_ZONE);
+        registerPlatform(new WxPlatform.Creator(), Target.LOGIN_WX, Target.SHARE_WX_FAVORITE, Target.SHARE_WX_ZONE, Target.SHARE_WX_FRIENDS);
+        registerPlatform(new WbPlatform.Creator(), Target.LOGIN_WB, Target.SHARE_WB_NORMAL, Target.SHARE_WB_OPENAPI);
     }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Platform 注册
+    ///////////////////////////////////////////////////////////////////////////
+    public static void registerPlatform(PlatformCreator creator, int... targets) {
+        for (int target : targets) {
+            sPlatformCreatorMap.put(target, creator);
+        }
+    }
+
+    public static IPlatform getPlatform(Context context, int target) {
+        PlatformCreator creator = sPlatformCreatorMap.get(target);
+        if (creator != null) {
+            return creator.create(context, target);
+        }
+        return null;
+    }
+    ///////////////////////////////////////////////////////////////////////////
+    // JsonAdapter
+    ///////////////////////////////////////////////////////////////////////////
 
     public static IJsonAdapter getJsonAdapter() {
         if (sJsonAdapter == null) {
@@ -38,6 +75,10 @@ public class SocialSdk {
     public static void setJsonAdapter(IJsonAdapter jsonAdapter) {
         sJsonAdapter = jsonAdapter;
     }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // RequestAdapter
+    ///////////////////////////////////////////////////////////////////////////
 
     public static IRequestAdapter getRequestAdapter() {
         if (sRequestAdapter == null) {

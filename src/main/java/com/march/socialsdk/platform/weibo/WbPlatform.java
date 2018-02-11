@@ -5,9 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
+import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.common.ThumbDataContinuation;
 import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.exception.SocialException;
+import com.march.socialsdk.model.SocialSdkConfig;
+import com.march.socialsdk.platform.IPlatform;
+import com.march.socialsdk.platform.PlatformCreator;
 import com.march.socialsdk.utils.BitmapUtils;
 import com.march.socialsdk.utils.CommonUtils;
 import com.march.socialsdk.utils.FileUtils;
@@ -57,7 +61,7 @@ public class WbPlatform extends AbsPlatform {
 
     private static final String TAG = WbPlatform.class.getSimpleName();
 
-    private IWeiboShareAPI mWeiboShareAPI;
+    private IWeiboShareAPI mWbShareAPI;
     private AuthInfo mAuthInfo;
     private SsoHandler mSsoHandler;
     private StatusesAPI mStatusesAPI;
@@ -75,16 +79,30 @@ public class WbPlatform extends AbsPlatform {
         }
     };
 
+    public static class Creator implements PlatformCreator {
+        @Override
+        public IPlatform create(Context context, int target) {
+            IPlatform platform = null;
+            SocialSdkConfig config = SocialSdk.getConfig();
+            if (!CommonUtils.isAnyEmpty(config.getSinaAppId(), config.getAppName()
+                    , config.getSinaRedirectUrl(), config.getSinaScope())) {
+                platform = new WbPlatform(context, config.getSinaAppId(), config.getAppName()
+                        , config.getSinaRedirectUrl(), config.getSinaScope());
+            }
+            return platform;
+        }
+    }
+
     public WbPlatform(Context context, String appId, String appName, String redirectUrl, String scope) {
         super(context, appId, appName);
-        mWeiboShareAPI = WeiboShareSDK.createWeiboAPI(context, appId);
-        mWeiboShareAPI.registerApp();
+        mWbShareAPI = WeiboShareSDK.createWeiboAPI(context, appId);
+        mWbShareAPI.registerApp();
         mAuthInfo = new AuthInfo(context, appId, redirectUrl, scope);
     }
 
     @Override
     public boolean isInstall() {
-        return mWeiboShareAPI != null && mWeiboShareAPI.isWeiboAppInstalled();
+        return mWbShareAPI != null && mWbShareAPI.isWeiboAppInstalled();
     }
 
     @Override
@@ -109,7 +127,7 @@ public class WbPlatform extends AbsPlatform {
             return;
         }
         IWeiboHandler.Response shareResponse = (IWeiboHandler.Response) activity;
-        mWeiboShareAPI.handleWeiboResponse(activity.getIntent(), shareResponse);
+        mWbShareAPI.handleWeiboResponse(activity.getIntent(), shareResponse);
     }
 
     @Override
@@ -144,9 +162,9 @@ public class WbPlatform extends AbsPlatform {
 
 
     private boolean isSupportShare() {
-        return mWeiboShareAPI != null
-                && mWeiboShareAPI.isWeiboAppSupportAPI()
-                && mWeiboShareAPI.getWeiboAppSupportAPI() != -1;
+        return mWbShareAPI != null
+                && mWbShareAPI.isWeiboAppSupportAPI()
+                && mWbShareAPI.getWeiboAppSupportAPI() != -1;
 
     }
 
@@ -257,7 +275,7 @@ public class WbPlatform extends AbsPlatform {
         SendMultiMessageToWeiboRequest request = new SendMultiMessageToWeiboRequest();
         request.transaction = String.valueOf(System.currentTimeMillis());
         request.multiMessage = message;
-        boolean isSendSuccess = mWeiboShareAPI.sendRequest(activity, request);
+        boolean isSendSuccess = mWbShareAPI.sendRequest(activity, request);
         if (!isSendSuccess) {
             mOnShareListener.onFailure(new SocialException("sina分享发送失败，检查参数"));
         }

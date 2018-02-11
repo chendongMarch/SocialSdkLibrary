@@ -9,8 +9,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.exception.SocialException;
+import com.march.socialsdk.model.SocialSdkConfig;
+import com.march.socialsdk.platform.IPlatform;
+import com.march.socialsdk.platform.PlatformCreator;
 import com.march.socialsdk.utils.FileUtils;
 import com.march.socialsdk.utils.CommonUtils;
 import com.march.socialsdk.utils.LogUtils;
@@ -45,6 +49,19 @@ public class QQPlatform extends AbsPlatform {
     private Tencent mTencentApi;
     private QQLoginHelper mQQLoginHelper;
     private IUiListenerWrap mIUiListenerWrap;
+
+    public static class Creator implements PlatformCreator {
+        @Override
+        public IPlatform create(Context context, int target) {
+            IPlatform platform = null;
+            SocialSdkConfig config = SocialSdk.getConfig();
+            if (!CommonUtils.isAnyEmpty(config.getQqAppId(), config.getAppName())) {
+                platform = new QQPlatform(context, config.getQqAppId(), config.getAppName());
+            }
+            return platform;
+        }
+    }
+
 
     public QQPlatform(Context context, String appId, String appName) {
         super(context, appId, appName);

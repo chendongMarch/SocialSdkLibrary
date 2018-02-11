@@ -4,10 +4,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.common.ThumbDataContinuation;
 import com.march.socialsdk.exception.SocialException;
+import com.march.socialsdk.model.SocialSdkConfig;
+import com.march.socialsdk.platform.IPlatform;
+import com.march.socialsdk.platform.PlatformCreator;
 import com.march.socialsdk.utils.BitmapUtils;
+import com.march.socialsdk.utils.CommonUtils;
 import com.march.socialsdk.utils.FileUtils;
 import com.march.socialsdk.utils.IntentShareUtils;
 import com.march.socialsdk.utils.LogUtils;
@@ -45,6 +50,19 @@ public class WxPlatform extends AbsPlatform {
     private WxLoginHelper mWeChatLoginHelper;
     private IWXAPI mWxApi;
     private String mWxSecret;
+
+    public static class Creator implements PlatformCreator {
+        @Override
+        public IPlatform create(Context context, int target) {
+            IPlatform platform = null;
+            SocialSdkConfig config = SocialSdk.getConfig();
+            if (!CommonUtils.isAnyEmpty(config.getWxAppId(), config.getWxSecretKey())) {
+                platform = new WxPlatform(context, config.getWxAppId(), config.getWxSecretKey(), config.getAppName());
+            }
+            return platform;
+        }
+    }
+
 
     public WxPlatform(Context context, String appId, String wxSecret, String appName) {
         super(context, appId, appName);

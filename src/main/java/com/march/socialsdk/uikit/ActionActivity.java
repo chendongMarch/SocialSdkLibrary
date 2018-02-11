@@ -119,7 +119,7 @@ public class ActionActivity extends Activity
 
 
     private IPlatform getPlatform() {
-        IPlatform platform = BaseManager.getPlatform();
+        IPlatform platform = BaseManager.getCurrentPlatform();
         if (platform == null) {
             LogUtils.e(TAG, "platform is null");
             checkFinish();

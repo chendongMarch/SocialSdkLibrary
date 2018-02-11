@@ -114,7 +114,7 @@ public class ShareManager extends BaseManager {
 
         sOnShareListener = onShareListener;
         buildPlatform(context, shareTarget);
-        if (!getPlatform().isInstall()) {
+        if (!getCurrentPlatform().isInstall()) {
             onShareListener.onFailure(new SocialException(SocialException.CODE_NOT_INSTALL));
             return true;
         }
@@ -158,10 +158,10 @@ public class ShareManager extends BaseManager {
             LogUtils.e(TAG, "没有获取到读存储卡的权限，这可能导致某些分享不能进行");
         }
 
-        if (getPlatform() == null)
+        if (getCurrentPlatform() == null)
             return;
-        getPlatform().initOnShareListener(getOnShareListenerWrap(activity));
-        getPlatform().share(activity, shareTarget, shareObj);
+        getCurrentPlatform().initOnShareListener(getOnShareListenerWrap(activity));
+        getCurrentPlatform().share(activity, shareTarget, shareObj);
     }
 
     private static OnShareListener getOnShareListenerWrap(final Activity activity) {

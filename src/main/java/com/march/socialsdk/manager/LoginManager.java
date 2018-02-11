@@ -34,7 +34,7 @@ public class LoginManager extends BaseManager {
     public static void login(Context context, @Target.LoginTarget int loginTarget, OnLoginListener loginListener) {
         sOnLoginListener = loginListener;
         buildPlatform(context, loginTarget);
-        if (!getPlatform().isInstall()) {
+        if (!getCurrentPlatform().isInstall()) {
             loginListener.onFailure(new SocialException(SocialException.CODE_NOT_INSTALL));
             return;
         }
@@ -70,10 +70,10 @@ public class LoginManager extends BaseManager {
         if (sOnLoginListener == null) {
             LogUtils.e(TAG, "请设置 OnLoginListener");
         }
-        if (getPlatform() == null) {
+        if (getCurrentPlatform() == null) {
             return;
         }
-        getPlatform().login(activity, getOnLoginListenerWrap(activity));
+        getCurrentPlatform().login(activity, getOnLoginListenerWrap(activity));
     }
 
 
