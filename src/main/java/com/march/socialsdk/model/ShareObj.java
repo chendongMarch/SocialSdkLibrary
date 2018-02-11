@@ -21,7 +21,6 @@ public class ShareObj implements Parcelable {
     public static final int SHARE_TYPE_WEB = 0x44; // 分享web
     public static final int SHARE_TYPE_MUSIC = 0x45; // 分享音乐
     public static final int SHARE_TYPE_VIDEO = 0x46; // 分享视频
-    public static final int SHARE_TYPE_VOICE = 0x47; // 分享声音
     public static final int SHARE_OPEN_APP = 0x99; // 打开 app
 
     // 分享对象的类型
@@ -121,16 +120,6 @@ public class ShareObj implements Parcelable {
         shareMediaObj.setShareByIntent(true);
         shareMediaObj.setTitle(title);
         shareMediaObj.setSummary(summary);
-        return shareMediaObj;
-    }
-
-    // 声音，仅微博支持，其他平台使用web支持
-    public static ShareObj buildVoiceObj(String title, String summary
-            , String thumbImagePath, String targetUrl, String mediaPath, int duration) {
-        ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_VOICE);
-        shareMediaObj.init(title, summary, thumbImagePath, targetUrl);
-        shareMediaObj.setMediaPath(mediaPath);
-        shareMediaObj.setDuration(duration);
         return shareMediaObj;
     }
 

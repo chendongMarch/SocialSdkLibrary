@@ -51,7 +51,7 @@ public class IntentShareUtils {
     }
 
 
-    public static void activeShare(Activity activity, Intent sendIntent, String pkg, String targetActivity) throws Exception {
+    private static void activeShare(Activity activity, Intent sendIntent, String pkg, String targetActivity) throws Exception {
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         if (!TextUtils.isEmpty(targetActivity))
@@ -61,7 +61,6 @@ public class IntentShareUtils {
             if (chooserIntent == null) {
                 return;
             }
-
             activity.startActivityForResult(chooserIntent, SHARE_REQ_CODE);
         } catch (Exception e) {
             e.printStackTrace();

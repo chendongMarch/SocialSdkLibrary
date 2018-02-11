@@ -13,23 +13,29 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class Target {
 
+    public static final int PLATFORM_QQ = 0x11; // qq 登录
+    public static final int PLATFORM_WX = 0x12; // 微信登录
+    public static final int PLATFORM_WB = 0x13; // 微博登录
+    public static final int PLATFORM_DD = 0x14; // 微博登录
+
     public static final int LOGIN_QQ = 0x21; // qq 登录
     public static final int LOGIN_WX = 0x22; // 微信登录
     public static final int LOGIN_WB = 0x23; // 微博登录
 
 
-    public static final int SHARE_QQ_FRIENDS  = 0x31; // qq好友
-    public static final int SHARE_QQ_ZONE     = 0x32; // qq空间
-    public static final int SHARE_WX_FRIENDS  = 0x33; // 微信好友
-    public static final int SHARE_WX_ZONE     = 0x34; // 微信朋友圈
+    public static final int SHARE_QQ_FRIENDS = 0x31; // qq好友
+    public static final int SHARE_QQ_ZONE = 0x32; // qq空间
+    public static final int SHARE_WX_FRIENDS = 0x33; // 微信好友
+    public static final int SHARE_WX_ZONE = 0x34; // 微信朋友圈
     public static final int SHARE_WX_FAVORITE = 0x35; // 微信收藏
-    public static final int SHARE_WB_NORMAL   = 0x36; // 新浪微博
-    public static final int SHARE_WB_OPENAPI  = 0x37; // 新浪微博openApi分享，暂不支持
+    public static final int SHARE_WB_NORMAL = 0x36; // 新浪微博
+    public static final int SHARE_WB_OPENAPI = 0x37; // 新浪微博openApi分享，暂不支持
+    public static final int SHARE_DD = 0x38; // dingding 分享
 
 
     @IntDef({Target.SHARE_QQ_FRIENDS, Target.SHARE_QQ_ZONE,
-                    Target.SHARE_WX_FRIENDS, Target.SHARE_WX_ZONE, Target.SHARE_WX_FAVORITE,
-                    Target.SHARE_WB_NORMAL, Target.SHARE_WB_OPENAPI})
+            Target.SHARE_WX_FRIENDS, Target.SHARE_WX_ZONE, Target.SHARE_WX_FAVORITE,
+            Target.SHARE_WB_NORMAL, Target.SHARE_WB_OPENAPI,Target.SHARE_DD})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ShareTarget {
 

@@ -10,6 +10,7 @@ import com.march.socialsdk.model.SocialSdkConfig;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformCreator;
 import com.march.socialsdk.platform.Target;
+import com.march.socialsdk.platform.ding.DDPlatform;
 import com.march.socialsdk.platform.tencent.QQPlatform;
 import com.march.socialsdk.platform.wechat.WxPlatform;
 import com.march.socialsdk.platform.weibo.WbPlatform;
@@ -43,6 +44,7 @@ public class SocialSdk {
         registerPlatform(new QQPlatform.Creator(), Target.LOGIN_QQ, Target.SHARE_QQ_FRIENDS, Target.SHARE_QQ_ZONE);
         registerPlatform(new WxPlatform.Creator(), Target.LOGIN_WX, Target.SHARE_WX_FAVORITE, Target.SHARE_WX_ZONE, Target.SHARE_WX_FRIENDS);
         registerPlatform(new WbPlatform.Creator(), Target.LOGIN_WB, Target.SHARE_WB_NORMAL, Target.SHARE_WB_OPENAPI);
+        registerPlatform(new DDPlatform.Creator(), Target.SHARE_DD);
     }
 
     ///////////////////////////////////////////////////////////////////////////

@@ -373,19 +373,6 @@ public class WbPlatform extends AbsPlatform {
         }
     }
 
-    @Override
-    public void shareVoice(int shareTarget, final Activity activity, final ShareObj obj) {
-        BitmapUtils.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
-                .continueWith(new ThumbDataContinuation(TAG, "shareVoice", mOnShareListener) {
-                    @Override
-                    public void onSuccess(byte[] thumbData) {
-                        WeiboMultiMessage multiMessage = new WeiboMultiMessage();
-                        checkAddTextAndImageObj(multiMessage, obj, thumbData);
-                        multiMessage.mediaObject = getVoiceObj(obj.getTitle(), thumbData, obj.getTargetUrl(), obj.getSummary(), obj.getMediaPath(), obj.getDuration());
-                        sendWeiboMultiMsg(activity, multiMessage);
-                    }
-                }, Task.UI_THREAD_EXECUTOR);
-    }
 
 
     /**

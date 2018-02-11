@@ -316,12 +316,6 @@ public class WxPlatform extends AbsPlatform {
 
     }
 
-    @Override
-    public void shareVoice(int shareTarget, Activity activity, ShareObj obj) {
-        LogUtils.e(TAG, "微信不支持voice分享，将以web形式分享");
-        shareWeb(shareTarget, activity, obj);
-    }
-
 
     private String buildTransaction(final String type) {
         return (type == null) ? String.valueOf(System.currentTimeMillis()) : type + System.currentTimeMillis();
