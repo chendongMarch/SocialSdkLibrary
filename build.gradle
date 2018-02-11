@@ -30,4 +30,5 @@ dependencies {
     compile 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:1.4.0' // 微信
     compile files('libs/open_sdk_r5923_lite.jar') // QQ
     compile files('libs/weiboSDKCore_3.1.4.jar') // sina
+    compile files('libs/libddshare.jar') // dingding
 }
