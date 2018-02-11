@@ -29,7 +29,7 @@ public abstract class AbsPlatform implements IPlatform {
     protected String mAppName = null;
     protected Context mContext;
 
-    protected AbsPlatform(Context context, String appId, String appName) {
+    public AbsPlatform(Context context, String appId, String appName) {
         this.mAppId = appId;
         this.mAppName = appName;
         this.mContext = context;

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 
+import com.android.dingtalk.share.ddsharemodule.IDDAPIEventHandler;
 import com.march.socialsdk.utils.LogUtils;
 import com.march.socialsdk.manager.BaseManager;
 import com.march.socialsdk.manager.LoginManager;
@@ -23,7 +24,7 @@ import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
  * @author chendong
  */
 public class ActionActivity extends Activity
-        implements IWeiboHandler.Response, IWXAPIEventHandler {
+        implements IWeiboHandler.Response, IWXAPIEventHandler, IDDAPIEventHandler {
 
     public static final String TAG = ActionActivity.class.getSimpleName();
 
@@ -87,9 +88,12 @@ public class ActionActivity extends Activity
         checkFinish();
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    // 微信
+    ///////////////////////////////////////////////////////////////////////////
     @Override
+    //从微信页面返回的数据
     public void onResp(BaseResp resp) {
-        //从微信页面返回的数据
         if (getPlatform() != null)
             getPlatform().onResponse(resp);
         LogUtils.e(TAG, "onResp:" + "resp.getType():" + resp.getType() + " resp.errCode:" + resp.errCode + " resp.errStr:" + resp.errStr);
@@ -97,11 +101,33 @@ public class ActionActivity extends Activity
     }
 
     @Override
+    // 发起微信请求将会经过的方法
     public void onReq(BaseReq baseReq) {
-        // 发起微信请求将会经过的方法
         LogUtils.e(TAG, "onReq: " + baseReq.toString());
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    // 钉钉
+    ///////////////////////////////////////////////////////////////////////////
+
+    @Override
+    public void onReq(com.android.dingtalk.share.ddsharemodule.message.BaseReq baseReq) {
+
+    }
+
+    @Override
+    public void onResp(com.android.dingtalk.share.ddsharemodule.message.BaseResp baseResp) {
+        IPlatform platform = getPlatform();
+        if (platform != null) {
+            platform.onResponse(baseResp);
+        }
+        checkFinish();
+    }
+
+
+    ///////////////////////////////////////////////////////////////////////////
+    // help
+    ///////////////////////////////////////////////////////////////////////////
 
     private void checkFinish() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
@@ -127,4 +153,5 @@ public class ActionActivity extends Activity
         } else
             return platform;
     }
+
 }
