@@ -4,6 +4,10 @@ import android.os.Looper;
 import android.util.Log;
 
 import com.march.socialsdk.BuildConfig;
+import com.march.socialsdk.SocialSdk;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * CreateAt : 2016/12/22
@@ -15,19 +19,18 @@ import com.march.socialsdk.BuildConfig;
 public class LogUtils {
 
     public static final String TAG = "social-sdk";
-    public static boolean DEBUG = BuildConfig.DEBUG;
 
     private static String getMsg(Object msg) {
         return msg == null ? "null" : msg.toString();
     }
 
     public static void e(String tag, Object msg) {
-        if (DEBUG)
+        if (SocialSdk.getConfig().isDebug())
             Log.e(tag + "|" + TAG, getMsg(msg));
     }
 
     public static void e(String tag, Object... msg) {
-        if (DEBUG) {
+        if (SocialSdk.getConfig().isDebug()) {
             StringBuilder sb = new StringBuilder();
             for (Object o : msg) {
                 sb.append(" ").append(getMsg(o)).append(" ");
@@ -37,7 +40,7 @@ public class LogUtils {
     }
 
     public static void e(Object msg) {
-        if (DEBUG)
+        if (SocialSdk.getConfig().isDebug())
             Log.e(TAG, getMsg(msg));
     }
 
@@ -45,45 +48,29 @@ public class LogUtils {
         Log.e(TAG, throwable.getMessage(), throwable);
     }
 
-    private static String getHeaderInfo() {
-        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-        if (null == stackTrace) {
-            return "";
+
+    public static void json(String tag, String json) {
+        StringBuilder sb = new StringBuilder();
+        if (json == null || json.trim().length() == 0) {
+            sb.append("json isEmpty => ").append(json);
         } else {
-            StackTraceElement destStackTraceElement = null;
-            boolean next = true;
-            int var4 = stackTrace.length;
-            int lineNumber;
-            for (lineNumber = 0; lineNumber < var4; ++lineNumber) {
-                StackTraceElement traceElement = stackTrace[lineNumber];
-                if (traceElement.getClassName().equals(LogUtils.class.getName())) {
-                    next = false;
-                } else if (!next) {
-                    destStackTraceElement = traceElement;
-                    break;
-                }
-            }
-
-            if (null == destStackTraceElement) {
-                return "";
-            } else {
-                String className = destStackTraceElement.getClassName();
-                String methodName = destStackTraceElement.getMethodName();
-                lineNumber = destStackTraceElement.getLineNumber();
-                if (lineNumber < 0) {
-                    lineNumber = 0;
-                }
-                String threadInfo = "Thread: " + Thread.currentThread().getName();
-                if (Looper.myLooper() == Looper.getMainLooper()) {
-                    threadInfo = threadInfo + "(UI线程), ";
+            try {
+                json = json.trim();
+                if (json.startsWith("{")) {
+                    JSONObject jsonObject = new JSONObject(json);
+                    sb.append(jsonObject.toString(2));
+                } else if (json.startsWith("[")) {
+                    JSONArray jsonArray = new JSONArray(json);
+                    sb.append(jsonArray.toString(2));
                 } else {
-                    threadInfo = threadInfo + "(Work线程), ";
+                    sb.append("json 格式错误 => ").append(json);
                 }
-
-                String classAndMethodInfo = "[(" + className + ".java" + ":" + lineNumber + ")#" + methodName + "]\n";
-                return threadInfo + classAndMethodInfo;
+            } catch (Exception e) {
+                e.printStackTrace();
+                sb.append("json formatError => ").append(json);
             }
         }
+        e(tag, sb.toString());
     }
 
 }
