@@ -11,7 +11,7 @@ import android.text.TextUtils;
 
 import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.common.SocialConstants;
-import com.march.socialsdk.exception.SocialException;
+import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.utils.CommonUtils;
 import com.march.socialsdk.utils.FileUtils;
 import com.march.socialsdk.utils.LogUtils;
@@ -71,7 +71,7 @@ public class ShareManager extends BaseManager {
             public Boolean then(Task<ShareObj> task) throws Exception {
                 if (task.isFaulted() || task.getResult() == null) {
                     if (onShareListener != null) {
-                        SocialException exception = new SocialException("onPrepareInBackground error", task.getError());
+                        SocialError exception = new SocialError("onPrepareInBackground error", task.getError());
                         onShareListener.onFailure(exception);
                     }
                     return null;
@@ -83,7 +83,7 @@ public class ShareManager extends BaseManager {
             @Override
             public Boolean then(Task<Boolean> task) throws Exception {
                 if (task.isFaulted()) {
-                    SocialException exception = new SocialException("ShareManager.share() error", task.getError());
+                    SocialError exception = new SocialError("ShareManager.share() error", task.getError());
                     onShareListener.onFailure(exception);
                 }
                 return true;
@@ -108,14 +108,14 @@ public class ShareManager extends BaseManager {
     // 开始分享
     private static boolean doShare(Context context, @Target.ShareTarget int shareTarget, ShareObj shareObj, OnShareListener onShareListener) {
         if (!ShareObjCheckUtils.checkObjValid(shareObj, shareTarget)) {
-            onShareListener.onFailure(new SocialException(SocialException.CODE_SHARE_OBJ_VALID));
+            onShareListener.onFailure(new SocialError(SocialError.CODE_SHARE_OBJ_VALID));
             return true;
         }
 
         sOnShareListener = onShareListener;
         buildPlatform(context, shareTarget);
         if (!getCurrentPlatform().isInstall()) {
-            onShareListener.onFailure(new SocialException(SocialException.CODE_NOT_INSTALL));
+            onShareListener.onFailure(new SocialError(SocialError.CODE_NOT_INSTALL));
             return true;
         }
         Intent intent = new Intent(context, ActionActivity.class);
@@ -183,7 +183,7 @@ public class ShareManager extends BaseManager {
             }
 
             @Override
-            public void onFailure(SocialException e) {
+            public void onFailure(SocialError e) {
                 sOnShareListener.onFailure(e);
                 finishProcess(activity);
             }

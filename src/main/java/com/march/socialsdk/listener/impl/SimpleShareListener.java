@@ -1,6 +1,6 @@
 package com.march.socialsdk.listener.impl;
 
-import com.march.socialsdk.exception.SocialException;
+import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.model.ShareObj;
 
@@ -27,7 +27,7 @@ public class SimpleShareListener implements OnShareListener {
     }
 
     @Override
-    public void onFailure(SocialException e) {
+    public void onFailure(SocialError e) {
 
     }
 

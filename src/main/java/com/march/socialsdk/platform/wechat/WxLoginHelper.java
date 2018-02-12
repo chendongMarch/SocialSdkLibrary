@@ -3,7 +3,7 @@ package com.march.socialsdk.platform.wechat;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.march.socialsdk.exception.SocialException;
+import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.utils.TokenStoreUtils;
 import com.march.socialsdk.utils.JsonUtils;
 import com.march.socialsdk.utils.LogUtils;
@@ -109,7 +109,7 @@ public class WxLoginHelper {
             }
 
             @Override
-            public void onFailure(SocialException e) {
+            public void onFailure(SocialError e) {
                 // 刷新token失败
                 loginListener.onFailure(e.append("refreshToken fail"));
             }
@@ -131,13 +131,13 @@ public class WxLoginHelper {
                     TokenStoreUtils.saveWxToken(context, token);
                     getUserInfoByValidToken(token);
                 } else {
-                    SocialException exception = new SocialException("获取access_token失败 code = " + token.getErrcode() + "  msg = " + token.getErrmsg());
+                    SocialError exception = new SocialError("获取access_token失败 code = " + token.getErrcode() + "  msg = " + token.getErrmsg());
                     loginListener.onFailure(exception);
                 }
             }
 
             @Override
-            public void onFailure(SocialException e) {
+            public void onFailure(SocialError e) {
                 // 获取access_token失败
                 loginListener.onFailure(e.append("getAccessTokenByCode fail"));
             }
@@ -167,7 +167,7 @@ public class WxLoginHelper {
             }
 
             @Override
-            public void onFailure(SocialException e) {
+            public void onFailure(SocialError e) {
                 // 检测access_token有效性失败
                 LogUtils.e(TAG, "检测access_token失败");
                 loginListener.onFailure(e.append("checkAccessTokenValid fail"));
@@ -189,12 +189,12 @@ public class WxLoginHelper {
                 if (wxUserInfo.isNoError()) {
                     loginListener.onLoginSucceed(new LoginResult(loginType, wxUserInfo, token));
                 } else {
-                    loginListener.onFailure(new SocialException("wx_login code = " + wxUserInfo.getErrcode() + " ,msg = " + wxUserInfo.getErrmsg()));
+                    loginListener.onFailure(new SocialError("wx_login code = " + wxUserInfo.getErrcode() + " ,msg = " + wxUserInfo.getErrmsg()));
                 }
             }
 
             @Override
-            public void onFailure(SocialException e) {
+            public void onFailure(SocialError e) {
                 // 获取用户信息失败
                 loginListener.onFailure(e.append("getUserInfoByValidToken fail"));
             }

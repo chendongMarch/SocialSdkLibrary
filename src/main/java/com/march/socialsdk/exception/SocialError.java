@@ -10,11 +10,12 @@ import com.tencent.tauth.UiError;
  *
  * @author chendong
  */
-public class SocialException {
+public class SocialError {
+
+    public static final String TAG = SocialError.class.getSimpleName();
 
     public static final int CODE_OK = 1; // 成功
     public static final int CODE_CANCEL = 2; // 用户取消
-
 
     public static final int CODE_NOT_INSTALL = 0; // 没有安装应用
     public static final int CODE_VERSION_LOW = 1; // 版本低
@@ -24,12 +25,9 @@ public class SocialException {
     private int platform;
     private int errorCode;
     private String errorMsg;
-
-    private WeiboException mWeiboException;
-    private UiError mUiError;
     private Exception mException;
 
-    public SocialException(int errorCode) {
+    public SocialError(int errorCode) {
         this.errorCode = errorCode;
         switch (errorCode) {
             case CODE_NOT_INSTALL:
@@ -44,36 +42,18 @@ public class SocialException {
         }
     }
 
-    public SocialException(String message) {
+    public SocialError(String message) {
         this.errorMsg = message;
     }
 
-    public SocialException(int errorCode, Exception exception) {
+    public SocialError(int errorCode, Exception exception) {
         this.errorCode = errorCode;
         mException = exception;
     }
 
-    public SocialException(String message, WeiboException wbException) {
-        this(message);
-        this.mWeiboException = wbException;
-    }
-
-    public SocialException(String message, UiError uiError) {
-        this(message);
-        this.mUiError = uiError;
-    }
-
-    public SocialException(String message, Exception exception) {
+    public SocialError(String message, Exception exception) {
         this(message);
         mException = exception;
-    }
-
-    public UiError getUiError() {
-        return mUiError;
-    }
-
-    public Exception getException() {
-        return mException;
     }
 
     public int getErrorCode() {
@@ -92,12 +72,6 @@ public class SocialException {
         this.errorMsg = errorMsg;
     }
 
-    public WeiboException getWeiboException() {
-        return mWeiboException;
-    }
-
-    public static final String TAG = SocialException.class.getSimpleName();
-
     public void printStackTrace() {
         LogUtils.e(TAG, toString());
     }
@@ -106,26 +80,16 @@ public class SocialException {
     public String toString() {
         StringBuilder sb = new StringBuilder()
                 .append("errCode = ").append(errorCode)
-                .append("   ,errMsg = ").append(errorMsg).append("\n");
+                .append(", errMsg = ").append(errorMsg).append("\n");
         if (mException != null) {
             sb.append("其他错误 : ").append(mException.getMessage());
             mException.printStackTrace();
         }
-        if (mWeiboException != null) {
-            sb.append("微博分享出现错误 : ").append(mWeiboException.getMessage());
-            mWeiboException.printStackTrace();
-        }
-        if (mUiError != null) {
-            sb.append("qq分享出现错误 : ")
-                    .append(mUiError.errorCode).append("\n")
-                    .append(mUiError.errorMessage).append("\n")
-                    .append(mUiError.errorDetail).append("\n");
-        }
         return sb.toString();
     }
 
-    public SocialException append(String msg) {
-        this.errorMsg = String.valueOf(errorMsg) + " + " + msg;
+    public SocialError append(String msg) {
+        this.errorMsg = String.valueOf(errorMsg) + "   " + msg;
         return this;
     }
 }

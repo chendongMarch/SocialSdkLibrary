@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 
-import com.march.socialsdk.exception.SocialException;
+import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.utils.TokenStoreUtils;
 import com.march.socialsdk.utils.LogUtils;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
@@ -26,7 +26,7 @@ public class WbAuthHelper {
     public interface OnAuthOverListener {
         void onAuth(Oauth2AccessToken token);
 
-        void onException(SocialException e);
+        void onException(SocialError e);
 
         void onCancel();
     }
@@ -76,7 +76,7 @@ public class WbAuthHelper {
                 String code = values.getString("code");
                 // 授权失败
                 LogUtils.e(TAG,"wb_auth", "授权失败 " + code);
-                listener.onException(new SocialException("授权失败 code = " + code));
+                listener.onException(new SocialError("授权失败 code = " + code));
             }
         }
 
@@ -93,7 +93,7 @@ public class WbAuthHelper {
             // 授权失败
             e.printStackTrace();
             LogUtils.e(TAG,"wb_auth", "Auth exception : " + e.getMessage());
-            listener.onException(new SocialException("授权失败", e));
+            listener.onException(new SocialError("授权失败", e));
         }
     }
 }
