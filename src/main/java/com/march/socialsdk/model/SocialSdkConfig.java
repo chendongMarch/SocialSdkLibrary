@@ -18,18 +18,21 @@ public class SocialSdkConfig {
 
     public static final String SHARE_CACHE_DIR_NAME = "toShare";
 
+    // 调试配置
+    private boolean isDebug = false;
+    // 应用名
     private String appName = "应用";
-
+    // 微信配置
     private String wxAppId;
     private String wxSecretKey;
-
+    // qq 配置
     private String qqAppId;
-
+    // 微博配置
     private String sinaAppId;
     private String sinaRedirectUrl = SocialConstants.REDIRECT_URL;
     private String sinaScope       = SocialConstants.SCOPE;
     private String shareCacheDirPath;
-
+    // 钉钉配置
     private String ddAppId;
 
     public SocialSdkConfig(Context context) {
@@ -104,6 +107,14 @@ public class SocialSdkConfig {
 
     public String getSinaScope() {
         return sinaScope;
+    }
+
+    public boolean isDebug() {
+        return isDebug;
+    }
+
+    public void setDebug(boolean debug) {
+        isDebug = debug;
     }
 
     @Override
