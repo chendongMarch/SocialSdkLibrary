@@ -257,6 +257,9 @@ public class ShareManager extends BaseManager {
             case Target.SHARE_WB_OPENAPI:
                 pkgName = SocialConstants.SINA_PKG;
                 break;
+            case Target.SHARE_DD:
+                pkgName = SocialConstants.DD_PKG;
+                break;
         }
         return !TextUtils.isEmpty(pkgName) && CommonUtils.openApp(context, pkgName);
     }

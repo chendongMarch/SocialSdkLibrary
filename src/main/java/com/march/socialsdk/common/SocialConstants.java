@@ -11,6 +11,7 @@ public class SocialConstants {
     public static final String QQ_PKG = "com.tencent.mobileqq";
     public static final String WECHAT_PKG = "com.tencent.mm";
     public static final String SINA_PKG = "com.sina.weibo";
+    public static final String DD_PKG = "com.alibaba.android.rimet";
 
     // 微信收藏
     public static final String WX_FAVORITE_PAGE = "com.tencent.mm.ui.tools.AddFavoriteUI";
@@ -18,6 +19,8 @@ public class SocialConstants {
     public static final String WX_FRIEND_PAGE = "com.tencent.mm.ui.tools.ShareImgUI";
     // 微信主界面
     public static final String WX_LAUNCH_PAGE = "com.tencent.mm.ui.LauncherUI";
+    // 钉钉分享界面
+    public static final String DD_FRIEND_PAGE = "com.alibaba.android.rimet.biz.BokuiActivity";
 
 
     public static final String QQ_QZONE_PAGE = "com.qzonex.module.maxvideo.activity.QzonePublishVideoActivity";// qq空间app

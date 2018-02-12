@@ -114,9 +114,9 @@ public class ShareObj implements Parcelable {
     }
 
     // 本地视频
-    public static ShareObj buildVideoObj(String title,String summary,String mediaPath) {
+    public static ShareObj buildVideoObj(String title,String summary,String localVideoPath) {
         ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_VIDEO);
-        shareMediaObj.setMediaPath(mediaPath);
+        shareMediaObj.setMediaPath(localVideoPath);
         shareMediaObj.setShareByIntent(true);
         shareMediaObj.setTitle(title);
         shareMediaObj.setSummary(summary);

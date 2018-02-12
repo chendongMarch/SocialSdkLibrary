@@ -42,8 +42,7 @@ public class ShareObjCheckUtils {
                         && isThumbLocalPathValid(obj);
             }
             //  music voice
-            case ShareObj.SHARE_TYPE_MUSIC:
-            {
+            case ShareObj.SHARE_TYPE_MUSIC: {
                 return isMusicVideoVoiceValid(obj) && isNetMedia(obj);
             }
             // video
@@ -54,8 +53,8 @@ public class ShareObjCheckUtils {
                     // 网络视频使用 web 兼容,因此本地网络文件都可以
                     // 不需要缩略图文件
                     return isTitleSummaryValid(obj) && !CommonUtils.isAnyEmpty(obj.getMediaPath());
-                } else if (obj.isShareByIntent() && (shareTarget == Target.SHARE_WB_NORMAL || shareTarget == Target.SHARE_QQ_FRIENDS || shareTarget == Target.SHARE_WX_FRIENDS)) {
-                    // 本地视频分享，支持微博、qq好友、微信好友 intent
+                } else if (obj.isShareByIntent() && isSupportLocalVideo(shareTarget)) {
+                    // 本地视频分享，支持微博、qq好友、微信好友、钉钉
                     return FileUtils.isExist(obj.getMediaPath());
                 } else {
                     // 必须是网络路径
@@ -67,6 +66,12 @@ public class ShareObjCheckUtils {
         }
     }
 
+    private static boolean isSupportLocalVideo(int shareTarget) {
+        return shareTarget == Target.SHARE_WB_NORMAL
+                || shareTarget == Target.SHARE_QQ_FRIENDS
+                || shareTarget == Target.SHARE_WX_FRIENDS
+                || shareTarget == Target.SHARE_DD;
+    }
 
     private static boolean isTitleSummaryValid(ShareObj obj) {
         boolean valid = !CommonUtils.isAnyEmpty(obj.getTitle(), obj.getSummary());
