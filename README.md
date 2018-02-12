@@ -1,22 +1,33 @@
-# SocialSdk
 
-![img](http://olx4t2q6z.bkt.clouddn.com/18-2-6/30515419.jpg)
+# SocialSDK
 
-🎉  2017.12.12 对代码进行简单重构并测试，发布第一个稳定版本 1.0.0
+<img src="http://olx4t2q6z.bkt.clouddn.com/18-2-6/30515419.jpg"/>
 
-「`SocialSdk`」 提供微博、微信、QQ的登陆分享功能支持，使用 微博、QQ、微信 原生 SDK 接入，持续优化中...
+使用 **微博**、**QQ**、**微信**、**钉钉** 原生 `SDK` 接入，提供这些平台的登录、分享功能支持。针对业务逻辑对各个平台的接口进行封装，对外提供一致的表现，在减轻接入压力的同时，又能获得原生 `SDK` 最大的灵活性。
 
-由于项目中想要接入的平台因人而异，第三方 SDK 更新也比较频繁，因此没有对类库进行发布操作，本项目是个 `Library Module`，测试代码的 `sample` 我没有发不上来，下载之后直接依赖这个 `module` 即可，这样也方便问题修复。
 
 项目地址 : [GitHub - SocialSdkLibrary](https://github.com/chendongMarch/SocialSdkLibrary)
 
-推荐阅读 ：[文章地址](http://cdevlab.top/article/3067853428/)
+本文地址 ：[快速接入微信微博QQ钉钉原生登录分享](http://cdevlab.top/article/3067853428/)
+
+🎉  2017.12.12 对代码进行简单重构并测试，发布第一个稳定版本 1.0.0
+🎉  2018.2.12 支持钉钉分享
+
+<div style="width:100%;display: flex;height:30px;">
+
+<img style="margin-right:20px;" src="https://badge.juejin.im/entry/5a793a405188257a82111092/likes.svg?style=flat-square"/>
+
+<img style="margin-right:20px;"  src="https://img.shields.io/github/stars/chendongMarch/SocialSdkLibrary.svg"/>
+
+<img  style="margin-right:20px;"  src="https://img.shields.io/github/forks/chendongMarch/SocialSdkLibrary.svg"/>
+
+</div>
 
 <!--more-->
 
 ## 优点
 
-写的不好，还在优化中...
+还在优化中...
 
 🔥 简单：只需要关注几个管理类和相关数据的构造即可实现所需功能，不需要考虑复杂的授权和分享逻辑。
 
@@ -24,11 +35,15 @@
 
 🔥 全面：内部存储授权 token，避免多次授权；对qq、微信、微博做了完善的支持；
 
-🔥 扩展性：项目以功能进行划分，各个平台之间互相独立，如果想仅支持部分平台，只需要删除某个平台的具体实现即可。可从外部注入代理，对一些功能进行自定义的扩展。
+🔥 扩展性：项目以平台进行划分，各个平台之间互相独立，如果想仅支持部分平台，只需要删除某个平台的具体实现即可。可从外部注入代理，对一些功能进行自定义的扩展。
 
 🔥 功能性：针对实际项目需求进行扩展，例如在分享前统一对分享数据提供一次重新构造的机会。
 
-🔥 兼容性：为多个平台提供外观一致的分享接口，若不支持，使用 web 分享兼容。支持直接使用网络图片分享，内置自动下载功能。使用 Intent 兼容不支持的数据模式，如支持本地视频分享，qq 的纯文字分享等等。
+🔥 兼容性：
+
+- 为多个平台提供外观一致的分享接口，若不支持，使用 `web` 分享兼容。
+- 支持直接使用网络图片分享，内置自动下载功能。
+- 使用 `Intent` 兼容不支持的数据模式，如支持本地视频分享，`qq` 的纯文字分享等等。
 
 ## 主要类文件
 
@@ -73,8 +88,9 @@ String qqAppId = getString(R.string.QQ_APPID);
 String wxAppId = getString(R.string.WEICHAT_APPID);
 String wxSecretKey = getString(R.string.WEICHAT_APPKEY);
 String sinaAppId = getString(R.string.SINA_APPKEY);
-
+String ddAppId = getString(R.string.DD_APPID);
 SocialSdkConfig config = new SocialSdkConfig(this)
+        .dd(ddAppId)
         // 配置qq
         .qq(qqAppId)
         // 配置wx
@@ -82,14 +98,13 @@ SocialSdkConfig config = new SocialSdkConfig(this)
         // 配置sina
         .sina(sinaAppId)
         // 配置Sina的RedirectUrl，有默认值，如果是官网默认的不需要设置
-        .sinaRedirectUrl("http://open.manfenmm.cxxxxxxx")
+        .sinaRedirectUrl("http://open.manfenmm.com/bbpp/app/weibo/common.php")
         // 配置Sina授权scope,有默认值，默认值 all
         .sinaScope(SocialConstants.SCOPE);
-
-// 👮 添加自定义的 json 解析，必须
-SocialSdk.addJsonAdapter(new GsonJsonAdapter());
 // 👮 添加 config 数据，必须
 SocialSdk.init(config);
+// 👮 添加自定义的 json 解析，必须
+SocialSdk.setJsonAdapter(new GsonJsonAdapter());
 ```
 
 ## adapter
@@ -174,9 +189,9 @@ ShareManager.sendEmail(mActivity,"1101873740@qq.com","subject","msg body");
 ShareManager.openApp(mActivity,Target.SHARE_QQ_FRIENDS);
 ```
 
-### 9 种数据支持
+### 8 种数据支持
 
-分享支持 9 种类型的数据；如果某个平台不兼容某种类型的分享，将会使用 `web` 分享的方式代替；比如微信不支持 `app` 分享，分享出去之后时 `web` 分享的模式。支持的 9 种类型分别是：
+分享支持 8 种类型的数据；如果某个平台不兼容某种类型的分享，将会使用 `web` 分享的方式代替；比如微信不支持 `app` 分享，分享出去之后时 `web` 分享的模式。支持的 8 种类型分别是：
 
 > 1. 开启渠道对用的 app。
 > 2. 分享文字。
@@ -186,13 +201,13 @@ ShareManager.openApp(mActivity,Target.SHARE_QQ_FRIENDS);
 > 6. 分享 music。
 > 7. 分享 video。
 > 8. 分享本地 video，使用 Intent 方式唤醒。
-> 9. 分享 voice，(sina 专有，其他平台使用 web 分享)
 
 
-### 7 个分享渠道
+### 8 个分享渠道
 
 ```java
 // 支持的分享渠道
+Target.SHARE_DD; // 钉钉好友
 Target.SHARE_QQ_FRIENDS; // qq好友
 Target.SHARE_QQ_ZONE; // qq空间
 Target.SHARE_WX_FRIENDS; // 微信好友
@@ -236,8 +251,6 @@ ShareObj videoObj = ShareObj.buildVideoObj("分享视频", "summary", localImage
 ShareObj videoLocalObj = ShareObj.buildVideoObjByLocalPath(localVideoPath);
 // 分享音乐
 ShareObj musicObj = ShareObj.buildMusicObj("分享音乐", "summary", localImagePath, targetUrl, netMusicPath, 10);
-// 分享声音，微博特有，其他平台以web方式分享
-ShareObj voiceObj = ShareObj.buildVoiceObj("分享声音", "summary", localImagePath, targetUrl, netMusicPath, 10);
 ```
 
 ### 分享监听
