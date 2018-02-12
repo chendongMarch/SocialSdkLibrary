@@ -28,6 +28,14 @@
             android:screenOrientation="portrait"
             android:targetActivity="com.march.socialsdk.uikit.ActionActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"/>
+        <!--dd-->
+        <activity-alias
+            android:name="${applicationId}.ddshare.DDShareActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:targetActivity="com.march.socialsdk.uikit.ActionActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"/>
 
         <!-- QQ、Qzone平台 -->
         <activity
