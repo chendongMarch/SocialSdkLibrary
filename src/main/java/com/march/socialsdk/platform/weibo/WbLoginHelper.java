@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.march.socialsdk.exception.SocialException;
+import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.utils.CommonUtils;
 import com.march.socialsdk.utils.JsonUtils;
 import com.march.socialsdk.utils.LogUtils;
@@ -61,7 +61,7 @@ public class WbLoginHelper {
 
             @Override
             public void onWeiboException(WeiboException e) {
-                loginListener.onFailure(new SocialException("sina,获取用户信息失败", e));
+                loginListener.onFailure(new SocialError("sina,获取用户信息失败", e));
             }
         });
     }
@@ -78,7 +78,7 @@ public class WbLoginHelper {
             }
 
             @Override
-            public void onException(SocialException e) {
+            public void onException(SocialError e) {
                 loginListener.onFailure(e);
             }
 

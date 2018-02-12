@@ -11,7 +11,7 @@ import android.text.TextUtils;
 
 import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.common.SocialConstants;
-import com.march.socialsdk.exception.SocialException;
+import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.model.SocialSdkConfig;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformCreator;
@@ -101,7 +101,7 @@ public class QQPlatform extends AbsPlatform {
     public void login(Activity activity, OnLoginListener loginListener) {
         if (!mTencentApi.isSupportSSOLogin(activity)) {
             // 下载最新版
-            loginListener.onFailure(new SocialException(SocialException.CODE_VERSION_LOW));
+            loginListener.onFailure(new SocialError(SocialError.CODE_VERSION_LOW));
             return;
         }
         mQQLoginHelper = new QQLoginHelper(activity, mTencentApi, loginListener);
@@ -131,7 +131,7 @@ public class QQPlatform extends AbsPlatform {
         if (rst) {
             mOnShareListener.onSuccess();
         } else {
-            mOnShareListener.onFailure(new SocialException("open app error"));
+            mOnShareListener.onFailure(new SocialError("open app error"));
         }
     }
 
@@ -236,7 +236,7 @@ public class QQPlatform extends AbsPlatform {
                 LogUtils.e(TAG, "qq空间本地视频分享");
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                         && activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-                    this.mIUiListenerWrap.onError(new SocialException("没有获取到读存储卡的权限，qq 空间分享本地视频功能无法继续"));
+                    this.mIUiListenerWrap.onError(new SocialError("没有获取到读存储卡的权限，qq 空间分享本地视频功能无法继续"));
                     return;
                 }
                 final Bundle params = new Bundle();
@@ -249,8 +249,6 @@ public class QQPlatform extends AbsPlatform {
             }
         }
     }
-
-
 
 
     private class IUiListenerWrap implements IUiListener {
@@ -270,10 +268,10 @@ public class QQPlatform extends AbsPlatform {
         @Override
         public void onError(UiError uiError) {
             if (listener != null)
-                listener.onFailure(new SocialException("分享失败", uiError));
+                listener.onFailure(new SocialError("分享失败 " + mQQLoginHelper.parseUiError(uiError)));
         }
 
-        public void onError(SocialException e) {
+        public void onError(SocialError e) {
             if (listener != null)
                 listener.onFailure(e);
         }

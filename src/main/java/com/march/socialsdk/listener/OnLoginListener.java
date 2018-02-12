@@ -1,6 +1,6 @@
 package com.march.socialsdk.listener;
 
-import com.march.socialsdk.exception.SocialException;
+import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.model.LoginResult;
 
 /**
@@ -17,5 +17,5 @@ public interface OnLoginListener {
 
     void onCancel();
 
-    void onFailure(SocialException e);
+    void onFailure(SocialError e);
 }

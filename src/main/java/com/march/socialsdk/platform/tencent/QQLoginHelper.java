@@ -3,7 +3,7 @@ package com.march.socialsdk.platform.tencent;
 import android.app.Activity;
 import android.content.Intent;
 
-import com.march.socialsdk.exception.SocialException;
+import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.utils.TokenStoreUtils;
 import com.march.socialsdk.utils.JsonUtils;
 import com.march.socialsdk.utils.LogUtils;
@@ -30,9 +30,9 @@ public class QQLoginHelper {
 
     public static final String TAG = QQLoginHelper.class.getSimpleName();
 
-    private int             loginType;
-    private Tencent         mTencentApi;
-    private Activity        activity;
+    private int loginType;
+    private Tencent mTencentApi;
+    private Activity activity;
     private OnLoginListener onLoginListener;
     private LoginUiListener loginUiListener;
 
@@ -87,7 +87,7 @@ public class QQLoginHelper {
 
         @Override
         public void onError(UiError e) {
-            onLoginListener.onFailure(new SocialException("qq,获取用户信息失败", e));
+            onLoginListener.onFailure(new SocialError("qq,获取用户信息失败 " + parseUiError(e)));
         }
 
         @Override
@@ -104,15 +104,21 @@ public class QQLoginHelper {
             public void onComplete(Object object) {
                 LogUtils.e(TAG, "qq 获取到用户信息 = " + object);
                 QQUser qqUserInfo = JsonUtils.getObject(object.toString(), QQUser.class);
-                qqUserInfo.setOpenId(mTencentApi.getOpenId());
-                if (onLoginListener != null) {
-                    onLoginListener.onLoginSucceed(new LoginResult(loginType, qqUserInfo, qqToken));
+                if(qqUserInfo == null){
+                    if (onLoginListener != null) {
+                        onLoginListener.onFailure(new SocialError("解析 qq user 错误"));
+                    }
+                }else {
+                    qqUserInfo.setOpenId(mTencentApi.getOpenId());
+                    if (onLoginListener != null) {
+                        onLoginListener.onLoginSucceed(new LoginResult(loginType, qqUserInfo, qqToken));
+                    }
                 }
             }
 
             @Override
             public void onError(UiError e) {
-                onLoginListener.onFailure(new SocialException("qq,获取用户信息失败", e));
+                onLoginListener.onFailure(new SocialError("qq获取用户信息失败  " + parseUiError(e)));
             }
 
             @Override
@@ -121,5 +127,9 @@ public class QQLoginHelper {
             }
 
         });
+    }
+
+    public String parseUiError(UiError error) {
+        return "qq error [ code = " + error.errorCode + ", msg = " + error.errorMessage + ", detail = " + error.errorDetail + " ]";
     }
 }

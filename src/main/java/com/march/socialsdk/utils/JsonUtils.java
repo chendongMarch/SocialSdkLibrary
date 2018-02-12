@@ -5,7 +5,7 @@ import android.text.TextUtils;
 
 import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.adapter.IJsonAdapter;
-import com.march.socialsdk.exception.SocialException;
+import com.march.socialsdk.exception.SocialError;
 
 import java.util.concurrent.Callable;
 
@@ -49,7 +49,7 @@ public class JsonUtils {
 
         void onSuccess(@NonNull T object);
 
-        void onFailure(SocialException e);
+        void onFailure(SocialError e);
     }
 
     public static <T> void startJsonRequest(final String url, final Class<T> clz, final Callback<T> callback) {
@@ -71,11 +71,11 @@ public class JsonUtils {
                 if (!task.isFaulted() && task.getResult() != null) {
                     callback.onSuccess(task.getResult());
                 } else if (task.isFaulted()) {
-                    callback.onFailure(new SocialException("startJsonRequest error", task.getError()));
+                    callback.onFailure(new SocialError("startJsonRequest error", task.getError()));
                 } else if (task.getResult() == null) {
-                    callback.onFailure(new SocialException("json 无法解析"));
+                    callback.onFailure(new SocialError("json 无法解析"));
                 } else {
-                    callback.onFailure(new SocialException("unKnow error"));
+                    callback.onFailure(new SocialError("unKnow error"));
                 }
                 return true;
             }
@@ -83,7 +83,7 @@ public class JsonUtils {
             @Override
             public Object then(Task<Boolean> task) throws Exception {
                 if(task.isFaulted()) {
-                    callback.onFailure(new SocialException("未 handle 的错误"));
+                    callback.onFailure(new SocialError("未 handle 的错误"));
                 }
                 return null;
             }

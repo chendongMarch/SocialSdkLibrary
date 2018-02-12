@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
-import com.march.socialsdk.exception.SocialException;
+import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.utils.TokenStoreUtils;
 import com.march.socialsdk.utils.LogUtils;
 import com.march.socialsdk.listener.OnLoginListener;
@@ -35,7 +35,7 @@ public class LoginManager extends BaseManager {
         sOnLoginListener = loginListener;
         buildPlatform(context, loginTarget);
         if (!getCurrentPlatform().isInstall()) {
-            loginListener.onFailure(new SocialException(SocialException.CODE_NOT_INSTALL));
+            loginListener.onFailure(new SocialError(SocialError.CODE_NOT_INSTALL));
             return;
         }
         Intent intent = new Intent(context, ActionActivity.class);
@@ -97,7 +97,7 @@ public class LoginManager extends BaseManager {
             }
 
             @Override
-            public void onFailure(SocialException e) {
+            public void onFailure(SocialError e) {
                 sOnLoginListener.onFailure(e);
                 finishProcess(activity);
             }

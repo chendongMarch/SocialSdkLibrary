@@ -7,7 +7,7 @@ import android.text.TextUtils;
 import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.common.ThumbDataContinuation;
-import com.march.socialsdk.exception.SocialException;
+import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.model.SocialSdkConfig;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformCreator;
@@ -132,11 +132,11 @@ public class WxPlatform extends AbsPlatform {
                     break;
                 case BaseResp.ErrCode.ERR_SENT_FAILED:
                     // 分享失败
-                    mOnShareListener.onFailure(new SocialException("分享失败"));
+                    mOnShareListener.onFailure(new SocialError("分享失败"));
                     break;
                 case BaseResp.ErrCode.ERR_AUTH_DENIED:
                     // 分享被拒绝
-                    mOnShareListener.onFailure(new SocialException("分享被拒绝"));
+                    mOnShareListener.onFailure(new SocialError("分享被拒绝"));
                     break;
             }
         }
@@ -145,7 +145,7 @@ public class WxPlatform extends AbsPlatform {
     @Override
     public void login(Activity context, OnLoginListener loginListener) {
         if (!mWxApi.isWXAppSupportAPI()) {
-            loginListener.onFailure(new SocialException(SocialException.CODE_VERSION_LOW));
+            loginListener.onFailure(new SocialError(SocialError.CODE_VERSION_LOW));
             return;
         }
         mWeChatLoginHelper = new WxLoginHelper(context, mWxApi, mAppId);
@@ -177,7 +177,7 @@ public class WxPlatform extends AbsPlatform {
         req.scene = getShareToWhere(shareTarget);
         boolean sendResult = mWxApi.sendReq(req);
         if (!sendResult) {
-            mOnShareListener.onFailure(new SocialException("sendMsgToWx失败，可能是参数错误"));
+            mOnShareListener.onFailure(new SocialError("sendMsgToWx失败，可能是参数错误"));
         }
     }
 
@@ -187,7 +187,7 @@ public class WxPlatform extends AbsPlatform {
         if (rst) {
             mOnShareListener.onSuccess();
         } else {
-            mOnShareListener.onFailure(new SocialException("open app error"));
+            mOnShareListener.onFailure(new SocialError("open app error"));
         }
     }
 
@@ -296,7 +296,7 @@ public class WxPlatform extends AbsPlatform {
             try {
                 IntentShareUtils.shareVideo(activity, obj.getMediaPath(), SocialConstants.WECHAT_PKG, SocialConstants.WX_FRIEND_PAGE);
             } catch (Exception e) {
-                this.mOnShareListener.onFailure(new SocialException(SocialException.CODE_SHARE_BY_INTENT_FAIL, e));
+                this.mOnShareListener.onFailure(new SocialError(SocialError.CODE_SHARE_BY_INTENT_FAIL, e));
             }
         } else {
             BitmapUtils.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)

@@ -1,6 +1,6 @@
 package com.march.socialsdk.listener;
 
-import com.march.socialsdk.exception.SocialException;
+import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.model.ShareObj;
 
 /**
@@ -24,7 +24,7 @@ public interface OnShareListener {
 
     void onSuccess();
 
-    void onFailure(SocialException e);
+    void onFailure(SocialError e);
 
     void onCancel();
 }

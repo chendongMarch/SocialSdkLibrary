@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import com.march.socialsdk.exception.SocialException;
+import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.utils.IntentShareUtils;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.listener.OnShareListener;
@@ -88,7 +88,7 @@ public abstract class AbsPlatform implements IPlatform {
             IntentShareUtils.shareVideo(activity, obj.getMediaPath(), pkg, page);
         } catch (Exception e) {
             if (this.mOnShareListener != null) {
-                this.mOnShareListener.onFailure(new SocialException(SocialException.CODE_SHARE_BY_INTENT_FAIL, e));
+                this.mOnShareListener.onFailure(new SocialError(SocialError.CODE_SHARE_BY_INTENT_FAIL, e));
             }
         }
     }
@@ -98,7 +98,7 @@ public abstract class AbsPlatform implements IPlatform {
             IntentShareUtils.shareText(activity, obj.getTitle(), obj.getSummary(), pkg, page);
         } catch (Exception e) {
             if (this.mOnShareListener != null) {
-                this.mOnShareListener.onFailure(new SocialException(SocialException.CODE_SHARE_BY_INTENT_FAIL, e));
+                this.mOnShareListener.onFailure(new SocialError(SocialError.CODE_SHARE_BY_INTENT_FAIL, e));
             }
         }
     }

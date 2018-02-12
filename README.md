@@ -1,10 +1,14 @@
 
 # SocialSDK
 
+
+
 <img src="http://olx4t2q6z.bkt.clouddn.com/18-2-6/30515419.jpg"/>
+
 
 使用 **微博**、**QQ**、**微信**、**钉钉** 原生 `SDK` 接入，提供这些平台的登录、分享功能支持。针对业务逻辑对各个平台的接口进行封装，对外提供一致的表现，在减轻接入压力的同时，又能获得原生 `SDK` 最大的灵活性。
 
+考虑到 `SDK` 更新较为频繁，且每个人的需求差异比较大，因此没有对类库进行发布，可以下载 `GitHub` 上的 `module` 自行依赖，如果只需要支持部分平台，只需要删除 `platform` 包下面对应的实现即可。
 
 项目地址 : [GitHub - SocialSdkLibrary](https://github.com/chendongMarch/SocialSdkLibrary)
 

@@ -8,7 +8,7 @@ import android.graphics.Bitmap;
 import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.common.ThumbDataContinuation;
 import com.march.socialsdk.common.SocialConstants;
-import com.march.socialsdk.exception.SocialException;
+import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.model.SocialSdkConfig;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformCreator;
@@ -75,7 +75,7 @@ public class WbPlatform extends AbsPlatform {
 
         @Override
         public void onWeiboException(WeiboException e) {
-            mOnShareListener.onFailure(new SocialException("open api分享图片失败", e));
+            mOnShareListener.onFailure(new SocialError("open api分享图片失败", e));
         }
     };
 
@@ -146,7 +146,7 @@ public class WbPlatform extends AbsPlatform {
                 break;
             case WBConstants.ErrorCode.ERR_FAIL:
                 // 分享失败
-                mOnShareListener.onFailure(new SocialException("微博分享失败"));
+                mOnShareListener.onFailure(new SocialError("微博分享失败"));
                 break;
         }
     }
@@ -186,7 +186,7 @@ public class WbPlatform extends AbsPlatform {
             }
 
             @Override
-            public void onException(SocialException e) {
+            public void onException(SocialError e) {
                 mOnShareListener.onFailure(e);
             }
 
@@ -224,7 +224,7 @@ public class WbPlatform extends AbsPlatform {
             @Override
             public Object then(final Task<Bitmap> task) throws Exception {
                 if (task.isFaulted() || task.getResult() == null) {
-                    mOnShareListener.onFailure(new SocialException("sina openApi分享jpg,png失败", task.getError()));
+                    mOnShareListener.onFailure(new SocialError("sina openApi分享jpg,png失败", task.getError()));
                     return null;
                 }
                 mStatusesAPI.upload(obj.getSummary(), task.getResult(), null, null, requestListener);
@@ -248,7 +248,7 @@ public class WbPlatform extends AbsPlatform {
             @Override
             public Object then(final Task<ByteArrayOutputStream> task) throws Exception {
                 if (task.isFaulted() || task.getResult() == null) {
-                    mOnShareListener.onFailure(new SocialException("sina openApi分享gif失败", task.getError()));
+                    mOnShareListener.onFailure(new SocialError("sina openApi分享gif失败", task.getError()));
                     return null;
                 }
                 mStatusesAPI.upload(obj.getSummary(), task.getResult(), requestListener);
@@ -277,7 +277,7 @@ public class WbPlatform extends AbsPlatform {
         request.multiMessage = message;
         boolean isSendSuccess = mWbShareAPI.sendRequest(activity, request);
         if (!isSendSuccess) {
-            mOnShareListener.onFailure(new SocialException("sina分享发送失败，检查参数"));
+            mOnShareListener.onFailure(new SocialError("sina分享发送失败，检查参数"));
         }
     }
 
@@ -287,7 +287,7 @@ public class WbPlatform extends AbsPlatform {
         if (rst) {
             mOnShareListener.onSuccess();
         } else {
-            mOnShareListener.onFailure(new SocialException("open app error"));
+            mOnShareListener.onFailure(new SocialError("open app error"));
         }
     }
 
@@ -357,7 +357,7 @@ public class WbPlatform extends AbsPlatform {
             try {
                 IntentShareUtils.shareVideo(activity, obj.getMediaPath(), SocialConstants.SINA_PKG, SocialConstants.WB_COMPOSER_PAGE);
             } catch (Exception e) {
-                this.mOnShareListener.onFailure(new SocialException(SocialException.CODE_SHARE_BY_INTENT_FAIL, e));
+                this.mOnShareListener.onFailure(new SocialError(SocialError.CODE_SHARE_BY_INTENT_FAIL, e));
             }
         } else {
             BitmapUtils.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
