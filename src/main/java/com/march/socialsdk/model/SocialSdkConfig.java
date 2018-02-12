@@ -113,6 +113,7 @@ public class SocialSdkConfig {
                 ", wxAppId='" + wxAppId + '\'' +
                 ", wxSecretKey='" + wxSecretKey + '\'' +
                 ", qqAppId='" + qqAppId + '\'' +
+                ", ddAppId='" + ddAppId + '\'' +
                 ", sinaAppId='" + sinaAppId + '\'' +
                 ", sinaRedirectUrl='" + sinaRedirectUrl + '\'' +
                 ", sinaScope='" + sinaScope + '\'' +

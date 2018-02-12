@@ -13,13 +13,16 @@ import com.android.dingtalk.share.ddsharemodule.message.DDTextMessage;
 import com.android.dingtalk.share.ddsharemodule.message.DDWebpageMessage;
 import com.android.dingtalk.share.ddsharemodule.message.SendMessageToDD;
 import com.march.socialsdk.SocialSdk;
+import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.exception.SocialException;
 import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.model.SocialSdkConfig;
 import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformCreator;
+import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.utils.CommonUtils;
+import com.march.socialsdk.utils.IntentShareUtils;
 
 /**
  * CreateAt : 2018/2/11
@@ -56,7 +59,9 @@ public class DDPlatform extends AbsPlatform {
 
     @Override
     public void onResponse(Object resp) {
-        super.onResponse(resp);
+        if (!(resp instanceof BaseResp)) {
+            return;
+        }
         BaseResp baseResp = (BaseResp) resp;
         int errCode = baseResp.mErrCode;
         switch (errCode) {
@@ -153,7 +158,15 @@ public class DDPlatform extends AbsPlatform {
 
     @Override
     protected void shareVideo(int shareTarget, Activity activity, ShareObj obj) {
-        shareWeb(shareTarget, activity, obj);
+        if (obj.isShareByIntent()) {
+            try {
+                IntentShareUtils.shareVideo(activity, obj.getMediaPath(), SocialConstants.DD_PKG, SocialConstants.DD_FRIEND_PAGE);
+            } catch (Exception e) {
+                this.mOnShareListener.onFailure(new SocialException(SocialException.CODE_SHARE_BY_INTENT_FAIL, e));
+            }
+        } else {
+            shareWeb(shareTarget, activity, obj);
+        }
     }
 
 
