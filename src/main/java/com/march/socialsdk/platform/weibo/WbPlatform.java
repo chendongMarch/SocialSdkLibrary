@@ -93,7 +93,7 @@ public class WbPlatform extends AbsPlatform {
         }
     }
 
-    public WbPlatform(Context context, String appId, String appName, String redirectUrl, String scope) {
+    WbPlatform(Context context, String appId, String appName, String redirectUrl, String scope) {
         super(context, appId, appName);
         mWbShareAPI = WeiboShareSDK.createWeiboAPI(context, appId);
         mWbShareAPI.registerApp();

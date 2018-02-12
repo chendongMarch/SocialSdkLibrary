@@ -63,7 +63,7 @@ public class QQPlatform extends AbsPlatform {
     }
 
 
-    public QQPlatform(Context context, String appId, String appName) {
+    QQPlatform(Context context, String appId, String appName) {
         super(context, appId, appName);
         mTencentApi = Tencent.createInstance(appId, context);
     }

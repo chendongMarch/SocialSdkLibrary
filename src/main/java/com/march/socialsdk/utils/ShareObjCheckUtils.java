@@ -43,7 +43,6 @@ public class ShareObjCheckUtils {
             }
             //  music voice
             case ShareObj.SHARE_TYPE_MUSIC:
-            case ShareObj.SHARE_TYPE_VOICE: //
             {
                 return isMusicVideoVoiceValid(obj) && isNetMedia(obj);
             }

@@ -43,7 +43,7 @@ public class DDPlatform extends AbsPlatform {
         }
     }
 
-    public DDPlatform(Context context, String appId, String appName) {
+    DDPlatform(Context context, String appId, String appName) {
         super(context, appId, appName);
         mDdShareApi = DDShareApiFactory.createDDShareApi(context, appId, false);
     }

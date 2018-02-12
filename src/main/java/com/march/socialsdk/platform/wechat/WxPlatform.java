@@ -64,7 +64,7 @@ public class WxPlatform extends AbsPlatform {
     }
 
 
-    public WxPlatform(Context context, String appId, String wxSecret, String appName) {
+    WxPlatform(Context context, String appId, String wxSecret, String appName) {
         super(context, appId, appName);
         this.mWxSecret = wxSecret;
         mWxApi = WXAPIFactory.createWXAPI(context, appId, true);
