@@ -9,5 +9,5 @@ import android.content.Context;
  * @author chendong
  */
 public interface PlatformCreator {
-    IPlatform create(Context context,int target);
+    IPlatform create(Context context, int target);
 }

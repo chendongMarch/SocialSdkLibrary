@@ -12,6 +12,8 @@ import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.model.ShareObj;
 
+import java.lang.ref.WeakReference;
+
 /**
  * CreateAt : 2016/12/3
  * Describe : platform基类
@@ -27,17 +29,15 @@ public abstract class AbsPlatform implements IPlatform {
     protected OnShareListener mOnShareListener;
     protected String mAppId = "";
     protected String mAppName = null;
-    protected Context mContext;
 
     public AbsPlatform(Context context, String appId, String appName) {
         this.mAppId = appId;
         this.mAppName = appName;
-        this.mContext = context;
     }
 
     @Override
     public boolean checkPlatformConfig() {
-        return !TextUtils.isEmpty(mAppId) && !TextUtils.isEmpty(mAppName) && mContext != null;
+        return !TextUtils.isEmpty(mAppId) && !TextUtils.isEmpty(mAppName);
     }
 
     @Override
@@ -46,7 +46,7 @@ public abstract class AbsPlatform implements IPlatform {
     }
 
     @Override
-    public boolean isInstall() {
+    public boolean isInstall(Context context) {
         return false;
     }
 

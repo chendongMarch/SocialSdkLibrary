@@ -10,6 +10,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+
 /**
  * CreateAt : 2016/12/6
  * Describe : 未归类的帮助方法
@@ -95,4 +96,5 @@ public class CommonUtils {
             return "";
         }
     }
+
 }

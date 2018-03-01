@@ -7,13 +7,15 @@ import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.Target;
 
+import java.lang.ref.WeakReference;
+
 /**
  * CreateAt : 2017/5/19
  * Describe : manager 基类
  *
  * @author chendong
  */
-public abstract class BaseManager {
+public abstract class BaseManager<Listener> {
 
     public static final int INVALID_PARAM = -1;
 
@@ -26,29 +28,32 @@ public abstract class BaseManager {
     public static final String KEY_SHARE_TARGET = "KEY_SHARE_TARGET"; // share target
     public static final String KEY_LOGIN_TARGET = "KEY_LOGIN_TARGET"; // login target
 
-    private static IPlatform sPlatform;
+    protected static WeakReference<IPlatform> sPlatformWeakRef;
 
-    static IPlatform buildPlatform(Context activity, int target) {
+
+    static IPlatform buildPlatform(Context context, int target) {
         if (SocialSdk.getConfig() == null) {
-            throw new IllegalArgumentException(Target.toDesc(target) + " SocialSdl.init() request");
+            throw new IllegalArgumentException(Target.toDesc(target) + " SocialSdk.init() request");
         }
-
-        sPlatform = SocialSdk.getPlatform(activity,target);
-
-        if (sPlatform == null) {
+        IPlatform platform = SocialSdk.getPlatform(context, target);
+        if (platform == null) {
             throw new IllegalArgumentException(Target.toDesc(target) + "  创建platform失败，请检查参数 " + SocialSdk.getConfig().toString());
         }
-        return sPlatform;
+        sPlatformWeakRef = new WeakReference<>(platform);
+        return platform;
     }
 
     public static IPlatform getCurrentPlatform() {
-        return sPlatform;
+        if (sPlatformWeakRef != null) {
+            return sPlatformWeakRef.get();
+        }
+        return null;
     }
 
     static void finishProcess(Activity activity) {
-        if (sPlatform != null) {
-            sPlatform.recycle();
-            sPlatform = null;
+        if (sPlatformWeakRef != null && sPlatformWeakRef.get() != null) {
+            sPlatformWeakRef.get().recycle();
+            sPlatformWeakRef.clear();
         }
         if (activity != null && !activity.isFinishing()) {
             activity.finish();

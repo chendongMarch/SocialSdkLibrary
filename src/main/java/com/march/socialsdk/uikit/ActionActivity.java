@@ -23,8 +23,7 @@ import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
  *
  * @author chendong
  */
-public class ActionActivity extends Activity
-        implements IWeiboHandler.Response, IWXAPIEventHandler, IDDAPIEventHandler {
+public class ActionActivity extends Activity implements IWeiboHandler.Response, IWXAPIEventHandler, IDDAPIEventHandler {
 
     public static final String TAG = ActionActivity.class.getSimpleName();
 

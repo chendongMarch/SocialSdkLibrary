@@ -101,7 +101,7 @@ public class WbPlatform extends AbsPlatform {
     }
 
     @Override
-    public boolean isInstall() {
+    public boolean isInstall(Context context) {
         return mWbShareAPI != null && mWbShareAPI.isWeiboAppInstalled();
     }
 
@@ -283,7 +283,7 @@ public class WbPlatform extends AbsPlatform {
 
     @Override
     protected void shareOpenApp(int shareTarget, Activity activity, ShareObj obj) {
-        boolean rst = CommonUtils.openApp(mContext, SocialConstants.SINA_PKG);
+        boolean rst = CommonUtils.openApp(activity, SocialConstants.SINA_PKG);
         if (rst) {
             mOnShareListener.onSuccess();
         } else {

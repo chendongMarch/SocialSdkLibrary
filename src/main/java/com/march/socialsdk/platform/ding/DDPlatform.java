@@ -79,7 +79,7 @@ public class DDPlatform extends AbsPlatform {
     }
 
     @Override
-    public boolean isInstall() {
+    public boolean isInstall(Context context) {
         return mDdShareApi != null && mDdShareApi.isDDAppInstalled() && mDdShareApi.isDDSupportAPI();
     }
 

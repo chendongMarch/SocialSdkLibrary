@@ -149,7 +149,7 @@ public class LoginResult {
 // 登陆结果监听
 mOnLoginListener = new OnLoginListener() {
     @Override
-    public void onLoginSucceed(LoginResult loginResult) {
+    public void onSuccess(LoginResult loginResult) {
         Log.e(TAG, loginResult.toString());
     }
     @Override
