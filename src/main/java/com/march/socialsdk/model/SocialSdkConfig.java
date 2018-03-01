@@ -113,8 +113,9 @@ public class SocialSdkConfig {
         return isDebug;
     }
 
-    public void setDebug(boolean debug) {
+    public SocialSdkConfig setDebug(boolean debug) {
         isDebug = debug;
+        return this;
     }
 
     @Override
