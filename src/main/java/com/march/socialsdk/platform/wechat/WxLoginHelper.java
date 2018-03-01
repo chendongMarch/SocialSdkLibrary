@@ -233,6 +233,10 @@ public class WxLoginHelper {
     }
 
 
+    public OnLoginListener getLoginListener() {
+        return loginListener;
+    }
+
     /**
      * 检测token有效性的resp
      */
