@@ -22,6 +22,10 @@ import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.uikit.ActionActivity;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.concurrent.Callable;
 
 import bolts.Continuation;
@@ -37,8 +41,7 @@ public class ShareManager extends BaseManager {
 
     public static final String TAG = ShareManager.class.getSimpleName();
 
-    private static OnShareListener sOnShareListener;
-
+    private static WeakReference<OnShareListener> sOnShareListenerWeakRef;
 
     /**
      * 开始分享，供外面调用
@@ -112,9 +115,9 @@ public class ShareManager extends BaseManager {
             return true;
         }
 
-        sOnShareListener = onShareListener;
+        sOnShareListenerWeakRef = new WeakReference<>(onShareListener);
         buildPlatform(context, shareTarget);
-        if (!getCurrentPlatform().isInstall()) {
+        if (!getCurrentPlatform().isInstall(context)) {
             onShareListener.onFailure(new SocialError(SocialError.CODE_NOT_INSTALL));
             return true;
         }
@@ -127,7 +130,6 @@ public class ShareManager extends BaseManager {
             ((Activity) context).overridePendingTransition(0, 0);
         return false;
     }
-
 
     /**
      * 激活分享
@@ -149,7 +151,7 @@ public class ShareManager extends BaseManager {
             LogUtils.e(TAG, "shareObj == null");
             return;
         }
-        if (sOnShareListener == null) {
+        if (sOnShareListenerWeakRef == null || sOnShareListenerWeakRef.get() == null) {
             LogUtils.e(TAG, "请设置 OnShareListener");
             return;
         }
@@ -160,40 +162,46 @@ public class ShareManager extends BaseManager {
 
         if (getCurrentPlatform() == null)
             return;
-        getCurrentPlatform().initOnShareListener(getOnShareListenerWrap(activity));
+        getCurrentPlatform().initOnShareListener(getOnShareListenerProxy(activity));
         getCurrentPlatform().share(activity, shareTarget, shareObj);
     }
 
-    private static OnShareListener getOnShareListenerWrap(final Activity activity) {
-        return new OnShareListener() {
-            @Override
-            public void onStart(int shareTarget, ShareObj obj) {
-                sOnShareListener.onStart(shareTarget, obj);
-            }
 
-            @Override
-            public ShareObj onPrepareInBackground(int shareTarget, ShareObj obj) throws Exception {
-                return sOnShareListener.onPrepareInBackground(shareTarget, obj);
-            }
+    private static OnShareListener getOnShareListenerProxy(final Activity activity) {
+        return (OnShareListener) Proxy.newProxyInstance(OnShareListener.class.getClassLoader(),
+                new Class[]{OnShareListener.class},
+                new FinishActivityInvocationHandler(activity));
+    }
 
-            @Override
-            public void onSuccess() {
-                sOnShareListener.onSuccess();
-                finishProcess(activity);
-            }
 
-            @Override
-            public void onFailure(SocialError e) {
-                sOnShareListener.onFailure(e);
-                finishProcess(activity);
-            }
+    // 动态代理数据
+    static class FinishActivityInvocationHandler implements InvocationHandler {
 
-            @Override
-            public void onCancel() {
-                sOnShareListener.onCancel();
-                finishProcess(activity);
+        private WeakReference<Activity> mActivityWeakRef;
+        private OnShareListener mOnShareListener;
+
+        FinishActivityInvocationHandler(Activity activity) {
+            mActivityWeakRef = new WeakReference<>(activity);
+            mOnShareListener = sOnShareListenerWeakRef.get();
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            if (method.getDeclaringClass() == Object.class) {
+                return method.invoke(this, args);
             }
-        };
+            if (method.getDeclaringClass() == OnShareListener.class && mOnShareListener != null) {
+                Object invoke = method.invoke(mOnShareListener, args);
+                if (TextUtils.equals(method.getName(), "onSuccess")
+                        || TextUtils.equals(method.getName(), "onFailure")
+                        || TextUtils.equals(method.getName(), "onCancel")) {
+                    finishProcess(mActivityWeakRef.get());
+                    sOnShareListenerWeakRef.clear();
+                }
+                return invoke;
+            }
+            return null;
+        }
     }
 
 

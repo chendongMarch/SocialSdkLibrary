@@ -111,7 +111,7 @@ public class QQLoginHelper {
                 }else {
                     qqUserInfo.setOpenId(mTencentApi.getOpenId());
                     if (onLoginListener != null) {
-                        onLoginListener.onLoginSucceed(new LoginResult(loginType, qqUserInfo, qqToken));
+                        onLoginListener.onSuccess(new LoginResult(loginType, qqUserInfo, qqToken));
                     }
                 }
             }

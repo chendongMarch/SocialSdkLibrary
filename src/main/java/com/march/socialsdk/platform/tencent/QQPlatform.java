@@ -81,10 +81,9 @@ public class QQPlatform extends AbsPlatform {
     }
 
     @Override
-    public boolean isInstall() {
-        return mTencentApi.isQQInstalled(mContext);
+    public boolean isInstall(Context context) {
+        return mTencentApi.isQQInstalled(context);
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -127,7 +126,7 @@ public class QQPlatform extends AbsPlatform {
 
     @Override
     protected void shareOpenApp(int shareTarget, Activity activity, ShareObj obj) {
-        boolean rst = CommonUtils.openApp(mContext, SocialConstants.QQ_PKG);
+        boolean rst = CommonUtils.openApp(activity, SocialConstants.QQ_PKG);
         if (rst) {
             mOnShareListener.onSuccess();
         } else {

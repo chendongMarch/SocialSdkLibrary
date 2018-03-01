@@ -44,7 +44,6 @@ public class StreamUtils {
         conn.setRequestMethod("GET");
         conn.setReadTimeout(3_000);
         conn.setConnectTimeout(3_000);
-        conn.setDoOutput(true);
         conn.setDoInput(true);
         // 设置通用的请求属性
         conn.setRequestProperty("accept", "*/*");

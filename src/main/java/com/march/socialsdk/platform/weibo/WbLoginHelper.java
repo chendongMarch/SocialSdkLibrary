@@ -55,7 +55,7 @@ public class WbLoginHelper {
                 if (!TextUtils.isEmpty(response)) {
                     LogUtils.e(TAG,response);
                     SinaUser sinaUser = JsonUtils.getObject(response, SinaUser.class);
-                    loginListener.onLoginSucceed(new LoginResult(loginType,sinaUser,new SinaAccessToken(mAccessToken)));
+                    loginListener.onSuccess(new LoginResult(loginType,sinaUser,new SinaAccessToken(mAccessToken)));
                 }
             }
 

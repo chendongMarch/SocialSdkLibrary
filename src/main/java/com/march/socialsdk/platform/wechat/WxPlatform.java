@@ -77,7 +77,7 @@ public class WxPlatform extends AbsPlatform {
     }
 
     @Override
-    public boolean isInstall() {
+    public boolean isInstall(Context context) {
         return mWxApi != null && mWxApi.isWXAppInstalled();
     }
 

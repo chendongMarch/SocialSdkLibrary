@@ -3,14 +3,21 @@ package com.march.socialsdk.manager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 
 import com.march.socialsdk.exception.SocialError;
+import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.utils.TokenStoreUtils;
 import com.march.socialsdk.utils.LogUtils;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.LoginResult;
 import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.uikit.ActionActivity;
+
+import java.lang.ref.WeakReference;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 /**
  * CreateAt : 2017/5/19
@@ -22,7 +29,7 @@ public class LoginManager extends BaseManager {
 
     public static final String TAG = LoginManager.class.getSimpleName();
 
-    private static OnLoginListener sOnLoginListener;
+    private static WeakReference<OnLoginListener> sOnLoginListenerWeakRef;
 
     /**
      * 开始登陆，供外面使用
@@ -32,9 +39,12 @@ public class LoginManager extends BaseManager {
      * @param loginListener 登陆监听
      */
     public static void login(Context context, @Target.LoginTarget int loginTarget, OnLoginListener loginListener) {
-        sOnLoginListener = loginListener;
+        sOnLoginListenerWeakRef = new WeakReference<>(loginListener);
         buildPlatform(context, loginTarget);
-        if (!getCurrentPlatform().isInstall()) {
+        if (getCurrentPlatform() == null) {
+            return;
+        }
+        if (!getCurrentPlatform().isInstall(context)) {
             loginListener.onFailure(new SocialError(SocialError.CODE_NOT_INSTALL));
             return;
         }
@@ -67,7 +77,7 @@ public class LoginManager extends BaseManager {
             LogUtils.e(TAG, "shareTargetType无效");
             return;
         }
-        if (sOnLoginListener == null) {
+        if (sOnLoginListenerWeakRef == null) {
             LogUtils.e(TAG, "请设置 OnLoginListener");
         }
         if (getCurrentPlatform() == null) {
@@ -78,31 +88,41 @@ public class LoginManager extends BaseManager {
 
 
     private static OnLoginListener getOnLoginListenerWrap(final Activity activity) {
-        return new OnLoginListener() {
-            @Override
-            public void onStart() {
-
-            }
-
-            @Override
-            public void onLoginSucceed(LoginResult loginResult) {
-                sOnLoginListener.onLoginSucceed(loginResult);
-                finishProcess(activity);
-            }
-
-            @Override
-            public void onCancel() {
-                sOnLoginListener.onCancel();
-                finishProcess(activity);
-            }
-
-            @Override
-            public void onFailure(SocialError e) {
-                sOnLoginListener.onFailure(e);
-                finishProcess(activity);
-            }
-        };
+        return (OnLoginListener) Proxy.newProxyInstance(OnLoginListener.class.getClassLoader(),
+                new Class[]{OnLoginListener.class},
+                new FinishActivityInvocationHandler(activity));
     }
+
+    // 动态代理数据
+    static class FinishActivityInvocationHandler implements InvocationHandler {
+
+        private WeakReference<Activity> mActivityWeakRef;
+        private OnLoginListener mOnLoginListener;
+
+        FinishActivityInvocationHandler(Activity activity) {
+            mActivityWeakRef = new WeakReference<>(activity);
+            mOnLoginListener = sOnLoginListenerWeakRef.get();
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            if (method.getDeclaringClass() == Object.class) {
+                return method.invoke(this, args);
+            }
+            if (method.getDeclaringClass() == OnShareListener.class && mOnLoginListener != null) {
+                Object invoke = method.invoke(mOnLoginListener, args);
+                if (TextUtils.equals(method.getName(), "onSuccess")
+                        || TextUtils.equals(method.getName(), "onFailure")
+                        || TextUtils.equals(method.getName(), "onCancel")) {
+                    finishProcess(mActivityWeakRef.get());
+                    sOnLoginListenerWeakRef.clear();
+                }
+                return invoke;
+            }
+            return null;
+        }
+    }
+
 
     public static void clearAllToken(Context context) {
         TokenStoreUtils.clearToken(context, Target.LOGIN_QQ);

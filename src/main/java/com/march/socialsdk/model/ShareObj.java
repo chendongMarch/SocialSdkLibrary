@@ -31,6 +31,7 @@ public class ShareObj implements Parcelable {
     private String summary;
     // 缩略图地址，必传
     private String thumbImagePath;
+    private String thumbImagePathNet;
     // 启动url，点击之后指向的url，启动新的网页
     private String targetUrl;
     // 资源url,音视频播放源
@@ -114,7 +115,7 @@ public class ShareObj implements Parcelable {
     }
 
     // 本地视频
-    public static ShareObj buildVideoObj(String title,String summary,String localVideoPath) {
+    public static ShareObj buildVideoObj(String title, String summary, String localVideoPath) {
         ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_VIDEO);
         shareMediaObj.setMediaPath(localVideoPath);
         shareMediaObj.setShareByIntent(true);
@@ -181,6 +182,7 @@ public class ShareObj implements Parcelable {
 
     public void setThumbImagePath(String thumbImagePath) {
         this.thumbImagePath = thumbImagePath;
+        this.thumbImagePathNet = thumbImagePath;
     }
 
     public String getTargetUrl() {

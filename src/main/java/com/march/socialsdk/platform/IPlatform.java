@@ -1,6 +1,7 @@
 package com.march.socialsdk.platform;
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.march.socialsdk.listener.PlatformLifeCircle;
 import com.march.socialsdk.listener.OnLoginListener;
@@ -23,7 +24,7 @@ public interface IPlatform extends PlatformLifeCircle {
     void initOnShareListener(OnShareListener listener);
 
     // 是否安装
-    boolean isInstall();
+    boolean isInstall(Context context);
 
     // 发起登录
     void login(Activity activity, OnLoginListener onLoginListener);

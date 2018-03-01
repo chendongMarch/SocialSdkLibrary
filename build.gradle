@@ -20,9 +20,9 @@ android {
 
 dependencies {
 
-    // 我本地依赖是统一管理的，可能编译无法通过，clone 后请使用下面的依赖
-    // compile 'com.parse.bolts:bolts-tasks:1.4.0'
+    // 我本地依赖是统一管理的，clone 后是无法编译的，请使用下面的依赖代替
     // compile "com.android.support:appcompat-v7:25.3.0"
+    // compile 'com.parse.bolts:bolts-tasks:1.4.0'
 
     compile rootProject.ext.google.appcompat_v7
     compile rootProject.ext.libs.bolts

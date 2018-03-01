@@ -187,7 +187,7 @@ public class WxLoginHelper {
             public void onSuccess(@NonNull WxUser wxUserInfo) {
                 LogUtils.e(TAG, "获取到用户信息" + wxUserInfo.toString());
                 if (wxUserInfo.isNoError()) {
-                    loginListener.onLoginSucceed(new LoginResult(loginType, wxUserInfo, token));
+                    loginListener.onSuccess(new LoginResult(loginType, wxUserInfo, token));
                 } else {
                     loginListener.onFailure(new SocialError("wx_login code = " + wxUserInfo.getErrcode() + " ,msg = " + wxUserInfo.getErrmsg()));
                 }
