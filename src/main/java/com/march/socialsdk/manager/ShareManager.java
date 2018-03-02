@@ -12,6 +12,7 @@ import android.text.TextUtils;
 import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.exception.SocialError;
+import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.utils.CommonUtils;
 import com.march.socialsdk.utils.FileUtils;
 import com.march.socialsdk.utils.LogUtils;
@@ -23,9 +24,6 @@ import com.march.socialsdk.uikit.ActionActivity;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.concurrent.Callable;
 
 import bolts.Continuation;
@@ -41,7 +39,7 @@ public class ShareManager extends BaseManager {
 
     public static final String TAG = ShareManager.class.getSimpleName();
 
-    private static WeakReference<OnShareListener> sOnShareListenerWeakRef;
+    private static WeakReference<OnShareListener> sListener;
 
     /**
      * 开始分享，供外面调用
@@ -114,10 +112,9 @@ public class ShareManager extends BaseManager {
             onShareListener.onFailure(new SocialError(SocialError.CODE_SHARE_OBJ_VALID));
             return true;
         }
-
-        sOnShareListenerWeakRef = new WeakReference<>(onShareListener);
-        buildPlatform(context, shareTarget);
-        if (!getCurrentPlatform().isInstall(context)) {
+        sListener = new WeakReference<>(onShareListener);
+        IPlatform platform = newPlatform(context, shareTarget);
+        if (!platform.isInstall(context)) {
             onShareListener.onFailure(new SocialError(SocialError.CODE_NOT_INSTALL));
             return true;
         }
@@ -126,8 +123,9 @@ public class ShareManager extends BaseManager {
         intent.putExtra(KEY_SHARE_MEDIA_OBJ, shareObj);
         intent.putExtra(KEY_SHARE_TARGET, shareTarget);
         context.startActivity(intent);
-        if (context instanceof Activity)
+        if (context instanceof Activity) {
             ((Activity) context).overridePendingTransition(0, 0);
+        }
         return false;
     }
 
@@ -151,7 +149,8 @@ public class ShareManager extends BaseManager {
             LogUtils.e(TAG, "shareObj == null");
             return;
         }
-        if (sOnShareListenerWeakRef == null || sOnShareListenerWeakRef.get() == null) {
+        OnShareListener listener = sListener.get();
+        if (sListener == null || listener == null) {
             LogUtils.e(TAG, "请设置 OnShareListener");
             return;
         }
@@ -160,47 +159,69 @@ public class ShareManager extends BaseManager {
             LogUtils.e(TAG, "没有获取到读存储卡的权限，这可能导致某些分享不能进行");
         }
 
-        if (getCurrentPlatform() == null)
+        if (getPlatform() == null)
             return;
-        getCurrentPlatform().initOnShareListener(getOnShareListenerProxy(activity));
-        getCurrentPlatform().share(activity, shareTarget, shareObj);
+        OnShareListener newListener = wrapListener(activity);
+        getPlatform().initOnShareListener(newListener);
+        getPlatform().share(activity, shareTarget, shareObj);
     }
 
-
-    private static OnShareListener getOnShareListenerProxy(final Activity activity) {
-        return (OnShareListener) Proxy.newProxyInstance(OnShareListener.class.getClassLoader(),
-                new Class[]{OnShareListener.class},
-                new FinishActivityInvocationHandler(activity));
+    private static OnShareListener wrapListener(Activity activity) {
+        return new FinishShareListener(activity);
     }
 
-
-    // 动态代理数据
-    static class FinishActivityInvocationHandler implements InvocationHandler {
+    static class FinishShareListener implements OnShareListener {
 
         private WeakReference<Activity> mActivityWeakRef;
-        private OnShareListener mOnShareListener;
 
-        FinishActivityInvocationHandler(Activity activity) {
+        FinishShareListener(Activity activity) {
             mActivityWeakRef = new WeakReference<>(activity);
-            mOnShareListener = sOnShareListenerWeakRef.get();
         }
 
         @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            if (method.getDeclaringClass() == Object.class) {
-                return method.invoke(this, args);
+        public void onStart(int shareTarget, ShareObj obj) {
+            if (sListener != null && sListener.get() != null) {
+                sListener.get().onStart(shareTarget, obj);
             }
-            if (method.getDeclaringClass() == OnShareListener.class && mOnShareListener != null) {
-                Object invoke = method.invoke(mOnShareListener, args);
-                if (TextUtils.equals(method.getName(), "onSuccess")
-                        || TextUtils.equals(method.getName(), "onFailure")
-                        || TextUtils.equals(method.getName(), "onCancel")) {
-                    finishProcess(mActivityWeakRef.get());
-                    sOnShareListenerWeakRef.clear();
-                }
-                return invoke;
+        }
+
+        @Override
+        public ShareObj onPrepareInBackground(int shareTarget, ShareObj obj) throws Exception {
+            if (sListener != null && sListener.get() != null) {
+                return sListener.get().onPrepareInBackground(shareTarget, obj);
             }
             return null;
+        }
+
+
+        private void finish() {
+            finishProcess(mActivityWeakRef.get());
+        }
+
+        @Override
+        public void onSuccess() {
+            if (sListener != null && sListener.get() != null) {
+                sListener.get().onSuccess();
+            }
+            finish();
+        }
+
+
+        @Override
+        public void onCancel() {
+            if (sListener != null && sListener.get() != null) {
+                sListener.get().onCancel();
+            }
+            finish();
+        }
+
+
+        @Override
+        public void onFailure(SocialError e) {
+            if (sListener != null && sListener.get() != null) {
+                sListener.get().onFailure(e);
+            }
+            finish();
         }
     }
 

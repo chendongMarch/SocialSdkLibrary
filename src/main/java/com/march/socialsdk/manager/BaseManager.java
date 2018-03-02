@@ -2,6 +2,7 @@ package com.march.socialsdk.manager;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.platform.IPlatform;
@@ -15,7 +16,7 @@ import java.lang.ref.WeakReference;
  *
  * @author chendong
  */
-public abstract class BaseManager<Listener> {
+public abstract class BaseManager {
 
     public static final int INVALID_PARAM = -1;
 
@@ -28,10 +29,10 @@ public abstract class BaseManager<Listener> {
     public static final String KEY_SHARE_TARGET = "KEY_SHARE_TARGET"; // share target
     public static final String KEY_LOGIN_TARGET = "KEY_LOGIN_TARGET"; // login target
 
-    protected static WeakReference<IPlatform> sPlatformWeakRef;
+    private static WeakReference<IPlatform> sPlatformWeakRef;
 
-
-    static IPlatform buildPlatform(Context context, int target) {
+    static @NonNull
+    IPlatform newPlatform(Context context, int target) {
         if (SocialSdk.getConfig() == null) {
             throw new IllegalArgumentException(Target.toDesc(target) + " SocialSdk.init() request");
         }
@@ -43,7 +44,7 @@ public abstract class BaseManager<Listener> {
         return platform;
     }
 
-    public static IPlatform getCurrentPlatform() {
+    public static IPlatform getPlatform() {
         if (sPlatformWeakRef != null) {
             return sPlatformWeakRef.get();
         }
@@ -54,9 +55,51 @@ public abstract class BaseManager<Listener> {
         if (sPlatformWeakRef != null && sPlatformWeakRef.get() != null) {
             sPlatformWeakRef.get().recycle();
             sPlatformWeakRef.clear();
+            sPlatformWeakRef = null;
         }
         if (activity != null && !activity.isFinishing()) {
             activity.finish();
         }
     }
+
+//
+//
+//    static Object wrapListener(final Activity activity, Class clz, Object listener) {
+//        return Proxy.newProxyInstance(clz.getClassLoader(),
+//                new Class[]{clz},
+//                new FinishActivityHandler(activity, clz, listener));
+//    }
+//
+//
+//    // 动态代理数据
+//    protected static class FinishActivityHandler implements InvocationHandler {
+//
+//        private WeakReference<Activity> mActivityWeakRef;
+//        private Object mListener;
+//        private Class mClz;
+//
+//        public FinishActivityHandler(Activity activity, Class clz, Object listener) {
+//            mActivityWeakRef = new WeakReference<>(activity);
+//            mListener = listener;
+//            mClz = clz;
+//        }
+//
+//        @Override
+//        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+//            if (method.getDeclaringClass() == Object.class) {
+//                return method.invoke(this, args);
+//            }
+//            if (method.getDeclaringClass() == mClz && mListener != null) {
+//                Object invoke = method.invoke(mListener, args);
+//                if (TextUtils.equals(method.getName(), "onSuccess")
+//                        || TextUtils.equals(method.getName(), "onFailure")
+//                        || TextUtils.equals(method.getName(), "onCancel")) {
+//                    finishProcess(mActivityWeakRef.get());
+//                    mListener = null;
+//                }
+//                return invoke;
+//            }
+//            return null;
+//        }
+//    }
 }
