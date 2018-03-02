@@ -3,21 +3,17 @@ package com.march.socialsdk.manager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.text.TextUtils;
 
 import com.march.socialsdk.exception.SocialError;
-import com.march.socialsdk.listener.OnShareListener;
+import com.march.socialsdk.model.LoginResult;
+import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.utils.TokenStoreUtils;
 import com.march.socialsdk.utils.LogUtils;
 import com.march.socialsdk.listener.OnLoginListener;
-import com.march.socialsdk.model.LoginResult;
 import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.uikit.ActionActivity;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 
 /**
  * CreateAt : 2017/5/19
@@ -29,7 +25,7 @@ public class LoginManager extends BaseManager {
 
     public static final String TAG = LoginManager.class.getSimpleName();
 
-    private static WeakReference<OnLoginListener> sOnLoginListenerWeakRef;
+    private static WeakReference<OnLoginListener> sListener;
 
     /**
      * 开始登陆，供外面使用
@@ -39,12 +35,9 @@ public class LoginManager extends BaseManager {
      * @param loginListener 登陆监听
      */
     public static void login(Context context, @Target.LoginTarget int loginTarget, OnLoginListener loginListener) {
-        sOnLoginListenerWeakRef = new WeakReference<>(loginListener);
-        buildPlatform(context, loginTarget);
-        if (getCurrentPlatform() == null) {
-            return;
-        }
-        if (!getCurrentPlatform().isInstall(context)) {
+        sListener = new WeakReference<>(loginListener);
+        IPlatform platform = newPlatform(context, loginTarget);
+        if (!platform.isInstall(context)) {
             loginListener.onFailure(new SocialError(SocialError.CODE_NOT_INSTALL));
             return;
         }
@@ -52,8 +45,9 @@ public class LoginManager extends BaseManager {
         intent.putExtra(KEY_ACTION_TYPE, ACTION_TYPE_LOGIN);
         intent.putExtra(KEY_LOGIN_TARGET, loginTarget);
         context.startActivity(intent);
-        if (context instanceof Activity)
+        if (context instanceof Activity) {
             ((Activity) context).overridePendingTransition(0, 0);
+        }
     }
 
 
@@ -77,49 +71,63 @@ public class LoginManager extends BaseManager {
             LogUtils.e(TAG, "shareTargetType无效");
             return;
         }
-        if (sOnLoginListenerWeakRef == null) {
+        OnLoginListener listener = sListener.get();
+        if (sListener == null || listener == null) {
             LogUtils.e(TAG, "请设置 OnLoginListener");
-        }
-        if (getCurrentPlatform() == null) {
             return;
         }
-        getCurrentPlatform().login(activity, getOnLoginListenerWrap(activity));
+        if (getPlatform() == null) {
+            return;
+        }
+        OnLoginListener newLoginListener = wrapListener(activity);
+        getPlatform().login(activity, newLoginListener);
     }
 
-
-    private static OnLoginListener getOnLoginListenerWrap(final Activity activity) {
-        return (OnLoginListener) Proxy.newProxyInstance(OnLoginListener.class.getClassLoader(),
-                new Class[]{OnLoginListener.class},
-                new FinishActivityInvocationHandler(activity));
+    private static OnLoginListener wrapListener(Activity activity) {
+        return new FinishLoginListener(activity);
     }
 
-    // 动态代理数据
-    static class FinishActivityInvocationHandler implements InvocationHandler {
+    static class FinishLoginListener implements OnLoginListener {
 
         private WeakReference<Activity> mActivityWeakRef;
-        private OnLoginListener mOnLoginListener;
 
-        FinishActivityInvocationHandler(Activity activity) {
+        FinishLoginListener(Activity activity) {
             mActivityWeakRef = new WeakReference<>(activity);
-            mOnLoginListener = sOnLoginListenerWeakRef.get();
         }
 
         @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            if (method.getDeclaringClass() == Object.class) {
-                return method.invoke(this, args);
+        public void onStart() {
+            if (sListener != null && sListener.get() != null) {
+                sListener.get().onStart();
             }
-            if (method.getDeclaringClass() == OnShareListener.class && mOnLoginListener != null) {
-                Object invoke = method.invoke(mOnLoginListener, args);
-                if (TextUtils.equals(method.getName(), "onSuccess")
-                        || TextUtils.equals(method.getName(), "onFailure")
-                        || TextUtils.equals(method.getName(), "onCancel")) {
-                    finishProcess(mActivityWeakRef.get());
-                    sOnLoginListenerWeakRef.clear();
-                }
-                return invoke;
+        }
+
+        private void finish() {
+            finishProcess(mActivityWeakRef.get());
+        }
+
+        @Override
+        public void onSuccess(LoginResult loginResult) {
+            if (sListener != null && sListener.get() != null) {
+                sListener.get().onSuccess(loginResult);
             }
-            return null;
+            finish();
+        }
+
+        @Override
+        public void onCancel() {
+            if (sListener != null && sListener.get() != null) {
+                sListener.get().onCancel();
+            }
+            finish();
+        }
+
+        @Override
+        public void onFailure(SocialError e) {
+            if (sListener != null && sListener.get() != null) {
+                sListener.get().onFailure(e);
+            }
+            finish();
         }
     }
 

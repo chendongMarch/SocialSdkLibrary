@@ -111,11 +111,11 @@ public class WxPlatform extends AbsPlatform {
                     break;
                 case BaseResp.ErrCode.ERR_USER_CANCEL:
                     // 用户取消
-                    mWeChatLoginHelper.getLoginListener().onCancel();
+                    mWeChatLoginHelper.getOnLoginListener().onCancel();
                     break;
                 case BaseResp.ErrCode.ERR_AUTH_DENIED:
                     // 用户拒绝授权
-                    mWeChatLoginHelper.getLoginListener().onCancel();
+                    mWeChatLoginHelper.getOnLoginListener().onCancel();
                     break;
             }
         } else if (baseResp.getType() == ConstantsAPI.COMMAND_SENDMESSAGE_TO_WX) {

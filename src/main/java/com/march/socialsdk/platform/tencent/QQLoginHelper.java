@@ -1,6 +1,7 @@
 package com.march.socialsdk.platform.tencent;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 
 import com.march.socialsdk.exception.SocialError;
@@ -19,6 +20,8 @@ import com.tencent.tauth.UiError;
 
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
+
 /**
  * CreateAt : 2016/12/6
  * Describe : qq 登录辅助
@@ -32,18 +35,21 @@ public class QQLoginHelper {
 
     private int loginType;
     private Tencent mTencentApi;
-    private Activity activity;
+    private WeakReference<Activity> mActivityRef;
     private OnLoginListener onLoginListener;
     private LoginUiListener loginUiListener;
 
 
     QQLoginHelper(Activity activity, Tencent mTencentApi, OnLoginListener onQQLoginListener) {
-        this.activity = activity;
+        this.mActivityRef = new WeakReference<>(activity);
         this.mTencentApi = mTencentApi;
         this.onLoginListener = onQQLoginListener;
         this.loginType = Target.LOGIN_QQ;
     }
 
+    private Context getContext() {
+        return mActivityRef.get().getApplicationContext();
+    }
 
     // 接受登录结果
     void handleResultData(Intent data) {
@@ -52,7 +58,7 @@ public class QQLoginHelper {
 
     // 登录
     public void login() {
-        QQAccessToken qqToken = TokenStoreUtils.getQQToken(activity);
+        QQAccessToken qqToken = TokenStoreUtils.getQQToken(getContext());
         if (qqToken != null) {
             mTencentApi.setAccessToken(qqToken.getAccess_token(), qqToken.getExpires_in() + "");
             mTencentApi.setOpenId(qqToken.getOpenid());
@@ -60,11 +66,11 @@ public class QQLoginHelper {
                 getUserInfo(qqToken);
             } else {
                 loginUiListener = new LoginUiListener();
-                mTencentApi.login(activity, "all", loginUiListener);
+                mTencentApi.login(mActivityRef.get(), "all", loginUiListener);
             }
         } else {
             loginUiListener = new LoginUiListener();
-            mTencentApi.login(activity, "all", loginUiListener);
+            mTencentApi.login(mActivityRef.get(), "all", loginUiListener);
         }
     }
 
@@ -74,13 +80,15 @@ public class QQLoginHelper {
         public void onComplete(Object o) {
             JSONObject jsonResponse = (JSONObject) o;
             QQAccessToken qqToken = JsonUtils.getObject(jsonResponse.toString(), QQAccessToken.class);
-            LogUtils.e(TAG, "获取到 qq token = " + qqToken.toString());
+            LogUtils.e(TAG, "获取到 qq token = ", qqToken);
+            if (qqToken == null) {
+                onLoginListener.onFailure(new SocialError("qq token is null, may be parse json error"));
+                return;
+            }
             // 保存token
-            TokenStoreUtils.saveQQToken(activity, qqToken);
-
+            TokenStoreUtils.saveQQToken(getContext(), qqToken);
             mTencentApi.setAccessToken(qqToken.getAccess_token(), qqToken.getExpires_in() + "");
             mTencentApi.setOpenId(qqToken.getOpenid());
-
             getUserInfo(qqToken);
         }
 
@@ -98,17 +106,17 @@ public class QQLoginHelper {
 
     // 获取用户信息
     private void getUserInfo(final QQAccessToken qqToken) {
-        UserInfo info = new UserInfo(activity, mTencentApi.getQQToken());
+        UserInfo info = new UserInfo(getContext(), mTencentApi.getQQToken());
         info.getUserInfo(new IUiListener() {
             @Override
             public void onComplete(Object object) {
                 LogUtils.e(TAG, "qq 获取到用户信息 = " + object);
                 QQUser qqUserInfo = JsonUtils.getObject(object.toString(), QQUser.class);
-                if(qqUserInfo == null){
+                if (qqUserInfo == null) {
                     if (onLoginListener != null) {
                         onLoginListener.onFailure(new SocialError("解析 qq user 错误"));
                     }
-                }else {
+                } else {
                     qqUserInfo.setOpenId(mTencentApi.getOpenId());
                     if (onLoginListener != null) {
                         onLoginListener.onSuccess(new LoginResult(loginType, qqUserInfo, qqToken));

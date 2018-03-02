@@ -32,12 +32,12 @@ public class ActionActivity extends Activity implements IWeiboHandler.Response, 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getPlatform() != null)
+        if (getPlatform() != null) {
             getPlatform().onNewIntent(this);
+        }
         int actionType = getIntent().getIntExtra(BaseManager.KEY_ACTION_TYPE, -1);
         if (actionType == -1) {
-            LogUtils.e(TAG, "onCreate actionType无效");
-            checkFinish();
+            // LogUtils.e(TAG, "onCreate actionType 无效，这边不能作为依据，微信和钉钉会重新创建 activity");
             return;
         }
         switch (actionType) {
@@ -54,22 +54,14 @@ public class ActionActivity extends Activity implements IWeiboHandler.Response, 
     protected void onResume() {
         super.onResume();
         if (mIsNotFirstResume) {
-            if (getPlatform() != null)
+            if (getPlatform() != null) {
                 getPlatform().onNewIntent(this);
-            checkFinish();
+            }
+            // checkFinish();
         } else {
             mIsNotFirstResume = true;
         }
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (getPlatform() != null)
-            getPlatform().onActivityResult(requestCode, resultCode, data);
-        super.onActivityResult(requestCode, resultCode, data);
-        checkFinish();
-    }
-
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -80,7 +72,7 @@ public class ActionActivity extends Activity implements IWeiboHandler.Response, 
         checkFinish();
     }
 
-    public void onRespCommon(Object resp) {
+    public void onRespHandler(Object resp) {
         IPlatform platform = getPlatform();
         if (platform != null) {
             platform.onResponse(resp);
@@ -88,47 +80,50 @@ public class ActionActivity extends Activity implements IWeiboHandler.Response, 
         checkFinish();
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // 微博
-    ///////////////////////////////////////////////////////////////////////////
+    //////////////////////////////  -- qq --  //////////////////////////////
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (getPlatform() != null)
+            getPlatform().onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
+        checkFinish();
+    }
+
+    //////////////////////////////  -- 微博 --  //////////////////////////////
+
     @Override
     public void onResponse(BaseResponse baseResponse) {
-        onRespCommon(baseResponse);
+        onRespHandler(baseResponse);
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // 微信
-    ///////////////////////////////////////////////////////////////////////////
+    //////////////////////////////  -- 微信 --  //////////////////////////////
+
     @Override
-    //从微信页面返回的数据
     public void onResp(BaseResp resp) {
-        onRespCommon(resp);
+        onRespHandler(resp);
     }
 
     @Override
-    // 发起微信请求将会经过的方法
     public void onReq(BaseReq baseReq) {
-        LogUtils.e(TAG, "onReq: " + baseReq.toString());
+        LogUtils.e(TAG, "wx onReq: ", baseReq);
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // 钉钉
-    ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////  -- 钉钉 --  //////////////////////////////
 
     @Override
     public void onReq(com.android.dingtalk.share.ddsharemodule.message.BaseReq baseReq) {
-
+        LogUtils.e(TAG, "wx onReq: ", baseReq);
     }
 
     @Override
     public void onResp(com.android.dingtalk.share.ddsharemodule.message.BaseResp baseResp) {
-        onRespCommon(baseResp);
+        onRespHandler(baseResp);
     }
 
 
-    ///////////////////////////////////////////////////////////////////////////
-    // help
-    ///////////////////////////////////////////////////////////////////////////
+    //////////////////////////////  -- help --  //////////////////////////////
 
     private void checkFinish() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
@@ -146,7 +141,7 @@ public class ActionActivity extends Activity implements IWeiboHandler.Response, 
 
 
     private IPlatform getPlatform() {
-        IPlatform platform = BaseManager.getCurrentPlatform();
+        IPlatform platform = BaseManager.getPlatform();
         if (platform == null) {
             LogUtils.e(TAG, "platform is null");
             checkFinish();
