@@ -69,7 +69,7 @@ public class ActionActivity extends Activity implements IWeiboHandler.Response, 
         setIntent(intent);
         if (getPlatform() != null)
             getPlatform().onNewIntent(this);
-        checkFinish();
+        // checkFinish();
     }
 
     public void onRespHandler(Object resp) {
