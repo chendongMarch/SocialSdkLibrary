@@ -50,7 +50,8 @@ public class SocialSdk {
     ///////////////////////////////////////////////////////////////////////////
     // Platform 注册
     ///////////////////////////////////////////////////////////////////////////
-    public static void registerPlatform(PlatformCreator creator, int... targets) {
+
+    private static void registerPlatform(PlatformCreator creator, int... targets) {
         for (int target : targets) {
             sPlatformCreatorMap.put(target, creator);
         }
@@ -63,6 +64,7 @@ public class SocialSdk {
         }
         return null;
     }
+
     ///////////////////////////////////////////////////////////////////////////
     // JsonAdapter
     ///////////////////////////////////////////////////////////////////////////
