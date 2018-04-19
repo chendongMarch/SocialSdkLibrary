@@ -25,6 +25,7 @@
             android:name="${applicationId}.wxapi.WXEntryActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:targetActivity="com.march.socialsdk.uikit.ActionActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"/>

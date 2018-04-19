@@ -20,6 +20,7 @@ import com.march.socialsdk.model.SocialSdkConfig;
 import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformCreator;
+import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.utils.CommonUtils;
 import com.march.socialsdk.utils.IntentShareUtils;
 
@@ -51,8 +52,8 @@ public class DDPlatform extends AbsPlatform {
     }
 
     @Override
-    public void onNewIntent(Activity activity) {
-        super.onNewIntent(activity);
+    public void handleIntent(Activity activity) {
+        super.handleIntent(activity);
         mDdShareApi.handleIntent(activity.getIntent(), (IDDAPIEventHandler) activity);
     }
 
@@ -169,6 +170,10 @@ public class DDPlatform extends AbsPlatform {
     }
 
 
+    @Override
+    public int getPlatformType() {
+        return Target.PLATFORM_DD;
+    }
     private String buildTransaction(String tag) {
         return tag + System.currentTimeMillis();
     }

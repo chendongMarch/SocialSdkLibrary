@@ -24,6 +24,7 @@ import com.tencent.mm.opensdk.constants.ConstantsAPI;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.opensdk.modelmsg.WXAppExtendObject;
 import com.tencent.mm.opensdk.modelmsg.WXEmojiObject;
 import com.tencent.mm.opensdk.modelmsg.WXImageObject;
 import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
@@ -89,7 +90,7 @@ public class WxPlatform extends AbsPlatform {
     }
 
     @Override
-    public void onNewIntent(Activity activity) {
+    public void handleIntent(Activity activity) {
         if (activity instanceof IWXAPIEventHandler && mWxApi != null)
             mWxApi.handleIntent(activity.getIntent(), (IWXAPIEventHandler) activity);
     }
@@ -152,6 +153,11 @@ public class WxPlatform extends AbsPlatform {
         }
         mWeChatLoginHelper = new WxLoginHelper(context, mWxApi, mAppId);
         mWeChatLoginHelper.login(mWxSecret, loginListener);
+    }
+
+    @Override
+    public int getPlatformType() {
+        return Target.PLATFORM_WX;
     }
 
 
@@ -251,6 +257,8 @@ public class WxPlatform extends AbsPlatform {
     public void shareApp(int shareTarget, Activity activity, ShareObj obj) {
         LogUtils.e(TAG, "微信不支持app分享，将以web形式分享");
         shareWeb(shareTarget, activity, obj);
+
+
     }
 
 

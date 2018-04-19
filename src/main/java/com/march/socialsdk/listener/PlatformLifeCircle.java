@@ -13,7 +13,7 @@ public interface PlatformLifeCircle {
 
     void onActivityResult(int requestCode, int resultCode, Intent data);
 
-    void onNewIntent(Activity intent);
+    void handleIntent(Activity intent);
 
     void onResponse(Object resp);
 
