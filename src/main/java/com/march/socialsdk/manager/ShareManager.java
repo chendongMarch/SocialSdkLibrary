@@ -24,10 +24,13 @@ import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.uikit.ActionActivity;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.concurrent.Callable;
 
 import bolts.Continuation;
 import bolts.Task;
+
+import static com.march.socialsdk.manager.PlatformManager.KEY_ACTION_TYPE;
 
 /**
  * CreateAt : 2017/5/19
@@ -35,11 +38,11 @@ import bolts.Task;
  *
  * @author chendong
  */
-public class ShareManager extends BaseManager {
+public class ShareManager {
 
     public static final String TAG = ShareManager.class.getSimpleName();
 
-    private static OnShareListener sListener;
+    static OnShareListener sListener;
 
     /**
      * 开始分享，供外面调用
@@ -114,15 +117,15 @@ public class ShareManager extends BaseManager {
             return true;
         }
         sListener = onShareListener;
-        IPlatform platform = newPlatform(context, shareTarget);
+        IPlatform platform = PlatformManager.newPlatform(context, shareTarget);
         if (!platform.isInstall(context)) {
             onShareListener.onFailure(new SocialError(SocialError.CODE_NOT_INSTALL));
             return true;
         }
         Intent intent = new Intent(context, ActionActivity.class);
-        intent.putExtra(KEY_ACTION_TYPE, ACTION_TYPE_SHARE);
-        intent.putExtra(KEY_SHARE_MEDIA_OBJ, shareObj);
-        intent.putExtra(KEY_SHARE_TARGET, shareTarget);
+        intent.putExtra(PlatformManager.KEY_ACTION_TYPE, PlatformManager.ACTION_TYPE_SHARE);
+        intent.putExtra(PlatformManager.KEY_SHARE_MEDIA_OBJ, shareObj);
+        intent.putExtra(PlatformManager.KEY_SHARE_TARGET, shareTarget);
         context.startActivity(intent);
         if (context instanceof Activity) {
             ((Activity) context).overridePendingTransition(0, 0);
@@ -137,12 +140,12 @@ public class ShareManager extends BaseManager {
      */
     public static void _actionShare(Activity activity) {
         Intent intent = activity.getIntent();
-        int actionType = intent.getIntExtra(KEY_ACTION_TYPE, INVALID_PARAM);
-        int shareTarget = intent.getIntExtra(KEY_SHARE_TARGET, INVALID_PARAM);
-        ShareObj shareObj = intent.getParcelableExtra(KEY_SHARE_MEDIA_OBJ);
-        if (actionType != ACTION_TYPE_SHARE)
+        int actionType = intent.getIntExtra(KEY_ACTION_TYPE, PlatformManager.INVALID_PARAM);
+        int shareTarget = intent.getIntExtra(PlatformManager.KEY_SHARE_TARGET, PlatformManager.INVALID_PARAM);
+        ShareObj shareObj = intent.getParcelableExtra(PlatformManager.KEY_SHARE_MEDIA_OBJ);
+        if (actionType != PlatformManager.ACTION_TYPE_SHARE)
             return;
-        if (shareTarget == INVALID_PARAM) {
+        if (shareTarget == PlatformManager.INVALID_PARAM) {
             LogUtils.e(TAG, "shareTargetType无效");
             return;
         }
@@ -159,68 +162,54 @@ public class ShareManager extends BaseManager {
                 && activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
             LogUtils.e(TAG, "没有获取到读存储卡的权限，这可能导致某些分享不能进行");
         }
-
-        if (getPlatform() == null)
+        if (PlatformManager.getPlatform() == null)
             return;
-        OnShareListener newListener = wrapListener(activity);
-        getPlatform().initOnShareListener(newListener);
-        getPlatform().share(activity, shareTarget, shareObj);
-    }
-
-    private static OnShareListener wrapListener(Activity activity) {
-        return new FinishShareListener(activity);
+        PlatformManager.getPlatform().initOnShareListener(new FinishShareListener(activity));
+        PlatformManager.getPlatform().share(activity, shareTarget, shareObj);
     }
 
     static class FinishShareListener implements OnShareListener {
 
-        private Activity mActivity;
+        private WeakReference<Activity> mActivityRef;
 
         FinishShareListener(Activity activity) {
-            mActivity = activity;
+            mActivityRef = new WeakReference<>(activity);
         }
 
         @Override
         public void onStart(int shareTarget, ShareObj obj) {
-            if (sListener != null) {
-                sListener.onStart(shareTarget, obj);
-            }
+            if (sListener != null) sListener.onStart(shareTarget, obj);
         }
 
         @Override
         public ShareObj onPrepareInBackground(int shareTarget, ShareObj obj) throws Exception {
-            if (sListener != null ) {
+            if (sListener != null)
                 return sListener.onPrepareInBackground(shareTarget, obj);
-            }
             return null;
         }
 
         private void finish() {
-            finishProcess(mActivity);
+            PlatformManager.release(mActivityRef.get());
+            sListener = null;
         }
 
         @Override
         public void onSuccess() {
-            if (sListener != null) {
-                sListener.onSuccess();
-            }
+            if (sListener != null) sListener.onSuccess();
             finish();
         }
 
 
         @Override
         public void onCancel() {
-            if (sListener != null) {
-                sListener.onCancel();
-            }
+            if (sListener != null) sListener.onCancel();
             finish();
         }
 
 
         @Override
         public void onFailure(SocialError e) {
-            if (sListener != null) {
-                sListener.onFailure(e);
-            }
+            if (sListener != null) sListener.onFailure(e);
             finish();
         }
     }

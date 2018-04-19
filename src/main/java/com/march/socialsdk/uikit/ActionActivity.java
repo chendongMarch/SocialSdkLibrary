@@ -2,13 +2,17 @@ package com.march.socialsdk.uikit;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.android.dingtalk.share.ddsharemodule.IDDAPIEventHandler;
+import com.march.socialsdk.manager.PlatformManager;
 import com.march.socialsdk.utils.LogUtils;
-import com.march.socialsdk.manager.BaseManager;
 import com.march.socialsdk.manager.LoginManager;
 import com.march.socialsdk.manager.ShareManager;
 import com.march.socialsdk.platform.IPlatform;
@@ -17,6 +21,8 @@ import com.sina.weibo.sdk.api.share.IWeiboHandler;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
+
+import java.lang.ref.WeakReference;
 
 /**
  * CreateAt : 2017/1/8
@@ -38,17 +44,17 @@ public class ActionActivity extends Activity implements IWeiboHandler.Response, 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        logMsg("onCreate");
+        // for wx & dd
         if (getPlatform() != null) {
             getPlatform().handleIntent(this);
         }
-        mActionType = getIntent().getIntExtra(BaseManager.KEY_ACTION_TYPE, -1);
+        mActionType = getIntent().getIntExtra(PlatformManager.KEY_ACTION_TYPE, -1);
         if (mActionType != -1) {
             switch (mActionType) {
-                case BaseManager.ACTION_TYPE_LOGIN:
+                case PlatformManager.ACTION_TYPE_LOGIN:
                     LoginManager._actionLogin(this);
                     break;
-                case BaseManager.ACTION_TYPE_SHARE:
+                case PlatformManager.ACTION_TYPE_SHARE:
                     ShareManager._actionShare(this);
                     break;
             }
@@ -68,6 +74,12 @@ public class ActionActivity extends Activity implements IWeiboHandler.Response, 
         } else {
             mIsNotFirstResume = true;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        PlatformManager.release(this);
     }
 
     @Override
@@ -132,7 +144,6 @@ public class ActionActivity extends Activity implements IWeiboHandler.Response, 
         onRespHandler(baseResp);
     }
 
-
     //////////////////////////////  -- help --  //////////////////////////////
 
     @TargetApi(Build.VERSION_CODES.ECLAIR)
@@ -151,7 +162,7 @@ public class ActionActivity extends Activity implements IWeiboHandler.Response, 
     }
 
     private IPlatform getPlatform() {
-        IPlatform platform = BaseManager.getPlatform();
+        IPlatform platform = PlatformManager.getPlatform();
         if (platform == null) {
             // LogUtils.e(TAG, "platform is null");
             checkFinish();
@@ -159,5 +170,4 @@ public class ActionActivity extends Activity implements IWeiboHandler.Response, 
         } else
             return platform;
     }
-
 }

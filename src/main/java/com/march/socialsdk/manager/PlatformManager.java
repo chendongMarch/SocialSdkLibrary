@@ -8,15 +8,15 @@ import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.Target;
 
-import java.lang.ref.WeakReference;
-
 /**
  * CreateAt : 2017/5/19
- * Describe : manager 基类
+ * Describe : 静态持有 platform, 在流程结束后会回收所有资源
  *
  * @author chendong
  */
-public abstract class BaseManager {
+public class PlatformManager {
+
+    public static final String RESULT_BROADCAST_FILTER = "RESULT_BROADCAST_FILTER";
 
     public static final int INVALID_PARAM = -1;
 
@@ -48,7 +48,7 @@ public abstract class BaseManager {
         return sIPlatform;
     }
 
-    static void finishProcess(Activity activity) {
+    public static void release(Activity activity) {
         if (sIPlatform != null ) {
             sIPlatform.recycle();
             sIPlatform = null;
@@ -57,4 +57,5 @@ public abstract class BaseManager {
             activity.finish();
         }
     }
+
 }

@@ -15,17 +15,19 @@ import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.uikit.ActionActivity;
 
+import java.lang.ref.WeakReference;
+
 /**
  * CreateAt : 2017/5/19
  * Describe : 登陆管理类，使用该类进行登陆操作
  *
  * @author chendong
  */
-public class LoginManager extends BaseManager {
+public class LoginManager {
 
     public static final String TAG = LoginManager.class.getSimpleName();
 
-    private static OnLoginListener sListener;
+    static OnLoginListener sListener;
 
     /**
      * 开始登陆，供外面使用
@@ -37,14 +39,14 @@ public class LoginManager extends BaseManager {
     @TargetApi(Build.VERSION_CODES.ECLAIR)
     public static void login(Context context, @Target.LoginTarget int loginTarget, OnLoginListener loginListener) {
         sListener = loginListener;
-        IPlatform platform = newPlatform(context, loginTarget);
+        IPlatform platform = PlatformManager.newPlatform(context, loginTarget);
         if (!platform.isInstall(context)) {
             loginListener.onFailure(new SocialError(SocialError.CODE_NOT_INSTALL));
             return;
         }
         Intent intent = new Intent(context, ActionActivity.class);
-        intent.putExtra(KEY_ACTION_TYPE, ACTION_TYPE_LOGIN);
-        intent.putExtra(KEY_LOGIN_TARGET, loginTarget);
+        intent.putExtra(PlatformManager.KEY_ACTION_TYPE, PlatformManager.ACTION_TYPE_LOGIN);
+        intent.putExtra(PlatformManager.KEY_LOGIN_TARGET, loginTarget);
         context.startActivity(intent);
         if (context instanceof Activity) {
             ((Activity) context).overridePendingTransition(0, 0);
@@ -59,79 +61,67 @@ public class LoginManager extends BaseManager {
      */
     public static void _actionLogin(final Activity activity) {
         Intent intent = activity.getIntent();
-        int actionType = intent.getIntExtra(KEY_ACTION_TYPE, INVALID_PARAM);
-        int loginTarget = intent.getIntExtra(KEY_LOGIN_TARGET, INVALID_PARAM);
-        if (actionType == INVALID_PARAM) {
+        int actionType = intent.getIntExtra(PlatformManager.KEY_ACTION_TYPE, PlatformManager.INVALID_PARAM);
+        int loginTarget = intent.getIntExtra(PlatformManager.KEY_LOGIN_TARGET, PlatformManager.INVALID_PARAM);
+        if (actionType == PlatformManager.INVALID_PARAM) {
             LogUtils.e(TAG, "_actionLogin actionType无效");
             return;
         }
-        if (actionType != ACTION_TYPE_LOGIN) {
+        if (actionType != PlatformManager.ACTION_TYPE_LOGIN) {
             return;
         }
-        if (loginTarget == INVALID_PARAM) {
+        if (loginTarget == PlatformManager.INVALID_PARAM) {
             LogUtils.e(TAG, "shareTargetType无效");
             return;
         }
         OnLoginListener listener = sListener;
-        if (sListener == null || listener == null) {
+        if (sListener == null) {
             LogUtils.e(TAG, "请设置 OnLoginListener");
             return;
         }
-        if (getPlatform() == null) {
+        if (PlatformManager.getPlatform() == null) {
             return;
         }
-        OnLoginListener newLoginListener = wrapListener(activity);
-        getPlatform().login(activity, newLoginListener);
+        PlatformManager.getPlatform().login(activity, new FinishLoginListener(activity));
     }
 
-    private static OnLoginListener wrapListener(Activity activity) {
-        return new FinishLoginListener(activity);
-    }
 
     static class FinishLoginListener implements OnLoginListener {
 
-        private Activity mActivity;
+        private WeakReference<Activity> mActivityWeakRef;
 
         FinishLoginListener(Activity activity) {
-            mActivity = activity;
+            mActivityWeakRef = new WeakReference<>(activity);
         }
 
         @Override
         public void onStart() {
-            if (sListener != null ) {
-                sListener.onStart();
-            }
+            if (sListener != null) sListener.onStart();
         }
 
         private void finish() {
-            finishProcess(mActivity);
+            PlatformManager.release(mActivityWeakRef.get());
+            sListener = null;
         }
 
         @Override
         public void onSuccess(LoginResult loginResult) {
-            if (sListener != null ) {
-                sListener.onSuccess(loginResult);
-            }
+            if (sListener != null) sListener.onSuccess(loginResult);
             finish();
         }
 
         @Override
         public void onCancel() {
-            if (sListener != null ) {
-                sListener.onCancel();
-            }
+            if (sListener != null) sListener.onCancel();
             finish();
         }
 
         @Override
         public void onFailure(SocialError e) {
-            if (sListener != null ) {
-                sListener.onFailure(e);
-            }
+            if (sListener != null) sListener.onFailure(e);
             finish();
         }
     }
-
 
     public static void clearAllToken(Context context) {
         TokenStoreUtils.clearToken(context, Target.LOGIN_QQ);
