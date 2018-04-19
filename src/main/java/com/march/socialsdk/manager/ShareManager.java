@@ -1,6 +1,7 @@
 package com.march.socialsdk.manager;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -23,7 +24,6 @@ import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.uikit.ActionActivity;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
 import java.util.concurrent.Callable;
 
 import bolts.Continuation;
@@ -39,7 +39,7 @@ public class ShareManager extends BaseManager {
 
     public static final String TAG = ShareManager.class.getSimpleName();
 
-    private static WeakReference<OnShareListener> sListener;
+    private static OnShareListener sListener;
 
     /**
      * 开始分享，供外面调用
@@ -107,12 +107,13 @@ public class ShareManager extends BaseManager {
 
 
     // 开始分享
+    @TargetApi(Build.VERSION_CODES.ECLAIR)
     private static boolean doShare(Context context, @Target.ShareTarget int shareTarget, ShareObj shareObj, OnShareListener onShareListener) {
         if (!ShareObjCheckUtils.checkObjValid(shareObj, shareTarget)) {
             onShareListener.onFailure(new SocialError(SocialError.CODE_SHARE_OBJ_VALID));
             return true;
         }
-        sListener = new WeakReference<>(onShareListener);
+        sListener = onShareListener;
         IPlatform platform = newPlatform(context, shareTarget);
         if (!platform.isInstall(context)) {
             onShareListener.onFailure(new SocialError(SocialError.CODE_NOT_INSTALL));
@@ -149,8 +150,8 @@ public class ShareManager extends BaseManager {
             LogUtils.e(TAG, "shareObj == null");
             return;
         }
-        OnShareListener listener = sListener.get();
-        if (sListener == null || listener == null) {
+        OnShareListener listener = sListener;
+        if (sListener == null) {
             LogUtils.e(TAG, "请设置 OnShareListener");
             return;
         }
@@ -172,36 +173,35 @@ public class ShareManager extends BaseManager {
 
     static class FinishShareListener implements OnShareListener {
 
-        private WeakReference<Activity> mActivityWeakRef;
+        private Activity mActivity;
 
         FinishShareListener(Activity activity) {
-            mActivityWeakRef = new WeakReference<>(activity);
+            mActivity = activity;
         }
 
         @Override
         public void onStart(int shareTarget, ShareObj obj) {
-            if (sListener != null && sListener.get() != null) {
-                sListener.get().onStart(shareTarget, obj);
+            if (sListener != null) {
+                sListener.onStart(shareTarget, obj);
             }
         }
 
         @Override
         public ShareObj onPrepareInBackground(int shareTarget, ShareObj obj) throws Exception {
-            if (sListener != null && sListener.get() != null) {
-                return sListener.get().onPrepareInBackground(shareTarget, obj);
+            if (sListener != null ) {
+                return sListener.onPrepareInBackground(shareTarget, obj);
             }
             return null;
         }
 
-
         private void finish() {
-            finishProcess(mActivityWeakRef.get());
+            finishProcess(mActivity);
         }
 
         @Override
         public void onSuccess() {
-            if (sListener != null && sListener.get() != null) {
-                sListener.get().onSuccess();
+            if (sListener != null) {
+                sListener.onSuccess();
             }
             finish();
         }
@@ -209,8 +209,8 @@ public class ShareManager extends BaseManager {
 
         @Override
         public void onCancel() {
-            if (sListener != null && sListener.get() != null) {
-                sListener.get().onCancel();
+            if (sListener != null) {
+                sListener.onCancel();
             }
             finish();
         }
@@ -218,8 +218,8 @@ public class ShareManager extends BaseManager {
 
         @Override
         public void onFailure(SocialError e) {
-            if (sListener != null && sListener.get() != null) {
-                sListener.get().onFailure(e);
+            if (sListener != null) {
+                sListener.onFailure(e);
             }
             finish();
         }

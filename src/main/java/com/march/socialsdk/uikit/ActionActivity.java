@@ -1,5 +1,6 @@
 package com.march.socialsdk.uikit;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
@@ -27,37 +28,43 @@ public class ActionActivity extends Activity implements IWeiboHandler.Response, 
 
     public static final String TAG = ActionActivity.class.getSimpleName();
 
-    private boolean mIsNotFirstResume;
+    private boolean mIsNotFirstResume = false;
+    private int mActionType = -1;
+
+    private void logMsg(String msg) {
+        LogUtils.e(TAG, "ActionActivity - " + msg + "  " + hashCode());
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logMsg("onCreate");
         if (getPlatform() != null) {
-            getPlatform().onNewIntent(this);
+            getPlatform().handleIntent(this);
         }
-        int actionType = getIntent().getIntExtra(BaseManager.KEY_ACTION_TYPE, -1);
-        if (actionType == -1) {
-            // LogUtils.e(TAG, "onCreate actionType 无效，这边不能作为依据，微信和钉钉会重新创建 activity");
-            return;
-        }
-        switch (actionType) {
-            case BaseManager.ACTION_TYPE_LOGIN:
-                LoginManager._actionLogin(this);
-                break;
-            case BaseManager.ACTION_TYPE_SHARE:
-                ShareManager._actionShare(this);
-                break;
+        mActionType = getIntent().getIntExtra(BaseManager.KEY_ACTION_TYPE, -1);
+        if (mActionType != -1) {
+            switch (mActionType) {
+                case BaseManager.ACTION_TYPE_LOGIN:
+                    LoginManager._actionLogin(this);
+                    break;
+                case BaseManager.ACTION_TYPE_SHARE:
+                    ShareManager._actionShare(this);
+                    break;
+            }
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        logMsg("onResume");
         if (mIsNotFirstResume) {
             if (getPlatform() != null) {
-                getPlatform().onNewIntent(this);
+                getPlatform().handleIntent(this);
             }
-            // checkFinish();
+            // 留在目标 app 后在返回会再次 resume
+            checkFinish();
         } else {
             mIsNotFirstResume = true;
         }
@@ -66,9 +73,10 @@ public class ActionActivity extends Activity implements IWeiboHandler.Response, 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        logMsg("handleIntent");
         setIntent(intent);
         if (getPlatform() != null)
-            getPlatform().onNewIntent(this);
+            getPlatform().handleIntent(this);
         // checkFinish();
     }
 
@@ -84,9 +92,10 @@ public class ActionActivity extends Activity implements IWeiboHandler.Response, 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        logMsg("onActivityResult");
         if (getPlatform() != null)
             getPlatform().onActivityResult(requestCode, resultCode, data);
-        super.onActivityResult(requestCode, resultCode, data);
         checkFinish();
     }
 
@@ -101,12 +110,13 @@ public class ActionActivity extends Activity implements IWeiboHandler.Response, 
 
     @Override
     public void onResp(BaseResp resp) {
+        logMsg("Wx onResp");
         onRespHandler(resp);
     }
 
     @Override
     public void onReq(BaseReq baseReq) {
-        LogUtils.e(TAG, "wx onReq: ", baseReq);
+        logMsg("Wx onReq");
     }
 
 
@@ -114,7 +124,7 @@ public class ActionActivity extends Activity implements IWeiboHandler.Response, 
 
     @Override
     public void onReq(com.android.dingtalk.share.ddsharemodule.message.BaseReq baseReq) {
-        LogUtils.e(TAG, "wx onReq: ", baseReq);
+        LogUtils.e(TAG, "dd onReq: ", baseReq);
     }
 
     @Override
@@ -125,6 +135,7 @@ public class ActionActivity extends Activity implements IWeiboHandler.Response, 
 
     //////////////////////////////  -- help --  //////////////////////////////
 
+    @TargetApi(Build.VERSION_CODES.ECLAIR)
     private void checkFinish() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             if (!isFinishing() && !isDestroyed()) {
@@ -139,11 +150,10 @@ public class ActionActivity extends Activity implements IWeiboHandler.Response, 
         }
     }
 
-
     private IPlatform getPlatform() {
         IPlatform platform = BaseManager.getPlatform();
         if (platform == null) {
-            LogUtils.e(TAG, "platform is null");
+            // LogUtils.e(TAG, "platform is null");
             checkFinish();
             return null;
         } else

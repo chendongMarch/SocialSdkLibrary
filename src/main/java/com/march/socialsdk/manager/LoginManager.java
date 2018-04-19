@@ -1,8 +1,10 @@
 package com.march.socialsdk.manager;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.model.LoginResult;
@@ -12,8 +14,6 @@ import com.march.socialsdk.utils.LogUtils;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.uikit.ActionActivity;
-
-import java.lang.ref.WeakReference;
 
 /**
  * CreateAt : 2017/5/19
@@ -25,7 +25,7 @@ public class LoginManager extends BaseManager {
 
     public static final String TAG = LoginManager.class.getSimpleName();
 
-    private static WeakReference<OnLoginListener> sListener;
+    private static OnLoginListener sListener;
 
     /**
      * 开始登陆，供外面使用
@@ -34,8 +34,9 @@ public class LoginManager extends BaseManager {
      * @param loginTarget   登陆类型
      * @param loginListener 登陆监听
      */
+    @TargetApi(Build.VERSION_CODES.ECLAIR)
     public static void login(Context context, @Target.LoginTarget int loginTarget, OnLoginListener loginListener) {
-        sListener = new WeakReference<>(loginListener);
+        sListener = loginListener;
         IPlatform platform = newPlatform(context, loginTarget);
         if (!platform.isInstall(context)) {
             loginListener.onFailure(new SocialError(SocialError.CODE_NOT_INSTALL));
@@ -71,7 +72,7 @@ public class LoginManager extends BaseManager {
             LogUtils.e(TAG, "shareTargetType无效");
             return;
         }
-        OnLoginListener listener = sListener.get();
+        OnLoginListener listener = sListener;
         if (sListener == null || listener == null) {
             LogUtils.e(TAG, "请设置 OnLoginListener");
             return;
@@ -89,43 +90,43 @@ public class LoginManager extends BaseManager {
 
     static class FinishLoginListener implements OnLoginListener {
 
-        private WeakReference<Activity> mActivityWeakRef;
+        private Activity mActivity;
 
         FinishLoginListener(Activity activity) {
-            mActivityWeakRef = new WeakReference<>(activity);
+            mActivity = activity;
         }
 
         @Override
         public void onStart() {
-            if (sListener != null && sListener.get() != null) {
-                sListener.get().onStart();
+            if (sListener != null ) {
+                sListener.onStart();
             }
         }
 
         private void finish() {
-            finishProcess(mActivityWeakRef.get());
+            finishProcess(mActivity);
         }
 
         @Override
         public void onSuccess(LoginResult loginResult) {
-            if (sListener != null && sListener.get() != null) {
-                sListener.get().onSuccess(loginResult);
+            if (sListener != null ) {
+                sListener.onSuccess(loginResult);
             }
             finish();
         }
 
         @Override
         public void onCancel() {
-            if (sListener != null && sListener.get() != null) {
-                sListener.get().onCancel();
+            if (sListener != null ) {
+                sListener.onCancel();
             }
             finish();
         }
 
         @Override
         public void onFailure(SocialError e) {
-            if (sListener != null && sListener.get() != null) {
-                sListener.get().onFailure(e);
+            if (sListener != null ) {
+                sListener.onFailure(e);
             }
             finish();
         }

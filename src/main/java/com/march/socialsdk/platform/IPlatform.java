@@ -32,4 +32,5 @@ public interface IPlatform extends PlatformLifeCircle {
     // 发起分享
     void share(Activity activity, int shareTarget, ShareObj shareMediaObj);
 
+    int getPlatformType();
 }

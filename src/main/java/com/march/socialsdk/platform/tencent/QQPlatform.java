@@ -107,6 +107,11 @@ public class QQPlatform extends AbsPlatform {
         mQQLoginHelper.login();
     }
 
+    @Override
+    public int getPlatformType() {
+        return Target.PLATFORM_QQ;
+    }
+
 
     private Bundle buildCommonBundle(String title, String summary, String targetUrl, int shareTarget) {
         final Bundle params = new Bundle();

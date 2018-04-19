@@ -124,7 +124,7 @@ public abstract class AbsPlatform implements IPlatform {
 
 
     @Override
-    public void onNewIntent(Activity activity) {
+    public void handleIntent(Activity activity) {
 
     }
 
