@@ -31,7 +31,7 @@ import com.sina.weibo.sdk.utils.LogUtil;
  * @author SINA
  * @since 2013-11-05
  */
-public abstract class AbsOpenAPI {
+abstract class AbsOpenAPI {
     private static final String TAG = AbsOpenAPI.class.getName();
     
     /** 访问微博服务接口的地址 */

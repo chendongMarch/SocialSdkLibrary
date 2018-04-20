@@ -24,22 +24,7 @@ import java.lang.ref.WeakReference;
  * @author chendong
  */
 
-public class WxLoginHelper {
-    /*
-     * 流程：
-     * 发起登录申请流程 : 发起登录申请 -> code -> 获取access_token -> 存储 -> 获取用户信息 -> 结束
-     * 检测本地token -> :
-     * -> 没有 -> 发起登录申请流程
-     * -> 有 -> 检测token有效期 —>
-     *                     -> 快要到期 -> 发起登录申请流程
-     *                     -> 还没到期 -> :
-     *                                 -> 检测access_token有效性 —> :
-     *                                                        -> 有效 -> 获取用户信息
-     *                                                        -> 无效 -> 使用refresh_token刷新access_token -> :
-     *                                                                                                   -> 成功 -> 存储 -> 获取用户信息 -> 结束
-     *                                                                                                   -> refresh_token无效 -> 发起登录申请流程
-     *
-     */
+class WxLoginHelper {
 
     public static final String TAG = WxLoginHelper.class.getSimpleName();
 

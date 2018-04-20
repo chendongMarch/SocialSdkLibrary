@@ -28,7 +28,7 @@ import java.lang.ref.WeakReference;
  * @author chendong
  */
 
-public class WbLoginHelper {
+class WbLoginHelper {
 
     public static final String TAG = WbLoginHelper.class.getSimpleName();
 
