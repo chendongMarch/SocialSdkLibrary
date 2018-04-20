@@ -29,7 +29,7 @@ import java.lang.ref.WeakReference;
  * @author chendong
  */
 
-public class QQLoginHelper {
+class QQLoginHelper {
 
     public static final String TAG = QQLoginHelper.class.getSimpleName();
 

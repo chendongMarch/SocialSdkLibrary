@@ -18,8 +18,7 @@ import com.sina.weibo.sdk.exception.WeiboException;
  *
  * @author chendong
  */
-
-public class WbAuthHelper {
+class WbAuthHelper {
 
     public static final String TAG = WbAuthHelper.class.getSimpleName();
 
