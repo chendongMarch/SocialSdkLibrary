@@ -161,7 +161,9 @@ public class FileUtils {
      */
     public static String mapUrl2LocalPath(String url) {
         // 映射文件名
-        String fileName = CommonUtils.getMD5(url) + FileUtils.getSuffix(url);
+        String suffix = FileUtils.getSuffix(url);
+        suffix = TextUtils.isEmpty(suffix) ? ".png" : suffix;
+        String fileName = CommonUtils.getMD5(url) + suffix;
         File saveFile = new File(SocialSdk.getConfig().getShareCacheDirPath(), fileName);
         return saveFile.getAbsolutePath();
     }
