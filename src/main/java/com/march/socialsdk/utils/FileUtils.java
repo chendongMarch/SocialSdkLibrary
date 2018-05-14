@@ -67,7 +67,23 @@ public class FileUtils {
      * @return 后缀名
      */
     public static String getSuffix(String path) {
-        return path.substring(path.lastIndexOf("."), path.length());
+        if (!TextUtils.isEmpty(path)) {
+            int lineIndex = path.lastIndexOf("/");
+            if (lineIndex != -1) {
+                String fileName = path.substring(lineIndex, path.length());
+                if (!TextUtils.isEmpty(fileName)) {
+                    int pointIndex = fileName.lastIndexOf(".");
+                    if (pointIndex != -1) {
+                        String suffix = fileName.substring(pointIndex, fileName.length());
+                        if (!TextUtils.isEmpty(suffix)) {
+                            return suffix;
+                        }
+                    }
+
+                }
+            }
+        }
+        return "";
     }
 
     /**
