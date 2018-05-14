@@ -74,7 +74,6 @@ public class LoginManager {
             LogUtils.e(TAG, "shareTargetType无效");
             return;
         }
-        OnLoginListener listener = sListener;
         if (sListener == null) {
             LogUtils.e(TAG, "请设置 OnLoginListener");
             return;

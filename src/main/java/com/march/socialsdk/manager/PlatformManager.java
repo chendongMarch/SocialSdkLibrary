@@ -16,8 +16,6 @@ import com.march.socialsdk.platform.Target;
  */
 public class PlatformManager {
 
-    public static final String RESULT_BROADCAST_FILTER = "RESULT_BROADCAST_FILTER";
-
     public static final int INVALID_PARAM = -1;
 
     public static final int ACTION_TYPE_LOGIN = 0;

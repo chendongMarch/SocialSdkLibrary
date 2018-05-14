@@ -153,7 +153,6 @@ public class ShareManager {
             LogUtils.e(TAG, "shareObj == null");
             return;
         }
-        OnShareListener listener = sListener;
         if (sListener == null) {
             LogUtils.e(TAG, "请设置 OnShareListener");
             return;
