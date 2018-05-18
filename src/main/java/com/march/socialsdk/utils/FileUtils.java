@@ -193,16 +193,6 @@ public class FileUtils {
         return saveFile.getAbsolutePath();
     }
 
-    /**
-     * 生成不重复文件名
-     *
-     * @param suffix 后缀
-     * @return 文件名
-     */
-    public static String getFileUid(String suffix) {
-        String format = new SimpleDateFormat("yyyyMMddHHmmssSSS", Locale.CHINA).format(System.currentTimeMillis());
-        return format + suffix;
-    }
 }
 
 
