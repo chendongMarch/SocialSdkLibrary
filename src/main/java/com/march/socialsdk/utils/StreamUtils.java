@@ -65,6 +65,9 @@ public class StreamUtils {
         BufferedOutputStream bos = null;
         byte[] bs;
         try {
+            if (!file.exists()) {
+                file.createNewFile();
+            }
             bis = new BufferedInputStream(is);
             bos = new BufferedOutputStream(new FileOutputStream(file));
             bs = new byte[1024 * 10];

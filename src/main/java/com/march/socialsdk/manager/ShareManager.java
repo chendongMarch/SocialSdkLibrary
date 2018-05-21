@@ -13,15 +13,15 @@ import android.text.TextUtils;
 import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.exception.SocialError;
+import com.march.socialsdk.listener.OnShareListener;
+import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.platform.IPlatform;
+import com.march.socialsdk.platform.Target;
+import com.march.socialsdk.uikit.ActionActivity;
 import com.march.socialsdk.utils.CommonUtils;
 import com.march.socialsdk.utils.FileUtils;
 import com.march.socialsdk.utils.LogUtils;
 import com.march.socialsdk.utils.ShareObjCheckUtils;
-import com.march.socialsdk.listener.OnShareListener;
-import com.march.socialsdk.model.ShareObj;
-import com.march.socialsdk.platform.Target;
-import com.march.socialsdk.uikit.ActionActivity;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -57,7 +57,7 @@ public class ShareManager {
         Task.callInBackground(new Callable<ShareObj>() {
             @Override
             public ShareObj call() throws Exception {
-                prepareImageInBackground(shareObj);
+                prepareImageInBackground(context, shareObj);
                 ShareObj temp = null;
                 try {
                     temp = onShareListener.onPrepareInBackground(shareTarget, shareObj);
@@ -95,12 +95,14 @@ public class ShareManager {
         });
     }
 
-
     // 如果是网络图片先下载
-    private static void prepareImageInBackground(ShareObj shareObj) {
+    private static void prepareImageInBackground(Context context, ShareObj shareObj) throws SocialError {
         String thumbImagePath = shareObj.getThumbImagePath();
-        // 路径不为空 & 是网络路径
+        // 图片路径为网络路径，下载为本地图片
         if (!TextUtils.isEmpty(thumbImagePath) && FileUtils.isHttpPath(thumbImagePath)) {
+            if (!FileUtils.hasStoragePermission(context)) {
+                throw new SocialError(SocialError.CODE_STORAGE_ERROR, "没有读写存储的权限");
+            }
             File file = SocialSdk.getRequestAdapter().getFile(thumbImagePath);
             if (FileUtils.isExist(file)) {
                 shareObj.setThumbImagePath(file.getAbsolutePath());

@@ -1,8 +1,11 @@
 package com.march.socialsdk.utils;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.text.TextUtils;
 
 import com.march.socialsdk.SocialSdk;
@@ -12,8 +15,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
 
 /**
  * CreateAt : 2016/12/22
@@ -192,6 +193,16 @@ public class FileUtils {
         }
         return saveFile.getAbsolutePath();
     }
+
+    public static boolean hasStoragePermission(Context context) {
+        boolean hasPermission = true;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            hasPermission = context.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                    && context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        }
+        return hasPermission;
+    }
+
 
 }
 

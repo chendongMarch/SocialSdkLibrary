@@ -10,7 +10,7 @@ import com.tencent.tauth.UiError;
  *
  * @author chendong
  */
-public class SocialError {
+public class SocialError extends Exception{
 
     public static final String TAG = SocialError.class.getSimpleName();
 
@@ -20,10 +20,16 @@ public class SocialError {
     public static final int CODE_VERSION_LOW = 1; // 版本低
     public static final int CODE_SHARE_OBJ_VALID = 2; // 分享的对象参数有问题
     public static final int CODE_SHARE_BY_INTENT_FAIL = 3; // 使用 Intent 分享失败
+    public static final int CODE_STORAGE_ERROR = 4; // 没有读写存储的权限
 
     private int errorCode;
     private String errorMsg;
     private Exception mException;
+
+    public SocialError(String message) {
+        super(message);
+        this.errorMsg = message;
+    }
 
     public SocialError(int errorCode) {
         this.errorCode = errorCode;
@@ -40,9 +46,12 @@ public class SocialError {
         }
     }
 
-    public SocialError(String message) {
+
+    public SocialError(int errCode,String message) {
         this.errorMsg = message;
+        this.errorCode = errCode;
     }
+
 
     public SocialError(int errorCode, Exception exception) {
         this.errorCode = errorCode;
