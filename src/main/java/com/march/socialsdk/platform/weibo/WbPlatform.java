@@ -217,7 +217,7 @@ public class WbPlatform extends AbsPlatform {
         final Callable<Bitmap> getBitmapCallable = new Callable<Bitmap>() {
             @Override
             public Bitmap call() throws Exception {
-                return BitmapUtils.getBitmapByPath(obj.getThumbImagePath(), 5 * 1024 * 1024);
+                return BitmapUtils.getMaxSizeBitmap(obj.getThumbImagePath(), 5 * 1024 * 1024);
             }
         };
         final Continuation<Bitmap, Object> shareImageContinuation = new Continuation<Bitmap, Object>() {

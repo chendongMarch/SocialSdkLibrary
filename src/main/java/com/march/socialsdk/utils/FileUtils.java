@@ -182,9 +182,12 @@ public class FileUtils {
         File saveFile = new File(SocialSdk.getConfig().getShareCacheDirPath(), fileName);
         if (saveFile.exists())
             return saveFile.getAbsolutePath();
-        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resId);
+        Bitmap bitmap = null;
         try {
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(saveFile));
+            bitmap = BitmapFactory.decodeResource(context.getResources(), resId);
+            if (bitmap != null && bitmap.getWidth() > 0 && bitmap.getHeight() > 0) {
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(saveFile));
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return null;
