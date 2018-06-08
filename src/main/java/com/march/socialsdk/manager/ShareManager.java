@@ -106,6 +106,11 @@ public class ShareManager {
             File file = SocialSdk.getRequestAdapter().getFile(thumbImagePath);
             if (FileUtils.isExist(file)) {
                 shareObj.setThumbImagePath(file.getAbsolutePath());
+            } else if (SocialSdk.getConfig().getDefImageResId() > 0) {
+                String localPath = FileUtils.mapResId2LocalPath(context, SocialSdk.getConfig().getDefImageResId());
+                if (FileUtils.isExist(localPath)) {
+                    shareObj.setThumbImagePath(localPath);
+                }
             }
         }
     }
