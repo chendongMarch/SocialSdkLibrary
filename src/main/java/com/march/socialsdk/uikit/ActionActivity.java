@@ -38,7 +38,7 @@ public class ActionActivity extends Activity implements IWeiboHandler.Response, 
     private int mActionType = -1;
 
     private void logMsg(String msg) {
-        LogUtils.e(TAG, "ActionActivity - " + msg + "  " + hashCode());
+        // LogUtils.e(TAG, "ActionActivity - " + msg + "  " + hashCode());
     }
 
     @Override
@@ -64,7 +64,6 @@ public class ActionActivity extends Activity implements IWeiboHandler.Response, 
     @Override
     protected void onResume() {
         super.onResume();
-        logMsg("onResume");
         if (mIsNotFirstResume) {
             if (getPlatform() != null) {
                 getPlatform().handleIntent(this);

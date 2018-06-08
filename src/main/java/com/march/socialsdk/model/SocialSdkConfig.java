@@ -1,6 +1,8 @@
 package com.march.socialsdk.model;
 
 import android.content.Context;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 
 import com.march.socialsdk.R;
 import com.march.socialsdk.common.SocialConstants;
@@ -35,6 +37,9 @@ public class SocialSdkConfig {
     // 钉钉配置
     private String ddAppId;
 
+    private int defImageResId;
+
+    @RequiresApi(api = Build.VERSION_CODES.FROYO)
     public SocialSdkConfig(Context context) {
         this.appName = context.getString(R.string.app_name);
         File shareDir = new File(context.getExternalCacheDir(), SHARE_CACHE_DIR_NAME);
@@ -66,16 +71,24 @@ public class SocialSdkConfig {
         return this;
     }
 
-    public SocialSdkConfig sinaRedirectUrl(String sinaRedirectUrl) {
-        this.sinaRedirectUrl = sinaRedirectUrl;
-        return this;
-    }
-
     public SocialSdkConfig sinaScope(String sinaScope) {
         this.sinaScope = sinaScope;
         return this;
     }
 
+     public SocialSdkConfig sinaRedirectUrl(String sinaRedirectUrl) {
+        this.sinaRedirectUrl = sinaRedirectUrl;
+        return this;
+    }
+
+    public SocialSdkConfig defImageResId(int defImageResId) {
+        this.defImageResId = defImageResId;
+        return this;
+    }
+
+    public int getDefImageResId() {
+        return defImageResId;
+    }
 
     public String getAppName() {
         return appName;
