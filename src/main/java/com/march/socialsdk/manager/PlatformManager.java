@@ -56,4 +56,16 @@ public class PlatformManager {
         }
     }
 
+    public static void action(Activity activity, int actionType) {
+        if (actionType != -1) {
+            switch (actionType) {
+                case PlatformManager.ACTION_TYPE_LOGIN:
+                    LoginManager._actionLogin(activity);
+                    break;
+                case PlatformManager.ACTION_TYPE_SHARE:
+                    ShareManager._actionShare(activity);
+                    break;
+            }
+        }
+    }
 }

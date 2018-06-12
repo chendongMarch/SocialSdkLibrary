@@ -140,7 +140,7 @@ public class ShareManager {
      *
      * @param activity activity
      */
-    private static void _actionShare(Activity activity) {
+    static void _actionShare(Activity activity) {
         Intent intent = activity.getIntent();
         int actionType = intent.getIntExtra(KEY_ACTION_TYPE, PlatformManager.INVALID_PARAM);
         int shareTarget = intent.getIntExtra(PlatformManager.KEY_SHARE_TARGET, PlatformManager.INVALID_PARAM);
