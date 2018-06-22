@@ -5,19 +5,19 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.march.socialsdk.exception.SocialError;
+import com.march.socialsdk.listener.OnLoginListener;
+import com.march.socialsdk.model.LoginResult;
+import com.march.socialsdk.platform.Target;
+import com.march.socialsdk.platform.weibo.extend.UsersAPI;
+import com.march.socialsdk.platform.weibo.model.SinaAccessToken;
+import com.march.socialsdk.platform.weibo.model.SinaUser;
 import com.march.socialsdk.utils.CommonUtils;
 import com.march.socialsdk.utils.JsonUtils;
 import com.march.socialsdk.utils.LogUtils;
-import com.march.socialsdk.listener.OnLoginListener;
-import com.march.socialsdk.model.LoginResult;
-import com.march.socialsdk.model.token.SinaAccessToken;
-import com.march.socialsdk.model.user.SinaUser;
-import com.march.socialsdk.platform.weibo.extend.UsersAPI;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.sina.weibo.sdk.auth.sso.SsoHandler;
 import com.sina.weibo.sdk.exception.WeiboException;
 import com.sina.weibo.sdk.net.RequestListener;
-import com.march.socialsdk.platform.Target;
 
 import java.lang.ref.WeakReference;
 
@@ -42,6 +42,8 @@ class WbLoginHelper {
         this.appId = appId;
         this.mLoginType = Target.LOGIN_WB;
     }
+
+
 
     /**
      * 获取用户信息

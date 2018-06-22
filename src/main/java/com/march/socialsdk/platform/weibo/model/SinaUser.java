@@ -1,5 +1,7 @@
 
-package com.march.socialsdk.model.user;
+package com.march.socialsdk.platform.weibo.model;
+
+import com.march.socialsdk.model.user.BaseUser;
 
 /**
  * 用户信息结构体。

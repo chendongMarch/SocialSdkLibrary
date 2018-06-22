@@ -1,6 +1,6 @@
-package com.march.socialsdk.model.token;
+package com.march.socialsdk.platform.tencent.model;
 
-import com.march.socialsdk.manager.LoginManager;
+import com.march.socialsdk.model.token.AccessToken;
 import com.march.socialsdk.platform.Target;
 
 /**
@@ -10,7 +10,7 @@ import com.march.socialsdk.platform.Target;
  * @author chendong
  */
 
-public class QQAccessToken extends BaseAccessToken {
+public class QQAccessToken extends AccessToken {
 
     private int    ret;
     private String pay_token;

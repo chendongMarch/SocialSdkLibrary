@@ -1,4 +1,6 @@
-package com.march.socialsdk.model.user;
+package com.march.socialsdk.platform.wechat.model;
+
+import com.march.socialsdk.model.user.BaseUser;
 
 import java.util.List;
 

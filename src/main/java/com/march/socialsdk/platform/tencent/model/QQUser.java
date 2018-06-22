@@ -1,4 +1,6 @@
-package com.march.socialsdk.model.user;
+package com.march.socialsdk.platform.tencent.model;
+
+import com.march.socialsdk.model.user.BaseUser;
 
 /**
  * CreateAt : 2016/12/3
