@@ -12,13 +12,15 @@
 
 本文地址 ：[快速接入微信微博QQ钉钉原生登录分享](http://cdevlab.top/article/3067853428/)
 
-🎉  2017.12.12 对代码进行简单重构并测试  [稳定版本 1.0.0](https://github.com/chendongMarch/SocialSdkLibrary/releases/tag/1.0.0)
 
-🎉  2018.2.12 支持钉钉分享
+🎉  2018.6.7 项目获得了第100颗🌟，最后一颗是我问同事要的🤦‍
 
 🎉  2018.5.12 修复内存问题、功能扩展 [稳定版本 1.1.0](https://github.com/chendongMarch/SocialSdkLibrary/releases/tag/1.1.0)
 
-🎉  2018.6.7 项目获得了第100颗🌟，最后一颗是我问同事要的🤦‍
+🎉  2018.2.12 支持钉钉分享
+
+🎉  2017.12.12 对代码进行简单重构并测试  [稳定版本 1.0.0](https://github.com/chendongMarch/SocialSdkLibrary/releases/tag/1.0.0)
+
 
 <div style="width:100%;display: flex;height:30px;">
 
