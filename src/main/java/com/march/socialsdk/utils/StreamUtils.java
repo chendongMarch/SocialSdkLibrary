@@ -79,7 +79,7 @@ public class StreamUtils {
             bis.close();
             bos.close();
         } catch (Exception e) {
-            LogUtils.t(e);
+            SocialLogUtils.t(e);
             return null;
         } finally {
             closeStream(bis, bos);

@@ -1,8 +1,6 @@
 package com.march.socialsdk.exception;
 
-import com.march.socialsdk.utils.LogUtils;
-import com.sina.weibo.sdk.exception.WeiboException;
-import com.tencent.tauth.UiError;
+import com.march.socialsdk.utils.SocialLogUtils;
 
 /**
  * CreateAt : 2016/12/5
@@ -80,7 +78,7 @@ public class SocialError extends Exception{
     }
 
     public void printStackTrace() {
-        LogUtils.e(TAG, toString());
+        SocialLogUtils.e(TAG, toString());
     }
 
     @Override

@@ -2,17 +2,13 @@ package com.march.socialsdk.uikit;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 
 import com.android.dingtalk.share.ddsharemodule.IDDAPIEventHandler;
 import com.march.socialsdk.manager.PlatformManager;
-import com.march.socialsdk.utils.LogUtils;
+import com.march.socialsdk.utils.SocialLogUtils;
 import com.march.socialsdk.manager.LoginManager;
 import com.march.socialsdk.manager.ShareManager;
 import com.march.socialsdk.platform.IPlatform;
@@ -21,8 +17,6 @@ import com.sina.weibo.sdk.api.share.IWeiboHandler;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
-
-import java.lang.ref.WeakReference;
 
 /**
  * CreateAt : 2017/1/8
@@ -134,7 +128,7 @@ public class ActionActivity extends Activity implements IWeiboHandler.Response, 
 
     @Override
     public void onReq(com.android.dingtalk.share.ddsharemodule.message.BaseReq baseReq) {
-        LogUtils.e(TAG, "dd onReq: ", baseReq);
+        SocialLogUtils.e(TAG, "dd onReq: ", baseReq);
     }
 
     @Override

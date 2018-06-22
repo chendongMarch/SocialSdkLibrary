@@ -1,6 +1,6 @@
 package com.march.socialsdk.platform.tencent.model;
 
-import com.march.socialsdk.model.user.BaseUser;
+import com.march.socialsdk.model.user.SocialUser;
 
 /**
  * CreateAt : 2016/12/3
@@ -9,7 +9,7 @@ import com.march.socialsdk.model.user.BaseUser;
  * @author chendong
  */
 
-public class QQUser extends BaseUser {
+public class QQUser extends SocialUser {
 
     ///////////////////////////////////////////////////////////////////////////
     // {

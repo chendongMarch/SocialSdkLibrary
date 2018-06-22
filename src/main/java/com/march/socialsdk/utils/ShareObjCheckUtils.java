@@ -27,7 +27,7 @@ public class ShareObjCheckUtils {
                 if (shareTarget == Target.SHARE_WB_OPENAPI) {
                     boolean isSummaryValid = !CommonUtils.isAnyEmpty(obj.getSummary());
                     if (!isSummaryValid)
-                        LogUtils.e(TAG, "Sina openApi分享必须有summary");
+                        SocialLogUtils.e(TAG, "Sina openApi分享必须有summary");
                     return isThumbLocalPathValid(obj) && isSummaryValid;
                 } else {
                     return isThumbLocalPathValid(obj);
@@ -76,7 +76,7 @@ public class ShareObjCheckUtils {
     private static boolean isTitleSummaryValid(ShareObj obj) {
         boolean valid = !CommonUtils.isAnyEmpty(obj.getTitle(), obj.getSummary());
         if (!valid) {
-            LogUtils.e("title summary 不能空");
+            SocialLogUtils.e("title summary 不能空");
         }
         return valid;
     }
@@ -85,7 +85,7 @@ public class ShareObjCheckUtils {
     private static boolean isNetMedia(ShareObj obj) {
         boolean httpPath = FileUtils.isHttpPath(obj.getMediaPath());
         if (!httpPath) {
-            LogUtils.e("ShareObj mediaPath 需要 网络路机构");
+            SocialLogUtils.e("ShareObj mediaPath 需要 网络路机构");
         }
         return httpPath;
     }
@@ -95,7 +95,7 @@ public class ShareObjCheckUtils {
         String targetUrl = obj.getTargetUrl();
         boolean urlValid = !CommonUtils.isAnyEmpty(targetUrl) && FileUtils.isHttpPath(targetUrl);
         if (!urlValid) {
-            LogUtils.e(TAG, "url : " + targetUrl + "  不能为空，且必须带有http协议头");
+            SocialLogUtils.e(TAG, "url : " + targetUrl + "  不能为空，且必须带有http协议头");
         }
         return urlValid;
     }
@@ -111,7 +111,7 @@ public class ShareObjCheckUtils {
         boolean exist = FileUtils.isExist(thumbImagePath);
         boolean picFile = FileUtils.isPicFile(thumbImagePath);
         if (!exist || !picFile) {
-            LogUtils.e(TAG, "path : " + thumbImagePath + "  " + (exist ? "" : "文件不存在") + (picFile ? "" : "不是图片文件"));
+            SocialLogUtils.e(TAG, "path : " + thumbImagePath + "  " + (exist ? "" : "文件不存在") + (picFile ? "" : "不是图片文件"));
         }
         return exist && picFile;
     }

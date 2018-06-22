@@ -1,6 +1,6 @@
 package com.march.socialsdk.platform.wechat.model;
 
-import com.march.socialsdk.model.user.BaseUser;
+import com.march.socialsdk.model.user.SocialUser;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import java.util.List;
  * @author chendong
  */
 
-public class WxUser extends BaseUser {
+public class WxUser extends SocialUser {
 
     ///////////////////////////////////////////////////////////////////////////
     // openid是同一个公众账号用户的唯一标识，在同一个公众账号中不可能重复，不同公众账号有可能重复

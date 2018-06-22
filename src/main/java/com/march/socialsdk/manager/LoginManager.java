@@ -10,7 +10,7 @@ import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.model.LoginResult;
 import com.march.socialsdk.model.token.AccessToken;
 import com.march.socialsdk.platform.IPlatform;
-import com.march.socialsdk.utils.LogUtils;
+import com.march.socialsdk.utils.SocialLogUtils;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.uikit.ActionActivity;
@@ -64,18 +64,18 @@ public class LoginManager {
         int actionType = intent.getIntExtra(PlatformManager.KEY_ACTION_TYPE, PlatformManager.INVALID_PARAM);
         int loginTarget = intent.getIntExtra(PlatformManager.KEY_LOGIN_TARGET, PlatformManager.INVALID_PARAM);
         if (actionType == PlatformManager.INVALID_PARAM) {
-            LogUtils.e(TAG, "_actionLogin actionType无效");
+            SocialLogUtils.e(TAG, "_actionLogin actionType无效");
             return;
         }
         if (actionType != PlatformManager.ACTION_TYPE_LOGIN) {
             return;
         }
         if (loginTarget == PlatformManager.INVALID_PARAM) {
-            LogUtils.e(TAG, "shareTargetType无效");
+            SocialLogUtils.e(TAG, "shareTargetType无效");
             return;
         }
         if (sListener == null) {
-            LogUtils.e(TAG, "请设置 OnLoginListener");
+            SocialLogUtils.e(TAG, "请设置 OnLoginListener");
             return;
         }
         if (PlatformManager.getPlatform() == null) {

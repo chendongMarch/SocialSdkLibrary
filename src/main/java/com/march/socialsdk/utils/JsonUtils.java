@@ -29,7 +29,7 @@ public class JsonUtils {
             try {
                 return jsonAdapter.toObj(jsonString, cls);
             } catch (Exception e) {
-                LogUtils.e(TAG, e);
+                SocialLogUtils.e(TAG, e);
             }
         }
         return null;
@@ -40,7 +40,7 @@ public class JsonUtils {
         try {
             return jsonAdapter.toJson(object);
         } catch (Exception e) {
-            LogUtils.e(TAG, e);
+            SocialLogUtils.e(TAG, e);
         }
         return null;
     }
@@ -53,14 +53,14 @@ public class JsonUtils {
     }
 
     public static <T> void startJsonRequest(final String url, final Class<T> clz, final Callback<T> callback) {
-        LogUtils.e("开始请求" + url);
+        SocialLogUtils.e("开始请求" + url);
         Task.callInBackground(new Callable<T>() {
             @Override
             public T call() throws Exception {
                 T object = null;
                 String json = SocialSdk.getRequestAdapter().getJson(url);
                 if (!TextUtils.isEmpty(json)) {
-                    LogUtils.e("请求结果" + json);
+                    SocialLogUtils.e("请求结果" + json);
                     object = getObject(json, clz);
                 }
                 return object;

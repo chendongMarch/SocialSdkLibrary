@@ -17,7 +17,7 @@ import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformCreator;
 import com.march.socialsdk.utils.FileUtils;
 import com.march.socialsdk.utils.CommonUtils;
-import com.march.socialsdk.utils.LogUtils;
+import com.march.socialsdk.utils.SocialLogUtils;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.model.ShareObj;
@@ -230,14 +230,14 @@ public class QQPlatform extends AbsPlatform {
                 shareVideoByIntent(activity, obj, SocialConstants.QQ_PKG, SocialConstants.QQ_FRIENDS_PAGE);
             } else {
                 // 使用 web 格式分享
-                LogUtils.e(TAG, "qq不支持分享视频，使用web分享代替");
+                SocialLogUtils.e(TAG, "qq不支持分享视频，使用web分享代替");
                 obj.setTargetUrl(obj.getMediaPath());
                 shareWeb(shareTarget, activity, obj);
             }
         } else if (shareTarget == Target.SHARE_QQ_ZONE) {
             // qq 空间支持本地文件发布
             if (!FileUtils.isHttpPath(obj.getMediaPath())) {
-                LogUtils.e(TAG, "qq空间本地视频分享");
+                SocialLogUtils.e(TAG, "qq空间本地视频分享");
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                         && activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
                     this.mIUiListenerWrap.onError(new SocialError("没有获取到读存储卡的权限，qq 空间分享本地视频功能无法继续"));
@@ -248,7 +248,7 @@ public class QQPlatform extends AbsPlatform {
                 params.putString(QzonePublish.PUBLISH_TO_QZONE_VIDEO_PATH, obj.getMediaPath());
                 mTencentApi.publishToQzone(activity, params, mIUiListenerWrap);
             } else {
-                LogUtils.e(TAG, "qq空间网络视频，使用web形式分享");
+                SocialLogUtils.e(TAG, "qq空间网络视频，使用web形式分享");
                 shareWeb(shareTarget, activity, obj);
             }
         }

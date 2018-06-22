@@ -13,7 +13,7 @@ import com.march.socialsdk.platform.weibo.model.SinaAccessToken;
 import com.march.socialsdk.platform.weibo.model.SinaUser;
 import com.march.socialsdk.utils.CommonUtils;
 import com.march.socialsdk.utils.JsonUtils;
-import com.march.socialsdk.utils.LogUtils;
+import com.march.socialsdk.utils.SocialLogUtils;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.sina.weibo.sdk.auth.sso.SsoHandler;
 import com.sina.weibo.sdk.exception.WeiboException;
@@ -57,7 +57,7 @@ class WbLoginHelper {
             @Override
             public void onComplete(String response) {
                 if (!TextUtils.isEmpty(response)) {
-                    LogUtils.e(TAG, response);
+                    SocialLogUtils.e(TAG, response);
                     SinaUser sinaUser = JsonUtils.getObject(response, SinaUser.class);
                     mOnLoginListener.onSuccess(new LoginResult(mLoginType, sinaUser, new SinaAccessToken(mAccessToken)));
                 }

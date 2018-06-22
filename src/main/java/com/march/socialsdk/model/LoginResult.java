@@ -1,7 +1,7 @@
 package com.march.socialsdk.model;
 
 import com.march.socialsdk.model.token.AccessToken;
-import com.march.socialsdk.model.user.BaseUser;
+import com.march.socialsdk.model.user.SocialUser;
 
 /**
  * CreateAt : 2016/12/25
@@ -16,11 +16,11 @@ public class LoginResult {
     private int         type;
     // 返回的基本用户信息
     // 针对登录类型可强转为 WbUser,WxUser,QQUser 来获取更加丰富的信息
-    private BaseUser    mBaseUser;
+    private SocialUser  mBaseUser;
     // 本次登陆的 token 信息，openid,unionid,token,expires_in
     private AccessToken mBaseToken;
 
-    public LoginResult(int type, BaseUser baseUser, AccessToken baseToken) {
+    public LoginResult(int type, SocialUser baseUser, AccessToken baseToken) {
         this.type = type;
         mBaseUser = baseUser;
         mBaseToken = baseToken;
@@ -30,7 +30,7 @@ public class LoginResult {
         return type;
     }
 
-    public BaseUser getBaseUser() {
+    public SocialUser getBaseUser() {
         return mBaseUser;
     }
 
@@ -38,7 +38,7 @@ public class LoginResult {
         this.type = type;
     }
 
-    public void setBaseUser(BaseUser baseUser) {
+    public void setBaseUser(SocialUser baseUser) {
         mBaseUser = baseUser;
     }
 
