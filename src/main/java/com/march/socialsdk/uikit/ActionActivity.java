@@ -8,10 +8,14 @@ import android.os.Bundle;
 
 import com.android.dingtalk.share.ddsharemodule.IDDAPIEventHandler;
 import com.march.socialsdk.manager.PlatformManager;
+<<<<<<< HEAD
 import com.march.socialsdk.utils.SocialLogUtils;
 import com.march.socialsdk.manager.LoginManager;
 import com.march.socialsdk.manager.ShareManager;
+=======
+>>>>>>> d0467b6eea6927ffe6f02135c9d60427aa5e91cd
 import com.march.socialsdk.platform.IPlatform;
+import com.march.socialsdk.utils.LogUtils;
 import com.sina.weibo.sdk.api.share.BaseResponse;
 import com.sina.weibo.sdk.api.share.IWeiboHandler;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
@@ -43,16 +47,7 @@ public class ActionActivity extends Activity implements IWeiboHandler.Response, 
             getPlatform().handleIntent(this);
         }
         mActionType = getIntent().getIntExtra(PlatformManager.KEY_ACTION_TYPE, -1);
-        if (mActionType != -1) {
-            switch (mActionType) {
-                case PlatformManager.ACTION_TYPE_LOGIN:
-                    LoginManager._actionLogin(this);
-                    break;
-                case PlatformManager.ACTION_TYPE_SHARE:
-                    ShareManager._actionShare(this);
-                    break;
-            }
-        }
+        PlatformManager.action(this,mActionType);
     }
 
     @Override

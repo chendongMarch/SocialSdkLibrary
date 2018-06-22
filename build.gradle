@@ -23,11 +23,11 @@ dependencies {
     // compile "com.android.support:appcompat-v7:26.1.0"
     // compile 'com.parse.bolts:bolts-tasks:1.4.0'
 
-    compile libs.appcompat_v7
-    compile libs.bolts
+    implementation libs.appcompat_v7
+    implementation libs.bolts
 
-    compile 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:5.1.4' // 微信
-    compile files('libs/open_sdk_r5923_lite.jar') // QQ
-    compile files('libs/weiboSDKCore_3.1.4.jar') // sina
-    compile files('libs/libddshare.jar') // dingding
+    implementation libs.wechatSocial // 微信
+    implementation files('libs/open_sdk_r5923_lite.jar') // QQ
+    implementation files('libs/weiboSDKCore_3.1.4.jar') // sina
+    implementation files('libs/libddshare.jar') // dingding
 }
