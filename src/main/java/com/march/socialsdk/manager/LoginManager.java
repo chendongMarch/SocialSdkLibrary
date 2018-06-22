@@ -8,8 +8,8 @@ import android.os.Build;
 
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.model.LoginResult;
+import com.march.socialsdk.model.token.AccessToken;
 import com.march.socialsdk.platform.IPlatform;
-import com.march.socialsdk.utils.TokenStoreUtils;
 import com.march.socialsdk.utils.LogUtils;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.platform.Target;
@@ -123,12 +123,13 @@ public class LoginManager {
     }
 
     public static void clearAllToken(Context context) {
-        TokenStoreUtils.clearToken(context, Target.LOGIN_QQ);
-        TokenStoreUtils.clearToken(context, Target.LOGIN_WX);
-        TokenStoreUtils.clearToken(context, Target.LOGIN_WB);
+        AccessToken.clearToken(context, Target.LOGIN_QQ);
+        AccessToken.clearToken(context, Target.LOGIN_WX);
+        AccessToken.clearToken(context, Target.LOGIN_WB);
     }
 
     public static void clearToken(Context context, @Target.LoginTarget int loginTarget) {
-        TokenStoreUtils.clearToken(context, loginTarget);
+        AccessToken.clearToken(context, loginTarget);
     }
+
 }

@@ -5,7 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import com.march.socialsdk.exception.SocialError;
-import com.march.socialsdk.utils.TokenStoreUtils;
+import com.march.socialsdk.model.token.AccessToken;
 import com.march.socialsdk.utils.LogUtils;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.sina.weibo.sdk.auth.WeiboAuthListener;
@@ -31,7 +31,7 @@ class WbAuthHelper {
     }
 
     public static void auth(Activity activity, SsoHandler mSsoHandler, OnAuthOverListener listener) {
-        Oauth2AccessToken token = TokenStoreUtils.getWbToken(activity);
+        Oauth2AccessToken token = AccessToken.getToken(activity, AccessToken.SINA_TOKEN_KEY, Oauth2AccessToken.class);
         if (token != null && token.isSessionValid()) {
             listener.onAuth(token);
         } else {
@@ -65,7 +65,7 @@ class WbAuthHelper {
             //String phoneNum = mAccessToken.getPhoneNum();
             if (mAccessToken.isSessionValid()) {
                 // 授权成功
-                TokenStoreUtils.saveWbToken(context, mAccessToken);
+                AccessToken.saveToken(context, AccessToken.SINA_TOKEN_KEY, mAccessToken);
                 listener.onAuth(mAccessToken);
             } else {
                 // 以下几种情况，您会收到 Code：

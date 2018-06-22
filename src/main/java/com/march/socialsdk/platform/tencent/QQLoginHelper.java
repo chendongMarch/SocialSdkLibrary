@@ -5,14 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.march.socialsdk.exception.SocialError;
-import com.march.socialsdk.utils.TokenStoreUtils;
-import com.march.socialsdk.utils.JsonUtils;
-import com.march.socialsdk.utils.LogUtils;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.LoginResult;
-import com.march.socialsdk.model.token.QQAccessToken;
-import com.march.socialsdk.model.user.QQUser;
+import com.march.socialsdk.model.token.AccessToken;
 import com.march.socialsdk.platform.Target;
+import com.march.socialsdk.platform.tencent.model.QQAccessToken;
+import com.march.socialsdk.platform.tencent.model.QQUser;
+import com.march.socialsdk.utils.JsonUtils;
+import com.march.socialsdk.utils.LogUtils;
 import com.tencent.connect.UserInfo;
 import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
@@ -51,6 +51,10 @@ class QQLoginHelper {
         return mActivityRef.get().getApplicationContext();
     }
 
+    public QQAccessToken getToken() {
+        return AccessToken.getToken(getContext(), AccessToken.QQ_TOKEN_KEY, QQAccessToken.class);
+    }
+
     // 接受登录结果
     void handleResultData(Intent data) {
         Tencent.handleResultData(data, this.loginUiListener);
@@ -58,7 +62,7 @@ class QQLoginHelper {
 
     // 登录
     public void login() {
-        QQAccessToken qqToken = TokenStoreUtils.getQQToken(getContext());
+        QQAccessToken qqToken = getToken();
         if (qqToken != null) {
             mTencentApi.setAccessToken(qqToken.getAccess_token(), qqToken.getExpires_in() + "");
             mTencentApi.setOpenId(qqToken.getOpenid());
@@ -86,7 +90,7 @@ class QQLoginHelper {
                 return;
             }
             // 保存token
-            TokenStoreUtils.saveQQToken(getContext(), qqToken);
+            AccessToken.saveToken(getContext(), AccessToken.QQ_TOKEN_KEY, qqToken);
             mTencentApi.setAccessToken(qqToken.getAccess_token(), qqToken.getExpires_in() + "");
             mTencentApi.setOpenId(qqToken.getOpenid());
             getUserInfo(qqToken);

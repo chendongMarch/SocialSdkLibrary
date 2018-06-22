@@ -1,6 +1,6 @@
-package com.march.socialsdk.model.token;
+package com.march.socialsdk.platform.weibo.model;
 
-import com.march.socialsdk.manager.LoginManager;
+import com.march.socialsdk.model.token.AccessToken;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.march.socialsdk.platform.Target;
 
@@ -10,7 +10,7 @@ import com.march.socialsdk.platform.Target;
  *
  * @author chendong
  */
-public class SinaAccessToken extends BaseAccessToken {
+public class SinaAccessToken extends AccessToken {
 
     private String refresh_token;
     private String phone;

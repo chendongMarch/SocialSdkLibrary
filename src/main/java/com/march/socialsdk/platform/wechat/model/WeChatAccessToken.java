@@ -1,6 +1,6 @@
-package com.march.socialsdk.model.token;
+package com.march.socialsdk.platform.wechat.model;
 
-import com.march.socialsdk.manager.LoginManager;
+import com.march.socialsdk.model.token.AccessToken;
 import com.march.socialsdk.platform.Target;
 
 /**
@@ -9,7 +9,7 @@ import com.march.socialsdk.platform.Target;
  *
  * @author chendong
  */
-public class WeChatAccessToken extends BaseAccessToken {
+public class WeChatAccessToken extends AccessToken {
 
     //正确返回
     private String refresh_token;//用户刷新access_token。
