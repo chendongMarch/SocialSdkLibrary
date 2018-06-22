@@ -7,13 +7,19 @@ import android.content.Intent;
 import android.os.Build;
 
 import com.march.socialsdk.exception.SocialError;
+import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.LoginResult;
 import com.march.socialsdk.model.token.AccessToken;
 import com.march.socialsdk.platform.IPlatform;
+<<<<<<< HEAD
 import com.march.socialsdk.utils.SocialLogUtils;
 import com.march.socialsdk.listener.OnLoginListener;
+=======
+>>>>>>> d0467b6eea6927ffe6f02135c9d60427aa5e91cd
 import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.uikit.ActionActivity;
+import com.march.socialsdk.utils.LogUtils;
+import com.march.socialsdk.utils.TokenStoreUtils;
 
 import java.lang.ref.WeakReference;
 
@@ -59,7 +65,7 @@ public class LoginManager {
      *
      * @param activity activity
      */
-    public static void _actionLogin(final Activity activity) {
+    static void _actionLogin(final Activity activity) {
         Intent intent = activity.getIntent();
         int actionType = intent.getIntExtra(PlatformManager.KEY_ACTION_TYPE, PlatformManager.INVALID_PARAM);
         int loginTarget = intent.getIntExtra(PlatformManager.KEY_LOGIN_TARGET, PlatformManager.INVALID_PARAM);

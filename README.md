@@ -18,6 +18,8 @@
 
 🎉  2018.5.12 修复内存问题、功能扩展 [稳定版本 1.1.0](https://github.com/chendongMarch/SocialSdkLibrary/releases/tag/1.1.0)
 
+🎉  2018.6.7 项目获得了第100颗🌟，最后一颗是我问同事要的🤦‍
+
 <div style="width:100%;display: flex;height:30px;">
 
 <img style="margin-right:20px;" src="https://badge.juejin.im/entry/5a793a405188257a82111092/likes.svg?style=flat-square"/>
