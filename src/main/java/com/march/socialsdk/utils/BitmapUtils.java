@@ -107,7 +107,7 @@ public class BitmapUtils {
      */
     public static Bitmap getMaxSizeBitmap(String filePath, int maxSize) {
         Size originSize = getBitmapSize(filePath);
-        LogUtils.e(TAG, "原始图片大小 = " + originSize.width + " * " + originSize.height);
+        SocialLogUtils.e(TAG, "原始图片大小 = " + originSize.width + " * " + originSize.height);
         int sampleSize = 0;
         // 我们对较小的图片不进行采样，因为采样只是尽量接近 32k 和避免占用大量内存
         // 对较小图片进行采样会导致图片更模糊，所以对不大的图片，直接走后面的细节调整
@@ -115,7 +115,7 @@ public class BitmapUtils {
             sampleSize = 1;
         } else {
             Size size = calculateSize(originSize, maxSize * 5);
-            LogUtils.e(TAG, "目标图片大小 = " + size.width + " * " + size.height);
+            SocialLogUtils.e(TAG, "目标图片大小 = " + size.width + " * " + size.height);
             while (sampleSize == 0
                     || originSize.height / sampleSize > size.height
                     || originSize.width / sampleSize > size.width) {
@@ -127,7 +127,7 @@ public class BitmapUtils {
         options.inSampleSize = sampleSize;
         options.inMutable = true;
         Bitmap bitmap = BitmapFactory.decodeFile(filePath, options);
-        LogUtils.e(TAG, "sample size = " + sampleSize + " 采样后 bitmap大小 = " + bitmap.getByteCount());
+        SocialLogUtils.e(TAG, "sample size = " + sampleSize + " 采样后 bitmap大小 = " + bitmap.getByteCount());
         return bitmap;
     }
 
@@ -148,7 +148,7 @@ public class BitmapUtils {
         srcBitmap.compress(format, 100, output);
         // 如果进行了上面的压缩后，依旧大于32K，就进行小范围的微调压缩
         byte[] bytes = output.toByteArray();
-        LogUtils.e(TAG, "开始循环压缩之前 bytes = " + bytes.length);
+        SocialLogUtils.e(TAG, "开始循环压缩之前 bytes = " + bytes.length);
         while (bytes.length > maxSize) {
             matrix.setScale(0.9f, 0.9f);//每次缩小 1/10
             tempBitmap = srcBitmap;
@@ -159,9 +159,9 @@ public class BitmapUtils {
             output.reset();
             srcBitmap.compress(format, 100, output);
             bytes = output.toByteArray();
-            LogUtils.e(TAG, "压缩一次 bytes = " + bytes.length);
+            SocialLogUtils.e(TAG, "压缩一次 bytes = " + bytes.length);
         }
-        LogUtils.e(TAG, "压缩后的图片输出大小 bytes = " + bytes.length);
+        SocialLogUtils.e(TAG, "压缩后的图片输出大小 bytes = " + bytes.length);
         recyclerBitmaps(srcBitmap);
         return bytes;
     }

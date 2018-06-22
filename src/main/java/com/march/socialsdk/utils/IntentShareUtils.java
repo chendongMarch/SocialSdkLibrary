@@ -74,7 +74,7 @@ public class IntentShareUtils {
         List<ResolveInfo> resolveInfos = activity.getPackageManager()
                 .queryIntentActivities(intent,PackageManager.GET_RESOLVED_FILTER);
         for (ResolveInfo resolveInfo : resolveInfos) {
-            LogUtils.e(resolveInfo.activityInfo.packageName + " - " + resolveInfo.activityInfo.name);
+            SocialLogUtils.e(resolveInfo.activityInfo.packageName + " - " + resolveInfo.activityInfo.name);
         }
     }
 }

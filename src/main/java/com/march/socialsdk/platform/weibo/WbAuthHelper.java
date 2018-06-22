@@ -6,7 +6,7 @@ import android.os.Bundle;
 
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.model.token.AccessToken;
-import com.march.socialsdk.utils.LogUtils;
+import com.march.socialsdk.utils.SocialLogUtils;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.sina.weibo.sdk.auth.WeiboAuthListener;
 import com.sina.weibo.sdk.auth.sso.SsoHandler;
@@ -37,7 +37,7 @@ class WbAuthHelper {
         } else {
             // 创建微博实例
             // 快速授权时，请不要传入 SCOPE，否则可能会授权不成功
-            LogUtils.e(TAG, "wb_auth", "开始授权");
+            SocialLogUtils.e(TAG, "wb_auth", "开始授权");
             mSsoHandler.authorize(new MyWeiboAuthListener(activity, listener));
 //            mSsoHandler.authorizeClientSso(new MyWeiboAuthListener(activity,listener));
         }
@@ -58,7 +58,7 @@ class WbAuthHelper {
          */
         @Override
         public void onComplete(Bundle values) {
-            LogUtils.e(TAG,"wb_auth", "complete " + values.toString());
+            SocialLogUtils.e(TAG,"wb_auth", "complete " + values.toString());
             // 从 Bundle 中解析 Token
             Oauth2AccessToken mAccessToken = Oauth2AccessToken.parseAccessToken(values);
             //从这里获取用户输入的 电话号码信息
@@ -74,7 +74,7 @@ class WbAuthHelper {
                 // 3. 当您在平台上注册的包名和签名与您当前测试的应用的包名和签名不匹配时。
                 String code = values.getString("code");
                 // 授权失败
-                LogUtils.e(TAG,"wb_auth", "授权失败 " + code);
+                SocialLogUtils.e(TAG,"wb_auth", "授权失败 " + code);
                 listener.onException(new SocialError("授权失败 code = " + code));
             }
         }
@@ -83,7 +83,7 @@ class WbAuthHelper {
         public void onCancel() {
             // 授权取消
             listener.onCancel();
-            LogUtils.e(TAG, "wb_auth", "取消");
+            SocialLogUtils.e(TAG, "wb_auth", "取消");
 
         }
 
@@ -91,7 +91,7 @@ class WbAuthHelper {
         public void onWeiboException(WeiboException e) {
             // 授权失败
             e.printStackTrace();
-            LogUtils.e(TAG,"wb_auth", "Auth exception : " + e.getMessage());
+            SocialLogUtils.e(TAG,"wb_auth", "Auth exception : " + e.getMessage());
             listener.onException(new SocialError("授权失败", e));
         }
     }

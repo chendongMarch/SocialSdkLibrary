@@ -20,7 +20,7 @@ import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.uikit.ActionActivity;
 import com.march.socialsdk.utils.CommonUtils;
 import com.march.socialsdk.utils.FileUtils;
-import com.march.socialsdk.utils.LogUtils;
+import com.march.socialsdk.utils.SocialLogUtils;
 import com.march.socialsdk.utils.ShareObjCheckUtils;
 
 import java.io.File;
@@ -62,7 +62,7 @@ public class ShareManager {
                 try {
                     temp = onShareListener.onPrepareInBackground(shareTarget, shareObj);
                 } catch (Exception e) {
-                    LogUtils.t(e);
+                    SocialLogUtils.t(e);
                 }
                 if (temp != null) {
                     return temp;
@@ -153,20 +153,20 @@ public class ShareManager {
         if (actionType != PlatformManager.ACTION_TYPE_SHARE)
             return;
         if (shareTarget == PlatformManager.INVALID_PARAM) {
-            LogUtils.e(TAG, "shareTargetType无效");
+            SocialLogUtils.e(TAG, "shareTargetType无效");
             return;
         }
         if (shareObj == null) {
-            LogUtils.e(TAG, "shareObj == null");
+            SocialLogUtils.e(TAG, "shareObj == null");
             return;
         }
         if (sListener == null) {
-            LogUtils.e(TAG, "请设置 OnShareListener");
+            SocialLogUtils.e(TAG, "请设置 OnShareListener");
             return;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-            LogUtils.e(TAG, "没有获取到读存储卡的权限，这可能导致某些分享不能进行");
+            SocialLogUtils.e(TAG, "没有获取到读存储卡的权限，这可能导致某些分享不能进行");
         }
         if (PlatformManager.getPlatform() == null)
             return;

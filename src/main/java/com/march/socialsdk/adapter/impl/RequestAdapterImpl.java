@@ -5,7 +5,7 @@ import android.text.TextUtils;
 
 import com.march.socialsdk.adapter.IRequestAdapter;
 import com.march.socialsdk.utils.FileUtils;
-import com.march.socialsdk.utils.LogUtils;
+import com.march.socialsdk.utils.SocialLogUtils;
 import com.march.socialsdk.utils.StreamUtils;
 
 import java.io.File;
@@ -42,7 +42,7 @@ public class RequestAdapterImpl implements IRequestAdapter {
                 return StreamUtils.saveStreamToFile(file, openStream(url, isHttps(url)));
             }
         } catch (Exception e) {
-            LogUtils.e(e);
+            SocialLogUtils.e(e);
         } finally {
             close();
         }
@@ -56,7 +56,7 @@ public class RequestAdapterImpl implements IRequestAdapter {
         try {
             return StreamUtils.saveStreamToString(openStream(url, isHttps(url)));
         } catch (Exception e) {
-            LogUtils.e(e);
+            SocialLogUtils.e(e);
         } finally {
             close();
         }

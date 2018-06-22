@@ -1,7 +1,7 @@
 
 package com.march.socialsdk.platform.weibo.model;
 
-import com.march.socialsdk.model.user.BaseUser;
+import com.march.socialsdk.model.user.SocialUser;
 
 /**
  * 用户信息结构体。
@@ -9,7 +9,7 @@ import com.march.socialsdk.model.user.BaseUser;
  * @author SINA
  * @since 2013-11-24
  */
-public class SinaUser extends BaseUser {
+public class SinaUser extends SocialUser {
 
     ///////////////////////////////////////////////////////////////////////////
 // {

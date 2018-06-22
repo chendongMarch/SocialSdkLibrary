@@ -6,7 +6,7 @@ package com.march.socialsdk.model.user;
  *
  * @author chendong
  */
-public abstract class BaseUser {
+public abstract class SocialUser {
 
     public static final int GENDER_BOY  = 1;
     public static final int GENDER_GIRL = 2;

@@ -15,7 +15,7 @@ import com.march.socialsdk.utils.BitmapUtils;
 import com.march.socialsdk.utils.CommonUtils;
 import com.march.socialsdk.utils.FileUtils;
 import com.march.socialsdk.utils.IntentShareUtils;
-import com.march.socialsdk.utils.LogUtils;
+import com.march.socialsdk.utils.SocialLogUtils;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.platform.AbsPlatform;
@@ -24,7 +24,6 @@ import com.tencent.mm.opensdk.constants.ConstantsAPI;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
-import com.tencent.mm.opensdk.modelmsg.WXAppExtendObject;
 import com.tencent.mm.opensdk.modelmsg.WXEmojiObject;
 import com.tencent.mm.opensdk.modelmsg.WXImageObject;
 import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
@@ -225,7 +224,7 @@ public class WxPlatform extends AbsPlatform {
     private void shareImage(final int shareTarget, String desc, final String localPath, byte[] thumbData) {
         if (shareTarget == Target.SHARE_WX_FRIENDS) {
             if (FileUtils.isGifFile(localPath)) {
-                LogUtils.e(TAG, "发送给朋友时 Gif 文件以emoji格式分享");
+                SocialLogUtils.e(TAG, "发送给朋友时 Gif 文件以emoji格式分享");
                 WXEmojiObject emoji = new WXEmojiObject();
                 emoji.emojiPath = localPath;
                 WXMediaMessage msg = new WXMediaMessage();
@@ -255,7 +254,7 @@ public class WxPlatform extends AbsPlatform {
 
     @Override
     public void shareApp(int shareTarget, Activity activity, ShareObj obj) {
-        LogUtils.e(TAG, "微信不支持app分享，将以web形式分享");
+        SocialLogUtils.e(TAG, "微信不支持app分享，将以web形式分享");
         shareWeb(shareTarget, activity, obj);
 
 

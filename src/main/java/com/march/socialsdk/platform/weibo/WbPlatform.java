@@ -16,7 +16,7 @@ import com.march.socialsdk.utils.BitmapUtils;
 import com.march.socialsdk.utils.CommonUtils;
 import com.march.socialsdk.utils.FileUtils;
 import com.march.socialsdk.utils.IntentShareUtils;
-import com.march.socialsdk.utils.LogUtils;
+import com.march.socialsdk.utils.SocialLogUtils;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.platform.AbsPlatform;
@@ -123,7 +123,7 @@ public class WbPlatform extends AbsPlatform {
         // 来接收微博客户端返回的数据；执行成功，返回 true，并调用
         // {@link IWeiboHandler.Response#onResponse}；失败返回 false，不调用上述回调
         if (!(activity instanceof IWeiboHandler.Response)) {
-            LogUtils.e(TAG, "微博接受回调的IWeiboHandler.Response必须是发起分享的Activity");
+            SocialLogUtils.e(TAG, "微博接受回调的IWeiboHandler.Response必须是发起分享的Activity");
             return;
         }
         IWeiboHandler.Response shareResponse = (IWeiboHandler.Response) activity;
@@ -179,7 +179,7 @@ public class WbPlatform extends AbsPlatform {
         WbAuthHelper.auth(activity, mSsoHandler, new WbAuthHelper.OnAuthOverListener() {
             @Override
             public void onAuth(Oauth2AccessToken token) {
-                LogUtils.e(TAG, token.toString());
+                SocialLogUtils.e(TAG, token.toString());
                 mStatusesAPI = new StatusesAPI(activity, mAppId, token);
                 if (runnable != null)
                     runnable.run();
@@ -319,7 +319,7 @@ public class WbPlatform extends AbsPlatform {
 
     @Override
     public void shareApp(int shareTarget, Activity activity, ShareObj obj) {
-        LogUtils.e(TAG, "sina不支持app分享，将以web形式分享");
+        SocialLogUtils.e(TAG, "sina不支持app分享，将以web形式分享");
         shareWeb(shareTarget, activity, obj);
     }
 
