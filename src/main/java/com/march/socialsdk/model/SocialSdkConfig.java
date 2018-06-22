@@ -27,6 +27,7 @@ public class SocialSdkConfig {
     // 微信配置
     private String wxAppId;
     private String wxSecretKey;
+    private boolean onlyAuthCode;
     // qq 配置
     private String qqAppId;
     // 微博配置
@@ -36,7 +37,7 @@ public class SocialSdkConfig {
     private String shareCacheDirPath;
     // 钉钉配置
     private String ddAppId;
-
+    // 图片默认资源
     private int defImageResId;
 
     @RequiresApi(api = Build.VERSION_CODES.FROYO)
@@ -61,6 +62,13 @@ public class SocialSdkConfig {
     }
 
     public SocialSdkConfig wechat(String wxAppId, String wxSecretKey) {
+        this.wxSecretKey = wxSecretKey;
+        this.wxAppId = wxAppId;
+        return this;
+    }
+
+    public SocialSdkConfig wechat(String wxAppId, String wxSecretKey, boolean onlyAuthCode) {
+        this.onlyAuthCode = onlyAuthCode;
         this.wxSecretKey = wxSecretKey;
         this.wxAppId = wxAppId;
         return this;
@@ -129,6 +137,10 @@ public class SocialSdkConfig {
     public SocialSdkConfig setDebug(boolean debug) {
         isDebug = debug;
         return this;
+    }
+
+    public boolean isOnlyAuthCode() {
+        return onlyAuthCode;
     }
 
     @Override

@@ -16,45 +16,62 @@ public class LoginResult {
     private int         type;
     // 返回的基本用户信息
     // 针对登录类型可强转为 WbUser,WxUser,QQUser 来获取更加丰富的信息
-    private SocialUser  mBaseUser;
+    private SocialUser  socialUser;
     // 本次登陆的 token 信息，openid,unionid,token,expires_in
-    private AccessToken mBaseToken;
+    private AccessToken accessToken;
+    //
+    private String      wxAuthCode;
 
     public LoginResult(int type, SocialUser baseUser, AccessToken baseToken) {
         this.type = type;
-        mBaseUser = baseUser;
-        mBaseToken = baseToken;
+        socialUser = baseUser;
+        accessToken = baseToken;
+    }
+
+    public LoginResult(int type, String wxAuthCode) {
+        this.type = type;
+        this.wxAuthCode = wxAuthCode;
     }
 
     public int getType() {
         return type;
     }
 
-    public SocialUser getBaseUser() {
-        return mBaseUser;
+    public SocialUser getSocialUser() {
+        return socialUser;
     }
 
     public void setType(int type) {
         this.type = type;
     }
 
-    public void setBaseUser(SocialUser baseUser) {
-        mBaseUser = baseUser;
+    public void setSocialUser(SocialUser socialUser) {
+        this.socialUser = socialUser;
     }
 
-    public AccessToken getBaseToken() {
-        return mBaseToken;
+    public AccessToken getAccessToken() {
+        return accessToken;
     }
 
-    public void setBaseToken(AccessToken baseToken) {
-        mBaseToken = baseToken;
+    public void setAccessToken(AccessToken accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    public String getWxAuthCode() {
+        return wxAuthCode;
+    }
+
+    public void setWxAuthCode(String wxAuthCode) {
+        this.wxAuthCode = wxAuthCode;
     }
 
     @Override
     public String toString() {
         return "LoginResult{" +
                 "type=" + type +
-                ", mBaseUser=" + mBaseUser.toString() +
+                ", socialUser=" + socialUser +
+                ", accessToken=" + accessToken +
+                ", wxAuthCode='" + wxAuthCode + '\'' +
                 '}';
     }
 }

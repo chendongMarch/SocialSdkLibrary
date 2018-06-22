@@ -8,18 +8,19 @@ import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.common.ThumbDataContinuation;
 import com.march.socialsdk.exception.SocialError;
+import com.march.socialsdk.listener.OnLoginListener;
+import com.march.socialsdk.model.LoginResult;
+import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.model.SocialSdkConfig;
+import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformCreator;
+import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.utils.BitmapUtils;
 import com.march.socialsdk.utils.CommonUtils;
 import com.march.socialsdk.utils.FileUtils;
 import com.march.socialsdk.utils.IntentShareUtils;
 import com.march.socialsdk.utils.SocialLogUtils;
-import com.march.socialsdk.listener.OnLoginListener;
-import com.march.socialsdk.model.ShareObj;
-import com.march.socialsdk.platform.AbsPlatform;
-import com.march.socialsdk.platform.Target;
 import com.tencent.mm.opensdk.constants.ConstantsAPI;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
@@ -102,20 +103,25 @@ public class WxPlatform extends AbsPlatform {
         BaseResp baseResp = (BaseResp) resp;
         if (baseResp.getType() == ConstantsAPI.COMMAND_SENDAUTH) {
             // 登录
+            OnLoginListener listener = mWeChatLoginHelper.getOnLoginListener();
             switch (baseResp.errCode) {
                 case BaseResp.ErrCode.ERR_OK:
                     // 用户同意  authResp.country;  authResp.lang;  authResp.state;
                     SendAuth.Resp authResp = (SendAuth.Resp) resp;
-                    String auth_code = authResp.code;
-                    mWeChatLoginHelper.getAccessTokenByCode(auth_code);
+                    String authCode = authResp.code;
+                    if (SocialSdk.getConfig().isOnlyAuthCode()) {
+                        listener.onSuccess(new LoginResult(Target.LOGIN_WX, authCode));
+                    } else {
+                        mWeChatLoginHelper.getAccessTokenByCode(authCode);
+                    }
                     break;
                 case BaseResp.ErrCode.ERR_USER_CANCEL:
                     // 用户取消
-                    mWeChatLoginHelper.getOnLoginListener().onCancel();
+                    listener.onCancel();
                     break;
                 case BaseResp.ErrCode.ERR_AUTH_DENIED:
                     // 用户拒绝授权
-                    mWeChatLoginHelper.getOnLoginListener().onCancel();
+                    listener.onCancel();
                     break;
             }
         } else if (baseResp.getType() == ConstantsAPI.COMMAND_SENDMESSAGE_TO_WX) {

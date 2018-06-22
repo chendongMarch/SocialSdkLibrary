@@ -3,7 +3,7 @@ package com.march.socialsdk.platform;
 import android.app.Activity;
 import android.content.Context;
 
-import com.march.socialsdk.listener.PlatformLifeCircle;
+import com.march.socialsdk.listener.PlatformLifecycle;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.model.ShareObj;
@@ -15,7 +15,7 @@ import com.march.socialsdk.model.ShareObj;
  * @author chendong
  */
 
-public interface IPlatform extends PlatformLifeCircle {
+public interface IPlatform extends PlatformLifecycle {
 
     // 检测参数配置
     boolean checkPlatformConfig();
