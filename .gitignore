@@ -51,13 +51,6 @@ captures/
 .svn
 *.properties
 
-#freeline
-freeline.py
-freeline.zip
-freeline/
-freeline.zip.tmp
-freeline_project_description.json
-
 .flowconfig
 
 node_modules/
