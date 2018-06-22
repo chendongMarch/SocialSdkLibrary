@@ -20,8 +20,8 @@ import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.uikit.ActionActivity;
 import com.march.socialsdk.utils.CommonUtils;
 import com.march.socialsdk.utils.FileUtils;
-import com.march.socialsdk.utils.SocialLogUtils;
 import com.march.socialsdk.utils.ShareObjCheckUtils;
+import com.march.socialsdk.utils.SocialLogUtils;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -54,6 +54,7 @@ public class ShareManager {
      */
     public static void share(final Context context, @Target.ShareTarget final int shareTarget,
             final ShareObj shareObj, final OnShareListener onShareListener) {
+        onShareListener.onStart(shareTarget, shareObj);
         Task.callInBackground(new Callable<ShareObj>() {
             @Override
             public ShareObj call() throws Exception {

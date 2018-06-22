@@ -11,18 +11,11 @@ import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.LoginResult;
 import com.march.socialsdk.model.token.AccessToken;
 import com.march.socialsdk.platform.IPlatform;
-<<<<<<< HEAD
-import com.march.socialsdk.utils.SocialLogUtils;
-import com.march.socialsdk.listener.OnLoginListener;
-=======
->>>>>>> d0467b6eea6927ffe6f02135c9d60427aa5e91cd
 import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.uikit.ActionActivity;
-import com.march.socialsdk.utils.LogUtils;
-import com.march.socialsdk.utils.TokenStoreUtils;
+import com.march.socialsdk.utils.SocialLogUtils;
 
 import java.lang.ref.WeakReference;
-
 /**
  * CreateAt : 2017/5/19
  * Describe : 登陆管理类，使用该类进行登陆操作
@@ -44,6 +37,7 @@ public class LoginManager {
      */
     @TargetApi(Build.VERSION_CODES.ECLAIR)
     public static void login(Context context, @Target.LoginTarget int loginTarget, OnLoginListener loginListener) {
+        loginListener.onStart();
         sListener = loginListener;
         IPlatform platform = PlatformManager.newPlatform(context, loginTarget);
         if (!platform.isInstall(context)) {
