@@ -9,7 +9,7 @@ import android.content.Intent;
  *
  * @author chendong
  */
-public interface PlatformLifeCircle {
+public interface PlatformLifecycle {
 
     void onActivityResult(int requestCode, int resultCode, Intent data);
 
