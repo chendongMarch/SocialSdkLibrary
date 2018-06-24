@@ -1,4 +1,4 @@
-package com.march.socialsdk.platform.tencent;
+package com.march.socialsdk.platform.qq;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,8 +9,8 @@ import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.LoginResult;
 import com.march.socialsdk.model.token.AccessToken;
 import com.march.socialsdk.platform.Target;
-import com.march.socialsdk.platform.tencent.model.QQAccessToken;
-import com.march.socialsdk.platform.tencent.model.QQUser;
+import com.march.socialsdk.platform.qq.model.QQAccessToken;
+import com.march.socialsdk.platform.qq.model.QQUser;
 import com.march.socialsdk.utils.JsonUtils;
 import com.march.socialsdk.utils.SocialLogUtils;
 import com.tencent.connect.UserInfo;

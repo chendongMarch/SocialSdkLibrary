@@ -27,6 +27,7 @@ dependencies {
     implementation libs.bolts
 
     implementation libs.wechatSocial // 微信
+    implementation 'com.sina.weibo.sdk:core:4.1.0:openDefaultRelease@aar'
     implementation files('libs/open_sdk_r5923_lite.jar') // QQ
     implementation files('libs/weiboSDKCore_3.1.4.jar') // sina
     implementation files('libs/libddshare.jar') // dingding

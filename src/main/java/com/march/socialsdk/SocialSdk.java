@@ -11,12 +11,9 @@ import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformCreator;
 import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.platform.ding.DDPlatform;
-import com.march.socialsdk.platform.tencent.QQPlatform;
+import com.march.socialsdk.platform.qq.QQPlatform;
 import com.march.socialsdk.platform.wechat.WxPlatform;
 import com.march.socialsdk.platform.weibo.WbPlatform;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * CreateAt : 2017/5/19
