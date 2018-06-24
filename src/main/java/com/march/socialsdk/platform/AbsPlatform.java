@@ -7,12 +7,10 @@ import android.content.Intent;
 import android.text.TextUtils;
 
 import com.march.socialsdk.exception.SocialError;
-import com.march.socialsdk.utils.IntentShareUtils;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.model.ShareObj;
-
-import java.lang.ref.WeakReference;
+import com.march.socialsdk.utils.IntentShareUtils;
 
 /**
  * CreateAt : 2016/12/3
@@ -27,10 +25,10 @@ public abstract class AbsPlatform implements IPlatform {
     protected static final int THUMB_IMAGE_SIZE = 32 * 1024;
 
     protected OnShareListener mOnShareListener;
-    protected String mAppId = "";
-    protected String mAppName = null;
+    protected String          mAppId;
+    protected String          mAppName;
 
-    public AbsPlatform(Context context, String appId, String appName) {
+    public AbsPlatform(String appId, String appName) {
         this.mAppId = appId;
         this.mAppName = appName;
     }
@@ -84,22 +82,20 @@ public abstract class AbsPlatform implements IPlatform {
     }
 
     protected void shareVideoByIntent(Activity activity, ShareObj obj, String pkg, String page) {
-        try {
-            IntentShareUtils.shareVideo(activity, obj.getMediaPath(), pkg, page);
-        } catch (Exception e) {
-            if (this.mOnShareListener != null) {
-                this.mOnShareListener.onFailure(new SocialError(SocialError.CODE_SHARE_BY_INTENT_FAIL, e));
-            }
+        boolean result = IntentShareUtils.shareVideo(activity, obj.getMediaPath(), pkg, page);
+        if (result) {
+            this.mOnShareListener.onSuccess();
+        } else {
+            this.mOnShareListener.onFailure(new SocialError(SocialError.CODE_SHARE_BY_INTENT_FAIL, "shareVideo by intent" + pkg + "  " + page + " failure"));
         }
     }
 
     protected void shareTextByIntent(Activity activity, ShareObj obj, String pkg, String page) {
-        try {
-            IntentShareUtils.shareText(activity, obj.getTitle(), obj.getSummary(), pkg, page);
-        } catch (Exception e) {
-            if (this.mOnShareListener != null) {
-                this.mOnShareListener.onFailure(new SocialError(SocialError.CODE_SHARE_BY_INTENT_FAIL, e));
-            }
+        boolean result = IntentShareUtils.shareText(activity, obj.getTitle(), obj.getSummary(), pkg, page);
+        if (result) {
+            this.mOnShareListener.onSuccess();
+        } else {
+            this.mOnShareListener.onFailure(new SocialError(SocialError.CODE_SHARE_BY_INTENT_FAIL, "shareText by intent" + pkg + "  " + page + " failure"));
         }
     }
 

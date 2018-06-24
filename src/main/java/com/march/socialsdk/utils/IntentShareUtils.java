@@ -20,38 +20,38 @@ public class IntentShareUtils {
 
     public static final int SHARE_REQ_CODE = 0x123;
 
-    public static void shareText(Activity activity, String title, String text, String pkg, String targetActivity) throws Exception {
+    public static boolean shareText(Activity activity, String title, String text, String pkg, String targetActivity) {
         Intent sendIntent = new Intent();
         sendIntent.putExtra(Intent.EXTRA_TEXT, text);
         sendIntent.putExtra(Intent.EXTRA_TITLE, title);
         sendIntent.setType("text/plain");
-        activeShare(activity, sendIntent, pkg, targetActivity);
+        return activeShare(activity, sendIntent, pkg, targetActivity);
     }
 
-    public static void shareImage(Activity activity, String path, String pkg, String targetActivity) throws Exception {
+    public static boolean shareImage(Activity activity, String path, String pkg, String targetActivity) {
         //由文件得到uri
         Uri imageUri = Uri.fromFile(new File(path));
         Intent shareIntent = new Intent();
         shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
         // shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList);
         shareIntent.setType("image/*");
-        activeShare(activity, shareIntent, pkg, targetActivity);
+        return activeShare(activity, shareIntent, pkg, targetActivity);
     }
 
 
-    public static void shareVideo(Activity activity, String path, String pkg, String targetActivity) throws Exception {
+    public static boolean shareVideo(Activity activity, String path, String pkg, String targetActivity) {
         //由文件得到uri
         Uri videoUri = Uri.fromFile(new File(path));
         Intent shareIntent = new Intent();
         shareIntent.putExtra(Intent.EXTRA_STREAM, videoUri);
         // shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList);
         shareIntent.setType("video/*");
-        printActivitySupport(activity,shareIntent);
-        activeShare(activity, shareIntent, pkg, targetActivity);
+        printActivitySupport(activity, shareIntent);
+        return activeShare(activity, shareIntent, pkg, targetActivity);
     }
 
 
-    private static void activeShare(Activity activity, Intent sendIntent, String pkg, String targetActivity) throws Exception {
+    private static boolean activeShare(Activity activity, Intent sendIntent, String pkg, String targetActivity) {
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         if (!TextUtils.isEmpty(targetActivity))
@@ -59,13 +59,14 @@ public class IntentShareUtils {
         try {
             Intent chooserIntent = Intent.createChooser(sendIntent, "请选择");
             if (chooserIntent == null) {
-                return;
+                return false;
             }
             activity.startActivityForResult(chooserIntent, SHARE_REQ_CODE);
         } catch (Exception e) {
             e.printStackTrace();
-            throw e;
+            return false;
         }
+        return true;
     }
 
 

@@ -24,14 +24,7 @@ public class ShareObjCheckUtils {
             // 图片分享，如果是微博的 open api 必须有summary
             case ShareObj.SHARE_TYPE_IMAGE: //
             {
-                if (shareTarget == Target.SHARE_WB_OPENAPI) {
-                    boolean isSummaryValid = !CommonUtils.isAnyEmpty(obj.getSummary());
-                    if (!isSummaryValid)
-                        SocialLogUtils.e(TAG, "Sina openApi分享必须有summary");
-                    return isThumbLocalPathValid(obj) && isSummaryValid;
-                } else {
-                    return isThumbLocalPathValid(obj);
-                }
+                return isThumbLocalPathValid(obj);
             }
             // app 和 web
             case ShareObj.SHARE_TYPE_APP:
@@ -46,19 +39,22 @@ public class ShareObjCheckUtils {
                 return isMusicVideoVoiceValid(obj) && isNetMedia(obj);
             }
             // video
-            case ShareObj.SHARE_TYPE_VIDEO: //
+            case ShareObj.SHARE_TYPE_VIDEO:
             {
-                if (shareTarget == Target.SHARE_QQ_ZONE) {
-                    // qq 空间仅支持本地视频
-                    // 网络视频使用 web 兼容,因此本地网络文件都可以
-                    // 不需要缩略图文件
+                // 本地视频分享，qq空间、微博自己支持，qq好友、微信好友、钉钉 使用 intent 支持
+                if (FileUtils.isExist(obj.getMediaPath()) && isAny(shareTarget,Target.SHARE_QQ_ZONE,
+                        Target.SHARE_WB,
+                        Target.SHARE_QQ_FRIENDS,
+                        Target.SHARE_WX_FRIENDS,
+                        Target.SHARE_DD)) {
                     return isTitleSummaryValid(obj) && !CommonUtils.isAnyEmpty(obj.getMediaPath());
-                } else if (obj.isShareByIntent() && isSupportLocalVideo(shareTarget)) {
-                    // 本地视频分享，支持微博、qq好友、微信好友、钉钉
-                    return FileUtils.isExist(obj.getMediaPath());
-                } else {
-                    // 必须是网络路径
+                }
+                // 网络视频
+                else if (FileUtils.isHttpPath(obj.getMediaPath())) {
                     return isUrlValid(obj) && isMusicVideoVoiceValid(obj) && isNetMedia(obj);
+                } else {
+                    SocialLogUtils.e("本地不支持或者，不是本地也不是网络 " + obj.toString());
+                    return false;
                 }
             }
             default:
@@ -66,11 +62,13 @@ public class ShareObjCheckUtils {
         }
     }
 
-    private static boolean isSupportLocalVideo(int shareTarget) {
-        return shareTarget == Target.SHARE_WB_NORMAL
-                || shareTarget == Target.SHARE_QQ_FRIENDS
-                || shareTarget == Target.SHARE_WX_FRIENDS
-                || shareTarget == Target.SHARE_DD;
+    private static boolean isAny(int shareTarget, int... targets) {
+        for (int target : targets) {
+            if (target == shareTarget) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static boolean isTitleSummaryValid(ShareObj obj) {
@@ -85,7 +83,7 @@ public class ShareObjCheckUtils {
     private static boolean isNetMedia(ShareObj obj) {
         boolean httpPath = FileUtils.isHttpPath(obj.getMediaPath());
         if (!httpPath) {
-            SocialLogUtils.e("ShareObj mediaPath 需要 网络路机构");
+            SocialLogUtils.e("ShareObj mediaPath 需要 网络路径");
         }
         return httpPath;
     }

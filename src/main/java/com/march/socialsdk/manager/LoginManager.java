@@ -36,10 +36,10 @@ public class LoginManager {
      * @param loginListener 登陆监听
      */
     @TargetApi(Build.VERSION_CODES.ECLAIR)
-    public static void login(Context context, @Target.LoginTarget int loginTarget, OnLoginListener loginListener) {
+    public static void login(Activity context, @Target.LoginTarget int loginTarget, OnLoginListener loginListener) {
         loginListener.onStart();
         sListener = loginListener;
-        IPlatform platform = PlatformManager.newPlatform(context, loginTarget);
+        IPlatform platform = PlatformManager.makePlatform(context, loginTarget);
         if (!platform.isInstall(context)) {
             loginListener.onFailure(new SocialError(SocialError.CODE_NOT_INSTALL));
             return;
@@ -48,9 +48,7 @@ public class LoginManager {
         intent.putExtra(PlatformManager.KEY_ACTION_TYPE, PlatformManager.ACTION_TYPE_LOGIN);
         intent.putExtra(PlatformManager.KEY_LOGIN_TARGET, loginTarget);
         context.startActivity(intent);
-        if (context instanceof Activity) {
-            ((Activity) context).overridePendingTransition(0, 0);
-        }
+        context.overridePendingTransition(0, 0);
     }
 
 

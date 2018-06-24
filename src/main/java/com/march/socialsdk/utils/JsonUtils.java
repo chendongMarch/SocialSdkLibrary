@@ -56,7 +56,7 @@ public class JsonUtils {
         SocialLogUtils.e("开始请求" + url);
         Task.callInBackground(new Callable<T>() {
             @Override
-            public T call() throws Exception {
+            public T call() {
                 T object = null;
                 String json = SocialSdk.getRequestAdapter().getJson(url);
                 if (!TextUtils.isEmpty(json)) {

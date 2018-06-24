@@ -1,6 +1,6 @@
 package com.march.socialsdk.platform;
 
-import android.content.Context;
+import android.app.Activity;
 
 /**
  * CreateAt : 2018/2/11
@@ -9,5 +9,5 @@ import android.content.Context;
  * @author chendong
  */
 public interface PlatformCreator {
-    IPlatform create(Context context, int target);
+    IPlatform create(Activity context, int target);
 }

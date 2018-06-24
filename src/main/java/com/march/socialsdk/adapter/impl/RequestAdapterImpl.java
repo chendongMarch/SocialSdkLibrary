@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.SecureRandom;
+import java.util.Map;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -63,6 +64,11 @@ public class RequestAdapterImpl implements IRequestAdapter {
         return null;
     }
 
+    @Override
+    public String postData(String url, Map<String, String> params, String fileKey, String filePath) {
+        throw new RuntimeException("如果想要支持 openApi, 则需要实现该方法，由于使用 HttpUrlConn 实现太复杂，建议使用 OkHttpClient 实现");
+    }
+
     private boolean isHttps(String url) {
         return url.startsWith("https");
     }
@@ -80,7 +86,7 @@ public class RequestAdapterImpl implements IRequestAdapter {
         if (isHttps) {
             initHttpsConnection(mConnection);
         }
-        return StreamUtils.openHttpStream(mConnection);
+        return StreamUtils.openGetHttpStream(mConnection);
     }
 
     /**

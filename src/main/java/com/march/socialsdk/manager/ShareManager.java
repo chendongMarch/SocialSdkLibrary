@@ -52,7 +52,8 @@ public class ShareManager {
      * @param shareObj        分享对象
      * @param onShareListener 分享监听
      */
-    public static void share(final Context context, @Target.ShareTarget final int shareTarget,
+//    @RequiresPermission(allOf = {"android.permission.WRITE_EXTERNAL_STORAGE"})
+    public static void share(final Activity context, @Target.ShareTarget final int shareTarget,
             final ShareObj shareObj, final OnShareListener onShareListener) {
         onShareListener.onStart(shareTarget, shareObj);
         Task.callInBackground(new Callable<ShareObj>() {
@@ -75,10 +76,8 @@ public class ShareManager {
             @Override
             public Boolean then(Task<ShareObj> task) throws Exception {
                 if (task.isFaulted() || task.getResult() == null) {
-                    if (onShareListener != null) {
-                        SocialError exception = new SocialError("onPrepareInBackground error", task.getError());
-                        onShareListener.onFailure(exception);
-                    }
+                    SocialError exception = new SocialError("onPrepareInBackground error", task.getError());
+                    onShareListener.onFailure(exception);
                     return null;
                 }
                 doShare(context, shareTarget, task.getResult(), onShareListener);
@@ -119,26 +118,23 @@ public class ShareManager {
 
     // 开始分享
     @TargetApi(Build.VERSION_CODES.ECLAIR)
-    private static boolean doShare(Context context, @Target.ShareTarget int shareTarget, ShareObj shareObj, OnShareListener onShareListener) {
+    private static void doShare(Activity context, @Target.ShareTarget int shareTarget, ShareObj shareObj, OnShareListener onShareListener) {
         if (!ShareObjCheckUtils.checkObjValid(shareObj, shareTarget)) {
             onShareListener.onFailure(new SocialError(SocialError.CODE_SHARE_OBJ_VALID));
-            return true;
+            return;
         }
         sListener = onShareListener;
-        IPlatform platform = PlatformManager.newPlatform(context, shareTarget);
+        IPlatform platform = PlatformManager.makePlatform(context, shareTarget);
         if (!platform.isInstall(context)) {
             onShareListener.onFailure(new SocialError(SocialError.CODE_NOT_INSTALL));
-            return true;
+            return;
         }
         Intent intent = new Intent(context, ActionActivity.class);
         intent.putExtra(PlatformManager.KEY_ACTION_TYPE, PlatformManager.ACTION_TYPE_SHARE);
         intent.putExtra(PlatformManager.KEY_SHARE_MEDIA_OBJ, shareObj);
         intent.putExtra(PlatformManager.KEY_SHARE_TARGET, shareTarget);
         context.startActivity(intent);
-        if (context instanceof Activity) {
-            ((Activity) context).overridePendingTransition(0, 0);
-        }
-        return false;
+        context.overridePendingTransition(0, 0);
     }
 
     /**
@@ -278,8 +274,7 @@ public class ShareManager {
             case Target.SHARE_WX_FAVORITE:
                 pkgName = SocialConstants.WECHAT_PKG;
                 break;
-            case Target.SHARE_WB_NORMAL:
-            case Target.SHARE_WB_OPENAPI:
+            case Target.SHARE_WB:
                 pkgName = SocialConstants.SINA_PKG;
                 break;
             case Target.SHARE_DD:

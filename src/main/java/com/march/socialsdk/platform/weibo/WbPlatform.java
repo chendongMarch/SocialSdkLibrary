@@ -3,50 +3,36 @@ package com.march.socialsdk.platform.weibo;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.net.Uri;
 
 import com.march.socialsdk.SocialSdk;
-import com.march.socialsdk.common.ThumbDataContinuation;
 import com.march.socialsdk.common.SocialConstants;
+import com.march.socialsdk.common.ThumbDataContinuation;
 import com.march.socialsdk.exception.SocialError;
+import com.march.socialsdk.listener.OnLoginListener;
+import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.model.SocialSdkConfig;
+import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformCreator;
 import com.march.socialsdk.utils.BitmapUtils;
 import com.march.socialsdk.utils.CommonUtils;
 import com.march.socialsdk.utils.FileUtils;
-import com.march.socialsdk.utils.IntentShareUtils;
 import com.march.socialsdk.utils.SocialLogUtils;
-import com.march.socialsdk.listener.OnLoginListener;
-import com.march.socialsdk.model.ShareObj;
-import com.march.socialsdk.platform.AbsPlatform;
-import com.march.socialsdk.platform.Target;
-import com.march.socialsdk.platform.weibo.extend.StatusesAPI;
-import com.sina.weibo.sdk.api.BaseMediaObject;
+import com.sina.weibo.sdk.WbSdk;
 import com.sina.weibo.sdk.api.ImageObject;
-import com.sina.weibo.sdk.api.MusicObject;
 import com.sina.weibo.sdk.api.TextObject;
-import com.sina.weibo.sdk.api.VideoObject;
-import com.sina.weibo.sdk.api.VoiceObject;
+import com.sina.weibo.sdk.api.VideoSourceObject;
 import com.sina.weibo.sdk.api.WebpageObject;
 import com.sina.weibo.sdk.api.WeiboMultiMessage;
-import com.sina.weibo.sdk.api.share.BaseResponse;
-import com.sina.weibo.sdk.api.share.IWeiboHandler;
-import com.sina.weibo.sdk.api.share.IWeiboShareAPI;
-import com.sina.weibo.sdk.api.share.SendMultiMessageToWeiboRequest;
-import com.sina.weibo.sdk.api.share.WeiboShareSDK;
 import com.sina.weibo.sdk.auth.AuthInfo;
-import com.sina.weibo.sdk.auth.Oauth2AccessToken;
-import com.sina.weibo.sdk.auth.sso.SsoHandler;
 import com.sina.weibo.sdk.constant.WBConstants;
-import com.sina.weibo.sdk.exception.WeiboException;
-import com.sina.weibo.sdk.net.RequestListener;
+import com.sina.weibo.sdk.share.WbShareCallback;
+import com.sina.weibo.sdk.share.WbShareHandler;
 import com.sina.weibo.sdk.utils.Utility;
 
-import java.io.ByteArrayOutputStream;
-import java.util.concurrent.Callable;
+import java.io.File;
 
-import bolts.Continuation;
 import bolts.Task;
 
 /**
@@ -61,27 +47,13 @@ public class WbPlatform extends AbsPlatform {
 
     private static final String TAG = WbPlatform.class.getSimpleName();
 
-    private IWeiboShareAPI mWbShareAPI;
-    private AuthInfo mAuthInfo;
-    private SsoHandler mSsoHandler;
-    private StatusesAPI mStatusesAPI;
-
-    // open Api分享时的监听
-    private RequestListener requestListener = new RequestListener() {
-        @Override
-        public void onComplete(String s) {
-            mOnShareListener.onSuccess();
-        }
-
-        @Override
-        public void onWeiboException(WeiboException e) {
-            mOnShareListener.onFailure(new SocialError("open api分享图片失败", e));
-        }
-    };
+    private WbShareHandler     mShareHandler;
+    private WbLoginHelper      mLoginHelper;
+    private OpenApiShareHelper mOpenApiShareHelper;
 
     public static class Creator implements PlatformCreator {
         @Override
-        public IPlatform create(Context context, int target) {
+        public IPlatform create(Activity context, int target) {
             IPlatform platform = null;
             SocialSdkConfig config = SocialSdk.getConfig();
             if (!CommonUtils.isAnyEmpty(config.getSinaAppId(), config.getAppName()
@@ -93,192 +65,75 @@ public class WbPlatform extends AbsPlatform {
         }
     }
 
-    WbPlatform(Context context, String appId, String appName, String redirectUrl, String scope) {
-        super(context, appId, appName);
-        mWbShareAPI = WeiboShareSDK.createWeiboAPI(context, appId);
-        mWbShareAPI.registerApp();
-        mAuthInfo = new AuthInfo(context, appId, redirectUrl, scope);
+    WbPlatform(Activity context, String appId, String appName, String redirectUrl, String scope) {
+        super(appId, appName);
+        AuthInfo authInfo = new AuthInfo(context, appId, redirectUrl, scope);
+        WbSdk.install(context, authInfo);
+        mShareHandler = new WbShareHandler(context);
+        mShareHandler.registerApp();
     }
 
     @Override
     public boolean isInstall(Context context) {
-        return mWbShareAPI != null && mWbShareAPI.isWeiboAppInstalled();
+        return mShareHandler != null;
     }
 
     @Override
     public void recycle() {
         super.recycle();
-        mStatusesAPI = null;
+        mShareHandler = null;
+    }
+
+    private WbLoginHelper makeLoginHelper(Activity activity) {
+        if (mLoginHelper == null) {
+            mLoginHelper = new WbLoginHelper(activity);
+        }
+        return mLoginHelper;
+    }
+
+    private OpenApiShareHelper makeOpenApiShareHelper(Activity activity) {
+        if (mOpenApiShareHelper == null) {
+            mOpenApiShareHelper = new OpenApiShareHelper(makeLoginHelper(activity), mOnShareListener);
+        }
+        return mOpenApiShareHelper;
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (mSsoHandler != null)
-            mSsoHandler.authorizeCallBack(requestCode, resultCode, data);
+        if (mLoginHelper != null)
+            mLoginHelper.authorizeCallBack(requestCode, resultCode, data);
     }
 
     @Override
     public void handleIntent(Activity activity) {
-        // 从当前应用唤起微博并进行分享后，返回到当前应用时，需要在此处调用该函数
-        // 来接收微博客户端返回的数据；执行成功，返回 true，并调用
-        // {@link IWeiboHandler.Response#onResponse}；失败返回 false，不调用上述回调
-        if (!(activity instanceof IWeiboHandler.Response)) {
-            SocialLogUtils.e(TAG, "微博接受回调的IWeiboHandler.Response必须是发起分享的Activity");
-            return;
+        if (mOnShareListener != null && activity instanceof WbShareCallback) {
+            mShareHandler.doResultIntent(activity.getIntent(), (WbShareCallback) activity);
         }
-        IWeiboHandler.Response shareResponse = (IWeiboHandler.Response) activity;
-        mWbShareAPI.handleWeiboResponse(activity.getIntent(), shareResponse);
     }
 
     @Override
     public void onResponse(Object resp) {
-        if (resp == null || !(resp instanceof BaseResponse))
-            return;
-        BaseResponse baseResp = (BaseResponse) resp;
-        switch (baseResp.errCode) {
-            case WBConstants.ErrorCode.ERR_OK:
-                // 分享成功
-                mOnShareListener.onSuccess();
-                break;
-            case WBConstants.ErrorCode.ERR_CANCEL:
-                // 分享取消
-                mOnShareListener.onCancel();
-                break;
-            case WBConstants.ErrorCode.ERR_FAIL:
-                // 分享失败
-                mOnShareListener.onFailure(new SocialError("微博分享失败"));
-                break;
+        if (resp instanceof Integer && mOnShareListener != null) {
+            switch ((int) resp) {
+                case WBConstants.ErrorCode.ERR_OK:
+                    // 分享成功
+                    mOnShareListener.onSuccess();
+                    break;
+                case WBConstants.ErrorCode.ERR_CANCEL:
+                    // 分享取消
+                    mOnShareListener.onCancel();
+                    break;
+                case WBConstants.ErrorCode.ERR_FAIL:
+                    // 分享失败
+                    mOnShareListener.onFailure(new SocialError("微博分享失败"));
+                    break;
+            }
         }
     }
-
 
     @Override
     public void login(Activity activity, OnLoginListener loginListener) {
-        if (mSsoHandler == null)
-            mSsoHandler = new SsoHandler(activity, mAuthInfo);
-        WbLoginHelper mLoginHelper = new WbLoginHelper(activity, mAppId);
-        mLoginHelper.login(activity, mSsoHandler, loginListener);
-    }
-
-
-    private boolean isSupportShare() {
-        return mWbShareAPI != null
-                && mWbShareAPI.isWeiboAppSupportAPI()
-                && mWbShareAPI.getWeiboAppSupportAPI() != -1;
-
-    }
-
-    // 授权，只拿token
-    private void justAuth(final Activity activity, final Runnable runnable) {
-        if (mSsoHandler != null && mStatusesAPI != null) {
-            if (runnable != null)
-                runnable.run();
-            return;
-        }
-        mSsoHandler = new SsoHandler(activity, mAuthInfo);
-        WbAuthHelper.auth(activity, mSsoHandler, new WbAuthHelper.OnAuthOverListener() {
-            @Override
-            public void onAuth(Oauth2AccessToken token) {
-                SocialLogUtils.e(TAG, token.toString());
-                mStatusesAPI = new StatusesAPI(activity, mAppId, token);
-                if (runnable != null)
-                    runnable.run();
-            }
-
-            @Override
-            public void onException(SocialError e) {
-                mOnShareListener.onFailure(e);
-            }
-
-            @Override
-            public void onCancel() {
-                mOnShareListener.onCancel();
-            }
-        });
-    }
-
-    // 用openApi实现可以支持5M以下图片文件分享，微博应用名称点亮可点击
-    // openApi分享本地图片
-    public void shareImageOpenApi(final Activity activity, final ShareObj obj) {
-        justAuth(activity, new Runnable() {
-            @Override
-            public void run() {
-                if (FileUtils.isGifFile(obj.getThumbImagePath())) {
-                    shareGifOpenApi(obj);
-                } else {
-                    shareJpgPngOpenApi(obj);
-                }
-            }
-        });
-    }
-
-    // openApi分享图片
-    private void shareJpgPngOpenApi(final ShareObj obj) {
-        final Callable<Bitmap> getBitmapCallable = new Callable<Bitmap>() {
-            @Override
-            public Bitmap call() throws Exception {
-                return BitmapUtils.getMaxSizeBitmap(obj.getThumbImagePath(), 5 * 1024 * 1024);
-            }
-        };
-        final Continuation<Bitmap, Object> shareImageContinuation = new Continuation<Bitmap, Object>() {
-            @Override
-            public Object then(final Task<Bitmap> task) throws Exception {
-                if (task.isFaulted() || task.getResult() == null) {
-                    mOnShareListener.onFailure(new SocialError("sina openApi分享jpg,png失败", task.getError()));
-                    return null;
-                }
-                mStatusesAPI.upload(obj.getSummary(), task.getResult(), null, null, requestListener);
-                return null;
-            }
-        };
-        // 分享普通图片
-        Task.callInBackground(getBitmapCallable).continueWith(shareImageContinuation, Task.UI_THREAD_EXECUTOR);
-
-    }
-
-    // openApi 分享gif
-    private void shareGifOpenApi(final ShareObj obj) {
-        final Callable<ByteArrayOutputStream> getBaosCallable = new Callable<ByteArrayOutputStream>() {
-            @Override
-            public ByteArrayOutputStream call() throws Exception {
-                return FileUtils.getOutputStreamFromFile(obj.getThumbImagePath());
-            }
-        };
-        final Continuation<ByteArrayOutputStream, Object> shareGifContinuation = new Continuation<ByteArrayOutputStream, Object>() {
-            @Override
-            public Object then(final Task<ByteArrayOutputStream> task) throws Exception {
-                if (task.isFaulted() || task.getResult() == null) {
-                    mOnShareListener.onFailure(new SocialError("sina openApi分享gif失败", task.getError()));
-                    return null;
-                }
-                mStatusesAPI.upload(obj.getSummary(), task.getResult(), requestListener);
-                return null;
-            }
-        };
-        // 分享gif
-        Task.callInBackground(getBaosCallable)
-                .continueWith(shareGifContinuation, Task.UI_THREAD_EXECUTOR);
-    }
-
-
-    // openApi 分享网络图片，需要高级权限
-    public void shareNetImage(final Activity activity, final String text, final String url) {
-        justAuth(activity, new Runnable() {
-            @Override
-            public void run() {
-                mStatusesAPI.uploadUrlText(text, url, null, null, null, requestListener);
-            }
-        });
-    }
-
-    private void sendWeiboMultiMsg(Activity activity, WeiboMultiMessage message) {
-        SendMultiMessageToWeiboRequest request = new SendMultiMessageToWeiboRequest();
-        request.transaction = String.valueOf(System.currentTimeMillis());
-        request.multiMessage = message;
-        boolean isSendSuccess = mWbShareAPI.sendRequest(activity, request);
-        if (!isSendSuccess) {
-            mOnShareListener.onFailure(new SocialError("sina分享发送失败，检查参数"));
-        }
+        makeLoginHelper(activity).login(activity, loginListener);
     }
 
     @Override
@@ -295,14 +150,13 @@ public class WbPlatform extends AbsPlatform {
     public void shareText(int shareTarget, Activity activity, final ShareObj obj) {
         WeiboMultiMessage multiMessage = new WeiboMultiMessage();
         multiMessage.textObject = getTextObj(obj.getSummary());
-        sendWeiboMultiMsg(activity, multiMessage);
+        mShareHandler.shareMessage(multiMessage, false);
     }
-
 
     @Override
     public void shareImage(int shareTarget, final Activity activity, final ShareObj obj) {
-        if (shareTarget == Target.SHARE_WB_OPENAPI) {
-            shareImageOpenApi(activity, obj);
+        if (FileUtils.isGifFile(obj.getThumbImagePath())) {
+            makeOpenApiShareHelper(activity).post(activity, obj);
         } else {
             BitmapUtils.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
                     .continueWith(new ThumbDataContinuation(TAG, "shareImage", mOnShareListener) {
@@ -311,10 +165,11 @@ public class WbPlatform extends AbsPlatform {
                             WeiboMultiMessage multiMessage = new WeiboMultiMessage();
                             multiMessage.imageObject = getImageObj(obj.getThumbImagePath(), thumbData);
                             multiMessage.textObject = getTextObj(obj.getSummary());
-                            sendWeiboMultiMsg(activity, multiMessage);
+                            mShareHandler.shareMessage(multiMessage, false);
                         }
                     }, Task.UI_THREAD_EXECUTOR);
         }
+
     }
 
     @Override
@@ -331,52 +186,38 @@ public class WbPlatform extends AbsPlatform {
                     public void onSuccess(byte[] thumbData) {
                         WeiboMultiMessage multiMessage = new WeiboMultiMessage();
                         checkAddTextAndImageObj(multiMessage, obj, thumbData);
-                        multiMessage.mediaObject = getWebObj(obj.getTitle(), thumbData, obj.getTargetUrl(), obj.getSummary());
-                        sendWeiboMultiMsg(activity, multiMessage);
+                        multiMessage.mediaObject = getWebObj(obj, thumbData);
+                        mShareHandler.shareMessage(multiMessage, false);
                     }
                 }, Task.UI_THREAD_EXECUTOR);
     }
 
     @Override
     public void shareMusic(int shareTarget, final Activity activity, final ShareObj obj) {
-        BitmapUtils.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
-                .continueWith(new ThumbDataContinuation(TAG, "shareMusic", mOnShareListener) {
-                    @Override
-                    public void onSuccess(byte[] thumbData) {
-                        WeiboMultiMessage multiMessage = new WeiboMultiMessage();
-                        checkAddTextAndImageObj(multiMessage, obj, thumbData);
-                        multiMessage.mediaObject = getMusicObj(obj.getTitle(), thumbData, obj.getTargetUrl(), obj.getSummary(), obj.getMediaPath(), obj.getDuration());
-                        sendWeiboMultiMsg(activity, multiMessage);
-                    }
-                }, Task.UI_THREAD_EXECUTOR);
+        shareWeb(shareTarget, activity, obj);
     }
 
     @Override
     public void shareVideo(int shareTarget, final Activity activity, final ShareObj obj) {
-        if (obj.isShareByIntent()) {
-            try {
-                IntentShareUtils.shareVideo(activity, obj.getMediaPath(), SocialConstants.SINA_PKG, SocialConstants.WB_COMPOSER_PAGE);
-            } catch (Exception e) {
-                this.mOnShareListener.onFailure(new SocialError(SocialError.CODE_SHARE_BY_INTENT_FAIL, e));
-            }
-        } else {
+        String mediaPath = obj.getMediaPath();
+        if (FileUtils.isExist(mediaPath)) {
+            // 本地视频，微博支持本地视频分享
             BitmapUtils.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
                     .continueWith(new ThumbDataContinuation(TAG, "shareVideo", mOnShareListener) {
                         @Override
                         public void onSuccess(byte[] thumbData) {
                             WeiboMultiMessage multiMessage = new WeiboMultiMessage();
                             checkAddTextAndImageObj(multiMessage, obj, thumbData);
-                            multiMessage.mediaObject = getVideoObj(obj.getTitle(), thumbData, obj.getTargetUrl(), obj.getSummary(), obj.getMediaPath(), obj.getDuration());
-                            sendWeiboMultiMsg(activity, multiMessage);
+                            multiMessage.videoSourceObject = getVideoObj(obj, thumbData);
+                            mShareHandler.shareMessage(multiMessage, false);
                         }
                     }, Task.UI_THREAD_EXECUTOR);
+        } else {
+            shareWeb(shareTarget, activity, obj);
         }
     }
 
-    @Override
-    public int getPlatformType() {
-        return Target.PLATFORM_WB;
-    }
+
     /**
      * 根据ShareMediaObj配置来检测是不是添加文字和照片
      *
@@ -398,6 +239,7 @@ public class WbPlatform extends AbsPlatform {
         return textObject;
     }
 
+
     private ImageObject getImageObj(String localPath, byte[] data) {
         ImageObject imageObject = new ImageObject();
         //设置缩略图。 注意：最终压缩过的缩略图大小不得超过 32kb。
@@ -407,59 +249,30 @@ public class WbPlatform extends AbsPlatform {
     }
 
 
-    private void initCommonParams(BaseMediaObject mediaObject, String title, byte[] data, String actionUrl, String defaultText) {
+    private WebpageObject getWebObj(ShareObj obj, byte[] thumbData) {
+        WebpageObject mediaObject = new WebpageObject();
         mediaObject.identify = Utility.generateGUID();
-        mediaObject.title = title;
-        mediaObject.description = defaultText;
-        // 设置 Bitmap 类型的图片到视频对象里
-        // 设置缩略图。 注意：最终压缩过的缩略图大小不得超过 32kb。
-        mediaObject.thumbData = data;
-        mediaObject.actionUrl = actionUrl;
+        mediaObject.title = obj.getTitle();
+        mediaObject.description = obj.getSummary();
+        // 注意：最终压缩过的缩略图大小不得超过 32kb。
+        mediaObject.thumbData = thumbData;
+        mediaObject.actionUrl = obj.getTargetUrl();
+        mediaObject.defaultText = obj.getSummary();
+        return mediaObject;
     }
 
 
-    private WebpageObject getWebObj(String title, byte[] thumbData, String actionUrl, String defaultText) {
-        WebpageObject webpageObject = new WebpageObject();
-        initCommonParams(webpageObject, title, thumbData, actionUrl, defaultText);
-        webpageObject.defaultText = defaultText;
-        return webpageObject;
-    }
-
-
-    private MusicObject getMusicObj(String title, byte[] thumbData, String actionUrl, String defaultText, String dataUrl, int duration) {
-        // 创建媒体消息
-        MusicObject musicObject = new MusicObject();
-        initCommonParams(musicObject, title, thumbData, actionUrl, defaultText);
-        musicObject.dataUrl = dataUrl;
-        musicObject.dataHdUrl = dataUrl;
-        musicObject.duration = duration == 0 ? 10 : duration;
-        musicObject.defaultText = defaultText + " " + actionUrl;
-        return musicObject;
-    }
-
-    private VideoObject getVideoObj(String title, byte[] thumbData, String actionUrl, String defaultText, String dataUrl, int duration) {
-        // 创建媒体消息
-        VideoObject videoObject = new VideoObject();
-        initCommonParams(videoObject, title, thumbData, actionUrl, defaultText);
-        videoObject.h5Url = dataUrl;
-        videoObject.dataUrl = dataUrl;
-        videoObject.dataHdUrl = dataUrl;
-        videoObject.duration = duration == 0 ? 10 : duration;
-        videoObject.defaultText = defaultText;
-        return videoObject;
-    }
-
-
-    private VoiceObject getVoiceObj(String title, byte[] thumbData, String actionUrl, String defaultText, String dataUrl, int duration) {
-        // 创建媒体消息
-        VoiceObject voiceObject = new VoiceObject();
-        initCommonParams(voiceObject, title, thumbData, actionUrl, defaultText);
-        voiceObject.h5Url = dataUrl;
-        voiceObject.dataUrl = dataUrl;
-        voiceObject.dataHdUrl = dataUrl;
-        voiceObject.duration = duration == 0 ? 10 : duration;
-        voiceObject.defaultText = defaultText;
-        return voiceObject;
+    private VideoSourceObject getVideoObj(ShareObj obj, byte[] thumbData) {
+        VideoSourceObject mediaObject = new VideoSourceObject();
+        mediaObject.videoPath = Uri.fromFile(new File(obj.getMediaPath()));
+        mediaObject.identify = Utility.generateGUID();
+        mediaObject.title = obj.getTitle();
+        mediaObject.description = obj.getSummary();
+        // 注意：最终压缩过的缩略图大小不得超过 32kb。
+        mediaObject.thumbData = thumbData;
+        mediaObject.actionUrl = obj.getTargetUrl();
+        mediaObject.during = obj.getDuration() == 0 ? 10 : obj.getDuration();
+        return mediaObject;
     }
 
 }

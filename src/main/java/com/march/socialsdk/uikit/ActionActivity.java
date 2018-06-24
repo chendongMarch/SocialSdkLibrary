@@ -8,16 +8,10 @@ import android.os.Bundle;
 
 import com.android.dingtalk.share.ddsharemodule.IDDAPIEventHandler;
 import com.march.socialsdk.manager.PlatformManager;
-<<<<<<< HEAD
-import com.march.socialsdk.utils.SocialLogUtils;
-import com.march.socialsdk.manager.LoginManager;
-import com.march.socialsdk.manager.ShareManager;
-=======
->>>>>>> d0467b6eea6927ffe6f02135c9d60427aa5e91cd
 import com.march.socialsdk.platform.IPlatform;
-import com.march.socialsdk.utils.LogUtils;
-import com.sina.weibo.sdk.api.share.BaseResponse;
-import com.sina.weibo.sdk.api.share.IWeiboHandler;
+import com.march.socialsdk.utils.SocialLogUtils;
+import com.sina.weibo.sdk.constant.WBConstants;
+import com.sina.weibo.sdk.share.WbShareCallback;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
@@ -28,7 +22,7 @@ import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
  *
  * @author chendong
  */
-public class ActionActivity extends Activity implements IWeiboHandler.Response, IWXAPIEventHandler, IDDAPIEventHandler {
+public class ActionActivity extends Activity implements WbShareCallback, IWXAPIEventHandler, IDDAPIEventHandler {
 
     public static final String TAG = ActionActivity.class.getSimpleName();
 
@@ -101,8 +95,18 @@ public class ActionActivity extends Activity implements IWeiboHandler.Response, 
     //////////////////////////////  -- 微博 --  //////////////////////////////
 
     @Override
-    public void onResponse(BaseResponse baseResponse) {
-        onRespHandler(baseResponse);
+    public void onWbShareSuccess() {
+        onRespHandler(WBConstants.ErrorCode.ERR_OK);
+    }
+
+    @Override
+    public void onWbShareCancel() {
+        onRespHandler(WBConstants.ErrorCode.ERR_CANCEL);
+    }
+
+    @Override
+    public void onWbShareFail() {
+        onRespHandler(WBConstants.ErrorCode.ERR_FAIL);
     }
 
     //////////////////////////////  -- 微信 --  //////////////////////////////
@@ -157,4 +161,5 @@ public class ActionActivity extends Activity implements IWeiboHandler.Response, 
         } else
             return platform;
     }
+
 }
