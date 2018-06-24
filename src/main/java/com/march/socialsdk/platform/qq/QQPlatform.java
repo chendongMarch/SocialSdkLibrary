@@ -1,28 +1,25 @@
 package com.march.socialsdk.platform.qq;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.exception.SocialError;
-import com.march.socialsdk.model.SocialSdkConfig;
-import com.march.socialsdk.platform.IPlatform;
-import com.march.socialsdk.platform.PlatformCreator;
-import com.march.socialsdk.utils.FileUtils;
-import com.march.socialsdk.utils.CommonUtils;
-import com.march.socialsdk.utils.SocialLogUtils;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.model.ShareObj;
+import com.march.socialsdk.model.SocialSdkConfig;
 import com.march.socialsdk.platform.AbsPlatform;
+import com.march.socialsdk.platform.IPlatform;
+import com.march.socialsdk.platform.PlatformCreator;
 import com.march.socialsdk.platform.Target;
+import com.march.socialsdk.utils.CommonUtils;
+import com.march.socialsdk.utils.FileUtils;
+import com.march.socialsdk.utils.SocialLogUtils;
 import com.tencent.connect.common.Constants;
 import com.tencent.connect.share.QQShare;
 import com.tencent.connect.share.QzonePublish;
@@ -53,7 +50,7 @@ public class QQPlatform extends AbsPlatform {
 
     public static class Creator implements PlatformCreator {
         @Override
-        public IPlatform create(Context context, int target) {
+        public IPlatform create(Activity context, int target) {
             IPlatform platform = null;
             SocialSdkConfig config = SocialSdk.getConfig();
             if (!CommonUtils.isAnyEmpty(config.getQqAppId(), config.getAppName())) {
@@ -65,7 +62,7 @@ public class QQPlatform extends AbsPlatform {
 
 
     QQPlatform(Context context, String appId, String appName) {
-        super(context, appId, appName);
+        super(appId, appName);
         mTencentApi = Tencent.createInstance(appId, context);
     }
 
@@ -106,11 +103,6 @@ public class QQPlatform extends AbsPlatform {
         }
         mQQLoginHelper = new QQLoginHelper(activity, mTencentApi, loginListener);
         mQQLoginHelper.login();
-    }
-
-    @Override
-    public int getPlatformType() {
-        return Target.PLATFORM_QQ;
     }
 
 
@@ -227,30 +219,28 @@ public class QQPlatform extends AbsPlatform {
     @Override
     public void shareVideo(int shareTarget, Activity activity, ShareObj obj) {
         if (shareTarget == Target.SHARE_QQ_FRIENDS) {
-            if (obj.isShareByIntent()) {
-                shareVideoByIntent(activity, obj, SocialConstants.QQ_PKG, SocialConstants.QQ_FRIENDS_PAGE);
-            } else {
-                // 使用 web 格式分享
-                SocialLogUtils.e(TAG, "qq不支持分享视频，使用web分享代替");
+            if (FileUtils.isHttpPath(obj.getMediaPath())) {
+                SocialLogUtils.e(TAG, "qq不支持分享网络视频，使用web分享代替");
                 obj.setTargetUrl(obj.getMediaPath());
                 shareWeb(shareTarget, activity, obj);
+            } else if (FileUtils.isExist(obj.getMediaPath())){
+                shareVideoByIntent(activity, obj, SocialConstants.QQ_PKG, SocialConstants.QQ_FRIENDS_PAGE);
+            } else{
+                this.mIUiListenerWrap.onError(new SocialError(SocialError.CODE_FILE_NOT_FOUND));
             }
         } else if (shareTarget == Target.SHARE_QQ_ZONE) {
             // qq 空间支持本地文件发布
-            if (!FileUtils.isHttpPath(obj.getMediaPath())) {
+            if (FileUtils.isHttpPath(obj.getMediaPath())) {
+                SocialLogUtils.e(TAG, "qq空间网络视频，使用web形式分享");
+                shareWeb(shareTarget, activity, obj);
+            } else if (FileUtils.isExist(obj.getMediaPath())) {
                 SocialLogUtils.e(TAG, "qq空间本地视频分享");
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                        && activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-                    this.mIUiListenerWrap.onError(new SocialError("没有获取到读存储卡的权限，qq 空间分享本地视频功能无法继续"));
-                    return;
-                }
                 final Bundle params = new Bundle();
                 params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzonePublish.PUBLISH_TO_QZONE_TYPE_PUBLISHVIDEO);
                 params.putString(QzonePublish.PUBLISH_TO_QZONE_VIDEO_PATH, obj.getMediaPath());
                 mTencentApi.publishToQzone(activity, params, mIUiListenerWrap);
             } else {
-                SocialLogUtils.e(TAG, "qq空间网络视频，使用web形式分享");
-                shareWeb(shareTarget, activity, obj);
+                this.mIUiListenerWrap.onError(new SocialError(SocialError.CODE_FILE_NOT_FOUND));
             }
         }
     }
@@ -273,7 +263,7 @@ public class QQPlatform extends AbsPlatform {
         @Override
         public void onError(UiError uiError) {
             if (listener != null)
-                listener.onFailure(new SocialError("分享失败 " + mQQLoginHelper.parseUiError(uiError)));
+                listener.onFailure(new SocialError("分享失败 " + SocialError.parseUiError(uiError)));
         }
 
         public void onError(SocialError e) {

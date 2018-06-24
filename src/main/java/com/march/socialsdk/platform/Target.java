@@ -22,20 +22,17 @@ public class Target {
     public static final int LOGIN_WX = 0x22; // 微信登录
     public static final int LOGIN_WB = 0x23; // 微博登录
 
-
-    public static final int SHARE_QQ_FRIENDS = 0x31; // qq好友
-    public static final int SHARE_QQ_ZONE = 0x32; // qq空间
-    public static final int SHARE_WX_FRIENDS = 0x33; // 微信好友
-    public static final int SHARE_WX_ZONE = 0x34; // 微信朋友圈
+    public static final int SHARE_QQ_FRIENDS  = 0x31; // qq好友
+    public static final int SHARE_QQ_ZONE     = 0x32; // qq空间
+    public static final int SHARE_WX_FRIENDS  = 0x33; // 微信好友
+    public static final int SHARE_WX_ZONE     = 0x34; // 微信朋友圈
     public static final int SHARE_WX_FAVORITE = 0x35; // 微信收藏
-    public static final int SHARE_WB_NORMAL = 0x36; // 新浪微博
-    public static final int SHARE_WB_OPENAPI = 0x37; // 新浪微博openApi分享，暂不支持
-    public static final int SHARE_DD = 0x38; // dingding 分享
-
+    public static final int SHARE_WB          = 0x36; // 新浪微博
+    public static final int SHARE_DD          = 0x38; // dingding 分享
 
     @IntDef({Target.SHARE_QQ_FRIENDS, Target.SHARE_QQ_ZONE,
             Target.SHARE_WX_FRIENDS, Target.SHARE_WX_ZONE, Target.SHARE_WX_FAVORITE,
-            Target.SHARE_WB_NORMAL, Target.SHARE_WB_OPENAPI,Target.SHARE_DD})
+            Target.SHARE_WB, Target.SHARE_DD})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ShareTarget {
 
@@ -73,11 +70,8 @@ public class Target {
             case Target.SHARE_WX_ZONE:
                 result = "微信空间分享";
                 break;
-            case Target.SHARE_WB_NORMAL:
+            case Target.SHARE_WB:
                 result = "微博普通分享";
-                break;
-            case Target.SHARE_WB_OPENAPI:
-                result = "微博 open api 分享";
                 break;
             default:
                 result = "未知类型";

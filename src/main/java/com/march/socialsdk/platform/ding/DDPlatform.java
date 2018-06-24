@@ -20,9 +20,8 @@ import com.march.socialsdk.model.SocialSdkConfig;
 import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformCreator;
-import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.utils.CommonUtils;
-import com.march.socialsdk.utils.IntentShareUtils;
+import com.march.socialsdk.utils.FileUtils;
 
 /**
  * CreateAt : 2018/2/11
@@ -36,7 +35,7 @@ public class DDPlatform extends AbsPlatform {
 
     public static class Creator implements PlatformCreator {
         @Override
-        public IPlatform create(Context context, int target) {
+        public IPlatform create(Activity context, int target) {
             IPlatform platform = null;
             SocialSdkConfig config = SocialSdk.getConfig();
             if (!CommonUtils.isAnyEmpty(config.getDdAppId())) {
@@ -47,7 +46,7 @@ public class DDPlatform extends AbsPlatform {
     }
 
     DDPlatform(Context context, String appId, String appName) {
-        super(context, appId, appName);
+        super(appId, appName);
         mDdShareApi = DDShareApiFactory.createDDShareApi(context, appId, false);
     }
 
@@ -158,22 +157,16 @@ public class DDPlatform extends AbsPlatform {
 
     @Override
     protected void shareVideo(int shareTarget, Activity activity, ShareObj obj) {
-        if (obj.isShareByIntent()) {
-            try {
-                IntentShareUtils.shareVideo(activity, obj.getMediaPath(), SocialConstants.DD_PKG, SocialConstants.DD_FRIEND_PAGE);
-            } catch (Exception e) {
-                this.mOnShareListener.onFailure(new SocialError(SocialError.CODE_SHARE_BY_INTENT_FAIL, e));
-            }
-        } else {
+        if (FileUtils.isHttpPath(obj.getMediaPath())) {
             shareWeb(shareTarget, activity, obj);
+        } else if (FileUtils.isExist(obj.getMediaPath())) {
+            shareVideoByIntent(activity, obj, SocialConstants.DD_PKG, SocialConstants.DD_FRIEND_PAGE);
+        } else {
+            mOnShareListener.onFailure(new SocialError(SocialError.CODE_FILE_NOT_FOUND));
         }
     }
 
 
-    @Override
-    public int getPlatformType() {
-        return Target.PLATFORM_DD;
-    }
     private String buildTransaction(String tag) {
         return tag + System.currentTimeMillis();
     }

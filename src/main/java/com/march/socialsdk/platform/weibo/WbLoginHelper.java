@@ -1,25 +1,22 @@
 package com.march.socialsdk.platform.weibo;
 
 import android.app.Activity;
-import android.content.Context;
-import android.text.TextUtils;
+import android.content.Intent;
+import android.support.annotation.NonNull;
 
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.LoginResult;
+import com.march.socialsdk.model.token.AccessToken;
 import com.march.socialsdk.platform.Target;
-import com.march.socialsdk.platform.weibo.extend.UsersAPI;
 import com.march.socialsdk.platform.weibo.model.SinaAccessToken;
 import com.march.socialsdk.platform.weibo.model.SinaUser;
-import com.march.socialsdk.utils.CommonUtils;
 import com.march.socialsdk.utils.JsonUtils;
 import com.march.socialsdk.utils.SocialLogUtils;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
+import com.sina.weibo.sdk.auth.WbAuthListener;
+import com.sina.weibo.sdk.auth.WbConnectErrorMessage;
 import com.sina.weibo.sdk.auth.sso.SsoHandler;
-import com.sina.weibo.sdk.exception.WeiboException;
-import com.sina.weibo.sdk.net.RequestListener;
-
-import java.lang.ref.WeakReference;
 
 /**
  * CreateAt : 2016/12/5
@@ -32,64 +29,89 @@ class WbLoginHelper {
 
     public static final String TAG = WbLoginHelper.class.getSimpleName();
 
-    private int mLoginType;
+    private int             mLoginType;
     private OnLoginListener mOnLoginListener;
-    private WeakReference<Context> mContextWeakRef;
-    private String appId;
+    private SsoHandler      mSsoHandler;
 
-    public WbLoginHelper(Context context, String appId) {
-        this.mContextWeakRef = new WeakReference<>(context.getApplicationContext());
-        this.appId = appId;
+    WbLoginHelper(Activity context) {
+        this.mSsoHandler = new SsoHandler(context);
         this.mLoginType = Target.LOGIN_WB;
     }
-
-
 
     /**
      * 获取用户信息
      *
-     * @param mAccessToken
+     * @param token token
      */
-    private void getUserInfo(final Oauth2AccessToken mAccessToken) {
-        //获取用户的信息
-        UsersAPI mUsersAPI = new UsersAPI(mContextWeakRef.get(), appId, mAccessToken);
-        mUsersAPI.show(CommonUtils.String2Long(mAccessToken.getUid()), new RequestListener() {
+    private void getUserInfo(final Oauth2AccessToken token) {
+        JsonUtils.startJsonRequest("https://api.weibo.com/2/users/show.json?access_token=" + token.getToken() + "&uid=" + token.getUid(), SinaUser.class, new JsonUtils.Callback<SinaUser>() {
             @Override
-            public void onComplete(String response) {
-                if (!TextUtils.isEmpty(response)) {
-                    SocialLogUtils.e(TAG, response);
-                    SinaUser sinaUser = JsonUtils.getObject(response, SinaUser.class);
-                    mOnLoginListener.onSuccess(new LoginResult(mLoginType, sinaUser, new SinaAccessToken(mAccessToken)));
-                }
+            public void onSuccess(@NonNull SinaUser user) {
+                SocialLogUtils.e(TAG, JsonUtils.getObject2Json(user));
+                mOnLoginListener.onSuccess(new LoginResult(mLoginType, user, new SinaAccessToken(token)));
             }
 
             @Override
-            public void onWeiboException(WeiboException e) {
-                mOnLoginListener.onFailure(new SocialError("sina,获取用户信息失败", e));
+            public void onFailure(SocialError e) {
+                mOnLoginListener.onFailure(e);
             }
         });
     }
 
-
-    public void login(Activity activity, SsoHandler ssoHandler, final OnLoginListener loginListener) {
-        this.mOnLoginListener = loginListener;
+    public void login(Activity activity, final OnLoginListener loginListener) {
         if (loginListener == null)
             return;
-        WbAuthHelper.auth(activity, ssoHandler, new WbAuthHelper.OnAuthOverListener() {
+        this.mOnLoginListener = loginListener;
+        justAuth(activity, new WbAuthListener() {
             @Override
-            public void onAuth(Oauth2AccessToken token) {
-                getUserInfo(token);
+            public void onSuccess(Oauth2AccessToken oauth2AccessToken) {
+                getUserInfo(oauth2AccessToken);
             }
 
             @Override
-            public void onException(SocialError e) {
-                loginListener.onFailure(e);
-            }
-
-            @Override
-            public void onCancel() {
+            public void cancel() {
                 loginListener.onCancel();
             }
+
+            @Override
+            public void onFailure(WbConnectErrorMessage msg) {
+                loginListener.onFailure(new SocialError(msg.getErrorCode() + " " + msg.getErrorMessage()));
+            }
         });
+    }
+
+    public void justAuth(final Activity activity, final WbAuthListener listener) {
+        Oauth2AccessToken token = AccessToken.getToken(activity, AccessToken.SINA_TOKEN_KEY, Oauth2AccessToken.class);
+        if (token != null && token.isSessionValid() && token.getExpiresTime() > System.currentTimeMillis()) {
+            listener.onSuccess(token);
+        } else {
+            AccessToken.clearToken(activity, Target.LOGIN_WB);
+            mSsoHandler.authorize(new WbAuthListener() {
+                @Override
+                public void onSuccess(Oauth2AccessToken oauth2AccessToken) {
+                    oauth2AccessToken.setBundle(null);
+
+                    SocialLogUtils.json("test", oauth2AccessToken.toString());
+                    AccessToken.saveToken(activity, AccessToken.SINA_TOKEN_KEY, oauth2AccessToken);
+                    listener.onSuccess(oauth2AccessToken);
+                }
+
+                @Override
+                public void cancel() {
+                    listener.cancel();
+                }
+
+                @Override
+                public void onFailure(WbConnectErrorMessage wbConnectErrorMessage) {
+                    listener.onFailure(wbConnectErrorMessage);
+                }
+            });
+        }
+    }
+
+    public void authorizeCallBack(int requestCode, int resultCode, Intent data) {
+        if (mSsoHandler != null) {
+            mSsoHandler.authorizeCallBack(requestCode, resultCode, data);
+        }
     }
 }

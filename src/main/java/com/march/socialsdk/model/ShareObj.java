@@ -277,4 +277,22 @@ public class ShareObj implements Parcelable {
             return new ShareObj[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "ShareObj{" +
+                "shareObjType=" + shareObjType +
+                ", title='" + title + '\'' +
+                ", summary='" + summary + '\'' +
+                ", thumbImagePath='" + thumbImagePath + '\'' +
+                ", thumbImagePathNet='" + thumbImagePathNet + '\'' +
+                ", targetUrl='" + targetUrl + '\'' +
+                ", mediaPath='" + mediaPath + '\'' +
+                ", duration=" + duration +
+                ", extraTag=" + extraTag +
+                ", isSinaWithSummary=" + isSinaWithSummary +
+                ", isSinaWithPicture=" + isSinaWithPicture +
+                ", isShareByIntent=" + isShareByIntent +
+                '}';
+    }
 }

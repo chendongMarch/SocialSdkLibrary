@@ -1,6 +1,7 @@
 package com.march.socialsdk.exception;
 
 import com.march.socialsdk.utils.SocialLogUtils;
+import com.tencent.tauth.UiError;
 
 /**
  * CreateAt : 2016/12/5
@@ -19,6 +20,7 @@ public class SocialError extends Exception{
     public static final int CODE_SHARE_OBJ_VALID = 2; // 分享的对象参数有问题
     public static final int CODE_SHARE_BY_INTENT_FAIL = 3; // 使用 Intent 分享失败
     public static final int CODE_STORAGE_ERROR = 4; // 没有读写存储的权限
+    public static final int CODE_FILE_NOT_FOUND = 5; // 文件不存在
 
     private int errorCode;
     private String errorMsg;
@@ -97,4 +99,9 @@ public class SocialError extends Exception{
         this.errorMsg = String.valueOf(errorMsg) + "   " + msg;
         return this;
     }
+
+    public static String parseUiError(UiError error) {
+        return "qq error [ code = " + error.errorCode + ", msg = " + error.errorMessage + ", detail = " + error.errorDetail + " ]";
+    }
+
 }

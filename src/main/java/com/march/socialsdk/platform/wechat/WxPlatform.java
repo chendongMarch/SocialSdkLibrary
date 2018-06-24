@@ -19,7 +19,6 @@ import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.utils.BitmapUtils;
 import com.march.socialsdk.utils.CommonUtils;
 import com.march.socialsdk.utils.FileUtils;
-import com.march.socialsdk.utils.IntentShareUtils;
 import com.march.socialsdk.utils.SocialLogUtils;
 import com.tencent.mm.opensdk.constants.ConstantsAPI;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
@@ -43,6 +42,9 @@ import bolts.Task;
  * Describe : 微信平台
  * [分享与收藏文档](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419317340&token=&lang=zh_CN)
  * [微信登录文档](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419317851&token=&lang=zh_CN)
+ *
+ * 缩略图不超过 32kb
+ * 源文件不超过 10M
  * @author chendong
  */
 public class WxPlatform extends AbsPlatform {
@@ -55,7 +57,7 @@ public class WxPlatform extends AbsPlatform {
 
     public static class Creator implements PlatformCreator {
         @Override
-        public IPlatform create(Context context, int target) {
+        public IPlatform create(Activity context, int target) {
             IPlatform platform = null;
             SocialSdkConfig config = SocialSdk.getConfig();
             if (!CommonUtils.isAnyEmpty(config.getWxAppId(), config.getWxSecretKey())) {
@@ -67,7 +69,7 @@ public class WxPlatform extends AbsPlatform {
 
 
     WxPlatform(Context context, String appId, String wxSecret, String appName) {
-        super(context, appId, appName);
+        super(appId, appName);
         this.mWxSecret = wxSecret;
         mWxApi = WXAPIFactory.createWXAPI(context, appId, true);
         mWxApi.registerApp(appId);
@@ -161,11 +163,6 @@ public class WxPlatform extends AbsPlatform {
         mWeChatLoginHelper.login(mWxSecret, loginListener);
     }
 
-    @Override
-    public int getPlatformType() {
-        return Target.PLATFORM_WX;
-    }
-
 
     private int getShareToWhere(int shareTarget) {
         int where = SendMessageToWX.Req.WXSceneSession;
@@ -231,15 +228,7 @@ public class WxPlatform extends AbsPlatform {
     private void shareImage(final int shareTarget, String desc, final String localPath, byte[] thumbData) {
         if (shareTarget == Target.SHARE_WX_FRIENDS) {
             if (FileUtils.isGifFile(localPath)) {
-                SocialLogUtils.e(TAG, "发送给朋友时 Gif 文件以emoji格式分享");
-                WXEmojiObject emoji = new WXEmojiObject();
-                emoji.emojiPath = localPath;
-                WXMediaMessage msg = new WXMediaMessage();
-                msg.mediaObject = emoji;
-                msg.description = desc;
-                //这个值似乎有限制,太大无法发送,所有已使用低质量压缩
-                msg.thumbData = thumbData;
-                sendMsgToWx(msg, shareTarget, "emoji");
+                shareEmoji(shareTarget, localPath, desc, thumbData);
             } else {
                 shareImage(shareTarget, localPath, thumbData);
             }
@@ -256,6 +245,16 @@ public class WxPlatform extends AbsPlatform {
         msg.mediaObject = imgObj;
         msg.thumbData = thumbData;
         sendMsgToWx(msg, shareTarget, "image");
+    }
+
+    private void shareEmoji(int shareTarget, String localPath, String desc, byte[] thumbData) {
+        WXEmojiObject emoji = new WXEmojiObject();
+        emoji.emojiPath = localPath;
+        WXMediaMessage msg = new WXMediaMessage();
+        msg.mediaObject = emoji;
+        msg.description = desc;
+        msg.thumbData = thumbData;
+        sendMsgToWx(msg, shareTarget, "emoji");
     }
 
 
@@ -308,11 +307,13 @@ public class WxPlatform extends AbsPlatform {
 
     @Override
     public void shareVideo(final int shareTarget, Activity activity, final ShareObj obj) {
-        if (obj.isShareByIntent() && shareTarget == Target.SHARE_WX_FRIENDS) {
-            try {
-                IntentShareUtils.shareVideo(activity, obj.getMediaPath(), SocialConstants.WECHAT_PKG, SocialConstants.WX_FRIEND_PAGE);
-            } catch (Exception e) {
-                this.mOnShareListener.onFailure(new SocialError(SocialError.CODE_SHARE_BY_INTENT_FAIL, e));
+        if (shareTarget == Target.SHARE_WX_FRIENDS) {
+            if (FileUtils.isHttpPath(obj.getMediaPath())) {
+                shareWeb(shareTarget, activity, obj);
+            } else if (FileUtils.isExist(obj.getMediaPath())) {
+                shareVideoByIntent(activity, obj, SocialConstants.WECHAT_PKG, SocialConstants.WX_FRIEND_PAGE);
+            } else {
+                mOnShareListener.onFailure(new SocialError(SocialError.CODE_FILE_NOT_FOUND));
             }
         } else {
             BitmapUtils.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)

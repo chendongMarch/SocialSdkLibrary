@@ -40,7 +40,7 @@ public class StreamUtils {
      * @return 流
      * @throws IOException error
      */
-    public static InputStream openHttpStream(HttpURLConnection conn) throws IOException {
+    public static InputStream openGetHttpStream(HttpURLConnection conn) throws IOException {
         conn.setRequestMethod("GET");
         conn.setReadTimeout(3_000);
         conn.setConnectTimeout(3_000);
@@ -52,6 +52,21 @@ public class StreamUtils {
         conn.connect();
         return conn.getInputStream();
     }
+
+    public static InputStream openPostHttpStream(HttpURLConnection conn) throws IOException {
+        conn.setRequestMethod("POST");
+        conn.setReadTimeout(3_000);
+        conn.setConnectTimeout(3_000);
+        conn.setDoInput(true);
+        conn.setDoOutput(true);
+        // 设置通用的请求属性
+        conn.setRequestProperty("accept", "*/*");
+        conn.setRequestProperty("connection", "Keep-Alive");
+        // 发起连接
+        conn.connect();
+        return conn.getInputStream();
+    }
+
 
     /**
      * 保存文件到

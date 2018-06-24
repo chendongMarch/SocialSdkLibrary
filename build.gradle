@@ -8,27 +8,18 @@ def version = rootProject.ext.version
 
 android {
     compileSdkVersion version.compileSdkVersion
-   
-    sourceSets {
-        main {
-            res.srcDirs = ['src/main/res']
-            jniLibs.srcDirs = ['src/main/jniLibs']
-        }
-    }
+
 }
 
 dependencies {
 
-    // 我本地依赖是统一管理的，clone 后是无法编译的，请使用下面的依赖代替
-    // compile "com.android.support:appcompat-v7:26.1.0"
-    // compile 'com.parse.bolts:bolts-tasks:1.4.0'
+    // 我本地依赖是统一管理的，clone 后是无法编译的，请查看 https://coding.net/u/devlab/p/Resource/git/raw/master/android/project.gradle
 
     implementation libs.appcompat_v7
     implementation libs.bolts
 
     implementation libs.wechatSocial // 微信
-    implementation 'com.sina.weibo.sdk:core:4.1.0:openDefaultRelease@aar'
+    implementation 'com.sina.weibo.sdk:core:4.1.0:openDefaultRelease@aar' // 微博
     implementation files('libs/open_sdk_r5923_lite.jar') // QQ
-    implementation files('libs/weiboSDKCore_3.1.4.jar') // sina
     implementation files('libs/libddshare.jar') // dingding
 }

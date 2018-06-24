@@ -25,7 +25,6 @@ import bolts.Task;
  *
  * @author chendong
  */
-@RequiresApi(api = Build.VERSION_CODES.HONEYCOMB_MR1)
 public class BitmapUtils {
 
     public static final String TAG = BitmapUtils.class.getSimpleName();

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 
 import com.march.socialsdk.R;
+import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.utils.JsonUtils;
 
@@ -99,11 +100,20 @@ public abstract class AccessToken {
         return JsonUtils.getObject(sp.getString(key, null), tokenClazz);
     }
 
-    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    public static void saveToken(Context context, String key, Object token) {
-        SharedPreferences sp = getSp(context);
-        String tokenJson = JsonUtils.getObject2Json(token);
-        sp.edit().putString(key, tokenJson).apply();
+    public static void saveToken(final Context context, final String key, final Object token) {
+        SocialSdk.getExecutorService().execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    SharedPreferences sp = getSp(context);
+                    String tokenJson = JsonUtils.getObject2Json(token);
+                    sp.edit().putString(key, tokenJson).apply();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+
     }
 
     // 清理平台 token
