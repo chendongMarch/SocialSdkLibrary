@@ -1,4 +1,4 @@
-package com.march.socialsdk.platform.tencent.model;
+package com.march.socialsdk.platform.qq.model;
 
 import com.march.socialsdk.model.token.AccessToken;
 import com.march.socialsdk.platform.Target;

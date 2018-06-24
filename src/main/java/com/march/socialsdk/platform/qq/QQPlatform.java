@@ -1,4 +1,4 @@
-package com.march.socialsdk.platform.tencent;
+package com.march.socialsdk.platform.qq;
 
 import android.Manifest;
 import android.app.Activity;
@@ -40,6 +40,7 @@ import java.util.ArrayList;
  * qq空间支持本地视频分享，网络视频使用web形式分享
  * qq好友不支持本地视频分享，支持网络视频分享
  *
+ * 登录分享文档 http://wiki.open.qq.com/wiki/QQ%E7%94%A8%E6%88%B7%E8%83%BD%E5%8A%9B
  * @author chendong
  */
 public class QQPlatform extends AbsPlatform {

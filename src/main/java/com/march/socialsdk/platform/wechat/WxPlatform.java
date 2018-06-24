@@ -41,7 +41,8 @@ import bolts.Task;
 /**
  * CreateAt : 2016/12/3
  * Describe : 微信平台
- *
+ * [分享与收藏文档](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419317340&token=&lang=zh_CN)
+ * [微信登录文档](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419317851&token=&lang=zh_CN)
  * @author chendong
  */
 public class WxPlatform extends AbsPlatform {
