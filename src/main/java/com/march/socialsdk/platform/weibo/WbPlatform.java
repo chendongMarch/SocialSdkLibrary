@@ -201,17 +201,10 @@ public class WbPlatform extends AbsPlatform {
     public void shareVideo(int shareTarget, final Activity activity, final ShareObj obj) {
         String mediaPath = obj.getMediaPath();
         if (FileUtils.isExist(mediaPath)) {
-            // 本地视频，微博支持本地视频分享
-            BitmapUtils.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
-                    .continueWith(new ThumbDataContinuation(TAG, "shareVideo", mOnShareListener) {
-                        @Override
-                        public void onSuccess(byte[] thumbData) {
-                            WeiboMultiMessage multiMessage = new WeiboMultiMessage();
-                            checkAddTextAndImageObj(multiMessage, obj, thumbData);
-                            multiMessage.videoSourceObject = getVideoObj(obj, thumbData);
-                            mShareHandler.shareMessage(multiMessage, false);
-                        }
-                    }, Task.UI_THREAD_EXECUTOR);
+            WeiboMultiMessage multiMessage = new WeiboMultiMessage();
+            checkAddTextAndImageObj(multiMessage, obj, null);
+            multiMessage.videoSourceObject = getVideoObj(obj, null);
+            mShareHandler.shareMessage(multiMessage, false);
         } else {
             shareWeb(shareTarget, activity, obj);
         }
@@ -269,7 +262,7 @@ public class WbPlatform extends AbsPlatform {
         mediaObject.title = obj.getTitle();
         mediaObject.description = obj.getSummary();
         // 注意：最终压缩过的缩略图大小不得超过 32kb。
-        mediaObject.thumbData = thumbData;
+//        mediaObject.thumbData = thumbData;
         mediaObject.actionUrl = obj.getTargetUrl();
         mediaObject.during = obj.getDuration() == 0 ? 10 : obj.getDuration();
         return mediaObject;
