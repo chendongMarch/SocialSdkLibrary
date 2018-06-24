@@ -118,6 +118,8 @@ SocialSdkConfig config = new SocialSdkConfig(this)
 SocialSdk.init(config);
 // 👮 添加自定义的 json 解析，必须
 SocialSdk.setJsonAdapter(new GsonJsonAdapter());
+// 这个不是必须的但是如果要使用微博的 openApi 需要重写该类，可以参考 temp 文件夹中的实现
+SocialSdk.setJsonAdapter(new OkHttpRequestAdapter());
 ```
 
 ## adapter
@@ -191,6 +193,10 @@ public static void clearToken(Context context, @Target.LoginTarget int loginTarg
 ## 分享功能
 
 
+请仔细查看平台和数据类型中间的支持能力
+
+![](http://cdn1.showjoy.com/images/b9/b9ffca33435c40d8b6e33914db0fa6da.png )
+
 ### 扩展支持
 
 ```java
@@ -226,8 +232,7 @@ Target.SHARE_QQ_ZONE; // qq空间
 Target.SHARE_WX_FRIENDS; // 微信好友
 Target.SHARE_WX_ZONE; // 微信朋友圈
 Target.SHARE_WX_FAVORITE; // 微信收藏
-Target.SHARE_WB_NORMAL; // 新浪微博
-Target.SHARE_WB_OPENAPI; // 新浪微博openApi分享，使用该方法分享图片时微博后面会带一个小尾巴，可以点击进入官微
+Target.SHARE_WB; // 新浪微博
 ```
 
 ### 创建分享数据
@@ -260,8 +265,8 @@ ShareObj appObj = ShareObj.buildAppObj("分享app", "summary", localImagePath, t
 ShareObj webObj = ShareObj.buildWebObj("分享web", "summary", localImagePath, targetUrl);
 // 分享视频
 ShareObj videoObj = ShareObj.buildVideoObj("分享视频", "summary", localImagePath, targetUrl, localVideoPath, 10);
-// 分享本地视频，使用 Intent 方式唤醒，支持 qq、微信 好友分享
-ShareObj videoLocalObj = ShareObj.buildVideoObjByLocalPath(localVideoPath);
+// 本地视频分享、部分平台支持
+ShareObj videoLocalObj = ShareObj.buildVideoObj("分享本地视频", "summary", localVideoPath);
 // 分享音乐
 ShareObj musicObj = ShareObj.buildMusicObj("分享音乐", "summary", localImagePath, targetUrl, netMusicPath, 10);
 ```
@@ -286,7 +291,7 @@ public class SimpleShareListener implements OnShareListener{
         // 分享成功
     }
     @Override
-    public void onFailure(SocialException e) {
+    public void onFailure(SocialError e) {
         // 分享失败
     }
     @Override
@@ -361,9 +366,9 @@ public class MyShareListener extends SimpleShareListener {
     }
 
     @Override
-    public void onFailure(SocialException e) {
+    public void onFailure(SocialError e) {
         switch (e.getErrorCode()) {
-            case SocialException.CODE_NOT_INSTALL:
+            case SocialError.CODE_NOT_INSTALL:
                 ToastUtil.show("应用未安装");
                 break;
         }

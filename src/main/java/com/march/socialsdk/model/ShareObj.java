@@ -47,7 +47,6 @@ public class ShareObj implements Parcelable {
     // 使用本地 intent 打开，分享本地视频用
     private boolean isShareByIntent = false;
 
-
     // 直接打开对应app
     public static ShareObj buildOpenAppObj() {
         return new ShareObj(SHARE_OPEN_APP);
@@ -127,7 +126,6 @@ public class ShareObj implements Parcelable {
     public ShareObj(int shareObjType) {
         this.shareObjType = shareObjType;
     }
-
 
     public void init(String title, String summary, String thumbImagePath, String targetUrl) {
         setTitle(title);
