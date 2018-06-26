@@ -118,7 +118,7 @@ public class ShareManager {
 
     // 开始分享
     @TargetApi(Build.VERSION_CODES.ECLAIR)
-    private static void doShare(Activity context, @Target.ShareTarget int shareTarget, ShareObj shareObj, OnShareListener onShareListener) {
+    private static void doShare(Context context, @Target.ShareTarget int shareTarget, ShareObj shareObj, OnShareListener onShareListener) {
         if (!ShareObjCheckUtils.checkObjValid(shareObj, shareTarget)) {
             onShareListener.onFailure(new SocialError(SocialError.CODE_SHARE_OBJ_VALID));
             return;
@@ -134,7 +134,9 @@ public class ShareManager {
         intent.putExtra(PlatformManager.KEY_SHARE_MEDIA_OBJ, shareObj);
         intent.putExtra(PlatformManager.KEY_SHARE_TARGET, shareTarget);
         context.startActivity(intent);
-        context.overridePendingTransition(0, 0);
+        if(context instanceof Activity) {
+            ((Activity) context).overridePendingTransition(0, 0);
+        }
     }
 
     /**

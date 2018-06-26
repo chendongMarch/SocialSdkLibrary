@@ -30,7 +30,7 @@ public class PlatformManager {
     private static IPlatform sIPlatform;
 
     static @NonNull
-    IPlatform makePlatform(Activity context, int target) {
+    IPlatform makePlatform(Context context, int target) {
         if (SocialSdk.getConfig() == null) {
             throw new IllegalArgumentException(Target.toDesc(target) + " SocialSdk.init() request");
         }
