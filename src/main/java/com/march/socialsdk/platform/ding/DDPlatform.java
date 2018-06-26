@@ -31,11 +31,11 @@ import com.march.socialsdk.utils.FileUtils;
  */
 public class DDPlatform extends AbsPlatform {
 
-    private final IDDShareApi mDdShareApi;
+    private IDDShareApi mDdShareApi;
 
     public static class Creator implements PlatformCreator {
         @Override
-        public IPlatform create(Activity context, int target) {
+        public IPlatform create(Context context, int target) {
             IPlatform platform = null;
             SocialSdkConfig config = SocialSdk.getConfig();
             if (!CommonUtils.isAnyEmpty(config.getDdAppId())) {
@@ -48,6 +48,12 @@ public class DDPlatform extends AbsPlatform {
     DDPlatform(Context context, String appId, String appName) {
         super(appId, appName);
         mDdShareApi = DDShareApiFactory.createDDShareApi(context, appId, false);
+    }
+
+
+    @Override
+    public void recycle() {
+        mDdShareApi = null;
     }
 
     @Override

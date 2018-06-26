@@ -50,7 +50,7 @@ public class QQPlatform extends AbsPlatform {
 
     public static class Creator implements PlatformCreator {
         @Override
-        public IPlatform create(Activity context, int target) {
+        public IPlatform create(Context context, int target) {
             IPlatform platform = null;
             SocialSdkConfig config = SocialSdk.getConfig();
             if (!CommonUtils.isAnyEmpty(config.getQqAppId(), config.getAppName())) {

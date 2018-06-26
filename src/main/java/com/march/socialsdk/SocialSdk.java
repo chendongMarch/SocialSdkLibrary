@@ -1,6 +1,7 @@
 package com.march.socialsdk;
 
 import android.app.Activity;
+import android.content.Context;
 import android.util.SparseArray;
 
 import com.march.socialsdk.adapter.IJsonAdapter;
@@ -58,7 +59,7 @@ public class SocialSdk {
         }
     }
 
-    public static IPlatform getPlatform(Activity context, int target) {
+    public static IPlatform getPlatform(Context context, int target) {
         PlatformCreator creator = sPlatformCreatorMap.get(target);
         if (creator != null) {
             return creator.create(context, target);

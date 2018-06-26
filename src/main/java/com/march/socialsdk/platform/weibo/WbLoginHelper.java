@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnLoginListener;
+import com.march.socialsdk.listener.Recyclable;
 import com.march.socialsdk.model.LoginResult;
 import com.march.socialsdk.model.token.AccessToken;
 import com.march.socialsdk.platform.Target;
@@ -25,7 +26,7 @@ import com.sina.weibo.sdk.auth.sso.SsoHandler;
  * @author chendong
  */
 
-class WbLoginHelper {
+class WbLoginHelper implements Recyclable {
 
     public static final String TAG = WbLoginHelper.class.getSimpleName();
 
@@ -113,5 +114,11 @@ class WbLoginHelper {
         if (mSsoHandler != null) {
             mSsoHandler.authorizeCallBack(requestCode, resultCode, data);
         }
+    }
+
+
+    @Override
+    public void recycle() {
+        mSsoHandler = null;
     }
 }

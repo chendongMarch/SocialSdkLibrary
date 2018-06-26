@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.listener.OnShareListener;
+import com.march.socialsdk.listener.Recyclable;
 import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.utils.IntentShareUtils;
 
@@ -27,6 +28,11 @@ public abstract class AbsPlatform implements IPlatform {
     protected OnShareListener mOnShareListener;
     protected String          mAppId;
     protected String          mAppName;
+    protected int             mTarget;
+
+    public void setTarget(int target) {
+        mTarget = target;
+    }
 
     public AbsPlatform(String appId, String appName) {
         this.mAppId = appId;
@@ -131,11 +137,6 @@ public abstract class AbsPlatform implements IPlatform {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-    }
-
-    @Override
-    public void recycle() {
 
     }
 

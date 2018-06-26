@@ -15,6 +15,7 @@ import com.march.socialsdk.model.SocialSdkConfig;
 import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformCreator;
+import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.utils.BitmapUtils;
 import com.march.socialsdk.utils.CommonUtils;
 import com.march.socialsdk.utils.FileUtils;
@@ -53,37 +54,57 @@ public class WbPlatform extends AbsPlatform {
 
     public static class Creator implements PlatformCreator {
         @Override
-        public IPlatform create(Activity context, int target) {
-            IPlatform platform = null;
+        public IPlatform create(Context context, int target) {
+            WbPlatform platform = null;
             SocialSdkConfig config = SocialSdk.getConfig();
-            if (!CommonUtils.isAnyEmpty(config.getSinaAppId(), config.getAppName()
-                    , config.getSinaRedirectUrl(), config.getSinaScope())) {
-                platform = new WbPlatform(context, config.getSinaAppId(), config.getAppName()
-                        , config.getSinaRedirectUrl(), config.getSinaScope());
+            String appId = config.getSinaAppId();
+            String appName = config.getAppName();
+            String redirectUrl = config.getSinaRedirectUrl();
+            String scope = config.getSinaScope();
+            if (!CommonUtils.isAnyEmpty(appId, appName, redirectUrl, scope)) {
+                platform = new WbPlatform(context, appId, appName, redirectUrl, scope);
+                platform.setTarget(target);
             }
             return platform;
         }
     }
 
-    WbPlatform(Activity context, String appId, String appName, String redirectUrl, String scope) {
+    WbPlatform(Context context, String appId, String appName, String redirectUrl, String scope) {
         super(appId, appName);
         AuthInfo authInfo = new AuthInfo(context, appId, redirectUrl, scope);
         WbSdk.install(context, authInfo);
-        mShareHandler = new WbShareHandler(context);
-        mShareHandler.registerApp();
     }
 
     @Override
     public boolean isInstall(Context context) {
-        return mShareHandler != null;
+        if (mTarget == Target.LOGIN_WB) {
+            // 支持网页授权，所以不需要安装 app
+            return true;
+        }
+        return WbSdk.isWbInstall(context);
     }
 
     @Override
     public void recycle() {
-        super.recycle();
+
         mShareHandler = null;
+        if (mLoginHelper != null) {
+            mLoginHelper.recycle();
+        }
+        mLoginHelper = null;
+        mOpenApiShareHelper = null;
     }
 
+    // 延迟获取 ShareHandler
+    private WbShareHandler makeWbShareHandler(Activity activity) {
+        if (mShareHandler == null) {
+            mShareHandler = new WbShareHandler(activity);
+            mShareHandler.registerApp();
+        }
+        return mShareHandler;
+    }
+
+    // 延迟创建 login helper
     private WbLoginHelper makeLoginHelper(Activity activity) {
         if (mLoginHelper == null) {
             mLoginHelper = new WbLoginHelper(activity);
@@ -91,6 +112,7 @@ public class WbPlatform extends AbsPlatform {
         return mLoginHelper;
     }
 
+    // 延迟创建 openApi 辅助
     private OpenApiShareHelper makeOpenApiShareHelper(Activity activity) {
         if (mOpenApiShareHelper == null) {
             mOpenApiShareHelper = new OpenApiShareHelper(makeLoginHelper(activity), mOnShareListener);
@@ -106,8 +128,8 @@ public class WbPlatform extends AbsPlatform {
 
     @Override
     public void handleIntent(Activity activity) {
-        if (mOnShareListener != null && activity instanceof WbShareCallback) {
-            mShareHandler.doResultIntent(activity.getIntent(), (WbShareCallback) activity);
+        if (mOnShareListener != null && activity instanceof WbShareCallback && mShareHandler != null) {
+            makeWbShareHandler(activity).doResultIntent(activity.getIntent(), (WbShareCallback) activity);
         }
     }
 
@@ -150,7 +172,7 @@ public class WbPlatform extends AbsPlatform {
     public void shareText(int shareTarget, Activity activity, final ShareObj obj) {
         WeiboMultiMessage multiMessage = new WeiboMultiMessage();
         multiMessage.textObject = getTextObj(obj.getSummary());
-        mShareHandler.shareMessage(multiMessage, false);
+        makeWbShareHandler(activity).shareMessage(multiMessage, false);
     }
 
     @Override
@@ -165,7 +187,7 @@ public class WbPlatform extends AbsPlatform {
                             WeiboMultiMessage multiMessage = new WeiboMultiMessage();
                             multiMessage.imageObject = getImageObj(obj.getThumbImagePath(), thumbData);
                             multiMessage.textObject = getTextObj(obj.getSummary());
-                            mShareHandler.shareMessage(multiMessage, false);
+                            makeWbShareHandler(activity).shareMessage(multiMessage, false);
                         }
                     }, Task.UI_THREAD_EXECUTOR);
         }
@@ -187,7 +209,7 @@ public class WbPlatform extends AbsPlatform {
                         WeiboMultiMessage multiMessage = new WeiboMultiMessage();
                         checkAddTextAndImageObj(multiMessage, obj, thumbData);
                         multiMessage.mediaObject = getWebObj(obj, thumbData);
-                        mShareHandler.shareMessage(multiMessage, false);
+                        makeWbShareHandler(activity).shareMessage(multiMessage, false);
                     }
                 }, Task.UI_THREAD_EXECUTOR);
     }
@@ -204,7 +226,7 @@ public class WbPlatform extends AbsPlatform {
             WeiboMultiMessage multiMessage = new WeiboMultiMessage();
             checkAddTextAndImageObj(multiMessage, obj, null);
             multiMessage.videoSourceObject = getVideoObj(obj, null);
-            mShareHandler.shareMessage(multiMessage, false);
+            makeWbShareHandler(activity).shareMessage(multiMessage, false);
         } else {
             shareWeb(shareTarget, activity, obj);
         }

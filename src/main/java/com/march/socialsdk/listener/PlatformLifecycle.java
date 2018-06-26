@@ -9,7 +9,7 @@ import android.content.Intent;
  *
  * @author chendong
  */
-public interface PlatformLifecycle {
+public interface PlatformLifecycle extends Recyclable{
 
     void onActivityResult(int requestCode, int resultCode, Intent data);
 
@@ -17,5 +17,4 @@ public interface PlatformLifecycle {
 
     void onResponse(Object resp);
 
-    void recycle();
 }
