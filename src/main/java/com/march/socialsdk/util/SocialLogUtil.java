@@ -1,4 +1,4 @@
-package com.march.socialsdk.utils;
+package com.march.socialsdk.util;
 
 import android.util.Log;
 
@@ -14,7 +14,7 @@ import org.json.JSONObject;
  * @author chendong
  */
 
-public class SocialLogUtils {
+public class SocialLogUtil {
 
     public static final String TAG = "social-sdk";
 

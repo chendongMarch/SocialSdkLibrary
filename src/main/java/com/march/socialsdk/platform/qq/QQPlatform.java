@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.march.socialsdk.SocialSdk;
-import com.march.socialsdk.common.SocialConstants;
+import com.march.socialsdk.common.SocialConst;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.listener.OnShareListener;
@@ -17,9 +17,9 @@ import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformCreator;
 import com.march.socialsdk.platform.Target;
-import com.march.socialsdk.utils.CommonUtils;
-import com.march.socialsdk.utils.FileUtils;
-import com.march.socialsdk.utils.SocialLogUtils;
+import com.march.socialsdk.util.Util;
+import com.march.socialsdk.util.FileUtil;
+import com.march.socialsdk.util.SocialLogUtil;
 import com.tencent.connect.common.Constants;
 import com.tencent.connect.share.QQShare;
 import com.tencent.connect.share.QzonePublish;
@@ -53,7 +53,7 @@ public class QQPlatform extends AbsPlatform {
         public IPlatform create(Context context, int target) {
             IPlatform platform = null;
             SocialSdkConfig config = SocialSdk.getConfig();
-            if (!CommonUtils.isAnyEmpty(config.getQqAppId(), config.getAppName())) {
+            if (!Util.isAnyEmpty(config.getQqAppId(), config.getAppName())) {
                 platform = new QQPlatform(context, config.getQqAppId(), config.getAppName());
             }
             return platform;
@@ -124,7 +124,7 @@ public class QQPlatform extends AbsPlatform {
 
     @Override
     protected void shareOpenApp(int shareTarget, Activity activity, ShareObj obj) {
-        boolean rst = CommonUtils.openApp(activity, SocialConstants.QQ_PKG);
+        boolean rst = Util.openApp(activity, SocialConst.QQ_PKG);
         if (rst) {
             mOnShareListener.onSuccess();
         } else {
@@ -136,7 +136,7 @@ public class QQPlatform extends AbsPlatform {
     @Override
     public void shareText(int shareTarget, Activity activity, ShareObj shareMediaObj) {
         if (shareTarget == Target.SHARE_QQ_FRIENDS) {
-            shareTextByIntent(activity, shareMediaObj, SocialConstants.QQ_PKG, SocialConstants.QQ_FRIENDS_PAGE);
+            shareTextByIntent(activity, shareMediaObj, SocialConst.QQ_PKG, SocialConst.QQ_FRIENDS_PAGE);
         } else if (shareTarget == Target.SHARE_QQ_ZONE) {
             final Bundle params = new Bundle();
             params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzonePublish.PUBLISH_TO_QZONE_TYPE_PUBLISHMOOD);
@@ -219,22 +219,22 @@ public class QQPlatform extends AbsPlatform {
     @Override
     public void shareVideo(int shareTarget, Activity activity, ShareObj obj) {
         if (shareTarget == Target.SHARE_QQ_FRIENDS) {
-            if (FileUtils.isHttpPath(obj.getMediaPath())) {
-                SocialLogUtils.e(TAG, "qq不支持分享网络视频，使用web分享代替");
+            if (FileUtil.isHttpPath(obj.getMediaPath())) {
+                SocialLogUtil.e(TAG, "qq不支持分享网络视频，使用web分享代替");
                 obj.setTargetUrl(obj.getMediaPath());
                 shareWeb(shareTarget, activity, obj);
-            } else if (FileUtils.isExist(obj.getMediaPath())){
-                shareVideoByIntent(activity, obj, SocialConstants.QQ_PKG, SocialConstants.QQ_FRIENDS_PAGE);
+            } else if (FileUtil.isExist(obj.getMediaPath())){
+                shareVideoByIntent(activity, obj, SocialConst.QQ_PKG, SocialConst.QQ_FRIENDS_PAGE);
             } else{
                 this.mIUiListenerWrap.onError(new SocialError(SocialError.CODE_FILE_NOT_FOUND));
             }
         } else if (shareTarget == Target.SHARE_QQ_ZONE) {
             // qq 空间支持本地文件发布
-            if (FileUtils.isHttpPath(obj.getMediaPath())) {
-                SocialLogUtils.e(TAG, "qq空间网络视频，使用web形式分享");
+            if (FileUtil.isHttpPath(obj.getMediaPath())) {
+                SocialLogUtil.e(TAG, "qq空间网络视频，使用web形式分享");
                 shareWeb(shareTarget, activity, obj);
-            } else if (FileUtils.isExist(obj.getMediaPath())) {
-                SocialLogUtils.e(TAG, "qq空间本地视频分享");
+            } else if (FileUtil.isExist(obj.getMediaPath())) {
+                SocialLogUtil.e(TAG, "qq空间本地视频分享");
                 final Bundle params = new Bundle();
                 params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzonePublish.PUBLISH_TO_QZONE_TYPE_PUBLISHVIDEO);
                 params.putString(QzonePublish.PUBLISH_TO_QZONE_VIDEO_PATH, obj.getMediaPath());

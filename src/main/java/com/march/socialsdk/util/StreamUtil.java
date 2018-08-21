@@ -1,4 +1,4 @@
-package com.march.socialsdk.utils;
+package com.march.socialsdk.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -17,7 +17,7 @@ import java.net.HttpURLConnection;
  *
  * @author chendong
  */
-public class StreamUtils {
+public class StreamUtil {
 
 
     // 关闭流
@@ -53,27 +53,13 @@ public class StreamUtils {
         return conn.getInputStream();
     }
 
-    public static InputStream openPostHttpStream(HttpURLConnection conn) throws IOException {
-        conn.setRequestMethod("POST");
-        conn.setReadTimeout(3_000);
-        conn.setConnectTimeout(3_000);
-        conn.setDoInput(true);
-        conn.setDoOutput(true);
-        // 设置通用的请求属性
-        conn.setRequestProperty("accept", "*/*");
-        conn.setRequestProperty("connection", "Keep-Alive");
-        // 发起连接
-        conn.connect();
-        return conn.getInputStream();
-    }
-
 
     /**
      * 保存文件到
      *
      * @param file 文件
      * @param is   流
-     * @return
+     * @return 文件
      */
     public static File saveStreamToFile(File file, InputStream is) {
         BufferedInputStream bis = null;
@@ -94,7 +80,7 @@ public class StreamUtils {
             bis.close();
             bos.close();
         } catch (Exception e) {
-            SocialLogUtils.t(e);
+            SocialLogUtil.t(e);
             return null;
         } finally {
             closeStream(bis, bos);

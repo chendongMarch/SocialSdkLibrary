@@ -11,17 +11,16 @@ import android.os.Build;
 import android.text.TextUtils;
 
 import com.march.socialsdk.SocialSdk;
-import com.march.socialsdk.common.SocialConstants;
+import com.march.socialsdk.common.SocialConst;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.uikit.ActionActivity;
-import com.march.socialsdk.utils.CommonUtils;
-import com.march.socialsdk.utils.FileUtils;
-import com.march.socialsdk.utils.ShareObjCheckUtils;
-import com.march.socialsdk.utils.SocialLogUtils;
+import com.march.socialsdk.util.Util;
+import com.march.socialsdk.util.FileUtil;
+import com.march.socialsdk.util.SocialLogUtil;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -64,7 +63,7 @@ public class ShareManager {
                 try {
                     temp = onShareListener.onPrepareInBackground(shareTarget, shareObj);
                 } catch (Exception e) {
-                    SocialLogUtils.t(e);
+                    SocialLogUtil.t(e);
                 }
                 if (temp != null) {
                     return temp;
@@ -99,16 +98,13 @@ public class ShareManager {
     private static void prepareImageInBackground(Context context, ShareObj shareObj) throws SocialError {
         String thumbImagePath = shareObj.getThumbImagePath();
         // 图片路径为网络路径，下载为本地图片
-        if (!TextUtils.isEmpty(thumbImagePath) && FileUtils.isHttpPath(thumbImagePath)) {
-            if (!FileUtils.hasStoragePermission(context)) {
-                throw new SocialError(SocialError.CODE_STORAGE_ERROR, "没有读写存储的权限");
-            }
+        if (!TextUtils.isEmpty(thumbImagePath) && FileUtil.isHttpPath(thumbImagePath)) {
             File file = SocialSdk.getRequestAdapter().getFile(thumbImagePath);
-            if (FileUtils.isExist(file)) {
+            if (FileUtil.isExist(file)) {
                 shareObj.setThumbImagePath(file.getAbsolutePath());
             } else if (SocialSdk.getConfig().getDefImageResId() > 0) {
-                String localPath = FileUtils.mapResId2LocalPath(context, SocialSdk.getConfig().getDefImageResId());
-                if (FileUtils.isExist(localPath)) {
+                String localPath = FileUtil.mapResId2LocalPath(context, SocialSdk.getConfig().getDefImageResId());
+                if (FileUtil.isExist(localPath)) {
                     shareObj.setThumbImagePath(localPath);
                 }
             }
@@ -119,7 +115,7 @@ public class ShareManager {
     // 开始分享
     @TargetApi(Build.VERSION_CODES.ECLAIR)
     private static void doShare(Context context, @Target.ShareTarget int shareTarget, ShareObj shareObj, OnShareListener onShareListener) {
-        if (!ShareObjCheckUtils.checkObjValid(shareObj, shareTarget)) {
+        if (!com.march.socialsdk.model.ShareObjChecker.ShareObjChecker.checkObjValid(shareObj, shareTarget)) {
             onShareListener.onFailure(new SocialError(SocialError.CODE_SHARE_OBJ_VALID));
             return;
         }
@@ -152,20 +148,20 @@ public class ShareManager {
         if (actionType != PlatformManager.ACTION_TYPE_SHARE)
             return;
         if (shareTarget == PlatformManager.INVALID_PARAM) {
-            SocialLogUtils.e(TAG, "shareTargetType无效");
+            SocialLogUtil.e(TAG, "shareTargetType无效");
             return;
         }
         if (shareObj == null) {
-            SocialLogUtils.e(TAG, "shareObj == null");
+            SocialLogUtil.e(TAG, "shareObj == null");
             return;
         }
         if (sListener == null) {
-            SocialLogUtils.e(TAG, "请设置 OnShareListener");
+            SocialLogUtil.e(TAG, "请设置 OnShareListener");
             return;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-            SocialLogUtils.e(TAG, "没有获取到读存储卡的权限，这可能导致某些分享不能进行");
+            SocialLogUtil.e(TAG, "没有获取到读存储卡的权限，这可能导致某些分享不能进行");
         }
         if (PlatformManager.getPlatform() == null)
             return;
@@ -269,20 +265,20 @@ public class ShareManager {
         switch (target) {
             case Target.SHARE_QQ_FRIENDS:
             case Target.SHARE_QQ_ZONE:
-                pkgName = SocialConstants.QQ_PKG;
+                pkgName = SocialConst.QQ_PKG;
                 break;
             case Target.SHARE_WX_FRIENDS:
             case Target.SHARE_WX_ZONE:
             case Target.SHARE_WX_FAVORITE:
-                pkgName = SocialConstants.WECHAT_PKG;
+                pkgName = SocialConst.WECHAT_PKG;
                 break;
             case Target.SHARE_WB:
-                pkgName = SocialConstants.SINA_PKG;
+                pkgName = SocialConst.SINA_PKG;
                 break;
             case Target.SHARE_DD:
-                pkgName = SocialConstants.DD_PKG;
+                pkgName = SocialConst.DD_PKG;
                 break;
         }
-        return !TextUtils.isEmpty(pkgName) && CommonUtils.openApp(context, pkgName);
+        return !TextUtils.isEmpty(pkgName) && Util.openApp(context, pkgName);
     }
 }

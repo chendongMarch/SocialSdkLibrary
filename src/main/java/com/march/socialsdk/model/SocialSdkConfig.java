@@ -1,11 +1,9 @@
 package com.march.socialsdk.model;
 
 import android.content.Context;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 
 import com.march.socialsdk.R;
-import com.march.socialsdk.common.SocialConstants;
+import com.march.socialsdk.common.SocialConst;
 
 import java.io.File;
 
@@ -32,8 +30,8 @@ public class SocialSdkConfig {
     private String qqAppId;
     // 微博配置
     private String sinaAppId;
-    private String sinaRedirectUrl = SocialConstants.REDIRECT_URL;
-    private String sinaScope       = SocialConstants.SCOPE;
+    private String sinaRedirectUrl = SocialConst.REDIRECT_URL;
+    private String sinaScope       = SocialConst.SCOPE;
     private String shareCacheDirPath;
     // 钉钉配置
     private String ddAppId;

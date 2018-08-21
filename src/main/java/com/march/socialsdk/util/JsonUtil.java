@@ -1,4 +1,4 @@
-package com.march.socialsdk.utils;
+package com.march.socialsdk.util;
 
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -19,9 +19,17 @@ import bolts.Task;
  * @author chendong
  */
 
-public class JsonUtils {
+public class JsonUtil {
 
-    public static final String TAG = JsonUtils.class.getSimpleName();
+    public static final String TAG = JsonUtil.class.getSimpleName();
+
+    public interface Callback<T> {
+
+        void onSuccess(@NonNull T object);
+
+        void onFailure(SocialError e);
+    }
+
 
     public static <T> T getObject(String jsonString, Class<T> cls) {
         IJsonAdapter jsonAdapter = SocialSdk.getJsonAdapter();
@@ -29,7 +37,7 @@ public class JsonUtils {
             try {
                 return jsonAdapter.toObj(jsonString, cls);
             } catch (Exception e) {
-                SocialLogUtils.e(TAG, e);
+                SocialLogUtil.e(TAG, e);
             }
         }
         return null;
@@ -40,27 +48,21 @@ public class JsonUtils {
         try {
             return jsonAdapter.toJson(object);
         } catch (Exception e) {
-            SocialLogUtils.e(TAG, e);
+            SocialLogUtil.e(TAG, e);
         }
         return null;
     }
 
-    public interface Callback<T> {
-
-        void onSuccess(@NonNull T object);
-
-        void onFailure(SocialError e);
-    }
 
     public static <T> void startJsonRequest(final String url, final Class<T> clz, final Callback<T> callback) {
-        SocialLogUtils.e("开始请求" + url);
+        SocialLogUtil.e("开始请求" + url);
         Task.callInBackground(new Callable<T>() {
             @Override
             public T call() {
                 T object = null;
                 String json = SocialSdk.getRequestAdapter().getJson(url);
                 if (!TextUtils.isEmpty(json)) {
-                    SocialLogUtils.e("请求结果" + json);
+                    SocialLogUtil.e("请求结果" + json);
                     object = getObject(json, clz);
                 }
                 return object;

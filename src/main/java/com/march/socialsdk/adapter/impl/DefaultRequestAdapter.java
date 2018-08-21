@@ -4,9 +4,9 @@ import android.annotation.SuppressLint;
 import android.text.TextUtils;
 
 import com.march.socialsdk.adapter.IRequestAdapter;
-import com.march.socialsdk.utils.FileUtils;
-import com.march.socialsdk.utils.SocialLogUtils;
-import com.march.socialsdk.utils.StreamUtils;
+import com.march.socialsdk.util.FileUtil;
+import com.march.socialsdk.util.SocialLogUtil;
+import com.march.socialsdk.util.StreamUtil;
 
 import java.io.File;
 import java.io.InputStream;
@@ -38,12 +38,12 @@ public class DefaultRequestAdapter implements IRequestAdapter {
             return null;
         File file = null;
         try {
-            file = new File(FileUtils.mapUrl2LocalPath(url));
-            if (!FileUtils.isExist(file)) {
-                return StreamUtils.saveStreamToFile(file, openStream(url, isHttps(url)));
+            file = new File(FileUtil.mapUrl2LocalPath(url));
+            if (!FileUtil.isExist(file)) {
+                return StreamUtil.saveStreamToFile(file, openStream(url, isHttps(url)));
             }
         } catch (Exception e) {
-            SocialLogUtils.e(e);
+            SocialLogUtil.e(e);
         } finally {
             close();
         }
@@ -55,9 +55,9 @@ public class DefaultRequestAdapter implements IRequestAdapter {
         if(TextUtils.isEmpty(url) || !url.startsWith("http"))
             return null;
         try {
-            return StreamUtils.saveStreamToString(openStream(url, isHttps(url)));
+            return StreamUtil.saveStreamToString(openStream(url, isHttps(url)));
         } catch (Exception e) {
-            SocialLogUtils.e(e);
+            SocialLogUtil.e(e);
         } finally {
             close();
         }
@@ -86,7 +86,7 @@ public class DefaultRequestAdapter implements IRequestAdapter {
         if (isHttps) {
             initHttpsConnection(mConnection);
         }
-        return StreamUtils.openGetHttpStream(mConnection);
+        return StreamUtil.openGetHttpStream(mConnection);
     }
 
     /**

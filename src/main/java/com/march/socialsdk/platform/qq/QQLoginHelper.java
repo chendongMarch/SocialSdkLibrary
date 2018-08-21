@@ -11,8 +11,8 @@ import com.march.socialsdk.model.token.AccessToken;
 import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.platform.qq.model.QQAccessToken;
 import com.march.socialsdk.platform.qq.model.QQUser;
-import com.march.socialsdk.utils.JsonUtils;
-import com.march.socialsdk.utils.SocialLogUtils;
+import com.march.socialsdk.util.JsonUtil;
+import com.march.socialsdk.util.SocialLogUtil;
 import com.tencent.connect.UserInfo;
 import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
@@ -83,8 +83,8 @@ class QQLoginHelper {
         @Override
         public void onComplete(Object o) {
             JSONObject jsonResponse = (JSONObject) o;
-            QQAccessToken qqToken = JsonUtils.getObject(jsonResponse.toString(), QQAccessToken.class);
-            SocialLogUtils.e(TAG, "获取到 qq token = ", qqToken);
+            QQAccessToken qqToken = JsonUtil.getObject(jsonResponse.toString(), QQAccessToken.class);
+            SocialLogUtil.e(TAG, "获取到 qq token = ", qqToken);
             if (qqToken == null) {
                 onLoginListener.onFailure(new SocialError("qq token is null, may be parse json error"));
                 return;
@@ -114,8 +114,8 @@ class QQLoginHelper {
         info.getUserInfo(new IUiListener() {
             @Override
             public void onComplete(Object object) {
-                SocialLogUtils.e(TAG, "qq 获取到用户信息 = " + object);
-                QQUser qqUserInfo = JsonUtils.getObject(object.toString(), QQUser.class);
+                SocialLogUtil.e(TAG, "qq 获取到用户信息 = " + object);
+                QQUser qqUserInfo = JsonUtil.getObject(object.toString(), QQUser.class);
                 if (qqUserInfo == null) {
                     if (onLoginListener != null) {
                         onLoginListener.onFailure(new SocialError("解析 qq user 错误"));

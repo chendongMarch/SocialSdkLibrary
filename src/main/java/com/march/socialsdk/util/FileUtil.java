@@ -1,18 +1,13 @@
-package com.march.socialsdk.utils;
+package com.march.socialsdk.util;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.text.TextUtils;
 
 import com.march.socialsdk.SocialSdk;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
@@ -23,43 +18,14 @@ import java.io.FileOutputStream;
  * @author chendong
  */
 
-public class FileUtils {
+public class FileUtil {
 
-    public static final String TAG = FileUtils.class.getSimpleName();
+    public static final String TAG = FileUtil.class.getSimpleName();
 
     public static final String POINT_GIF = ".gif";
     public static final String POINT_JPG = ".jpg";
     public static final String POINT_JPEG = ".jpeg";
     public static final String POINT_PNG = ".png";
-
-
-    /**
-     * 从文件中获取输出流
-     *
-     * @param path 路径
-     * @return 输出流
-     */
-    public static ByteArrayOutputStream getOutputStreamFromFile(String path) {
-        if (!FileUtils.isExist(path))
-            return null;
-        FileInputStream fis = null;
-        ByteArrayOutputStream baos = null;
-        try {
-            fis = new FileInputStream(path);
-            baos = new ByteArrayOutputStream();
-            byte[] b = new byte[8 * 1024];
-            int n;
-            while ((n = fis.read(b)) != -1) {
-                baos.write(b, 0, n);
-            }
-            return baos;
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            StreamUtils.closeStream(fis, baos);
-        }
-        return baos;
-    }
 
     /**
      * 文件后缀
@@ -67,7 +33,7 @@ public class FileUtils {
      * @param path 路径
      * @return 后缀名
      */
-    public static String getSuffix(String path) {
+    private static String getSuffix(String path) {
         if (!TextUtils.isEmpty(path)) {
             int lineIndex = path.lastIndexOf("/");
             if (lineIndex != -1) {
@@ -99,7 +65,7 @@ public class FileUtils {
      * @param path 路径
      * @return 是不是 jpg || png
      */
-    public static boolean isJpgPngFile(String path) {
+    private static boolean isJpgPngFile(String path) {
         return isJpgFile(path) || isPngFile(path);
     }
 
@@ -107,7 +73,7 @@ public class FileUtils {
      * @param path 路径
      * @return 是不是 jpg 文件
      */
-    public static boolean isJpgFile(String path) {
+    private static boolean isJpgFile(String path) {
         return path.toLowerCase().endsWith(POINT_JPG) || path.toLowerCase().endsWith(POINT_JPEG);
     }
 
@@ -162,9 +128,9 @@ public class FileUtils {
      */
     public static String mapUrl2LocalPath(String url) {
         // 映射文件名
-        String suffix = FileUtils.getSuffix(url);
+        String suffix = FileUtil.getSuffix(url);
         suffix = TextUtils.isEmpty(suffix) ? ".png" : suffix;
-        String fileName = CommonUtils.getMD5(url) + suffix;
+        String fileName = Util.getMD5(url) + suffix;
         File saveFile = new File(SocialSdk.getConfig().getShareCacheDirPath(), fileName);
         return saveFile.getAbsolutePath();
     }
@@ -178,7 +144,7 @@ public class FileUtils {
      * @return 路径
      */
     public static String mapResId2LocalPath(Context context, int resId) {
-        String fileName = CommonUtils.getMD5(resId + "") + FileUtils.POINT_PNG;
+        String fileName = Util.getMD5(resId + "") + FileUtil.POINT_PNG;
         File saveFile = new File(SocialSdk.getConfig().getShareCacheDirPath(), fileName);
         if (saveFile.exists())
             return saveFile.getAbsolutePath();
@@ -192,20 +158,10 @@ public class FileUtils {
             e.printStackTrace();
             return null;
         } finally {
-            BitmapUtils.recyclerBitmaps(bitmap);
+            BitmapUtil.recyclerBitmaps(bitmap);
         }
         return saveFile.getAbsolutePath();
     }
-
-    public static boolean hasStoragePermission(Context context) {
-        boolean hasPermission = true;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            hasPermission = context.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-                    && context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-        }
-        return hasPermission;
-    }
-
 
 }
 

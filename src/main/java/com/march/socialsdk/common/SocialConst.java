@@ -6,7 +6,7 @@ package com.march.socialsdk.common;
  *
  * @author chendong
  */
-public class SocialConstants {
+public class SocialConst {
 
     public static final String QQ_PKG = "com.tencent.mobileqq";
     public static final String WECHAT_PKG = "com.tencent.mm";

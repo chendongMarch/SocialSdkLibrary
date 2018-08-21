@@ -1,8 +1,10 @@
-package com.march.socialsdk.utils;
+package com.march.socialsdk.model;
 
 
-import com.march.socialsdk.model.ShareObj;
+import com.march.socialsdk.util.SocialLogUtil;
 import com.march.socialsdk.platform.Target;
+import com.march.socialsdk.util.FileUtil;
+import com.march.socialsdk.util.Util;
 
 /**
  * CreateAt : 2017/5/22
@@ -10,9 +12,9 @@ import com.march.socialsdk.platform.Target;
  *
  * @author chendong
  */
-public class ShareObjCheckUtils {
+public class ShareObjChecker {
 
-    public static final String TAG = ShareObjCheckUtils.class.getSimpleName();
+    public static final String TAG = ShareObjChecker.class.getSimpleName();
 
     public static boolean checkObjValid(ShareObj obj, int shareTarget) {
         switch (obj.getShareObjType()) {
@@ -42,18 +44,18 @@ public class ShareObjCheckUtils {
             case ShareObj.SHARE_TYPE_VIDEO:
             {
                 // 本地视频分享，qq空间、微博自己支持，qq好友、微信好友、钉钉 使用 intent 支持
-                if (FileUtils.isExist(obj.getMediaPath()) && isAny(shareTarget,Target.SHARE_QQ_ZONE,
+                if (FileUtil.isExist(obj.getMediaPath()) && isAny(shareTarget,Target.SHARE_QQ_ZONE,
                         Target.SHARE_WB,
                         Target.SHARE_QQ_FRIENDS,
                         Target.SHARE_WX_FRIENDS,
                         Target.SHARE_DD)) {
-                    return isTitleSummaryValid(obj) && !CommonUtils.isAnyEmpty(obj.getMediaPath());
+                    return isTitleSummaryValid(obj) && !Util.isAnyEmpty(obj.getMediaPath());
                 }
                 // 网络视频
-                else if (FileUtils.isHttpPath(obj.getMediaPath())) {
+                else if (FileUtil.isHttpPath(obj.getMediaPath())) {
                     return isUrlValid(obj) && isMusicVideoVoiceValid(obj) && isNetMedia(obj);
                 } else {
-                    SocialLogUtils.e("本地不支持或者，不是本地也不是网络 " + obj.toString());
+                    SocialLogUtil.e("本地不支持或者，不是本地也不是网络 " + obj.toString());
                     return false;
                 }
             }
@@ -72,18 +74,18 @@ public class ShareObjCheckUtils {
     }
 
     private static boolean isTitleSummaryValid(ShareObj obj) {
-        boolean valid = !CommonUtils.isAnyEmpty(obj.getTitle(), obj.getSummary());
+        boolean valid = !Util.isAnyEmpty(obj.getTitle(), obj.getSummary());
         if (!valid) {
-            SocialLogUtils.e("title summary 不能空");
+            SocialLogUtil.e("title summary 不能空");
         }
         return valid;
     }
 
     // 是否是网络视频
     private static boolean isNetMedia(ShareObj obj) {
-        boolean httpPath = FileUtils.isHttpPath(obj.getMediaPath());
+        boolean httpPath = FileUtil.isHttpPath(obj.getMediaPath());
         if (!httpPath) {
-            SocialLogUtils.e("ShareObj mediaPath 需要 网络路径");
+            SocialLogUtil.e("ShareObj mediaPath 需要 网络路径");
         }
         return httpPath;
     }
@@ -91,27 +93,26 @@ public class ShareObjCheckUtils {
     // url 合法
     private static boolean isUrlValid(ShareObj obj) {
         String targetUrl = obj.getTargetUrl();
-        boolean urlValid = !CommonUtils.isAnyEmpty(targetUrl) && FileUtils.isHttpPath(targetUrl);
+        boolean urlValid = !Util.isAnyEmpty(targetUrl) && FileUtil.isHttpPath(targetUrl);
         if (!urlValid) {
-            SocialLogUtils.e(TAG, "url : " + targetUrl + "  不能为空，且必须带有http协议头");
+            SocialLogUtil.e(TAG, "url : " + targetUrl + "  不能为空，且必须带有http协议头");
         }
         return urlValid;
     }
 
     // 音频视频
     private static boolean isMusicVideoVoiceValid(ShareObj obj) {
-        return isTitleSummaryValid(obj) && !CommonUtils.isAnyEmpty(obj.getMediaPath()) && isThumbLocalPathValid(obj);
+        return isTitleSummaryValid(obj) && !Util.isAnyEmpty(obj.getMediaPath()) && isThumbLocalPathValid(obj);
     }
 
     // 本地文件存在
     private static boolean isThumbLocalPathValid(ShareObj obj) {
         String thumbImagePath = obj.getThumbImagePath();
-        boolean exist = FileUtils.isExist(thumbImagePath);
-        boolean picFile = FileUtils.isPicFile(thumbImagePath);
+        boolean exist = FileUtil.isExist(thumbImagePath);
+        boolean picFile = FileUtil.isPicFile(thumbImagePath);
         if (!exist || !picFile) {
-            SocialLogUtils.e(TAG, "path : " + thumbImagePath + "  " + (exist ? "" : "文件不存在") + (picFile ? "" : "不是图片文件"));
+            SocialLogUtil.e(TAG, "path : " + thumbImagePath + "  " + (exist ? "" : "文件不存在") + (picFile ? "" : "不是图片文件"));
         }
         return exist && picFile;
     }
-
 }
