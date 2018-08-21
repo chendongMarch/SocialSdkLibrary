@@ -1,7 +1,6 @@
 package com.march.socialsdk.exception;
 
-import com.march.socialsdk.utils.SocialLogUtils;
-import com.tencent.tauth.UiError;
+import com.march.socialsdk.util.SocialLogUtil;
 
 /**
  * CreateAt : 2016/12/5
@@ -80,7 +79,7 @@ public class SocialError extends Exception{
     }
 
     public void printStackTrace() {
-        SocialLogUtils.e(TAG, toString());
+        SocialLogUtil.e(TAG, toString());
     }
 
     @Override
@@ -98,10 +97,6 @@ public class SocialError extends Exception{
     public SocialError append(String msg) {
         this.errorMsg = String.valueOf(errorMsg) + "   " + msg;
         return this;
-    }
-
-    public static String parseUiError(UiError error) {
-        return "qq error [ code = " + error.errorCode + ", msg = " + error.errorMessage + ", detail = " + error.errorDetail + " ]";
     }
 
 }

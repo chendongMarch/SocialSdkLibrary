@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 
 import com.march.socialsdk.SocialSdk;
-import com.march.socialsdk.common.SocialConstants;
+import com.march.socialsdk.common.SocialConst;
 import com.march.socialsdk.common.ThumbDataContinuation;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnLoginListener;
@@ -16,10 +16,10 @@ import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformCreator;
 import com.march.socialsdk.platform.Target;
-import com.march.socialsdk.utils.BitmapUtils;
-import com.march.socialsdk.utils.CommonUtils;
-import com.march.socialsdk.utils.FileUtils;
-import com.march.socialsdk.utils.SocialLogUtils;
+import com.march.socialsdk.util.BitmapUtil;
+import com.march.socialsdk.util.Util;
+import com.march.socialsdk.util.FileUtil;
+import com.march.socialsdk.util.SocialLogUtil;
 import com.sina.weibo.sdk.WbSdk;
 import com.sina.weibo.sdk.api.ImageObject;
 import com.sina.weibo.sdk.api.TextObject;
@@ -61,7 +61,7 @@ public class WbPlatform extends AbsPlatform {
             String appName = config.getAppName();
             String redirectUrl = config.getSinaRedirectUrl();
             String scope = config.getSinaScope();
-            if (!CommonUtils.isAnyEmpty(appId, appName, redirectUrl, scope)) {
+            if (!Util.isAnyEmpty(appId, appName, redirectUrl, scope)) {
                 platform = new WbPlatform(context, appId, appName, redirectUrl, scope);
                 platform.setTarget(target);
             }
@@ -160,7 +160,7 @@ public class WbPlatform extends AbsPlatform {
 
     @Override
     protected void shareOpenApp(int shareTarget, Activity activity, ShareObj obj) {
-        boolean rst = CommonUtils.openApp(activity, SocialConstants.SINA_PKG);
+        boolean rst = Util.openApp(activity, SocialConst.SINA_PKG);
         if (rst) {
             mOnShareListener.onSuccess();
         } else {
@@ -177,10 +177,10 @@ public class WbPlatform extends AbsPlatform {
 
     @Override
     public void shareImage(int shareTarget, final Activity activity, final ShareObj obj) {
-        if (FileUtils.isGifFile(obj.getThumbImagePath())) {
+        if (FileUtil.isGifFile(obj.getThumbImagePath())) {
             makeOpenApiShareHelper(activity).post(activity, obj);
         } else {
-            BitmapUtils.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
+            BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
                     .continueWith(new ThumbDataContinuation(TAG, "shareImage", mOnShareListener) {
                         @Override
                         public void onSuccess(byte[] thumbData) {
@@ -196,13 +196,13 @@ public class WbPlatform extends AbsPlatform {
 
     @Override
     public void shareApp(int shareTarget, Activity activity, ShareObj obj) {
-        SocialLogUtils.e(TAG, "sina不支持app分享，将以web形式分享");
+        SocialLogUtil.e(TAG, "sina不支持app分享，将以web形式分享");
         shareWeb(shareTarget, activity, obj);
     }
 
     @Override
     public void shareWeb(int shareTarget, final Activity activity, final ShareObj obj) {
-        BitmapUtils.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
+        BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
                 .continueWith(new ThumbDataContinuation(TAG, "shareWeb", mOnShareListener) {
                     @Override
                     public void onSuccess(byte[] thumbData) {
@@ -222,7 +222,7 @@ public class WbPlatform extends AbsPlatform {
     @Override
     public void shareVideo(int shareTarget, final Activity activity, final ShareObj obj) {
         String mediaPath = obj.getMediaPath();
-        if (FileUtils.isExist(mediaPath)) {
+        if (FileUtil.isExist(mediaPath)) {
             WeiboMultiMessage multiMessage = new WeiboMultiMessage();
             checkAddTextAndImageObj(multiMessage, obj, null);
             multiMessage.videoSourceObject = getVideoObj(obj, null);

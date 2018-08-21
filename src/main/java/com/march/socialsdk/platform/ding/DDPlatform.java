@@ -13,15 +13,15 @@ import com.android.dingtalk.share.ddsharemodule.message.DDTextMessage;
 import com.android.dingtalk.share.ddsharemodule.message.DDWebpageMessage;
 import com.android.dingtalk.share.ddsharemodule.message.SendMessageToDD;
 import com.march.socialsdk.SocialSdk;
-import com.march.socialsdk.common.SocialConstants;
+import com.march.socialsdk.common.SocialConst;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.model.SocialSdkConfig;
 import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformCreator;
-import com.march.socialsdk.utils.CommonUtils;
-import com.march.socialsdk.utils.FileUtils;
+import com.march.socialsdk.util.Util;
+import com.march.socialsdk.util.FileUtil;
 
 /**
  * CreateAt : 2018/2/11
@@ -38,7 +38,7 @@ public class DDPlatform extends AbsPlatform {
         public IPlatform create(Context context, int target) {
             IPlatform platform = null;
             SocialSdkConfig config = SocialSdk.getConfig();
-            if (!CommonUtils.isAnyEmpty(config.getDdAppId())) {
+            if (!Util.isAnyEmpty(config.getDdAppId())) {
                 platform = new DDPlatform(context, config.getDdAppId(), config.getAppName());
             }
             return platform;
@@ -163,10 +163,10 @@ public class DDPlatform extends AbsPlatform {
 
     @Override
     protected void shareVideo(int shareTarget, Activity activity, ShareObj obj) {
-        if (FileUtils.isHttpPath(obj.getMediaPath())) {
+        if (FileUtil.isHttpPath(obj.getMediaPath())) {
             shareWeb(shareTarget, activity, obj);
-        } else if (FileUtils.isExist(obj.getMediaPath())) {
-            shareVideoByIntent(activity, obj, SocialConstants.DD_PKG, SocialConstants.DD_FRIEND_PAGE);
+        } else if (FileUtil.isExist(obj.getMediaPath())) {
+            shareVideoByIntent(activity, obj, SocialConst.DD_PKG, SocialConst.DD_FRIEND_PAGE);
         } else {
             mOnShareListener.onFailure(new SocialError(SocialError.CODE_FILE_NOT_FOUND));
         }

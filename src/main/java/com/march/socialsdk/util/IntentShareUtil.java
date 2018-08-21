@@ -1,4 +1,4 @@
-package com.march.socialsdk.utils;
+package com.march.socialsdk.util;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @author chendong
  */
-public class IntentShareUtils {
+public class IntentShareUtil {
 
     public static final int SHARE_REQ_CODE = 0x123;
 
@@ -75,7 +75,7 @@ public class IntentShareUtils {
         List<ResolveInfo> resolveInfos = activity.getPackageManager()
                 .queryIntentActivities(intent,PackageManager.GET_RESOLVED_FILTER);
         for (ResolveInfo resolveInfo : resolveInfos) {
-            SocialLogUtils.e(resolveInfo.activityInfo.packageName + " - " + resolveInfo.activityInfo.name);
+            SocialLogUtil.e(resolveInfo.activityInfo.packageName + " - " + resolveInfo.activityInfo.name);
         }
     }
 }

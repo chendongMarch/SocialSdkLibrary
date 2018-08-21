@@ -1,4 +1,4 @@
-package com.march.socialsdk.utils;
+package com.march.socialsdk.util;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,20 +18,9 @@ import java.util.List;
  * @author chendong
  */
 
-public class CommonUtils {
+public class Util {
 
-    public static final String TAG = CommonUtils.class.getSimpleName();
-
-    // string 转 long
-    public static Long String2Long(String str) {
-        Long data = 0L;
-        try {
-            data = Long.parseLong(str);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return data;
-    }
+    public static final String TAG = Util.class.getSimpleName();
 
     // 任何一个为空 返回true
     public static boolean isAnyEmpty(String... strings) {
