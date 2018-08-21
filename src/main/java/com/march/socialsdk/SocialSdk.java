@@ -1,20 +1,15 @@
 package com.march.socialsdk;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.SparseArray;
 
 import com.march.socialsdk.adapter.IJsonAdapter;
 import com.march.socialsdk.adapter.IRequestAdapter;
-import com.march.socialsdk.adapter.impl.RequestAdapterImpl;
+import com.march.socialsdk.adapter.impl.DefaultRequestAdapter;
 import com.march.socialsdk.model.SocialSdkConfig;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformCreator;
 import com.march.socialsdk.platform.Target;
-import com.march.socialsdk.platform.ding.DDPlatform;
-import com.march.socialsdk.platform.qq.QQPlatform;
-import com.march.socialsdk.platform.wechat.WxPlatform;
-import com.march.socialsdk.platform.weibo.WbPlatform;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -42,20 +37,45 @@ public class SocialSdk {
 
     public static void init(SocialSdkConfig config) {
         sSocialSdkConfig = config;
-        sPlatformCreatorMap = new SparseArray<>();
-        registerPlatform(new QQPlatform.Creator(), Target.LOGIN_QQ, Target.SHARE_QQ_FRIENDS, Target.SHARE_QQ_ZONE);
-        registerPlatform(new WxPlatform.Creator(), Target.LOGIN_WX, Target.SHARE_WX_FAVORITE, Target.SHARE_WX_ZONE, Target.SHARE_WX_FRIENDS);
-        registerPlatform(new WbPlatform.Creator(), Target.LOGIN_WB, Target.SHARE_WB);
-        registerPlatform(new DDPlatform.Creator(), Target.SHARE_DD);
+
+        registerPlatform(makeCreator("com.march.socialsdk.platform.qq.QQPlatform$Creator"),
+                Target.LOGIN_QQ,
+                Target.SHARE_QQ_FRIENDS,
+                Target.SHARE_QQ_ZONE);
+        registerPlatform(makeCreator("com.march.socialsdk.platform.wechat.WxPlatform$Creator"),
+                Target.LOGIN_WX,
+                Target.SHARE_WX_FAVORITE,
+                Target.SHARE_WX_ZONE,
+                Target.SHARE_WX_FRIENDS);
+        registerPlatform(makeCreator("com.march.socialsdk.platform.weibo.WbPlatform$Creator"),
+                Target.LOGIN_WB,
+                Target.SHARE_WB);
+        registerPlatform(makeCreator("com.march.socialsdk.platform.ding.DDPlatform$Creator"),
+                Target.SHARE_DD);
     }
+
 
     ///////////////////////////////////////////////////////////////////////////
     // Platform 注册
     ///////////////////////////////////////////////////////////////////////////
 
+    private static PlatformCreator makeCreator(String clazz) {
+        try {
+            return (PlatformCreator) Class.forName(clazz).newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     private static void registerPlatform(PlatformCreator creator, int... targets) {
-        for (int target : targets) {
-            sPlatformCreatorMap.put(target, creator);
+        if (sPlatformCreatorMap == null) {
+            sPlatformCreatorMap = new SparseArray<>();
+        }
+        if (creator != null) {
+            for (int target : targets) {
+                sPlatformCreatorMap.put(target, creator);
+            }
         }
     }
 
@@ -88,7 +108,7 @@ public class SocialSdk {
 
     public static IRequestAdapter getRequestAdapter() {
         if (sRequestAdapter == null) {
-            sRequestAdapter = new RequestAdapterImpl();
+            sRequestAdapter = new DefaultRequestAdapter();
         }
         return sRequestAdapter;
     }

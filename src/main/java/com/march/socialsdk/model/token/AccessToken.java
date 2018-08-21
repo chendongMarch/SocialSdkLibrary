@@ -1,9 +1,7 @@
 package com.march.socialsdk.model.token;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 
 import com.march.socialsdk.R;
 import com.march.socialsdk.SocialSdk;
