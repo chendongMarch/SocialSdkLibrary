@@ -23,7 +23,7 @@ public class SocialSdkConfig {
     // 调试配置
     private boolean isDebug = false;
     // 应用名
-    private String appName = "应用";
+    private String appName;
     // 微信配置
     private String wxAppId;
     private String wxSecretKey;
@@ -40,7 +40,6 @@ public class SocialSdkConfig {
     // 图片默认资源
     private int defImageResId;
 
-    @RequiresApi(api = Build.VERSION_CODES.FROYO)
     public SocialSdkConfig(Context context) {
         this.appName = context.getString(R.string.app_name);
         File shareDir = new File(context.getExternalCacheDir(), SHARE_CACHE_DIR_NAME);

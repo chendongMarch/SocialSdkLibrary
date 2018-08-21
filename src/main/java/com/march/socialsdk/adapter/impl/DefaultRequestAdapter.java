@@ -28,7 +28,7 @@ import javax.net.ssl.X509TrustManager;
  *
  * @author chendong
  */
-public class RequestAdapterImpl implements IRequestAdapter {
+public class DefaultRequestAdapter implements IRequestAdapter {
 
     private HttpURLConnection mConnection;
 
