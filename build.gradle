@@ -1,21 +1,8 @@
-apply plugin: 'com.android.library'
-
-
-// project/build.gradle
-// apply from: 'https://coding.net/u/devlab/p/Resource/git/raw/master/android/project.gradle'
 def libs = rootProject.ext.libs
-def version = rootProject.ext.version
-
-android {
-    compileSdkVersion version.compileSdkVersion
-
-}
 
 dependencies {
 
-    // 我本地依赖是统一管理的，clone 后是无法编译的，请查看 https://coding.net/u/devlab/p/Resource/git/raw/master/android/project.gradle
-
-    implementation libs.appcompat_v7
+    implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation libs.bolts
 
     implementation libs.wechatSocial // 微信
@@ -23,3 +10,4 @@ dependencies {
     implementation files('libs/open_sdk_r5923_lite.jar') // QQ
     implementation files('libs/libddshare.jar') // dingding
 }
+

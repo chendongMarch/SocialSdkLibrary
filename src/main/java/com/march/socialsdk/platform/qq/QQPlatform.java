@@ -7,12 +7,12 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.march.socialsdk.SocialSdk;
-import com.march.socialsdk.common.SocialConst;
+import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.model.ShareObj;
-import com.march.socialsdk.model.SocialSdkConfig;
+import com.march.socialsdk.SocialSdkConfig;
 import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformCreator;
@@ -124,7 +124,7 @@ public class QQPlatform extends AbsPlatform {
 
     @Override
     protected void shareOpenApp(int shareTarget, Activity activity, ShareObj obj) {
-        boolean rst = Util.openApp(activity, SocialConst.QQ_PKG);
+        boolean rst = Util.openApp(activity, SocialConstants.QQ_PKG);
         if (rst) {
             mOnShareListener.onSuccess();
         } else {
@@ -136,7 +136,7 @@ public class QQPlatform extends AbsPlatform {
     @Override
     public void shareText(int shareTarget, Activity activity, ShareObj shareMediaObj) {
         if (shareTarget == Target.SHARE_QQ_FRIENDS) {
-            shareTextByIntent(activity, shareMediaObj, SocialConst.QQ_PKG, SocialConst.QQ_FRIENDS_PAGE);
+            shareTextByIntent(activity, shareMediaObj, SocialConstants.QQ_PKG, SocialConstants.QQ_FRIENDS_PAGE);
         } else if (shareTarget == Target.SHARE_QQ_ZONE) {
             final Bundle params = new Bundle();
             params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzonePublish.PUBLISH_TO_QZONE_TYPE_PUBLISHMOOD);
@@ -224,7 +224,7 @@ public class QQPlatform extends AbsPlatform {
                 obj.setTargetUrl(obj.getMediaPath());
                 shareWeb(shareTarget, activity, obj);
             } else if (FileUtil.isExist(obj.getMediaPath())){
-                shareVideoByIntent(activity, obj, SocialConst.QQ_PKG, SocialConst.QQ_FRIENDS_PAGE);
+                shareVideoByIntent(activity, obj, SocialConstants.QQ_PKG, SocialConstants.QQ_FRIENDS_PAGE);
             } else{
                 this.mIUiListenerWrap.onError(new SocialError(SocialError.CODE_FILE_NOT_FOUND));
             }
@@ -263,7 +263,7 @@ public class QQPlatform extends AbsPlatform {
         @Override
         public void onError(UiError uiError) {
             if (listener != null)
-                listener.onFailure(new SocialError("分享失败 " + SocialError.parseUiError(uiError)));
+                listener.onFailure(new SocialError("分享失败 " + parseUiError(uiError)));
         }
 
         public void onError(SocialError e) {
@@ -276,6 +276,11 @@ public class QQPlatform extends AbsPlatform {
             if (listener != null)
                 listener.onCancel();
         }
+    }
+
+
+    public static String parseUiError(UiError e) {
+        return "code = " + e.errorCode + " ,msg = " + e.errorMessage + " ,detail=" + e.errorDetail;
     }
 
 }

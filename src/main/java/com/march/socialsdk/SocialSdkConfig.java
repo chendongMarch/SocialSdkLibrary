@@ -1,9 +1,8 @@
-package com.march.socialsdk.model;
+package com.march.socialsdk;
 
 import android.content.Context;
 
-import com.march.socialsdk.R;
-import com.march.socialsdk.common.SocialConst;
+import com.march.socialsdk.common.SocialConstants;
 
 import java.io.File;
 
@@ -21,22 +20,22 @@ public class SocialSdkConfig {
     // 调试配置
     private boolean isDebug = false;
     // 应用名
-    private String appName;
+    private String  appName;
     // 微信配置
-    private String wxAppId;
-    private String wxSecretKey;
+    private String  wxAppId;
+    private String  wxSecretKey;
     private boolean onlyAuthCode;
     // qq 配置
-    private String qqAppId;
+    private String  qqAppId;
     // 微博配置
-    private String sinaAppId;
-    private String sinaRedirectUrl = SocialConst.REDIRECT_URL;
-    private String sinaScope       = SocialConst.SCOPE;
+    private String  sinaAppId;
+    private String sinaRedirectUrl = SocialConstants.REDIRECT_URL;
+    private String sinaScope       = SocialConstants.SCOPE;
     private String shareCacheDirPath;
     // 钉钉配置
     private String ddAppId;
     // 图片默认资源
-    private int defImageResId;
+    private int    defImageResId;
 
     public SocialSdkConfig(Context context) {
         this.appName = context.getString(R.string.app_name);
@@ -49,10 +48,11 @@ public class SocialSdkConfig {
         return shareCacheDirPath;
     }
 
-    public SocialSdkConfig dd(String ddAppId){
+    public SocialSdkConfig dd(String ddAppId) {
         this.ddAppId = ddAppId;
         return this;
     }
+
     public SocialSdkConfig qq(String qqAppId) {
         this.qqAppId = qqAppId;
         return this;
@@ -81,7 +81,7 @@ public class SocialSdkConfig {
         return this;
     }
 
-     public SocialSdkConfig sinaRedirectUrl(String sinaRedirectUrl) {
+    public SocialSdkConfig sinaRedirectUrl(String sinaRedirectUrl) {
         this.sinaRedirectUrl = sinaRedirectUrl;
         return this;
     }

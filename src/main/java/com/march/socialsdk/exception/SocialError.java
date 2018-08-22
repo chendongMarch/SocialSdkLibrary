@@ -1,6 +1,7 @@
 package com.march.socialsdk.exception;
 
 import com.march.socialsdk.util.SocialLogUtil;
+import com.tencent.tauth.UiError;
 
 /**
  * CreateAt : 2016/12/5
@@ -39,8 +40,8 @@ public class SocialError extends Exception{
             case CODE_VERSION_LOW:
                 errorMsg = "应用版本低,需要更高版本";
                 break;
-            case CODE_SHARE_OBJ_VALID:
-                errorMsg = "分享的对象参数有问题，请检查输出的log，会有具体的提示";
+            case CODE_STORAGE_ERROR:
+                errorMsg = "没有获取到读取SD卡的权限，这会导致图片缩略图无法获取";
                 break;
         }
     }

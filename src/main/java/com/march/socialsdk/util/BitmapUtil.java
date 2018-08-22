@@ -172,7 +172,7 @@ public class BitmapUtil {
      * @param maxSize 最大尺寸
      * @return byte[]
      */
-    private static byte[] getStaticSizeBitmapByteByPath(final String path, final int maxSize) {
+    public static byte[] getStaticSizeBitmapByteByPath(final String path, final int maxSize) {
         Bitmap srcBitmap = getMaxSizeBitmap(path, maxSize);
         Bitmap.CompressFormat format = Bitmap.CompressFormat.JPEG;
         if (FileUtil.isPngFile(path)) format = Bitmap.CompressFormat.PNG;
