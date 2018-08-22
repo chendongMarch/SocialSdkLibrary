@@ -3,8 +3,11 @@ package com.march.socialsdk;
 import android.content.Context;
 
 import com.march.socialsdk.common.SocialConstants;
+import com.march.socialsdk.platform.Target;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * CreateAt : 2017/5/20
@@ -31,11 +34,13 @@ public class SocialSdkConfig {
     private String  sinaAppId;
     private String sinaRedirectUrl = SocialConstants.REDIRECT_URL;
     private String sinaScope       = SocialConstants.SCOPE;
+    // 存储路径，不允许更改
     private String shareCacheDirPath;
     // 钉钉配置
     private String ddAppId;
     // 图片默认资源
     private int    defImageResId;
+    private List<Integer> disablePlatforms = new ArrayList<>();
 
     public SocialSdkConfig(Context context) {
         this.appName = context.getString(R.string.app_name);
@@ -46,6 +51,11 @@ public class SocialSdkConfig {
 
     public String getShareCacheDirPath() {
         return shareCacheDirPath;
+    }
+
+    public SocialSdkConfig disablePlatforms(@Target.PlatformTarget int platform) {
+        this.disablePlatforms.add(platform);
+        return this;
     }
 
     public SocialSdkConfig dd(String ddAppId) {
@@ -138,6 +148,10 @@ public class SocialSdkConfig {
 
     public boolean isOnlyAuthCode() {
         return onlyAuthCode;
+    }
+
+    public List<Integer> getDisablePlatforms() {
+        return disablePlatforms;
     }
 
     @Override

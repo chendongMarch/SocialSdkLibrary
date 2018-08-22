@@ -34,7 +34,8 @@ public class PlatformManager {
         if (SocialSdk.getConfig() == null) {
             throw new IllegalArgumentException(Target.toDesc(target) + " SocialSdk.init() request");
         }
-        IPlatform platform = SocialSdk.getPlatform(context, target);
+        int platformTarget = Target.mapPlatform(target);
+        IPlatform platform = SocialSdk.getPlatform(context, platformTarget);
         if (platform == null) {
             throw new IllegalArgumentException(Target.toDesc(target) + "  创建platform失败，请检查参数 " + SocialSdk.getConfig().toString());
         }

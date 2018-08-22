@@ -118,7 +118,7 @@ SocialSdkConfig config = new SocialSdkConfig(this)
 SocialSdk.init(config);
 // 👮 添加自定义的 json 解析，必须
 SocialSdk.setJsonAdapter(new GsonJsonAdapter());
-// 这个不是必须的但是如果要使用微博的 openApi 需要重写该类，可以参考 temp 文件夹中的实现
+// 👮 这个不是必须的但是如果要使用微博的 openApi 需要重写该类，可以参考 temp 文件夹中的实现
 SocialSdk.setJsonAdapter(new OkHttpRequestAdapter());
 ```
 
@@ -195,7 +195,9 @@ public static void clearToken(Context context, @Target.LoginTarget int loginTarg
 
 请仔细查看平台和数据类型中间的支持能力
 
-![](http://cdn1.showjoy.com/images/b9/b9ffca33435c40d8b6e33914db0fa6da.png )
+![](http://cdn1.showjoy.com/images/b9/b9ffca33435c40d8b6e33914db0fa6da.png)
+
+- 当 微博 使用 `openApi` 形式去分享时，可能有较长的延时，建议在生命周期中增加进度条显示，避免用户等待很久没有响应。
 
 ### 扩展支持
 

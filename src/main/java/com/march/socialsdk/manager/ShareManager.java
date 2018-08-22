@@ -96,7 +96,7 @@ public class ShareManager {
     }
 
     // 如果是网络图片先下载
-    private static void prepareImageInBackground(Context context, ShareObj shareObj) throws SocialError {
+    private static void prepareImageInBackground(Context context, ShareObj shareObj) {
         String thumbImagePath = shareObj.getThumbImagePath();
         // 图片路径为网络路径，下载为本地图片
         if (!TextUtils.isEmpty(thumbImagePath) && FileUtil.isHttpPath(thumbImagePath)) {
@@ -123,7 +123,15 @@ public class ShareManager {
         }
         // 是否有存储权限，读取缩略图片需要存储权限
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-            onShareListener.onFailure(new SocialError(SocialError.CODE_STORAGE_ERROR));
+            onShareListener.onFailure(new SocialError(SocialError.CODE_STORAGE_READ_ERROR));
+            return;
+        }
+        // 微博、本地、视频 需要写存储的权限
+        if (shareTarget == Target.SHARE_WB
+                && shareObj.getShareObjType() == ShareObj.SHARE_TYPE_VIDEO
+                && !FileUtil.isHttpPath(shareObj.getMediaPath())
+                && !Util.hasPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            onShareListener.onFailure(new SocialError(SocialError.CODE_STORAGE_WRITE_ERROR));
             return;
         }
         sListener = onShareListener;

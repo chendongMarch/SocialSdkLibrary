@@ -8,6 +8,11 @@ package com.march.socialsdk.common;
  */
 public class SocialConstants {
 
+    public static final String QQ_CREATOR = "com.march.socialsdk.platform.qq.QQPlatform$Creator";
+    public static final String WX_CREATOR = "com.march.socialsdk.platform.wechat.WxPlatform$Creator";
+    public static final String WB_CREATOR = "com.march.socialsdk.platform.weibo.WbPlatform$Creator";
+    public static final String DD_CREATOR = "com.march.socialsdk.platform.ding.DDPlatform$Creator";
+
     public static final String QQ_PKG = "com.tencent.mobileqq";
     public static final String WECHAT_PKG = "com.tencent.mm";
     public static final String SINA_PKG = "com.sina.weibo";
