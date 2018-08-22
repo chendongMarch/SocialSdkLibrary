@@ -99,7 +99,7 @@ class QQLoginHelper {
 
         @Override
         public void onError(UiError e) {
-            onLoginListener.onFailure(new SocialError("qq,获取用户信息失败 " + SocialError.parseUiError(e)));
+            onLoginListener.onFailure(new SocialError("qq,获取用户信息失败 " + QQPlatform.parseUiError(e)));
         }
 
         @Override
@@ -130,7 +130,7 @@ class QQLoginHelper {
 
             @Override
             public void onError(UiError e) {
-                onLoginListener.onFailure(new SocialError("qq获取用户信息失败  " + SocialError.parseUiError(e)));
+                onLoginListener.onFailure(new SocialError("qq获取用户信息失败  " + QQPlatform.parseUiError(e)));
             }
 
             @Override

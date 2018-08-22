@@ -5,21 +5,24 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.march.socialsdk.SocialSdk;
-import com.march.socialsdk.common.SocialConst;
+import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.common.ThumbDataContinuation;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.LoginResult;
 import com.march.socialsdk.model.ShareObj;
-import com.march.socialsdk.model.SocialSdkConfig;
+import com.march.socialsdk.SocialSdkConfig;
 import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformCreator;
 import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.util.BitmapUtil;
-import com.march.socialsdk.util.Util;
 import com.march.socialsdk.util.FileUtil;
 import com.march.socialsdk.util.SocialLogUtil;
+import com.march.socialsdk.util.Util;
+import com.march.socialsdk.workflow.CallAction;
+import com.march.socialsdk.workflow.ErrorAction;
+import com.march.socialsdk.workflow.TaskAction;
 import com.tencent.mm.opensdk.constants.ConstantsAPI;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
@@ -262,26 +265,47 @@ public class WxPlatform extends AbsPlatform {
     public void shareApp(int shareTarget, Activity activity, ShareObj obj) {
         SocialLogUtil.e(TAG, "微信不支持app分享，将以web形式分享");
         shareWeb(shareTarget, activity, obj);
-
-
     }
-
 
     @Override
     public void shareWeb(final int shareTarget, Activity activity, final ShareObj obj) {
-        BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
-                .continueWith(new ThumbDataContinuation(TAG, "shareWeb", mOnShareListener) {
-                    @Override
-                    public void onSuccess(byte[] thumbData) {
-                        WXWebpageObject webPage = new WXWebpageObject();
-                        webPage.webpageUrl = obj.getTargetUrl();
-                        WXMediaMessage msg = new WXMediaMessage(webPage);
-                        msg.title = obj.getTitle();
-                        msg.description = obj.getSummary();
-                        msg.thumbData = thumbData;
-                        sendMsgToWx(msg, shareTarget, "web");
-                    }
-                }, Task.UI_THREAD_EXECUTOR);
+        com.march.socialsdk.workflow.Task.call(com.march.socialsdk.workflow.Task.BG, new CallAction<byte[]>() {
+            @Override
+            public byte[] call() {
+                return BitmapUtil.getStaticSizeBitmapByteByPath(obj.getThumbImagePath(), THUMB_IMAGE_SIZE);
+            }
+        }).then(com.march.socialsdk.workflow.Task.UI, new TaskAction<byte[], Boolean>() {
+            @Override
+            public Boolean call(byte[] param) {
+                WXWebpageObject webPage = new WXWebpageObject();
+                webPage.webpageUrl = obj.getTargetUrl();
+                WXMediaMessage msg = new WXMediaMessage(webPage);
+                msg.title = obj.getTitle();
+                msg.description = obj.getSummary();
+                msg.thumbData = param;
+                sendMsgToWx(msg, shareTarget, "web");
+                return false;
+            }
+        }).error(new ErrorAction() {
+            @Override
+            public void error(Exception ex) {
+                mOnShareListener.onFailure(new SocialError("share web error", ex));
+            }
+        }).execute();
+
+//        BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
+//                .continueWith(new ThumbDataContinuation(TAG, "shareWeb", mOnShareListener) {
+//                    @Override
+//                    public void onSuccess(byte[] thumbData) {
+//                        WXWebpageObject webPage = new WXWebpageObject();
+//                        webPage.webpageUrl = obj.getTargetUrl();
+//                        WXMediaMessage msg = new WXMediaMessage(webPage);
+//                        msg.title = obj.getTitle();
+//                        msg.description = obj.getSummary();
+//                        msg.thumbData = thumbData;
+//                        sendMsgToWx(msg, shareTarget, "web");
+//                    }
+//                }, Task.UI_THREAD_EXECUTOR);
 
     }
 
@@ -311,7 +335,7 @@ public class WxPlatform extends AbsPlatform {
             if (FileUtil.isHttpPath(obj.getMediaPath())) {
                 shareWeb(shareTarget, activity, obj);
             } else if (FileUtil.isExist(obj.getMediaPath())) {
-                shareVideoByIntent(activity, obj, SocialConst.WECHAT_PKG, SocialConst.WX_FRIEND_PAGE);
+                shareVideoByIntent(activity, obj, SocialConstants.WECHAT_PKG, SocialConstants.WX_FRIEND_PAGE);
             } else {
                 mOnShareListener.onFailure(new SocialError(SocialError.CODE_FILE_NOT_FOUND));
             }

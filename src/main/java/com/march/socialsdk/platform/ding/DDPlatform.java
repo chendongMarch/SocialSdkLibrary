@@ -13,10 +13,10 @@ import com.android.dingtalk.share.ddsharemodule.message.DDTextMessage;
 import com.android.dingtalk.share.ddsharemodule.message.DDWebpageMessage;
 import com.android.dingtalk.share.ddsharemodule.message.SendMessageToDD;
 import com.march.socialsdk.SocialSdk;
-import com.march.socialsdk.common.SocialConst;
+import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.model.ShareObj;
-import com.march.socialsdk.model.SocialSdkConfig;
+import com.march.socialsdk.SocialSdkConfig;
 import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformCreator;
@@ -166,7 +166,7 @@ public class DDPlatform extends AbsPlatform {
         if (FileUtil.isHttpPath(obj.getMediaPath())) {
             shareWeb(shareTarget, activity, obj);
         } else if (FileUtil.isExist(obj.getMediaPath())) {
-            shareVideoByIntent(activity, obj, SocialConst.DD_PKG, SocialConst.DD_FRIEND_PAGE);
+            shareVideoByIntent(activity, obj, SocialConstants.DD_PKG, SocialConstants.DD_FRIEND_PAGE);
         } else {
             mOnShareListener.onFailure(new SocialError(SocialError.CODE_FILE_NOT_FOUND));
         }

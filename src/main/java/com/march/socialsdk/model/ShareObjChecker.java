@@ -1,10 +1,11 @@
 package com.march.socialsdk.model;
 
 
-import com.march.socialsdk.util.SocialLogUtil;
 import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.util.FileUtil;
 import com.march.socialsdk.util.Util;
+
+import java.lang.ref.WeakReference;
 
 /**
  * CreateAt : 2017/5/22
@@ -15,6 +16,18 @@ import com.march.socialsdk.util.Util;
 public class ShareObjChecker {
 
     public static final String TAG = ShareObjChecker.class.getSimpleName();
+
+    static class ErrMsgRef extends WeakReference<String> {
+        ErrMsgRef(String msg, ShareObj obj) {
+            super(msg + " data = " + (obj == null ? "no data" : obj.toString()));
+        }
+    }
+
+    private static ErrMsgRef sErrMsgRef = new ErrMsgRef("", null);
+
+    public static String getErrMsg() {
+        return sErrMsgRef.get();
+    }
 
     public static boolean checkObjValid(ShareObj obj, int shareTarget) {
         switch (obj.getShareObjType()) {
@@ -55,7 +68,7 @@ public class ShareObjChecker {
                 else if (FileUtil.isHttpPath(obj.getMediaPath())) {
                     return isUrlValid(obj) && isMusicVideoVoiceValid(obj) && isNetMedia(obj);
                 } else {
-                    SocialLogUtil.e("本地不支持或者，不是本地也不是网络 " + obj.toString());
+                    sErrMsgRef = new ErrMsgRef("本地不支持或者，不是本地也不是网络 ", obj);
                     return false;
                 }
             }
@@ -76,7 +89,7 @@ public class ShareObjChecker {
     private static boolean isTitleSummaryValid(ShareObj obj) {
         boolean valid = !Util.isAnyEmpty(obj.getTitle(), obj.getSummary());
         if (!valid) {
-            SocialLogUtil.e("title summary 不能空");
+            sErrMsgRef = new ErrMsgRef("title summary 不能空", obj);
         }
         return valid;
     }
@@ -85,7 +98,7 @@ public class ShareObjChecker {
     private static boolean isNetMedia(ShareObj obj) {
         boolean httpPath = FileUtil.isHttpPath(obj.getMediaPath());
         if (!httpPath) {
-            SocialLogUtil.e("ShareObj mediaPath 需要 网络路径");
+            sErrMsgRef = new ErrMsgRef("ShareObj mediaPath 需要 网络路径", obj);
         }
         return httpPath;
     }
@@ -95,7 +108,7 @@ public class ShareObjChecker {
         String targetUrl = obj.getTargetUrl();
         boolean urlValid = !Util.isAnyEmpty(targetUrl) && FileUtil.isHttpPath(targetUrl);
         if (!urlValid) {
-            SocialLogUtil.e(TAG, "url : " + targetUrl + "  不能为空，且必须带有http协议头");
+            sErrMsgRef = new ErrMsgRef("url : " + targetUrl + "  不能为空，且必须带有http协议头", obj);
         }
         return urlValid;
     }
@@ -111,7 +124,7 @@ public class ShareObjChecker {
         boolean exist = FileUtil.isExist(thumbImagePath);
         boolean picFile = FileUtil.isPicFile(thumbImagePath);
         if (!exist || !picFile) {
-            SocialLogUtil.e(TAG, "path : " + thumbImagePath + "  " + (exist ? "" : "文件不存在") + (picFile ? "" : "不是图片文件"));
+            sErrMsgRef = new ErrMsgRef("path : " + thumbImagePath + "  " + (exist ? "" : "文件不存在") + (picFile ? "" : "不是图片文件"), obj);
         }
         return exist && picFile;
     }

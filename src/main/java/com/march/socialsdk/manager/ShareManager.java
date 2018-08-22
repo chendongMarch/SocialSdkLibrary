@@ -11,16 +11,17 @@ import android.os.Build;
 import android.text.TextUtils;
 
 import com.march.socialsdk.SocialSdk;
-import com.march.socialsdk.common.SocialConst;
+import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.model.ShareObj;
+import com.march.socialsdk.model.ShareObjChecker;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.uikit.ActionActivity;
-import com.march.socialsdk.util.Util;
 import com.march.socialsdk.util.FileUtil;
 import com.march.socialsdk.util.SocialLogUtil;
+import com.march.socialsdk.util.Util;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -115,8 +116,14 @@ public class ShareManager {
     // 开始分享
     @TargetApi(Build.VERSION_CODES.ECLAIR)
     private static void doShare(Context context, @Target.ShareTarget int shareTarget, ShareObj shareObj, OnShareListener onShareListener) {
-        if (!com.march.socialsdk.model.ShareObjChecker.ShareObjChecker.checkObjValid(shareObj, shareTarget)) {
-            onShareListener.onFailure(new SocialError(SocialError.CODE_SHARE_OBJ_VALID));
+        // 对象是否完整
+        if (!ShareObjChecker.checkObjValid(shareObj, shareTarget)) {
+            onShareListener.onFailure(new SocialError(SocialError.CODE_SHARE_OBJ_VALID, ShareObjChecker.getErrMsg()));
+            return;
+        }
+        // 是否有存储权限，读取缩略图片需要存储权限
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+            onShareListener.onFailure(new SocialError(SocialError.CODE_STORAGE_ERROR));
             return;
         }
         sListener = onShareListener;
@@ -265,18 +272,18 @@ public class ShareManager {
         switch (target) {
             case Target.SHARE_QQ_FRIENDS:
             case Target.SHARE_QQ_ZONE:
-                pkgName = SocialConst.QQ_PKG;
+                pkgName = SocialConstants.QQ_PKG;
                 break;
             case Target.SHARE_WX_FRIENDS:
             case Target.SHARE_WX_ZONE:
             case Target.SHARE_WX_FAVORITE:
-                pkgName = SocialConst.WECHAT_PKG;
+                pkgName = SocialConstants.WECHAT_PKG;
                 break;
             case Target.SHARE_WB:
-                pkgName = SocialConst.SINA_PKG;
+                pkgName = SocialConstants.SINA_PKG;
                 break;
             case Target.SHARE_DD:
-                pkgName = SocialConst.DD_PKG;
+                pkgName = SocialConstants.DD_PKG;
                 break;
         }
         return !TextUtils.isEmpty(pkgName) && Util.openApp(context, pkgName);
