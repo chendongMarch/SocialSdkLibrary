@@ -10,7 +10,7 @@
 
 项目地址 : [GitHub - SocialSdkLibrary](https://github.com/chendongMarch/SocialSdkLibrary)
 
-本文地址 ：[快速接入微信微博QQ钉钉原生登录分享](http://cdevlab.top/article/3067853428/)
+本文地址 ：[快速接入微信微博QQ钉钉原生登录分享](http://zfyx.coding.me/article/3067853428/)
 
 
 🎉  2018.6.7 项目获得了第100颗🌟，最后一颗是我问同事要的🤦‍
