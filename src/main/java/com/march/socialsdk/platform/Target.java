@@ -30,6 +30,17 @@ public class Target {
     public static final int SHARE_WB          = 0x36; // 新浪微博
     public static final int SHARE_DD          = 0x38; // dingding 分享
 
+
+    public static class Mapping {
+        public Mapping( int platform,String creator) {
+            this.creator = creator;
+            this.platform = platform;
+        }
+
+        public String creator;
+        public int    platform;
+    }
+
     @IntDef({Target.SHARE_QQ_FRIENDS, Target.SHARE_QQ_ZONE,
             Target.SHARE_WX_FRIENDS, Target.SHARE_WX_ZONE, Target.SHARE_WX_FAVORITE,
             Target.SHARE_WB, Target.SHARE_DD})
@@ -45,9 +56,34 @@ public class Target {
 
     }
 
+    @IntDef({Target.PLATFORM_WX, Target.PLATFORM_QQ, Target.PLATFORM_WB, Target.PLATFORM_DD})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface PlatformTarget {
+
+    }
+
+    public static int mapPlatform(int target) {
+        switch (target) {
+            case Target.LOGIN_QQ:
+            case Target.SHARE_QQ_FRIENDS:
+            case Target.SHARE_QQ_ZONE:
+                return PLATFORM_QQ;
+            case Target.LOGIN_WX:
+            case Target.SHARE_WX_FRIENDS:
+            case Target.SHARE_WX_ZONE:
+                return PLATFORM_WX;
+            case Target.LOGIN_WB:
+            case Target.SHARE_WB:
+                return PLATFORM_WB;
+            case Target.SHARE_DD:
+                return PLATFORM_DD;
+            default:
+                return -1;
+        }
+    }
 
     public static String toDesc(int target) {
-        String result = " ";
+        String result;
         switch (target) {
             case Target.LOGIN_QQ:
                 result = "qq登录";
@@ -72,6 +108,9 @@ public class Target {
                 break;
             case Target.SHARE_WB:
                 result = "微博普通分享";
+                break;
+            case Target.SHARE_DD:
+                result = "丁丁分享";
                 break;
             default:
                 result = "未知类型";

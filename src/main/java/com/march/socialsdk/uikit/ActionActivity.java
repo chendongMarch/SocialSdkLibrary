@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.widget.ProgressBar;
 
 import com.march.socialsdk.manager.PlatformManager;
 import com.march.socialsdk.platform.IPlatform;
@@ -23,6 +24,7 @@ public class ActionActivity extends SocialReceiver {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
         // for wx & dd
         if (getPlatform() != null) {
             getPlatform().handleIntent(this);

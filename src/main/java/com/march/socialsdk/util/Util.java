@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.text.TextUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -21,6 +22,11 @@ import java.util.List;
 public class Util {
 
     public static final String TAG = Util.class.getSimpleName();
+
+    public static boolean hasPermission(Context context, String permission) {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M
+                || context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
+    }
 
     // 任何一个为空 返回true
     public static boolean isAnyEmpty(String... strings) {

@@ -1,7 +1,6 @@
 package com.march.socialsdk.exception;
 
 import com.march.socialsdk.util.SocialLogUtil;
-import com.tencent.tauth.UiError;
 
 /**
  * CreateAt : 2016/12/5
@@ -15,12 +14,13 @@ public class SocialError extends Exception{
 
     public static final int CODE_OK = 1; // 成功
 
-    public static final int CODE_NOT_INSTALL = 0; // 没有安装应用
-    public static final int CODE_VERSION_LOW = 1; // 版本低
-    public static final int CODE_SHARE_OBJ_VALID = 2; // 分享的对象参数有问题
+    public static final int CODE_NOT_INSTALL          = 0; // 没有安装应用
+    public static final int CODE_VERSION_LOW          = 1; // 版本低
+    public static final int CODE_SHARE_OBJ_VALID      = 2; // 分享的对象参数有问题
     public static final int CODE_SHARE_BY_INTENT_FAIL = 3; // 使用 Intent 分享失败
-    public static final int CODE_STORAGE_ERROR = 4; // 没有读写存储的权限
-    public static final int CODE_FILE_NOT_FOUND = 5; // 文件不存在
+    public static final int CODE_STORAGE_READ_ERROR   = 4; // 没有读存储的权限，获取分享缩略图将会失败
+    public static final int CODE_STORAGE_WRITE_ERROR  = 5; // 没有写存储的权限，微博分享视频copy操作将会失败
+    public static final int CODE_FILE_NOT_FOUND       = 6; // 文件不存在
 
     private int errorCode;
     private String errorMsg;
@@ -40,8 +40,11 @@ public class SocialError extends Exception{
             case CODE_VERSION_LOW:
                 errorMsg = "应用版本低,需要更高版本";
                 break;
-            case CODE_STORAGE_ERROR:
-                errorMsg = "没有获取到读取SD卡的权限，这会导致图片缩略图无法获取";
+            case CODE_STORAGE_READ_ERROR:
+                errorMsg = "没有获取到读SD卡的权限，这会导致图片缩略图无法获取";
+                break;
+            case CODE_STORAGE_WRITE_ERROR:
+                errorMsg = "没有获取到写SD卡的权限，这会微博分享本地视频无法使用";
                 break;
         }
     }
