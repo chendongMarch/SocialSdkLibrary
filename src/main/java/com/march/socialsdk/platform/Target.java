@@ -64,18 +64,22 @@ public class Target {
 
     public static int mapPlatform(int target) {
         switch (target) {
+            case Target.PLATFORM_QQ:
             case Target.LOGIN_QQ:
             case Target.SHARE_QQ_FRIENDS:
             case Target.SHARE_QQ_ZONE:
                 return PLATFORM_QQ;
+            case Target.PLATFORM_WX:
             case Target.LOGIN_WX:
             case Target.SHARE_WX_FRIENDS:
             case Target.SHARE_WX_ZONE:
                 return PLATFORM_WX;
             case Target.LOGIN_WB:
             case Target.SHARE_WB:
+            case Target.PLATFORM_WB:
                 return PLATFORM_WB;
             case Target.SHARE_DD:
+            case Target.PLATFORM_DD:
                 return PLATFORM_DD;
             default:
                 return -1;

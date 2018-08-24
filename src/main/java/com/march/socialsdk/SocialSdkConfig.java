@@ -53,7 +53,7 @@ public class SocialSdkConfig {
         return shareCacheDirPath;
     }
 
-    public SocialSdkConfig disablePlatforms(@Target.PlatformTarget int platform) {
+    public SocialSdkConfig disablePlatform(@Target.PlatformTarget int platform) {
         this.disablePlatforms.add(platform);
         return this;
     }

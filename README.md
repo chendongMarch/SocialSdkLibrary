@@ -97,12 +97,13 @@ defaultConfig {
 
 
 ```java
-String qqAppId = getString(R.string.QQ_APPID);
-String wxAppId = getString(R.string.WEICHAT_APPID);
-String wxSecretKey = getString(R.string.WEICHAT_APPKEY);
-String sinaAppId = getString(R.string.SINA_APPKEY);
-String ddAppId = getString(R.string.DD_APPID);
+String qqAppId = getString(R.string.QQ_APP_ID);
+String wxAppId = getString(R.string.WX_APP_ID);
+String wxSecretKey = getString(R.string.WX_SECRET_KEY);
+String sinaAppId = getString(R.string.SINA_APP_ID);
+String ddAppId = getString(R.string.DD_APP_ID);
 SocialSdkConfig config = new SocialSdkConfig(this)
+        .setDebug(true)
         .dd(ddAppId)
         // 配置qq
         .qq(qqAppId)
@@ -113,13 +114,18 @@ SocialSdkConfig config = new SocialSdkConfig(this)
         // 配置Sina的RedirectUrl，有默认值，如果是官网默认的不需要设置
         .sinaRedirectUrl("http://open.manfenmm.com/bbpp/app/weibo/common.php")
         // 配置Sina授权scope,有默认值，默认值 all
-        .sinaScope(SocialConstants.SCOPE);
+        .sinaScope(SocialConstants.SCOPE)
+        // 不加载钉钉和微博平台
+        .disablePlatform(Target.PLATFORM_DD)
+        .disablePlatform(Target.PLATFORM_WB)
+        // 当缩略图因为各种原因无法获取时，将会使用默认图，避免分享中断
+        .defImageResId(R.mipmap.ic_launcher_new);
 // 👮 添加 config 数据，必须
 SocialSdk.init(config);
-// 👮 添加自定义的 json 解析，必须
+// 👮 添加自定义的 json 解析，必须，参考 temp 文件夹下的实现
 SocialSdk.setJsonAdapter(new GsonJsonAdapter());
-// 👮 这个不是必须的但是如果要使用微博的 openApi 需要重写该类，可以参考 temp 文件夹中的实现
-SocialSdk.setJsonAdapter(new OkHttpRequestAdapter());
+// 👮 请求处理类，如果使用了微博的 openApi 分享，这个是必须的，参考 temp 文件夹下的实现
+SocialSdk.setRequestAdapter(new OkHttpRequestAdapter());
 ```
 
 ## adapter
@@ -128,7 +134,7 @@ SocialSdk.setJsonAdapter(new OkHttpRequestAdapter());
 
 - `IJsonAdapter`，负责 `Json` 解析，为了保持和宿主项目 `json` 解析框架的统一，是必须自定义添加的（没有内置一个实现是因为使用自带的 `JsonObject` 解析实在麻烦，又不想内置一个三方库进来，采取的这种折衷方案），提供一个 `Gson` 下的实现仅供参考 - [GsonJsonAdapter.java](https://github.com/chendongMarch/SocialSdkLibrary/blob/master/temp/GsonJsonAdapter.java)
 
-- `IRequestAdapter`，负责请求数据，目前微信的 `OAuth2` 授权和图片下载的相关请求都是使用 `IRequestAdapter` 代理，已经使用 `URLConnection` 内置了一个实现，如果你有自己的需求可以重写这部分，注意 `https` 请求的兼容，可以参考 - [RequestAdapterImpl.java](https://github.com/chendongMarch/SocialSdkLibrary/blob/master/src/main/java/com/march/socialsdk/adapter/impl/RequestAdapterImpl.java)
+- `IRequestAdapter`，负责请求数据，目前微信的 `OAuth2` 授权和图片下载的相关请求都是使用 `IRequestAdapter` 代理，已经使用 `URLConnection` 内置了一个实现，如果你有自己的需求可以重写这部分，可以参考 - [OkHttpRequestAdapter.java](https://github.com/chendongMarch/SocialSdkLibrary/blob/b0b8559ff26136abbaaee9667bfc5c2bf54eedea/temp/OkHttpRequestAdapter.java)
 
 ## 登录功能
 
@@ -207,7 +213,7 @@ ShareManager.sendSms(mActivity,"13612391817","msg body");
 // 发邮件
 ShareManager.sendEmail(mActivity,"1101873740@qq.com","subject","msg body");
 // 打开渠道对应应用
-ShareManager.openApp(mActivity,Target.SHARE_QQ_FRIENDS);
+ShareManager.openApp(mActivity,Target.PLATFORM_QQ);
 ```
 
 ### 8 种数据支持
@@ -314,7 +320,7 @@ ShareManager.share(mActivity, Target.SHARE_QQ_FRIENDS, imageObj, mOnShareListene
 
 关于重写分享对象，其实提供一种能在分享之前对需要分享的 `ShareObj` 进行统一处理的机会，类似中间插一道自定义工序，比如可以用来解决网络图片无法分享，我们需要将它下载到本地，在进行分享，又比如图片分享出去之前加上 app 水印等操作。
 
-主要是重写 `OnShareListener` 的 `onPrepareInBackground` 方法，这个方法会在分享之前首先执行，如果返回不是 null，将会使用新创建的 `ShareObj` 进行分享，另外由于考虑到可能进行耗时操作，这个方法是在子线程执行的。
+主要是重写 `OnShareListener` 的 `onPrepareInBackground` 方法，这个方法会在分享之前首先执行，如果返回不是 `null`，将会使用新创建的 `ShareObj` 进行分享，另外由于考虑到可能进行耗时操作，这个方法是在子线程执行的。
 
 ```java
 @Override
@@ -324,7 +330,7 @@ public ShareObj onPrepareInBackground(int shareTarget,ShareObj obj) {
 }
 ```
 
-看一个基本的实例，主要功能是在分享之前用来将网络图下载到本地然后更新 `ShareObj` 指向的图片地址，这样就可以支持网络图片的直接分享，当然，这个功能已经内置在类库中。
+看一个实现，主要功能是在分享之前用来将网络图下载到本地然后更新 `ShareObj` 指向的图片地址，这样就可以支持网络图片的直接分享，当然，`SocialSdk` 目前已经支持网络图片的分享，不需要再在外面重写对象。
 
 ```java
 public class MyShareListener extends SimpleShareListener {
@@ -382,4 +388,25 @@ public class MyShareListener extends SimpleShareListener {
         ToastUtil.show("分享取消");
     }
 }
+```
+
+## 错误码
+
+为了更好的统一分享失败时返回的异常，返回的所有异常都会有一个 `code`，可以根据不同的 `code` 定位问题和给出更友好的提示。
+
+
+```java
+CODE_COMMON_ERROR         = 101; // 通用错误，未归类
+CODE_NOT_INSTALL          = 102; // 没有安装应用
+CODE_VERSION_LOW          = 103; // 版本过低，不支持
+CODE_SHARE_OBJ_VALID      = 104; // 分享的对象参数有问题
+CODE_SHARE_BY_INTENT_FAIL = 105; // 使用 Intent 分享失败
+CODE_STORAGE_READ_ERROR   = 106; // 没有读存储的权限，获取分享缩略图将会失败
+CODE_STORAGE_WRITE_ERROR  = 107; // 没有写存储的权限，微博分享视频copy操作将会失败
+CODE_FILE_NOT_FOUND       = 108; // 文件不存在
+CODE_SDK_ERROR            = 109; // sdk 返回错误
+CODE_REQUEST_ERROR        = 110; // 网络请求发生错误
+CODE_CANNOT_OPEN_ERROR    = 111; // 无法启动 app
+CODE_PARSE_ERROR          = 112; // 数据解析错误
+CODE_IMAGE_COMPRESS_ERROR = 113; // 图片压缩失败
 ```
