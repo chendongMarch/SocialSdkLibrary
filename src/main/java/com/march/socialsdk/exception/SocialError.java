@@ -14,21 +14,21 @@ public class SocialError extends Exception{
 
     public static final int CODE_OK = 1; // 成功
 
-    public static final int CODE_COMMON_ERROR         = 0; // 通用错误
-    public static final int CODE_NOT_INSTALL          = 1; // 没有安装应用
-    public static final int CODE_VERSION_LOW          = 2; // 版本低
-    public static final int CODE_SHARE_OBJ_VALID      = 3; // 分享的对象参数有问题
-    public static final int CODE_SHARE_BY_INTENT_FAIL = 4; // 使用 Intent 分享失败
-    public static final int CODE_STORAGE_READ_ERROR   = 5; // 没有读存储的权限，获取分享缩略图将会失败
-    public static final int CODE_STORAGE_WRITE_ERROR  = 6; // 没有写存储的权限，微博分享视频copy操作将会失败
-    public static final int CODE_FILE_NOT_FOUND       = 7; // 文件不存在
-    public static final int CODE_SDK_ERROR            = 8; // sdk 返回错误
-    public static final int CODE_REQUEST_ERROR        = 9; // 请求发生错误
-    public static final int CODE_CANNOT_OPEN_ERROR    = 10; // 无法启动app
-    public static final int CODE_PARSE_ERROR          = 11; // 数据解析错误
-    public static final int CODE_IMAGE_COMPRESS_ERROR = 12; // 图片压缩失败
+    public static final int CODE_COMMON_ERROR         = 101; // 通用错误
+    public static final int CODE_NOT_INSTALL          = 102; // 没有安装应用
+    public static final int CODE_VERSION_LOW          = 103; // 版本低
+    public static final int CODE_SHARE_OBJ_VALID      = 104; // 分享的对象参数有问题
+    public static final int CODE_SHARE_BY_INTENT_FAIL = 105; // 使用 Intent 分享失败
+    public static final int CODE_STORAGE_READ_ERROR   = 106; // 没有读存储的权限，获取分享缩略图将会失败
+    public static final int CODE_STORAGE_WRITE_ERROR  = 107; // 没有写存储的权限，微博分享视频copy操作将会失败
+    public static final int CODE_FILE_NOT_FOUND       = 108; // 文件不存在
+    public static final int CODE_SDK_ERROR            = 109; // sdk 返回错误
+    public static final int CODE_REQUEST_ERROR        = 110;// 请求发生错误
+    public static final int CODE_CANNOT_OPEN_ERROR    = 111; // 无法启动app
+    public static final int CODE_PARSE_ERROR          = 112; // 数据解析错误
+    public static final int CODE_IMAGE_COMPRESS_ERROR = 113; // 图片压缩失败
 
-    private int errorCode;
+    private int errorCode = CODE_OK;
     private String errorMsg;
     private Exception mException;
 
