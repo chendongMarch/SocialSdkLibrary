@@ -275,9 +275,10 @@ public class ShareManager {
      * @param target  平台
      * @return 是否成功打开
      */
-    public static boolean openApp(Context context, @Target.ShareTarget int target) {
+    public static boolean openApp(Context context, int target) {
+        int platform = Target.mapPlatform(target);
         String pkgName = null;
-        switch (target) {
+        switch (platform) {
             case Target.SHARE_QQ_FRIENDS:
             case Target.SHARE_QQ_ZONE:
                 pkgName = SocialConstants.QQ_PKG;
