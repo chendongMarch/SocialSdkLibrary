@@ -5,13 +5,13 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.march.socialsdk.SocialSdk;
+import com.march.socialsdk.SocialSdkConfig;
 import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.common.ThumbDataContinuation;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.LoginResult;
 import com.march.socialsdk.model.ShareObj;
-import com.march.socialsdk.SocialSdkConfig;
 import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformCreator;
@@ -20,9 +20,6 @@ import com.march.socialsdk.util.BitmapUtil;
 import com.march.socialsdk.util.FileUtil;
 import com.march.socialsdk.util.SocialLogUtil;
 import com.march.socialsdk.util.Util;
-import com.march.socialsdk.workflow.CallAction;
-import com.march.socialsdk.workflow.ErrorAction;
-import com.march.socialsdk.workflow.TaskAction;
 import com.tencent.mm.opensdk.constants.ConstantsAPI;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
@@ -146,11 +143,11 @@ public class WxPlatform extends AbsPlatform {
                     break;
                 case BaseResp.ErrCode.ERR_SENT_FAILED:
                     // 分享失败
-                    mOnShareListener.onFailure(new SocialError("分享失败"));
+                    mOnShareListener.onFailure(new SocialError(SocialError.CODE_SDK_ERROR, "分享失败"));
                     break;
                 case BaseResp.ErrCode.ERR_AUTH_DENIED:
                     // 分享被拒绝
-                    mOnShareListener.onFailure(new SocialError("分享被拒绝"));
+                    mOnShareListener.onFailure(new SocialError(SocialError.CODE_SDK_ERROR, "分享被拒绝"));
                     break;
             }
         }
@@ -191,7 +188,7 @@ public class WxPlatform extends AbsPlatform {
         req.scene = getShareToWhere(shareTarget);
         boolean sendResult = mWxApi.sendReq(req);
         if (!sendResult) {
-            mOnShareListener.onFailure(new SocialError("sendMsgToWx失败，可能是参数错误"));
+            mOnShareListener.onFailure(new SocialError(SocialError.CODE_SDK_ERROR, TAG + "#sendMsgToWx失败，可能是参数错误"));
         }
     }
 
@@ -201,7 +198,7 @@ public class WxPlatform extends AbsPlatform {
         if (rst) {
             mOnShareListener.onSuccess();
         } else {
-            mOnShareListener.onFailure(new SocialError("open app error"));
+            mOnShareListener.onFailure(new SocialError(SocialError.CODE_CANNOT_OPEN_ERROR));
         }
     }
 
@@ -269,43 +266,43 @@ public class WxPlatform extends AbsPlatform {
 
     @Override
     public void shareWeb(final int shareTarget, Activity activity, final ShareObj obj) {
-        com.march.socialsdk.workflow.Task.call(com.march.socialsdk.workflow.Task.BG, new CallAction<byte[]>() {
-            @Override
-            public byte[] call() {
-                return BitmapUtil.getStaticSizeBitmapByteByPath(obj.getThumbImagePath(), THUMB_IMAGE_SIZE);
-            }
-        }).then(com.march.socialsdk.workflow.Task.UI, new TaskAction<byte[], Boolean>() {
-            @Override
-            public Boolean call(byte[] param) {
-                WXWebpageObject webPage = new WXWebpageObject();
-                webPage.webpageUrl = obj.getTargetUrl();
-                WXMediaMessage msg = new WXMediaMessage(webPage);
-                msg.title = obj.getTitle();
-                msg.description = obj.getSummary();
-                msg.thumbData = param;
-                sendMsgToWx(msg, shareTarget, "web");
-                return false;
-            }
-        }).error(new ErrorAction() {
-            @Override
-            public void error(Exception ex) {
-                mOnShareListener.onFailure(new SocialError("share web error", ex));
-            }
-        }).execute();
+//        com.march.socialsdk.workflow.Task.call(com.march.socialsdk.workflow.Task.BG, new CallAction<byte[]>() {
+//            @Override
+//            public byte[] call() {
+//                return BitmapUtil.getStaticSizeBitmapByteByPath(obj.getThumbImagePath(), THUMB_IMAGE_SIZE);
+//            }
+//        }).then(com.march.socialsdk.workflow.Task.UI, new TaskAction<byte[], Boolean>() {
+//            @Override
+//            public Boolean call(byte[] param) {
+//                WXWebpageObject webPage = new WXWebpageObject();
+//                webPage.webpageUrl = obj.getTargetUrl();
+//                WXMediaMessage msg = new WXMediaMessage(webPage);
+//                msg.title = obj.getTitle();
+//                msg.description = obj.getSummary();
+//                msg.thumbData = param;
+//                sendMsgToWx(msg, shareTarget, "web");
+//                return false;
+//            }
+//        }).error(new ErrorAction() {
+//            @Override
+//            public void error(Exception ex) {
+//                mOnShareListener.onFailure(new SocialError("share web error", ex));
+//            }
+//        }).execute();
 
-//        BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
-//                .continueWith(new ThumbDataContinuation(TAG, "shareWeb", mOnShareListener) {
-//                    @Override
-//                    public void onSuccess(byte[] thumbData) {
-//                        WXWebpageObject webPage = new WXWebpageObject();
-//                        webPage.webpageUrl = obj.getTargetUrl();
-//                        WXMediaMessage msg = new WXMediaMessage(webPage);
-//                        msg.title = obj.getTitle();
-//                        msg.description = obj.getSummary();
-//                        msg.thumbData = thumbData;
-//                        sendMsgToWx(msg, shareTarget, "web");
-//                    }
-//                }, Task.UI_THREAD_EXECUTOR);
+        BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
+                .continueWith(new ThumbDataContinuation(TAG, "shareWeb", mOnShareListener) {
+                    @Override
+                    public void onSuccess(byte[] thumbData) {
+                        WXWebpageObject webPage = new WXWebpageObject();
+                        webPage.webpageUrl = obj.getTargetUrl();
+                        WXMediaMessage msg = new WXMediaMessage(webPage);
+                        msg.title = obj.getTitle();
+                        msg.description = obj.getSummary();
+                        msg.thumbData = thumbData;
+                        sendMsgToWx(msg, shareTarget, "web");
+                    }
+                }, Task.UI_THREAD_EXECUTOR);
 
     }
 

@@ -76,7 +76,7 @@ public class ShareManager {
             @Override
             public Boolean then(Task<ShareObj> task) throws Exception {
                 if (task.isFaulted() || task.getResult() == null) {
-                    SocialError exception = new SocialError("onPrepareInBackground error", task.getError());
+                    SocialError exception = new SocialError(SocialError.CODE_COMMON_ERROR, "onPrepareInBackground error").exception(task.getError());
                     onShareListener.onFailure(exception);
                     return null;
                 }
@@ -87,7 +87,7 @@ public class ShareManager {
             @Override
             public Boolean then(Task<Boolean> task) throws Exception {
                 if (task.isFaulted()) {
-                    SocialError exception = new SocialError("ShareManager.share() error", task.getError());
+                    SocialError exception = new SocialError(SocialError.CODE_COMMON_ERROR,"ShareManager.share() error").exception(task.getError());
                     onShareListener.onFailure(exception);
                 }
                 return true;

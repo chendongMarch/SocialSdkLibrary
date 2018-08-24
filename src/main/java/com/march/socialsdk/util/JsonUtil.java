@@ -55,14 +55,12 @@ public class JsonUtil {
 
 
     public static <T> void startJsonRequest(final String url, final Class<T> clz, final Callback<T> callback) {
-        SocialLogUtil.e("开始请求" + url);
         Task.callInBackground(new Callable<T>() {
             @Override
             public T call() {
                 T object = null;
                 String json = SocialSdk.getRequestAdapter().getJson(url);
                 if (!TextUtils.isEmpty(json)) {
-                    SocialLogUtil.e("请求结果" + json);
                     object = getObject(json, clz);
                 }
                 return object;
@@ -73,11 +71,11 @@ public class JsonUtil {
                 if (!task.isFaulted() && task.getResult() != null) {
                     callback.onSuccess(task.getResult());
                 } else if (task.isFaulted()) {
-                    callback.onFailure(new SocialError("startJsonRequest error", task.getError()));
+                    callback.onFailure(new SocialError(SocialError.CODE_REQUEST_ERROR, task.getError()));
                 } else if (task.getResult() == null) {
-                    callback.onFailure(new SocialError("json 无法解析"));
+                    callback.onFailure(new SocialError(SocialError.CODE_PARSE_ERROR, "json 无法解析"));
                 } else {
-                    callback.onFailure(new SocialError("unKnow error"));
+                    callback.onFailure(new SocialError(SocialError.CODE_REQUEST_ERROR, "unKnow error"));
                 }
                 return true;
             }
@@ -85,7 +83,7 @@ public class JsonUtil {
             @Override
             public Object then(Task<Boolean> task) throws Exception {
                 if(task.isFaulted()) {
-                    callback.onFailure(new SocialError("未 handle 的错误"));
+                    callback.onFailure(new SocialError(SocialError.CODE_REQUEST_ERROR, "未 handle 的错误"));
                 }
                 return null;
             }

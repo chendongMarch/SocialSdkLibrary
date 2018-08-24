@@ -7,19 +7,19 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.march.socialsdk.SocialSdk;
+import com.march.socialsdk.SocialSdkConfig;
 import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.model.ShareObj;
-import com.march.socialsdk.SocialSdkConfig;
 import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformCreator;
 import com.march.socialsdk.platform.Target;
-import com.march.socialsdk.util.Util;
 import com.march.socialsdk.util.FileUtil;
 import com.march.socialsdk.util.SocialLogUtil;
+import com.march.socialsdk.util.Util;
 import com.tencent.connect.common.Constants;
 import com.tencent.connect.share.QQShare;
 import com.tencent.connect.share.QzonePublish;
@@ -128,7 +128,7 @@ public class QQPlatform extends AbsPlatform {
         if (rst) {
             mOnShareListener.onSuccess();
         } else {
-            mOnShareListener.onFailure(new SocialError("open app error"));
+            mOnShareListener.onFailure(new SocialError(SocialError.CODE_CANNOT_OPEN_ERROR, TAG + "#shareOpenApp#open app error"));
         }
     }
 
@@ -263,7 +263,7 @@ public class QQPlatform extends AbsPlatform {
         @Override
         public void onError(UiError uiError) {
             if (listener != null)
-                listener.onFailure(new SocialError("分享失败 " + parseUiError(uiError)));
+                listener.onFailure(new SocialError(SocialError.CODE_SDK_ERROR, TAG + "#IUiListenerWrap#分享失败 " + parseUiError(uiError)));
         }
 
         public void onError(SocialError e) {

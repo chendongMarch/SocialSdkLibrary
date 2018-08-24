@@ -13,15 +13,15 @@ import com.android.dingtalk.share.ddsharemodule.message.DDTextMessage;
 import com.android.dingtalk.share.ddsharemodule.message.DDWebpageMessage;
 import com.android.dingtalk.share.ddsharemodule.message.SendMessageToDD;
 import com.march.socialsdk.SocialSdk;
+import com.march.socialsdk.SocialSdkConfig;
 import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.model.ShareObj;
-import com.march.socialsdk.SocialSdkConfig;
 import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformCreator;
-import com.march.socialsdk.util.Util;
 import com.march.socialsdk.util.FileUtil;
+import com.march.socialsdk.util.Util;
 
 /**
  * CreateAt : 2018/2/11
@@ -76,7 +76,8 @@ public class DDPlatform extends AbsPlatform {
             case BaseResp.ErrCode.ERR_AUTH_DENIED:
             case BaseResp.ErrCode.ERR_SENT_FAILED:
             case BaseResp.ErrCode.ERR_UNSUPPORT:
-                mOnShareListener.onFailure(new SocialError("钉钉分享失败, code = " + baseResp.mErrCode + "，msg =" + baseResp.mErrStr));
+                mOnShareListener.onFailure(new SocialError(SocialError.CODE_SDK_ERROR,
+                        "钉钉分享失败, code = " + baseResp.mErrCode + "，msg =" + baseResp.mErrStr));
                 break;
             case BaseResp.ErrCode.ERR_USER_CANCEL:
                 mOnShareListener.onCancel();

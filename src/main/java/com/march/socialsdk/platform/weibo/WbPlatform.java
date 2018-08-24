@@ -6,20 +6,20 @@ import android.content.Intent;
 import android.net.Uri;
 
 import com.march.socialsdk.SocialSdk;
+import com.march.socialsdk.SocialSdkConfig;
 import com.march.socialsdk.common.SocialConstants;
 import com.march.socialsdk.common.ThumbDataContinuation;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.ShareObj;
-import com.march.socialsdk.SocialSdkConfig;
 import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformCreator;
 import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.util.BitmapUtil;
-import com.march.socialsdk.util.Util;
 import com.march.socialsdk.util.FileUtil;
 import com.march.socialsdk.util.SocialLogUtil;
+import com.march.socialsdk.util.Util;
 import com.sina.weibo.sdk.WbSdk;
 import com.sina.weibo.sdk.api.ImageObject;
 import com.sina.weibo.sdk.api.TextObject;
@@ -147,7 +147,7 @@ public class WbPlatform extends AbsPlatform {
                     break;
                 case WBConstants.ErrorCode.ERR_FAIL:
                     // 分享失败
-                    mOnShareListener.onFailure(new SocialError("微博分享失败"));
+                    mOnShareListener.onFailure(new SocialError(SocialError.CODE_SDK_ERROR, TAG + "#微博分享失败"));
                     break;
             }
         }
@@ -164,7 +164,7 @@ public class WbPlatform extends AbsPlatform {
         if (rst) {
             mOnShareListener.onSuccess();
         } else {
-            mOnShareListener.onFailure(new SocialError("open app error"));
+            mOnShareListener.onFailure(new SocialError(SocialError.CODE_CANNOT_OPEN_ERROR, "open app error"));
         }
     }
 

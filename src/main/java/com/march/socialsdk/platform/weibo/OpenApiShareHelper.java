@@ -52,23 +52,27 @@ public class OpenApiShareHelper {
                     @Override
                     public Boolean then(Task<String> task) throws Exception {
                         if (task.isFaulted() || TextUtils.isEmpty(task.getResult())) {
-                            throw new SocialError("open api 分享失败 " + task.getResult(), task.getError());
+                            throw new SocialError(SocialError.CODE_PARSE_ERROR, "open api 分享失败 " + task.getResult()).exception(task.getError());
                         } else {
                             JSONObject jsonObject = new JSONObject(task.getResult());
                             if (jsonObject.has("id") && jsonObject.get("id") != null) {
                                 mOnShareListener.onSuccess();
                                 return true;
                             } else {
-                                throw new SocialError("open api 分享失败 " + task.getResult());
+                                throw new SocialError(SocialError.CODE_PARSE_ERROR, "open api 分享失败 " + task.getResult());
                             }
                         }
                     }
                 }, Task.UI_THREAD_EXECUTOR).continueWith(new Continuation<Boolean, Boolean>() {
                     @Override
                     public Boolean then(Task<Boolean> task) {
-                        if (task.isFaulted()) {
-                            task.getError().printStackTrace();
-                            mOnShareListener.onFailure(new SocialError("open api 分享失败", task.getError()));
+                        if (task != null && task.isFaulted()) {
+                            Exception error = task.getError();
+                            if (error instanceof SocialError) {
+                                mOnShareListener.onFailure((SocialError) error);
+                            } else {
+                                mOnShareListener.onFailure(new SocialError(SocialError.CODE_REQUEST_ERROR, "open api 分享失败").exception(error));
+                            }
                         }
                         return true;
                     }
@@ -76,6 +80,9 @@ public class OpenApiShareHelper {
             }
         });
     }
+
+    public static final String TAG = OpenApiShareHelper.class.getSimpleName();
+
 
     class WbAuthListenerImpl implements WbAuthListener {
         @Override
@@ -89,7 +96,7 @@ public class OpenApiShareHelper {
 
         @Override
         public void onFailure(WbConnectErrorMessage msg) {
-            mOnShareListener.onFailure(new SocialError("wb auth fail" + msg.getErrorCode() + " " + msg.getErrorMessage()));
+            mOnShareListener.onFailure(new SocialError(SocialError.CODE_SDK_ERROR, TAG + "#WbAuthListenerImpl#wb auth fail," + msg.getErrorCode() + " " + msg.getErrorMessage()));
         }
     }
 }
