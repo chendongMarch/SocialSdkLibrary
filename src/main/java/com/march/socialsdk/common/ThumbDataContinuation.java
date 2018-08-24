@@ -29,7 +29,7 @@ public abstract class ThumbDataContinuation implements Continuation<byte[], Obje
     public Object then(Task<byte[]> task) throws Exception {
         if (task.isFaulted() || task.getResult() == null) {
             SocialLogUtil.e(tag, "图片压缩失败 -> " + msg);
-            onShareListener.onFailure(new SocialError(msg, task.getError()));
+            onShareListener.onFailure(new SocialError(SocialError.CODE_IMAGE_COMPRESS_ERROR, msg).exception(task.getError()));
         } else {
             onSuccess(task.getResult());
         }

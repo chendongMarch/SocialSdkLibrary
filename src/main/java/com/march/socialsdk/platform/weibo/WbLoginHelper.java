@@ -76,7 +76,7 @@ class WbLoginHelper implements Recyclable {
 
             @Override
             public void onFailure(WbConnectErrorMessage msg) {
-                loginListener.onFailure(new SocialError(msg.getErrorCode() + " " + msg.getErrorMessage()));
+                loginListener.onFailure(new SocialError(SocialError.CODE_SDK_ERROR, TAG + "#login#connect error," + msg.getErrorCode() + " " + msg.getErrorMessage()));
             }
         });
     }

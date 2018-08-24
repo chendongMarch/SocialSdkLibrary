@@ -120,7 +120,7 @@ class WxLoginHelper {
                     AccessToken.saveToken(mContextRef.get(), AccessToken.WECHAT_TOKEN_KEY, token);
                     getUserInfoByValidToken(token);
                 } else {
-                    SocialError exception = new SocialError("获取access_token失败 code = " + token.getErrcode() + "  msg = " + token.getErrmsg());
+                    SocialError exception = new SocialError(SocialError.CODE_REQUEST_ERROR, TAG + "#getAccessTokenByCode#获取access_token失败 code = " + token.getErrcode() + "  msg = " + token.getErrmsg());
                     mOnLoginListener.onFailure(exception);
                 }
             }
@@ -178,7 +178,7 @@ class WxLoginHelper {
                 if (wxUserInfo.isNoError()) {
                     mOnLoginListener.onSuccess(new LoginResult(mLoginType, wxUserInfo, token));
                 } else {
-                    mOnLoginListener.onFailure(new SocialError("wx_login code = " + wxUserInfo.getErrcode() + " ,msg = " + wxUserInfo.getErrmsg()));
+                    mOnLoginListener.onFailure(new SocialError(SocialError.CODE_REQUEST_ERROR, TAG + "#getUserInfoByValidToken#login code = " + wxUserInfo.getErrcode() + " ,msg = " + wxUserInfo.getErrmsg()));
                 }
             }
 

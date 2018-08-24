@@ -86,7 +86,7 @@ class QQLoginHelper {
             QQAccessToken qqToken = JsonUtil.getObject(jsonResponse.toString(), QQAccessToken.class);
             SocialLogUtil.e(TAG, "获取到 qq token = ", qqToken);
             if (qqToken == null) {
-                onLoginListener.onFailure(new SocialError("qq token is null, may be parse json error"));
+                onLoginListener.onFailure(new SocialError(SocialError.CODE_PARSE_ERROR, TAG + "#LoginUiListener#qq token is null, data = " + qqToken));
                 return;
             }
             // 保存token
@@ -99,7 +99,7 @@ class QQLoginHelper {
 
         @Override
         public void onError(UiError e) {
-            onLoginListener.onFailure(new SocialError("qq,获取用户信息失败 " + QQPlatform.parseUiError(e)));
+            onLoginListener.onFailure(new SocialError(SocialError.CODE_SDK_ERROR, TAG + "#LoginUiListener#获取用户信息失败 " + QQPlatform.parseUiError(e)));
         }
 
         @Override
@@ -114,11 +114,10 @@ class QQLoginHelper {
         info.getUserInfo(new IUiListener() {
             @Override
             public void onComplete(Object object) {
-                SocialLogUtil.e(TAG, "qq 获取到用户信息 = " + object);
                 QQUser qqUserInfo = JsonUtil.getObject(object.toString(), QQUser.class);
                 if (qqUserInfo == null) {
                     if (onLoginListener != null) {
-                        onLoginListener.onFailure(new SocialError("解析 qq user 错误"));
+                        onLoginListener.onFailure(new SocialError(SocialError.CODE_PARSE_ERROR, TAG + "#getUserInfo#解析 qq user 错误, data = " + object.toString()));
                     }
                 } else {
                     qqUserInfo.setOpenId(mTencentApi.getOpenId());
@@ -130,7 +129,7 @@ class QQLoginHelper {
 
             @Override
             public void onError(UiError e) {
-                onLoginListener.onFailure(new SocialError("qq获取用户信息失败  " + QQPlatform.parseUiError(e)));
+                onLoginListener.onFailure(new SocialError(SocialError.CODE_SDK_ERROR, TAG + "#getUserInfo#qq获取用户信息失败  " + QQPlatform.parseUiError(e)));
             }
 
             @Override
