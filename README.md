@@ -103,13 +103,15 @@ String wxSecretKey = getString(R.string.WX_SECRET_KEY);
 String sinaAppId = getString(R.string.SINA_APP_ID);
 String ddAppId = getString(R.string.DD_APP_ID);
 SocialSdkConfig config = new SocialSdkConfig(this)
+        // 开启调试
         .setDebug(true)
+        // 配置钉钉
         .dd(ddAppId)
         // 配置qq
         .qq(qqAppId)
-        // 配置wx
+        // 配置微信
         .wechat(wxAppId, wxSecretKey)
-        // 配置sina
+        // 配置微博
         .sina(sinaAppId)
         // 配置Sina的RedirectUrl，有默认值，如果是官网默认的不需要设置
         .sinaRedirectUrl("http://open.manfenmm.com/bbpp/app/weibo/common.php")
@@ -330,7 +332,7 @@ public ShareObj onPrepareInBackground(int shareTarget,ShareObj obj) {
 }
 ```
 
-看一个实现，主要功能是在分享之前用来将网络图下载到本地然后更新 `ShareObj` 指向的图片地址，这样就可以支持网络图片的直接分享，当然，`SocialSdk` 目前已经支持网络图片的分享，不需要再在外面重写对象。
+看一个实现，主要功能是在分享之前用来将网络图下载到本地然后更新 `ShareObj` 指向的图片地址，这样就可以支持网络图片的直接分享，当然，`SocialSdk` 目前已经支持网络图片的分享，这只是一个例子。
 
 ```java
 public class MyShareListener extends SimpleShareListener {
@@ -409,4 +411,22 @@ CODE_REQUEST_ERROR        = 110; // 网络请求发生错误
 CODE_CANNOT_OPEN_ERROR    = 111; // 无法启动 app
 CODE_PARSE_ERROR          = 112; // 数据解析错误
 CODE_IMAGE_COMPRESS_ERROR = 113; // 图片压缩失败
+```
+
+例如你可以这么做：
+
+```java
+mOnShareListener = new SimpleShareListener() {
+    @Override
+    public void onFailure(SocialError e) {
+        showMsg("分享失败  " + e.toString());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (e.getErrorCode() == SocialError.CODE_STORAGE_READ_ERROR) {
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
+            } else if (e.getErrorCode() == SocialError.CODE_STORAGE_WRITE_ERROR) {
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 100);
+            }
+        }
+    }
+};
 ```
