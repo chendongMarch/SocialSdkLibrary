@@ -2,7 +2,7 @@
 # SocialSDK
 
 
-![](http://cdn1.showjoy.com/shop/images/20180828/PO7BSBSNC1CINS52O1F31535431517199.png)
+![](http://cdn1.showjoy.com/shop/images/20180828/MLI1YQGFQLZBRO3VKH6U1535432744013.png)
 
 使用 **微博**、**QQ**、**微信**、**钉钉** 原生 `SDK` 接入，提供这些平台的登录、分享功能支持。针对业务逻辑对各个平台的接口进行封装，对外提供一致的表现，在减轻接入压力的同时，又能获得原生 `SDK` 最大的灵活性。
 
