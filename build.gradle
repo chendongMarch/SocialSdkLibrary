@@ -1,13 +1,11 @@
-def libs = rootProject.ext.libs
-
 dependencies {
 
     implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation libs.bolts
+    implementation 'com.parse.bolts:bolts-tasks:1.4.0' // 异步任务
 
-    implementation libs.wechatSocial // 微信
+    implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:5.1.4' // 微信
     implementation 'com.sina.weibo.sdk:core:4.1.0:openDefaultRelease@aar' // 微博
     implementation files('libs/open_sdk_r5923_lite.jar') // QQ
-    implementation files('libs/libddshare.jar') // dingding
+    implementation files('libs/libddshare.jar') // 钉钉
 }
 
