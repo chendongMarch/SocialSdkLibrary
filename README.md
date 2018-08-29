@@ -102,16 +102,16 @@ String wxAppId = getString(R.string.WX_APP_ID);
 String wxSecretKey = getString(R.string.WX_SECRET_KEY);
 String sinaAppId = getString(R.string.SINA_APP_ID);
 String ddAppId = getString(R.string.DD_APP_ID);
-SocialSdkConfig config = new SocialSdkConfig(this)
+SocialSdkConfig config = SocialSdkConfig.create(this)
         // 开启调试
-        .setDebug(true)
+        .debug(true)
         // 配置钉钉
         .dd(ddAppId)
         // 配置qq
         .qq(qqAppId)
-        // 配置微信
+        // 配置wx
         .wechat(wxAppId, wxSecretKey)
-        // 配置微博
+        // 配置sina
         .sina(sinaAppId)
         // 配置Sina的RedirectUrl，有默认值，如果是官网默认的不需要设置
         .sinaRedirectUrl("http://open.manfenmm.com/bbpp/app/weibo/common.php")

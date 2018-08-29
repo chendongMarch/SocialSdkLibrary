@@ -18,39 +18,50 @@ import java.util.List;
 
 public class SocialSdkConfig {
 
-    public static final String SHARE_CACHE_DIR_NAME = "toShare";
+    private static final String SHARE_CACHE_DIR_NAME = "toShare";
 
     // 调试配置
-    private boolean isDebug = false;
+    private boolean       debug;
     // 应用名
-    private String  appName;
+    private String        appName;
     // 微信配置
-    private String  wxAppId;
-    private String  wxSecretKey;
-    private boolean onlyAuthCode;
+    private String        wxAppId;
+    private String        wxSecretKey;
+    private boolean       onlyAuthCode;
     // qq 配置
-    private String  qqAppId;
+    private String        qqAppId;
     // 微博配置
-    private String  sinaAppId;
-    private String sinaRedirectUrl = SocialConstants.REDIRECT_URL;
-    private String sinaScope       = SocialConstants.SCOPE;
+    private String        sinaAppId;
+    private String        sinaRedirectUrl;
+    private String        sinaScope;
     // 存储路径，不允许更改
-    private String shareCacheDirPath;
+    private String        cacheDir;
     // 钉钉配置
-    private String ddAppId;
+    private String        ddAppId;
     // 图片默认资源
-    private int    defImageResId;
-    private List<Integer> disablePlatforms = new ArrayList<>();
+    private int           defImageResId;
+    private List<Integer> disablePlatforms;
 
-    public SocialSdkConfig(Context context) {
-        this.appName = context.getString(R.string.app_name);
+    // 静态工厂
+    public static SocialSdkConfig create(Context context) {
+        SocialSdkConfig config = new SocialSdkConfig();
+        config.appName = context.getString(R.string.app_name);
         File shareDir = new File(context.getExternalCacheDir(), SHARE_CACHE_DIR_NAME);
-        shareDir.mkdirs();
-        shareCacheDirPath = shareDir.getAbsolutePath();
+        config.cacheDir = (shareDir.mkdirs() ? shareDir : context.getCacheDir()).getAbsolutePath();
+        // init
+        config.disablePlatforms = new ArrayList<>();
+        config.sinaRedirectUrl = SocialConstants.REDIRECT_URL;
+        config.sinaScope = SocialConstants.SCOPE;
+        config.debug = false;
+        return config;
     }
 
-    public String getShareCacheDirPath() {
-        return shareCacheDirPath;
+    private SocialSdkConfig() {
+
+    }
+
+    public String getCacheDir() {
+        return cacheDir;
     }
 
     public SocialSdkConfig disablePlatform(@Target.PlatformTarget int platform) {
@@ -101,6 +112,11 @@ public class SocialSdkConfig {
         return this;
     }
 
+    public SocialSdkConfig debug(boolean debug) {
+        this.debug = debug;
+        return this;
+    }
+
     public int getDefImageResId() {
         return defImageResId;
     }
@@ -138,12 +154,7 @@ public class SocialSdkConfig {
     }
 
     public boolean isDebug() {
-        return isDebug;
-    }
-
-    public SocialSdkConfig setDebug(boolean debug) {
-        isDebug = debug;
-        return this;
+        return debug;
     }
 
     public boolean isOnlyAuthCode() {
@@ -165,7 +176,7 @@ public class SocialSdkConfig {
                 ", sinaAppId='" + sinaAppId + '\'' +
                 ", sinaRedirectUrl='" + sinaRedirectUrl + '\'' +
                 ", sinaScope='" + sinaScope + '\'' +
-                ", shareCacheDirPath='" + shareCacheDirPath + '\'' +
+                ", cacheDir='" + cacheDir + '\'' +
                 '}';
     }
 }
