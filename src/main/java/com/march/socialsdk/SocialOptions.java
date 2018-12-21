@@ -30,13 +30,13 @@ public class SocialOptions {
     // qq 配置
     private String        qqAppId;
     // 微博配置
-    private String        sinaAppId;
-    private String        sinaRedirectUrl;
-    private String        sinaScope;
-    // 存储路径，不允许更改
-    private String        cacheDir;
+    private String wbAppId;
+    private String wbRedirectUrl;
+    private String wbScope;
     // 钉钉配置
     private String        ddAppId;
+    // 存储路径，不允许更改
+    private String        cacheDir;
     // 图片默认资源
     private int failImgRes;
     // token 有效时间，默认1天
@@ -52,14 +52,49 @@ public class SocialOptions {
         config.cacheDir = (shareDir.mkdirs() ? shareDir : context.getCacheDir()).getAbsolutePath();
         // init
         config.platformFactoryArray = new SparseArray<>();
-        config.sinaRedirectUrl = SocialValues.REDIRECT_URL;
-        config.sinaScope = SocialValues.SCOPE;
+        config.wbRedirectUrl = SocialValues.REDIRECT_URL;
+        config.wbScope = SocialValues.SCOPE;
         config.debug = false;
         return config;
     }
 
     private SocialOptions() {
 
+    }
+
+
+    public SocialOptions dd(String ddAppId) {
+        this.ddAppId = ddAppId;
+        return this;
+    }
+
+    public SocialOptions qq(String qqAppId) {
+        this.qqAppId = qqAppId;
+        return this;
+    }
+
+    public SocialOptions wx(String wxAppId, String wxSecretKey) {
+        this.wxSecretKey = wxSecretKey;
+        this.wxAppId = wxAppId;
+        return this;
+    }
+
+    public SocialOptions wx(String wxAppId, String wxSecretKey, boolean onlyAuthCode) {
+        this.onlyAuthCode = onlyAuthCode;
+        this.wxSecretKey = wxSecretKey;
+        this.wxAppId = wxAppId;
+        return this;
+    }
+
+    public SocialOptions wb(String wbAppId) {
+        this.wbAppId = wbAppId;
+        return this;
+    }
+
+    public SocialOptions wb(String wbAppId, String wbRedirectUrl) {
+        this.wbAppId = wbAppId;
+        this.wbRedirectUrl = wbRedirectUrl;
+        return this;
     }
 
     public SocialOptions registerPlatform(PlatformFactory factory) {
@@ -73,43 +108,6 @@ public class SocialOptions {
         return this;
     }
 
-    public SocialOptions dd(String ddAppId) {
-        this.ddAppId = ddAppId;
-        return this;
-    }
-
-    public SocialOptions qq(String qqAppId) {
-        this.qqAppId = qqAppId;
-        return this;
-    }
-
-    public SocialOptions wechat(String wxAppId, String wxSecretKey) {
-        this.wxSecretKey = wxSecretKey;
-        this.wxAppId = wxAppId;
-        return this;
-    }
-
-    public SocialOptions wechat(String wxAppId, String wxSecretKey, boolean onlyAuthCode) {
-        this.onlyAuthCode = onlyAuthCode;
-        this.wxSecretKey = wxSecretKey;
-        this.wxAppId = wxAppId;
-        return this;
-    }
-
-    public SocialOptions sina(String sinaAppId) {
-        this.sinaAppId = sinaAppId;
-        return this;
-    }
-
-    public SocialOptions sinaScope(String sinaScope) {
-        this.sinaScope = sinaScope;
-        return this;
-    }
-
-    public SocialOptions sinaRedirectUrl(String sinaRedirectUrl) {
-        this.sinaRedirectUrl = sinaRedirectUrl;
-        return this;
-    }
 
     public SocialOptions failImgRes(int failImgRes) {
         this.failImgRes = failImgRes;
@@ -157,16 +155,16 @@ public class SocialOptions {
         return qqAppId;
     }
 
-    public String getSinaAppId() {
-        return sinaAppId;
+    public String getWbAppId() {
+        return wbAppId;
     }
 
-    public String getSinaRedirectUrl() {
-        return sinaRedirectUrl;
+    public String getWbRedirectUrl() {
+        return wbRedirectUrl;
     }
 
-    public String getSinaScope() {
-        return sinaScope;
+    public String getWbScope() {
+        return wbScope;
     }
 
     public boolean isDebug() {
@@ -185,9 +183,9 @@ public class SocialOptions {
                 ", wxSecretKey='" + wxSecretKey + '\'' +
                 ", qqAppId='" + qqAppId + '\'' +
                 ", ddAppId='" + ddAppId + '\'' +
-                ", sinaAppId='" + sinaAppId + '\'' +
-                ", sinaRedirectUrl='" + sinaRedirectUrl + '\'' +
-                ", sinaScope='" + sinaScope + '\'' +
+                ", wbAppId='" + wbAppId + '\'' +
+                ", wbRedirectUrl='" + wbRedirectUrl + '\'' +
+                ", wbScope='" + wbScope + '\'' +
                 ", cacheDir='" + cacheDir + '\'' +
                 '}';
     }
