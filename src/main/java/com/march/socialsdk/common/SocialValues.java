@@ -1,12 +1,21 @@
 package com.march.socialsdk.common;
 
+import com.tencent.mm.opensdk.modelmsg.WXMiniProgramObject;
+
 /**
  * CreateAt : 2017/5/19
  * Describe : 常量类
  *
  * @author chendong
  */
-public class SocialConstants {
+public class SocialValues {
+
+    /**
+     * 微信小程序分享类型
+     */
+    public static final int WX_MINI_TYPE_RELEASE = WXMiniProgramObject.MINIPTOGRAM_TYPE_RELEASE;
+    public static final int WX_MINI_TYPE_PREVIEW = WXMiniProgramObject.MINIPROGRAM_TYPE_PREVIEW;
+    public static final int WX_MINI_TYPE_TEST = WXMiniProgramObject.MINIPROGRAM_TYPE_TEST;
 
     public static final String QQ_CREATOR = "com.march.socialsdk.platform.qq.QQPlatform$Creator";
     public static final String WX_CREATOR = "com.march.socialsdk.platform.wechat.WxPlatform$Creator";

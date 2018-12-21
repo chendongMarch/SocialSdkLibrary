@@ -14,8 +14,9 @@ import com.android.dingtalk.share.ddsharemodule.message.DDWebpageMessage;
 import com.android.dingtalk.share.ddsharemodule.message.SendMessageToDD;
 import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.SocialSdkConfig;
-import com.march.socialsdk.common.SocialConstants;
+import com.march.socialsdk.common.SocialValues;
 import com.march.socialsdk.exception.SocialError;
+import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.IPlatform;
@@ -31,7 +32,6 @@ import com.march.socialsdk.util.Util;
  */
 public class DDPlatform extends AbsPlatform {
 
-    private IDDShareApi mDdShareApi;
 
     public static class Creator implements PlatformCreator {
         @Override
@@ -45,11 +45,12 @@ public class DDPlatform extends AbsPlatform {
         }
     }
 
-    DDPlatform(Context context, String appId, String appName) {
+    private IDDShareApi mDdShareApi;
+
+    private DDPlatform(Context context, String appId, String appName) {
         super(appId, appName);
         mDdShareApi = DDShareApiFactory.createDDShareApi(context, appId, false);
     }
-
 
     @Override
     public void recycle() {
@@ -76,7 +77,7 @@ public class DDPlatform extends AbsPlatform {
             case BaseResp.ErrCode.ERR_AUTH_DENIED:
             case BaseResp.ErrCode.ERR_SENT_FAILED:
             case BaseResp.ErrCode.ERR_UNSUPPORT:
-                mOnShareListener.onFailure(new SocialError(SocialError.CODE_SDK_ERROR,
+                mOnShareListener.onFailure(SocialError.make(SocialError.CODE_SDK_ERROR,
                         "钉钉分享失败, code = " + baseResp.mErrCode + "，msg =" + baseResp.mErrStr));
                 break;
             case BaseResp.ErrCode.ERR_USER_CANCEL:
@@ -91,12 +92,42 @@ public class DDPlatform extends AbsPlatform {
     }
 
     @Override
-    protected void shareOpenApp(int shareTarget, Activity activity, ShareObj obj) {
-        mDdShareApi.openDDApp();
+    public void login(Activity activity, OnLoginListener onLoginListener) {
+        throw new UnsupportedOperationException("钉钉不支持登录操作");
     }
 
     @Override
-    protected void shareText(int shareTarget, Activity activity, ShareObj obj) {
+    protected void dispatchShare(Activity activity, int shareTarget, ShareObj obj) {
+        switch (obj.getShareObjType()) {
+            case ShareObj.SHARE_TYPE_OPEN_APP:
+                mDdShareApi.openDDApp();
+                break;
+            case ShareObj.SHARE_TYPE_TEXT:
+                shareText(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_IMAGE:
+                shareImage(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_APP:
+                shareWeb(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_WEB:
+                shareWeb(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_MUSIC:
+                shareWeb(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_VIDEO:
+                shareVideo(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_WX_MINI:
+                shareWeb(shareTarget, activity, obj);
+                break;
+        }
+    }
+
+    // 分享文字
+    private void shareText(int shareTarget, Activity activity, ShareObj obj) {
         //初始化一个DDTextMessage对象
         DDTextMessage textObject = new DDTextMessage();
         textObject.mText = obj.getSummary();
@@ -111,8 +142,8 @@ public class DDPlatform extends AbsPlatform {
         mDdShareApi.sendReq(req);
     }
 
-    @Override
-    protected void shareImage(int shareTarget, Activity activity, ShareObj obj) {
+    // 分享图片
+    private void shareImage(int shareTarget, Activity activity, ShareObj obj) {
         //初始化一个DDImageMessage
         DDImageMessage imageObject = new DDImageMessage();
         // 支持网络图片
@@ -129,14 +160,8 @@ public class DDPlatform extends AbsPlatform {
         mDdShareApi.sendReq(req);
     }
 
-
-    @Override
-    protected void shareApp(int shareTarget, Activity activity, ShareObj obj) {
-        shareWeb(shareTarget, activity, obj);
-    }
-
-    @Override
-    protected void shareWeb(int shareTarget, Activity activity, ShareObj obj) {
+    // 分享网页
+    private void shareWeb(int shareTarget, Activity activity, ShareObj obj) {
         //初始化一个DDWebpageMessage并填充网页链接地址
         DDWebpageMessage webPageObject = new DDWebpageMessage();
         webPageObject.mUrl = obj.getTargetUrl();
@@ -157,19 +182,14 @@ public class DDPlatform extends AbsPlatform {
         mDdShareApi.sendReq(webReq);
     }
 
-    @Override
-    protected void shareMusic(int shareTarget, Activity activity, ShareObj obj) {
-        shareWeb(shareTarget, activity, obj);
-    }
-
-    @Override
-    protected void shareVideo(int shareTarget, Activity activity, ShareObj obj) {
+    // 分享视频
+    private void shareVideo(int shareTarget, Activity activity, ShareObj obj) {
         if (FileUtil.isHttpPath(obj.getMediaPath())) {
             shareWeb(shareTarget, activity, obj);
         } else if (FileUtil.isExist(obj.getMediaPath())) {
-            shareVideoByIntent(activity, obj, SocialConstants.DD_PKG, SocialConstants.DD_FRIEND_PAGE);
+            shareVideoByIntent(activity, obj, SocialValues.DD_PKG, SocialValues.DD_FRIEND_PAGE);
         } else {
-            mOnShareListener.onFailure(new SocialError(SocialError.CODE_FILE_NOT_FOUND));
+            mOnShareListener.onFailure(SocialError.make(SocialError.CODE_FILE_NOT_FOUND));
         }
     }
 

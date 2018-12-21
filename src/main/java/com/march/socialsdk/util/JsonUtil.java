@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.adapter.IJsonAdapter;
+import com.march.socialsdk.common.SocialUtil;
 import com.march.socialsdk.exception.SocialError;
 
 import java.util.concurrent.Callable;
@@ -37,7 +38,7 @@ public class JsonUtil {
             try {
                 return jsonAdapter.toObj(jsonString, cls);
             } catch (Exception e) {
-                SocialLogUtil.e(TAG, e);
+                SocialUtil.t(TAG, e);
             }
         }
         return null;
@@ -48,7 +49,7 @@ public class JsonUtil {
         try {
             return jsonAdapter.toJson(object);
         } catch (Exception e) {
-            SocialLogUtil.e(TAG, e);
+            SocialUtil.t(TAG, e);
         }
         return null;
     }
@@ -71,11 +72,11 @@ public class JsonUtil {
                 if (!task.isFaulted() && task.getResult() != null) {
                     callback.onSuccess(task.getResult());
                 } else if (task.isFaulted()) {
-                    callback.onFailure(new SocialError(SocialError.CODE_REQUEST_ERROR, task.getError()));
+                    callback.onFailure(SocialError.make(SocialError.CODE_REQUEST_ERROR, "", task.getError()));
                 } else if (task.getResult() == null) {
-                    callback.onFailure(new SocialError(SocialError.CODE_PARSE_ERROR, "json 无法解析"));
+                    callback.onFailure(SocialError.make(SocialError.CODE_PARSE_ERROR, "json 无法解析"));
                 } else {
-                    callback.onFailure(new SocialError(SocialError.CODE_REQUEST_ERROR, "unKnow error"));
+                    callback.onFailure(SocialError.make(SocialError.CODE_REQUEST_ERROR, "unKnow error"));
                 }
                 return true;
             }
@@ -83,7 +84,7 @@ public class JsonUtil {
             @Override
             public Object then(Task<Boolean> task) throws Exception {
                 if(task.isFaulted()) {
-                    callback.onFailure(new SocialError(SocialError.CODE_REQUEST_ERROR, "未 handle 的错误"));
+                    callback.onFailure(SocialError.make(SocialError.CODE_REQUEST_ERROR, "未 handle 的错误"));
                 }
                 return null;
             }

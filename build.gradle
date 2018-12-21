@@ -1,6 +1,7 @@
-dependencies {
+apply from: '../scripts/library.gradle'
 
-    implementation 'com.android.support:appcompat-v7:27.1.1'
+dependencies {
+    compileOnly libs.appcompat_v7
     implementation 'com.parse.bolts:bolts-tasks:1.4.0' // 异步任务
 
     implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:5.1.4' // 微信
@@ -8,4 +9,3 @@ dependencies {
     implementation files('libs/open_sdk_r5923_lite.jar') // QQ
     implementation files('libs/libddshare.jar') // 钉钉
 }
-

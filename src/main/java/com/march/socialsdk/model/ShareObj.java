@@ -1,8 +1,11 @@
 package com.march.socialsdk.model;
 
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
+
+import com.march.socialsdk.common.SocialKeys;
 
 /**
  * CreateAt : 2016/12/28
@@ -21,7 +24,8 @@ public class ShareObj implements Parcelable {
     public static final int SHARE_TYPE_WEB = 0x44; // 分享web
     public static final int SHARE_TYPE_MUSIC = 0x45; // 分享音乐
     public static final int SHARE_TYPE_VIDEO = 0x46; // 分享视频
-    public static final int SHARE_OPEN_APP = 0x99; // 打开 app
+    public static final int SHARE_TYPE_OPEN_APP = 0x47; // 打开 app
+    public static final int SHARE_TYPE_WX_MINI = 0x48; // 微信小程序分享
 
     // 分享对象的类型
     private int shareObjType;
@@ -38,67 +42,87 @@ public class ShareObj implements Parcelable {
     private String mediaPath;
     // 音视频时间
     private int duration = 10;
-    // 附加信息
-    private Parcelable extraTag;
     // 新浪分享带不带文字
     private boolean isSinaWithSummary = true;
     // 新浪分享带不带图片
     private boolean isSinaWithPicture = false;
     // 使用本地 intent 打开，分享本地视频用
     private boolean isShareByIntent = false;
+    // 附加信息
+    private Bundle extra;
 
     // 直接打开对应app
     public static ShareObj buildOpenAppObj() {
-        return new ShareObj(SHARE_OPEN_APP);
+        return new ShareObj(SHARE_TYPE_OPEN_APP);
     }
 
     // 分享文字，qq 好友原本不支持，使用intent兼容
     public static ShareObj buildTextObj(String title, String summary) {
-        ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_TEXT);
-        shareMediaObj.setTitle(title);
-        shareMediaObj.setSummary(summary);
-        return shareMediaObj;
+        ShareObj shareObj = new ShareObj(SHARE_TYPE_TEXT);
+        shareObj.setTitle(title);
+        shareObj.setSummary(summary);
+        return shareObj;
     }
 
     // 分享图片
     public static ShareObj buildImageObj(String path) {
-        ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_IMAGE);
-        shareMediaObj.setThumbImagePath(path);
-        return shareMediaObj;
+        ShareObj shareObj = new ShareObj(SHARE_TYPE_IMAGE);
+        shareObj.setThumbImagePath(path);
+        return shareObj;
     }
 
     // 分享图片，带描述，qq微信好友会分为两条消息发送
     public static ShareObj buildImageObj(String path, String summary) {
-        ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_IMAGE);
-        shareMediaObj.setThumbImagePath(path);
-        shareMediaObj.setSummary(summary);
-        return shareMediaObj;
+        ShareObj shareObj = new ShareObj(SHARE_TYPE_IMAGE);
+        shareObj.setThumbImagePath(path);
+        shareObj.setSummary(summary);
+        return shareObj;
     }
 
     // 应用分享，qq支持，其他平台使用 web 分享兼容
     public static ShareObj buildAppObj(String title, String summary
             , String thumbImagePath, String targetUrl) {
-        ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_APP);
-        shareMediaObj.init(title, summary, thumbImagePath, targetUrl);
-        return shareMediaObj;
+        ShareObj shareObj = new ShareObj(SHARE_TYPE_APP);
+        shareObj.init(title, summary, thumbImagePath, targetUrl);
+        return shareObj;
     }
 
     // 分享web，打开链接
     public static ShareObj buildWebObj(String title, String summary
             , String thumbImagePath, String targetUrl) {
-        ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_WEB);
-        shareMediaObj.init(title, summary, thumbImagePath, targetUrl);
-        return shareMediaObj;
+        ShareObj shareObj = new ShareObj(SHARE_TYPE_WEB);
+        shareObj.init(title, summary, thumbImagePath, targetUrl);
+        return shareObj;
+    }
+
+    // 构建微信小程序分享对象
+    public static ShareObj buildWxMiniObj(String title,
+            String summary,
+            String thumbImagePath,
+            String targetUrl,
+            int releaseType, // 类型
+            String originId, // 原始 id
+            String pagePath // 页面路径
+    ) {
+        ShareObj shareObj = new ShareObj(SHARE_TYPE_WX_MINI);
+        shareObj.init(title, summary, thumbImagePath, targetUrl);
+        if (shareObj.extra == null) {
+            shareObj.extra = new Bundle();
+        }
+        shareObj.extra.putString(SocialKeys.KEY_WX_MINI_ORIGIN_ID, originId);
+        shareObj.extra.putInt(SocialKeys.KEY_WX_MINI_TYPE, releaseType);
+        shareObj.extra.putString(SocialKeys.KEY_WX_MINI_PATH, pagePath);
+        return shareObj;
     }
 
     // 分享音乐,qq空间不支持，使用web分享
     public static ShareObj buildMusicObj(String title, String summary
             , String thumbImagePath, String targetUrl, String mediaPath, int duration) {
-        ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_MUSIC);
-        shareMediaObj.init(title, summary, thumbImagePath, targetUrl);
-        shareMediaObj.setMediaPath(mediaPath);
-        shareMediaObj.setDuration(duration);
-        return shareMediaObj;
+        ShareObj shareObj = new ShareObj(SHARE_TYPE_MUSIC);
+        shareObj.init(title, summary, thumbImagePath, targetUrl);
+        shareObj.setMediaPath(mediaPath);
+        shareObj.setDuration(duration);
+        return shareObj;
     }
 
     // 分享视频，
@@ -106,40 +130,40 @@ public class ShareObj implements Parcelable {
     // 支持网络视频
     public static ShareObj buildVideoObj(String title, String summary
             , String thumbImagePath, String targetUrl, String mediaPath, int duration) {
-        ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_VIDEO);
-        shareMediaObj.init(title, summary, thumbImagePath, targetUrl);
-        shareMediaObj.setMediaPath(mediaPath);
-        shareMediaObj.setDuration(duration);
-        return shareMediaObj;
+        ShareObj shareObj = new ShareObj(SHARE_TYPE_VIDEO);
+        shareObj.init(title, summary, thumbImagePath, targetUrl);
+        shareObj.setMediaPath(mediaPath);
+        shareObj.setDuration(duration);
+        return shareObj;
     }
 
     // 本地视频
     public static ShareObj buildVideoObj(String title, String summary, String localVideoPath) {
-        ShareObj shareMediaObj = new ShareObj(SHARE_TYPE_VIDEO);
-        shareMediaObj.setMediaPath(localVideoPath);
-        shareMediaObj.setShareByIntent(true);
-        shareMediaObj.setTitle(title);
-        shareMediaObj.setSummary(summary);
-        return shareMediaObj;
+        ShareObj shareObj = new ShareObj(SHARE_TYPE_VIDEO);
+        shareObj.setMediaPath(localVideoPath);
+        shareObj.setShareByIntent(true);
+        shareObj.setTitle(title);
+        shareObj.setSummary(summary);
+        return shareObj;
     }
 
-    public ShareObj(int shareObjType) {
+    private ShareObj(int shareObjType) {
         this.shareObjType = shareObjType;
     }
 
-    public void init(String title, String summary, String thumbImagePath, String targetUrl) {
+    private void init(String title, String summary, String thumbImagePath, String targetUrl) {
         setTitle(title);
         setSummary(summary);
         setThumbImagePath(thumbImagePath);
         setTargetUrl(targetUrl);
     }
 
-    public <T extends Parcelable> T getExtraTag() {
-        return (T) extraTag;
+    public Bundle getExtra() {
+        return extra;
     }
 
-    public void setExtraTag(Parcelable extraTag) {
-        this.extraTag = extraTag;
+    public void setExtra(Bundle extra) {
+        this.extra = extra;
     }
 
     public boolean isSinaWithSummary() {
@@ -231,6 +255,23 @@ public class ShareObj implements Parcelable {
 
 
     @Override
+    public String toString() {
+        return "ShareObj{" +
+                "shareObjType=" + shareObjType +
+                ", title='" + title + '\'' +
+                ", summary='" + summary + '\'' +
+                ", thumbImagePath='" + thumbImagePath + '\'' +
+                ", thumbImagePathNet='" + thumbImagePathNet + '\'' +
+                ", targetUrl='" + targetUrl + '\'' +
+                ", mediaPath='" + mediaPath + '\'' +
+                ", duration=" + duration +
+                ", isSinaWithSummary=" + isSinaWithSummary +
+                ", isSinaWithPicture=" + isSinaWithPicture +
+                ", isShareByIntent=" + isShareByIntent +
+                '}';
+    }
+
+    @Override
     public int describeContents() {
         return 0;
     }
@@ -241,13 +282,14 @@ public class ShareObj implements Parcelable {
         dest.writeString(this.title);
         dest.writeString(this.summary);
         dest.writeString(this.thumbImagePath);
+        dest.writeString(this.thumbImagePathNet);
         dest.writeString(this.targetUrl);
         dest.writeString(this.mediaPath);
         dest.writeInt(this.duration);
-        dest.writeParcelable(this.extraTag, flags);
         dest.writeByte(this.isSinaWithSummary ? (byte) 1 : (byte) 0);
         dest.writeByte(this.isSinaWithPicture ? (byte) 1 : (byte) 0);
         dest.writeByte(this.isShareByIntent ? (byte) 1 : (byte) 0);
+        dest.writeBundle(this.extra);
     }
 
     protected ShareObj(Parcel in) {
@@ -255,13 +297,14 @@ public class ShareObj implements Parcelable {
         this.title = in.readString();
         this.summary = in.readString();
         this.thumbImagePath = in.readString();
+        this.thumbImagePathNet = in.readString();
         this.targetUrl = in.readString();
         this.mediaPath = in.readString();
         this.duration = in.readInt();
-        this.extraTag = in.readParcelable(Parcelable.class.getClassLoader());
         this.isSinaWithSummary = in.readByte() != 0;
         this.isSinaWithPicture = in.readByte() != 0;
         this.isShareByIntent = in.readByte() != 0;
+        this.extra = in.readBundle();
     }
 
     public static final Creator<ShareObj> CREATOR = new Creator<ShareObj>() {
@@ -275,22 +318,4 @@ public class ShareObj implements Parcelable {
             return new ShareObj[size];
         }
     };
-
-    @Override
-    public String toString() {
-        return "ShareObj{" +
-                "shareObjType=" + shareObjType +
-                ", title='" + title + '\'' +
-                ", summary='" + summary + '\'' +
-                ", thumbImagePath='" + thumbImagePath + '\'' +
-                ", thumbImagePathNet='" + thumbImagePathNet + '\'' +
-                ", targetUrl='" + targetUrl + '\'' +
-                ", mediaPath='" + mediaPath + '\'' +
-                ", duration=" + duration +
-                ", extraTag=" + extraTag +
-                ", isSinaWithSummary=" + isSinaWithSummary +
-                ", isSinaWithPicture=" + isSinaWithPicture +
-                ", isShareByIntent=" + isShareByIntent +
-                '}';
-    }
 }

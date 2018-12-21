@@ -6,7 +6,7 @@ import android.util.SparseArray;
 import com.march.socialsdk.adapter.IJsonAdapter;
 import com.march.socialsdk.adapter.IRequestAdapter;
 import com.march.socialsdk.adapter.impl.DefaultRequestAdapter;
-import com.march.socialsdk.common.SocialConstants;
+import com.march.socialsdk.common.SocialValues;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformCreator;
 import com.march.socialsdk.platform.Target;
@@ -51,10 +51,10 @@ public class SocialSdk {
             sPlatformCreatorMap = new SparseArray<>();
         }
         Target.Mapping[] mappings = {
-                new Target.Mapping(Target.PLATFORM_QQ, SocialConstants.QQ_CREATOR),
-                new Target.Mapping(Target.PLATFORM_WX, SocialConstants.WX_CREATOR),
-                new Target.Mapping(Target.PLATFORM_WB, SocialConstants.WB_CREATOR),
-                new Target.Mapping(Target.PLATFORM_DD, SocialConstants.DD_CREATOR),
+                new Target.Mapping(Target.PLATFORM_QQ, SocialValues.QQ_CREATOR),
+                new Target.Mapping(Target.PLATFORM_WX, SocialValues.WX_CREATOR),
+                new Target.Mapping(Target.PLATFORM_WB, SocialValues.WB_CREATOR),
+                new Target.Mapping(Target.PLATFORM_DD, SocialValues.DD_CREATOR),
         };
         List<Integer> disablePlatforms = sSocialSdkConfig.getDisablePlatforms();
         for (Target.Mapping mapping : mappings) {

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
+import com.march.socialsdk.common.SocialUtil;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.LoginResult;
@@ -12,7 +13,6 @@ import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.platform.qq.model.QQAccessToken;
 import com.march.socialsdk.platform.qq.model.QQUser;
 import com.march.socialsdk.util.JsonUtil;
-import com.march.socialsdk.util.SocialLogUtil;
 import com.tencent.connect.UserInfo;
 import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
@@ -84,9 +84,9 @@ class QQLoginHelper {
         public void onComplete(Object o) {
             JSONObject jsonResponse = (JSONObject) o;
             QQAccessToken qqToken = JsonUtil.getObject(jsonResponse.toString(), QQAccessToken.class);
-            SocialLogUtil.e(TAG, "获取到 qq token = ", qqToken);
+            SocialUtil.e(TAG, "获取到 qq token = " + qqToken);
             if (qqToken == null) {
-                onLoginListener.onFailure(new SocialError(SocialError.CODE_PARSE_ERROR, TAG + "#LoginUiListener#qq token is null, data = " + qqToken));
+                onLoginListener.onFailure(SocialError.make(SocialError.CODE_PARSE_ERROR, TAG + "#LoginUiListener#qq token is null, data = " + qqToken));
                 return;
             }
             // 保存token
@@ -99,7 +99,7 @@ class QQLoginHelper {
 
         @Override
         public void onError(UiError e) {
-            onLoginListener.onFailure(new SocialError(SocialError.CODE_SDK_ERROR, TAG + "#LoginUiListener#获取用户信息失败 " + QQPlatform.parseUiError(e)));
+            onLoginListener.onFailure(SocialError.make(SocialError.CODE_SDK_ERROR, TAG + "#LoginUiListener#获取用户信息失败 " + QQPlatform.parseUiError(e)));
         }
 
         @Override
@@ -117,7 +117,7 @@ class QQLoginHelper {
                 QQUser qqUserInfo = JsonUtil.getObject(object.toString(), QQUser.class);
                 if (qqUserInfo == null) {
                     if (onLoginListener != null) {
-                        onLoginListener.onFailure(new SocialError(SocialError.CODE_PARSE_ERROR, TAG + "#getUserInfo#解析 qq user 错误, data = " + object.toString()));
+                        onLoginListener.onFailure(SocialError.make(SocialError.CODE_PARSE_ERROR, TAG + "#getUserInfo#解析 qq user 错误, data = " + object.toString()));
                     }
                 } else {
                     qqUserInfo.setOpenId(mTencentApi.getOpenId());
@@ -129,7 +129,7 @@ class QQLoginHelper {
 
             @Override
             public void onError(UiError e) {
-                onLoginListener.onFailure(new SocialError(SocialError.CODE_SDK_ERROR, TAG + "#getUserInfo#qq获取用户信息失败  " + QQPlatform.parseUiError(e)));
+                onLoginListener.onFailure(SocialError.make(SocialError.CODE_SDK_ERROR, TAG + "#getUserInfo#qq获取用户信息失败  " + QQPlatform.parseUiError(e)));
             }
 
             @Override

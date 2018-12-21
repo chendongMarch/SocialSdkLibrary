@@ -2,12 +2,10 @@ package com.march.socialsdk.platform;
 
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
 import com.march.socialsdk.exception.SocialError;
-import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.util.IntentShareUtil;
@@ -22,7 +20,8 @@ public abstract class AbsPlatform implements IPlatform {
 
     public static final String TAG = AbsPlatform.class.getSimpleName();
 
-    protected static final int THUMB_IMAGE_SIZE = 32 * 1024;
+    protected static final int THUMB_IMAGE_SIZE_32 = 32 * 1024;
+    protected static final int THUMB_IMAGE_SIZE_128 = 128 * 1024;
 
     protected OnShareListener mOnShareListener;
     protected String          mAppId;
@@ -49,41 +48,12 @@ public abstract class AbsPlatform implements IPlatform {
     }
 
     @Override
-    public boolean isInstall(Context context) {
-        return false;
-    }
-
-    @Override
-    public void login(Activity activity, OnLoginListener onLoginListener) {
-
-    }
-
-    @Override
-    public void share(Activity activity, int shareTarget, ShareObj shareMediaObj) {
-        if (shareMediaObj == null) return;
-        switch (shareMediaObj.getShareObjType()) {
-            case ShareObj.SHARE_OPEN_APP:
-                shareOpenApp(shareTarget, activity, shareMediaObj);
-                break;
-            case ShareObj.SHARE_TYPE_TEXT:
-                shareText(shareTarget, activity, shareMediaObj);
-                break;
-            case ShareObj.SHARE_TYPE_IMAGE:
-                shareImage(shareTarget, activity, shareMediaObj);
-                break;
-            case ShareObj.SHARE_TYPE_APP:
-                shareApp(shareTarget, activity, shareMediaObj);
-                break;
-            case ShareObj.SHARE_TYPE_WEB:
-                shareWeb(shareTarget, activity, shareMediaObj);
-                break;
-            case ShareObj.SHARE_TYPE_MUSIC:
-                shareMusic(shareTarget, activity, shareMediaObj);
-                break;
-            case ShareObj.SHARE_TYPE_VIDEO:
-                shareVideo(shareTarget, activity, shareMediaObj);
-                break;
+    public void share(Activity activity, int shareTarget, ShareObj shareObj) {
+        if (shareObj == null) {
+            mOnShareListener.onFailure(SocialError.make(SocialError.CODE_PARAM_ERROR, "obj is null"));
+            return;
         }
+        dispatchShare(activity, shareTarget, shareObj);
     }
 
     protected void shareVideoByIntent(Activity activity, ShareObj obj, String pkg, String page) {
@@ -91,7 +61,7 @@ public abstract class AbsPlatform implements IPlatform {
         if (result) {
             this.mOnShareListener.onSuccess();
         } else {
-            this.mOnShareListener.onFailure(new SocialError(SocialError.CODE_SHARE_BY_INTENT_FAIL, "shareVideo by intent" + pkg + "  " + page + " failure"));
+            this.mOnShareListener.onFailure(SocialError.make(SocialError.CODE_SHARE_BY_INTENT_FAIL, "shareVideo by intent" + pkg + "  " + page + " failure"));
         }
     }
 
@@ -100,23 +70,18 @@ public abstract class AbsPlatform implements IPlatform {
         if (result) {
             this.mOnShareListener.onSuccess();
         } else {
-            this.mOnShareListener.onFailure(new SocialError(SocialError.CODE_SHARE_BY_INTENT_FAIL, "shareText by intent" + pkg + "  " + page + " failure"));
+            this.mOnShareListener.onFailure(SocialError.make(SocialError.CODE_SHARE_BY_INTENT_FAIL, "shareText by intent" + pkg + "  " + page + " failure"));
         }
     }
 
-    protected abstract void shareOpenApp(int shareTarget, Activity activity, ShareObj obj);
-
-    protected abstract void shareText(int shareTarget, Activity activity, ShareObj obj);
-
-    protected abstract void shareImage(int shareTarget, Activity activity, ShareObj obj);
-
-    protected abstract void shareApp(int shareTarget, Activity activity, ShareObj obj);
-
-    protected abstract void shareWeb(int shareTarget, Activity activity, ShareObj obj);
-
-    protected abstract void shareMusic(int shareTarget, Activity activity, ShareObj obj);
-
-    protected abstract void shareVideo(int shareTarget, Activity activity, ShareObj obj);
+    /**
+     * 分享功能具体实现，由子类接管，方便更好的管理不兼容的类型
+     *
+     * @param shareTarget 分享的目标 {@link Target}
+     * @param activity    activity
+     * @param obj         ShareObj
+     */
+    protected abstract void dispatchShare(Activity activity, int shareTarget, ShareObj obj);
 
 
     ///////////////////////////////////////////////////////////////////////////

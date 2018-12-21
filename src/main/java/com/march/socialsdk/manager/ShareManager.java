@@ -11,7 +11,8 @@ import android.os.Build;
 import android.text.TextUtils;
 
 import com.march.socialsdk.SocialSdk;
-import com.march.socialsdk.common.SocialConstants;
+import com.march.socialsdk.common.SocialUtil;
+import com.march.socialsdk.common.SocialValues;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.model.ShareObj;
@@ -20,17 +21,14 @@ import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.uikit.ActionActivity;
 import com.march.socialsdk.util.FileUtil;
-import com.march.socialsdk.util.SocialLogUtil;
 import com.march.socialsdk.util.Util;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.util.concurrent.Callable;
 
-import bolts.Continuation;
 import bolts.Task;
 
-import static com.march.socialsdk.manager.PlatformManager.KEY_ACTION_TYPE;
+import static com.march.socialsdk.manager.GlobalPlatform.KEY_ACTION_TYPE;
 
 /**
  * CreateAt : 2017/5/19
@@ -52,46 +50,36 @@ public class ShareManager {
      * @param shareObj        分享对象
      * @param onShareListener 分享监听
      */
-//    @RequiresPermission(allOf = {"android.permission.WRITE_EXTERNAL_STORAGE"})
     public static void share(final Activity context, @Target.ShareTarget final int shareTarget,
             final ShareObj shareObj, final OnShareListener onShareListener) {
         onShareListener.onStart(shareTarget, shareObj);
-        Task.callInBackground(new Callable<ShareObj>() {
-            @Override
-            public ShareObj call() throws Exception {
-                prepareImageInBackground(context, shareObj);
-                ShareObj temp = null;
-                try {
-                    temp = onShareListener.onPrepareInBackground(shareTarget, shareObj);
-                } catch (Exception e) {
-                    SocialLogUtil.t(e);
-                }
-                if (temp != null) {
-                    return temp;
-                } else {
-                    return shareObj;
-                }
+        Task.callInBackground(() -> {
+            prepareImageInBackground(context, shareObj);
+            ShareObj temp = null;
+            try {
+                temp = onShareListener.onPrepareInBackground(shareTarget, shareObj);
+            } catch (Exception e) {
+                SocialUtil.t(TAG, e);
             }
-        }).continueWith(new Continuation<ShareObj, Boolean>() {
-            @Override
-            public Boolean then(Task<ShareObj> task) throws Exception {
-                if (task.isFaulted() || task.getResult() == null) {
-                    SocialError exception = new SocialError(SocialError.CODE_COMMON_ERROR, "onPrepareInBackground error").exception(task.getError());
-                    onShareListener.onFailure(exception);
-                    return null;
-                }
-                doShare(context, shareTarget, task.getResult(), onShareListener);
-                return true;
+            if (temp != null) {
+                return temp;
+            } else {
+                return shareObj;
             }
-        }, Task.UI_THREAD_EXECUTOR).continueWith(new Continuation<Boolean, Boolean>() {
-            @Override
-            public Boolean then(Task<Boolean> task) throws Exception {
-                if (task.isFaulted()) {
-                    SocialError exception = new SocialError(SocialError.CODE_COMMON_ERROR,"ShareManager.share() error").exception(task.getError());
-                    onShareListener.onFailure(exception);
-                }
-                return true;
+        }).continueWith(task -> {
+            if (task.isFaulted() || task.getResult() == null) {
+                SocialError exception = SocialError.make(SocialError.CODE_COMMON_ERROR, "onPrepareInBackground error", task.getError());
+                onShareListener.onFailure(exception);
+                return null;
             }
+            doShare(context, shareTarget, task.getResult(), onShareListener);
+            return true;
+        }, Task.UI_THREAD_EXECUTOR).continueWith(task -> {
+            if (task.isFaulted()) {
+                SocialError exception = SocialError.make(SocialError.CODE_COMMON_ERROR, "ShareManager.share() error", task.getError());
+                onShareListener.onFailure(exception);
+            }
+            return true;
         });
     }
 
@@ -118,12 +106,12 @@ public class ShareManager {
     private static void doShare(Context context, @Target.ShareTarget int shareTarget, ShareObj shareObj, OnShareListener onShareListener) {
         // 对象是否完整
         if (!ShareObjChecker.checkObjValid(shareObj, shareTarget)) {
-            onShareListener.onFailure(new SocialError(SocialError.CODE_SHARE_OBJ_VALID, ShareObjChecker.getErrMsg()));
+            onShareListener.onFailure(SocialError.make(SocialError.CODE_SHARE_OBJ_VALID, ShareObjChecker.getErrMsg()));
             return;
         }
         // 是否有存储权限，读取缩略图片需要存储权限
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-            onShareListener.onFailure(new SocialError(SocialError.CODE_STORAGE_READ_ERROR));
+            onShareListener.onFailure(SocialError.make(SocialError.CODE_STORAGE_READ_ERROR));
             return;
         }
         // 微博、本地、视频 需要写存储的权限
@@ -131,19 +119,19 @@ public class ShareManager {
                 && shareObj.getShareObjType() == ShareObj.SHARE_TYPE_VIDEO
                 && !FileUtil.isHttpPath(shareObj.getMediaPath())
                 && !Util.hasPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            onShareListener.onFailure(new SocialError(SocialError.CODE_STORAGE_WRITE_ERROR));
+            onShareListener.onFailure(SocialError.make(SocialError.CODE_STORAGE_WRITE_ERROR));
             return;
         }
         sListener = onShareListener;
-        IPlatform platform = PlatformManager.makePlatform(context, shareTarget);
+        IPlatform platform = GlobalPlatform.makePlatform(context, shareTarget);
         if (!platform.isInstall(context)) {
-            onShareListener.onFailure(new SocialError(SocialError.CODE_NOT_INSTALL));
+            onShareListener.onFailure(SocialError.make(SocialError.CODE_NOT_INSTALL));
             return;
         }
         Intent intent = new Intent(context, ActionActivity.class);
-        intent.putExtra(PlatformManager.KEY_ACTION_TYPE, PlatformManager.ACTION_TYPE_SHARE);
-        intent.putExtra(PlatformManager.KEY_SHARE_MEDIA_OBJ, shareObj);
-        intent.putExtra(PlatformManager.KEY_SHARE_TARGET, shareTarget);
+        intent.putExtra(GlobalPlatform.KEY_ACTION_TYPE, GlobalPlatform.ACTION_TYPE_SHARE);
+        intent.putExtra(GlobalPlatform.KEY_SHARE_MEDIA_OBJ, shareObj);
+        intent.putExtra(GlobalPlatform.KEY_SHARE_TARGET, shareTarget);
         context.startActivity(intent);
         if(context instanceof Activity) {
             ((Activity) context).overridePendingTransition(0, 0);
@@ -157,31 +145,31 @@ public class ShareManager {
      */
     static void _actionShare(Activity activity) {
         Intent intent = activity.getIntent();
-        int actionType = intent.getIntExtra(KEY_ACTION_TYPE, PlatformManager.INVALID_PARAM);
-        int shareTarget = intent.getIntExtra(PlatformManager.KEY_SHARE_TARGET, PlatformManager.INVALID_PARAM);
-        ShareObj shareObj = intent.getParcelableExtra(PlatformManager.KEY_SHARE_MEDIA_OBJ);
-        if (actionType != PlatformManager.ACTION_TYPE_SHARE)
+        int actionType = intent.getIntExtra(KEY_ACTION_TYPE, GlobalPlatform.INVALID_PARAM);
+        int shareTarget = intent.getIntExtra(GlobalPlatform.KEY_SHARE_TARGET, GlobalPlatform.INVALID_PARAM);
+        ShareObj shareObj = intent.getParcelableExtra(GlobalPlatform.KEY_SHARE_MEDIA_OBJ);
+        if (actionType != GlobalPlatform.ACTION_TYPE_SHARE)
             return;
-        if (shareTarget == PlatformManager.INVALID_PARAM) {
-            SocialLogUtil.e(TAG, "shareTargetType无效");
+        if (shareTarget == GlobalPlatform.INVALID_PARAM) {
+            SocialUtil.e(TAG, "shareTargetType无效");
             return;
         }
         if (shareObj == null) {
-            SocialLogUtil.e(TAG, "shareObj == null");
+            SocialUtil.e(TAG, "shareObj == null");
             return;
         }
         if (sListener == null) {
-            SocialLogUtil.e(TAG, "请设置 OnShareListener");
+            SocialUtil.e(TAG, "请设置 OnShareListener");
             return;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-            SocialLogUtil.e(TAG, "没有获取到读存储卡的权限，这可能导致某些分享不能进行");
+            SocialUtil.e(TAG, "没有获取到读存储卡的权限，这可能导致某些分享不能进行");
         }
-        if (PlatformManager.getPlatform() == null)
+        if (GlobalPlatform.getPlatform() == null)
             return;
-        PlatformManager.getPlatform().initOnShareListener(new FinishShareListener(activity));
-        PlatformManager.getPlatform().share(activity, shareTarget, shareObj);
+        GlobalPlatform.getPlatform().initOnShareListener(new FinishShareListener(activity));
+        GlobalPlatform.getPlatform().share(activity, shareTarget, shareObj);
     }
 
     static class FinishShareListener implements OnShareListener {
@@ -205,7 +193,7 @@ public class ShareManager {
         }
 
         private void finish() {
-            PlatformManager.release(mActivityRef.get());
+            GlobalPlatform.release(mActivityRef.get());
             sListener = null;
         }
 
@@ -281,18 +269,18 @@ public class ShareManager {
         switch (platform) {
             case Target.SHARE_QQ_FRIENDS:
             case Target.SHARE_QQ_ZONE:
-                pkgName = SocialConstants.QQ_PKG;
+                pkgName = SocialValues.QQ_PKG;
                 break;
             case Target.SHARE_WX_FRIENDS:
             case Target.SHARE_WX_ZONE:
             case Target.SHARE_WX_FAVORITE:
-                pkgName = SocialConstants.WECHAT_PKG;
+                pkgName = SocialValues.WECHAT_PKG;
                 break;
             case Target.SHARE_WB:
-                pkgName = SocialConstants.SINA_PKG;
+                pkgName = SocialValues.SINA_PKG;
                 break;
             case Target.SHARE_DD:
-                pkgName = SocialConstants.DD_PKG;
+                pkgName = SocialValues.DD_PKG;
                 break;
         }
         return !TextUtils.isEmpty(pkgName) && Util.openApp(context, pkgName);
