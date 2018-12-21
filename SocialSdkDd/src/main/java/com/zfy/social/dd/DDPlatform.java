@@ -24,11 +24,13 @@ import com.zfy.social.core.platform.IPlatform;
 import com.zfy.social.core.platform.PlatformFactory;
 import com.zfy.social.core.util.FileUtil;
 import com.zfy.social.core.util.SocialUtil;
+import com.zfy.social.dd.uikit.DDActionActivity;
 
 /**
  * CreateAt : 2018/2/11
  * Describe : 钉钉分享
  * 文档：https://open-doc.dingtalk.com/doc2/detail.htm?spm=0.0.0.0.MZqdJG&treeId=178&articleId=104982&docType=1
+ *
  * @author chendong
  */
 public class DDPlatform extends AbsPlatform {
@@ -55,6 +57,11 @@ public class DDPlatform extends AbsPlatform {
     private DDPlatform(Context context, String appId, String appName) {
         super(appId, appName);
         mDdShareApi = DDShareApiFactory.createDDShareApi(context, appId, false);
+    }
+
+    @Override
+    public Class getUIKitClazz() {
+        return DDActionActivity.class;
     }
 
     @Override

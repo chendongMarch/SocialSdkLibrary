@@ -36,6 +36,7 @@ import com.zfy.social.core.platform.PlatformFactory;
 import com.zfy.social.core.util.BitmapUtil;
 import com.zfy.social.core.util.FileUtil;
 import com.zfy.social.core.util.SocialUtil;
+import com.zfy.social.wx.uikit.WxActionActivity;
 
 import bolts.Task;
 
@@ -44,9 +45,10 @@ import bolts.Task;
  * Describe : 微信平台
  * [分享与收藏文档](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419317340&token=&lang=zh_CN)
  * [微信登录文档](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419317851&token=&lang=zh_CN)
- *
+ * <p>
  * 缩略图不超过 32kb
  * 源文件不超过 10M
+ *
  * @author chendong
  */
 public class WxPlatform extends AbsPlatform {
@@ -84,6 +86,11 @@ public class WxPlatform extends AbsPlatform {
     @Override
     public boolean checkPlatformConfig() {
         return super.checkPlatformConfig() && !TextUtils.isEmpty(mWxSecret);
+    }
+
+    @Override
+    public Class getUIKitClazz() {
+        return WxActionActivity.class;
     }
 
     @Override
@@ -160,10 +167,6 @@ public class WxPlatform extends AbsPlatform {
 
     @Override
     public void login(Activity context, OnLoginListener loginListener) {
-        if (!mWxApi.isWXAppSupportAPI()) {
-            loginListener.onFailure(SocialError.make(SocialError.CODE_VERSION_LOW));
-            return;
-        }
         mWeChatLoginHelper = new WxLoginHelper(context, mWxApi, mAppId);
         mWeChatLoginHelper.login(mWxSecret, loginListener);
     }

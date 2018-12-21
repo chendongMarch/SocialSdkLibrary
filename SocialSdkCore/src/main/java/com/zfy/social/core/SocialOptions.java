@@ -62,7 +62,6 @@ public class SocialOptions {
 
     }
 
-
     public SocialOptions dd(String ddAppId) {
         this.ddAppId = ddAppId;
         return this;
@@ -94,6 +93,11 @@ public class SocialOptions {
     public SocialOptions wb(String wbAppId, String wbRedirectUrl) {
         this.wbAppId = wbAppId;
         this.wbRedirectUrl = wbRedirectUrl;
+        return this;
+    }
+
+    public SocialOptions appName(String appName) {
+        this.appName = appName;
         return this;
     }
 
