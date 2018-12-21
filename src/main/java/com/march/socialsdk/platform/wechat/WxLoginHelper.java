@@ -3,7 +3,7 @@ package com.march.socialsdk.platform.wechat;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.march.socialsdk.common.SocialUtil;
+import com.march.socialsdk.util.SocialUtil;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.LoginResult;

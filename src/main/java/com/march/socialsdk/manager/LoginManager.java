@@ -6,14 +6,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
-import com.march.socialsdk.common.SocialUtil;
+import com.march.socialsdk.common.Target;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.LoginResult;
 import com.march.socialsdk.model.token.AccessToken;
 import com.march.socialsdk.platform.IPlatform;
-import com.march.socialsdk.common.Target;
 import com.march.socialsdk.uikit.ActionActivity;
+import com.march.socialsdk.util.SocialUtil;
 
 import java.lang.ref.WeakReference;
 /**

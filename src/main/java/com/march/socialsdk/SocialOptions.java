@@ -15,7 +15,7 @@ import java.io.File;
  * @author chendong
  */
 
-public class SocialSdkConfig {
+public class SocialOptions {
 
     private static final String SHARE_CACHE_DIR_NAME = "toShare";
 
@@ -38,13 +38,15 @@ public class SocialSdkConfig {
     // 钉钉配置
     private String        ddAppId;
     // 图片默认资源
-    private int           defImageResId;
-
+    private int failImgRes;
+    // token 有效时间，默认1天
+    private long tokenExpires = 24 * 60 * 60 * 1000;
+    // 平台工厂注册
     private SparseArray<PlatformFactory> platformFactoryArray;
 
     // 静态工厂
-    public static SocialSdkConfig with(Context context) {
-        SocialSdkConfig config = new SocialSdkConfig();
+    public static SocialOptions with(Context context) {
+        SocialOptions config = new SocialOptions();
         config.appName = context.getString(R.string.app_name);
         File shareDir = new File(context.getExternalCacheDir(), SHARE_CACHE_DIR_NAME);
         config.cacheDir = (shareDir.mkdirs() ? shareDir : context.getCacheDir()).getAbsolutePath();
@@ -56,13 +58,71 @@ public class SocialSdkConfig {
         return config;
     }
 
-    private SocialSdkConfig() {
+    private SocialOptions() {
 
     }
 
-    public SocialSdkConfig registerPlatform(PlatformFactory factory) {
+    public SocialOptions registerPlatform(PlatformFactory factory) {
         platformFactoryArray.append(factory.getTarget(), factory);
         return this;
+    }
+
+
+    public SocialOptions tokenExpires(long time) {
+        this.tokenExpires = time;
+        return this;
+    }
+
+    public SocialOptions dd(String ddAppId) {
+        this.ddAppId = ddAppId;
+        return this;
+    }
+
+    public SocialOptions qq(String qqAppId) {
+        this.qqAppId = qqAppId;
+        return this;
+    }
+
+    public SocialOptions wechat(String wxAppId, String wxSecretKey) {
+        this.wxSecretKey = wxSecretKey;
+        this.wxAppId = wxAppId;
+        return this;
+    }
+
+    public SocialOptions wechat(String wxAppId, String wxSecretKey, boolean onlyAuthCode) {
+        this.onlyAuthCode = onlyAuthCode;
+        this.wxSecretKey = wxSecretKey;
+        this.wxAppId = wxAppId;
+        return this;
+    }
+
+    public SocialOptions sina(String sinaAppId) {
+        this.sinaAppId = sinaAppId;
+        return this;
+    }
+
+    public SocialOptions sinaScope(String sinaScope) {
+        this.sinaScope = sinaScope;
+        return this;
+    }
+
+    public SocialOptions sinaRedirectUrl(String sinaRedirectUrl) {
+        this.sinaRedirectUrl = sinaRedirectUrl;
+        return this;
+    }
+
+    public SocialOptions failImgRes(int failImgRes) {
+        this.failImgRes = failImgRes;
+        return this;
+    }
+
+    public SocialOptions debug(boolean debug) {
+        this.debug = debug;
+        return this;
+    }
+
+    public long getTokenExpires() {
+        return tokenExpires;
     }
 
     public SparseArray<PlatformFactory> getPlatformFactoryArray() {
@@ -73,56 +133,8 @@ public class SocialSdkConfig {
         return cacheDir;
     }
 
-    public SocialSdkConfig dd(String ddAppId) {
-        this.ddAppId = ddAppId;
-        return this;
-    }
-
-    public SocialSdkConfig qq(String qqAppId) {
-        this.qqAppId = qqAppId;
-        return this;
-    }
-
-    public SocialSdkConfig wechat(String wxAppId, String wxSecretKey) {
-        this.wxSecretKey = wxSecretKey;
-        this.wxAppId = wxAppId;
-        return this;
-    }
-
-    public SocialSdkConfig wechat(String wxAppId, String wxSecretKey, boolean onlyAuthCode) {
-        this.onlyAuthCode = onlyAuthCode;
-        this.wxSecretKey = wxSecretKey;
-        this.wxAppId = wxAppId;
-        return this;
-    }
-
-    public SocialSdkConfig sina(String sinaAppId) {
-        this.sinaAppId = sinaAppId;
-        return this;
-    }
-
-    public SocialSdkConfig sinaScope(String sinaScope) {
-        this.sinaScope = sinaScope;
-        return this;
-    }
-
-    public SocialSdkConfig sinaRedirectUrl(String sinaRedirectUrl) {
-        this.sinaRedirectUrl = sinaRedirectUrl;
-        return this;
-    }
-
-    public SocialSdkConfig defImageResId(int defImageResId) {
-        this.defImageResId = defImageResId;
-        return this;
-    }
-
-    public SocialSdkConfig debug(boolean debug) {
-        this.debug = debug;
-        return this;
-    }
-
-    public int getDefImageResId() {
-        return defImageResId;
+    public int getFailImgRes() {
+        return failImgRes;
     }
 
     public String getAppName() {

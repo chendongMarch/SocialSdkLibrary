@@ -6,10 +6,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.march.socialsdk.SocialOptions;
 import com.march.socialsdk.SocialSdk;
-import com.march.socialsdk.SocialSdkConfig;
-import com.march.socialsdk.common.SocialUtil;
 import com.march.socialsdk.common.SocialValues;
+import com.march.socialsdk.common.Target;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.listener.OnShareListener;
@@ -17,9 +17,8 @@ import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformFactory;
-import com.march.socialsdk.common.Target;
 import com.march.socialsdk.util.FileUtil;
-import com.march.socialsdk.util.Util;
+import com.march.socialsdk.util.SocialUtil;
 import com.tencent.connect.common.Constants;
 import com.tencent.connect.share.QQShare;
 import com.tencent.connect.share.QzonePublish;
@@ -52,8 +51,8 @@ public class QQPlatform extends AbsPlatform {
         @Override
         public IPlatform create(Context context, int target) {
             IPlatform platform = null;
-            SocialSdkConfig config = SocialSdk.getConfig();
-            if (!Util.isAnyEmpty(config.getQqAppId(), config.getAppName())) {
+            SocialOptions config = SocialSdk.getConfig();
+            if (!SocialUtil.isAnyEmpty(config.getQqAppId(), config.getAppName())) {
                 platform = new QQPlatform(context, config.getQqAppId(), config.getAppName());
             }
             return platform;
@@ -159,7 +158,7 @@ public class QQPlatform extends AbsPlatform {
 
     // 打开 app
     private void shareOpenApp(int shareTarget, Activity activity, ShareObj obj) {
-        boolean rst = Util.openApp(activity, SocialValues.QQ_PKG);
+        boolean rst = SocialUtil.openApp(activity, SocialValues.QQ_PKG);
         if (rst) {
             mOnShareListener.onSuccess();
         } else {

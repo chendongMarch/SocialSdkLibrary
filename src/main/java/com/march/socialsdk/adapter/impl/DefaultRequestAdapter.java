@@ -4,7 +4,7 @@ import android.annotation.SuppressLint;
 import android.text.TextUtils;
 
 import com.march.socialsdk.adapter.IRequestAdapter;
-import com.march.socialsdk.common.SocialUtil;
+import com.march.socialsdk.util.SocialUtil;
 import com.march.socialsdk.util.FileUtil;
 import com.march.socialsdk.util.StreamUtil;
 

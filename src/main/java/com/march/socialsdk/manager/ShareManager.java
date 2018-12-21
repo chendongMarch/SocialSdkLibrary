@@ -11,17 +11,16 @@ import android.os.Build;
 import android.text.TextUtils;
 
 import com.march.socialsdk.SocialSdk;
-import com.march.socialsdk.common.SocialUtil;
 import com.march.socialsdk.common.SocialValues;
+import com.march.socialsdk.common.Target;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.model.ShareObjChecker;
 import com.march.socialsdk.platform.IPlatform;
-import com.march.socialsdk.common.Target;
 import com.march.socialsdk.uikit.ActionActivity;
 import com.march.socialsdk.util.FileUtil;
-import com.march.socialsdk.util.Util;
+import com.march.socialsdk.util.SocialUtil;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -91,8 +90,8 @@ public class ShareManager {
             File file = SocialSdk.getRequestAdapter().getFile(thumbImagePath);
             if (FileUtil.isExist(file)) {
                 shareObj.setThumbImagePath(file.getAbsolutePath());
-            } else if (SocialSdk.getConfig().getDefImageResId() > 0) {
-                String localPath = FileUtil.mapResId2LocalPath(context, SocialSdk.getConfig().getDefImageResId());
+            } else if (SocialSdk.getConfig().getFailImgRes() > 0) {
+                String localPath = FileUtil.mapResId2LocalPath(context, SocialSdk.getConfig().getFailImgRes());
                 if (FileUtil.isExist(localPath)) {
                     shareObj.setThumbImagePath(localPath);
                 }
@@ -118,7 +117,7 @@ public class ShareManager {
         if (shareTarget == Target.SHARE_WB
                 && shareObj.getShareObjType() == ShareObj.SHARE_TYPE_VIDEO
                 && !FileUtil.isHttpPath(shareObj.getMediaPath())
-                && !Util.hasPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                && !SocialUtil.hasPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             onShareListener.onFailure(SocialError.make(SocialError.CODE_STORAGE_WRITE_ERROR));
             return;
         }
@@ -283,6 +282,6 @@ public class ShareManager {
                 pkgName = SocialValues.DD_PKG;
                 break;
         }
-        return !TextUtils.isEmpty(pkgName) && Util.openApp(context, pkgName);
+        return !TextUtils.isEmpty(pkgName) && SocialUtil.openApp(context, pkgName);
     }
 }

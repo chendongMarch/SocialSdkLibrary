@@ -5,7 +5,6 @@ import android.text.TextUtils;
 
 import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.adapter.IJsonAdapter;
-import com.march.socialsdk.common.SocialUtil;
 import com.march.socialsdk.exception.SocialError;
 
 import java.util.concurrent.Callable;
