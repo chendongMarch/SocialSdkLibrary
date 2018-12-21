@@ -1,7 +1,8 @@
 apply from: '../scripts/library.gradle'
 
 dependencies {
-    implementation libs.appcompat_v7
+    compileOnly libs.soicalcore
+    implementation files('libs/libddshare.jar') // 钉钉
 }
 
 //apply plugin: 'bintray-release'

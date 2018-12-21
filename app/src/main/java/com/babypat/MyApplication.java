@@ -2,13 +2,13 @@ package com.babypat;
 
 import android.app.Application;
 
-import com.march.socialsdk.SocialOptions;
-import com.march.socialsdk.SocialSdk;
-import com.march.socialsdk.platform.ding.DDPlatform;
-import com.march.socialsdk.platform.qq.QQPlatform;
-import com.march.socialsdk.platform.wechat.WxPlatform;
-import com.march.socialsdk.platform.weibo.WbPlatform;
+import com.zfy.social.core.SocialOptions;
+import com.zfy.social.core.SocialSdk;
 import com.squareup.leakcanary.LeakCanary;
+import com.zfy.social.dd.DDPlatform;
+import com.zfy.social.qq.QQPlatform;
+import com.zfy.social.wb.WbPlatform;
+import com.zfy.social.wx.WxPlatform;
 
 
 /**

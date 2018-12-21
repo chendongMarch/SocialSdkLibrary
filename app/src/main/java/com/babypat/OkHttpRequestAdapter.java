@@ -2,7 +2,7 @@ package com.babypat;
 
 import android.text.TextUtils;
 
-import com.march.socialsdk.adapter.impl.DefaultRequestAdapter;
+import com.zfy.social.core.adapter.impl.DefaultRequestAdapter;
 
 import java.io.File;
 import java.io.IOException;

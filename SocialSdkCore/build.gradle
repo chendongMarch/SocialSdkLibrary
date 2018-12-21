@@ -1,7 +1,8 @@
 apply from: '../scripts/library.gradle'
 
 dependencies {
-    implementation libs.appcompat_v7
+    compileOnly libs.appcompat_v7
+    api libs.bolts
 }
 
 //apply plugin: 'bintray-release'

@@ -41,7 +41,7 @@ dependencies {
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    implementation project(':SocialSdkCore')
+    implementation libs.soicalcore
     implementation project(':SocialSdkWb')
     implementation project(':SocialSdkWx')
     implementation project(':SocialSdkQq')
