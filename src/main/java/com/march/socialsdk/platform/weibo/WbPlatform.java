@@ -56,10 +56,10 @@ public class WbPlatform extends AbsPlatform {
         public IPlatform create(Context context, int target) {
             WbPlatform platform = null;
             SocialOptions config = SocialSdk.getConfig();
-            String appId = config.getSinaAppId();
+            String appId = config.getWbAppId();
             String appName = config.getAppName();
-            String redirectUrl = config.getSinaRedirectUrl();
-            String scope = config.getSinaScope();
+            String redirectUrl = config.getWbRedirectUrl();
+            String scope = config.getWbScope();
             if (!SocialUtil.isAnyEmpty(appId, appName, redirectUrl, scope)) {
                 platform = new WbPlatform(context, appId, appName, redirectUrl, scope);
                 platform.setTarget(target);

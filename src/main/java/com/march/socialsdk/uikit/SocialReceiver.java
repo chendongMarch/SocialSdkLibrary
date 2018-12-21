@@ -7,7 +7,7 @@ import com.android.dingtalk.share.ddsharemodule.IDDAPIEventHandler;
 // weibo
 import com.sina.weibo.sdk.constant.WBConstants;
 import com.sina.weibo.sdk.share.WbShareCallback;
-// wechat
+// wx
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
 
 /**
@@ -49,7 +49,7 @@ public abstract class SocialReceiver extends Activity implements
         handleResp(WBConstants.ErrorCode.ERR_FAIL);
     }
 
-    // ---------- for wechat ---------
+    // ---------- for wx ---------
 
     @Override
     public void onResp(com.tencent.mm.opensdk.modelbase.BaseResp resp) {

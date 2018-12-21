@@ -104,6 +104,11 @@ String wxSecretKey = getString(R.string.WX_SECRET_KEY);
 String sinaAppId = getString(R.string.SINA_APP_ID);
 String ddAppId = getString(R.string.DD_APP_ID);
 
+String qqAppId = getString(R.string.QQ_APP_ID);
+String wxAppId = getString(R.string.WX_APP_ID);
+String wxSecretKey = getString(R.string.WX_SECRET_KEY);
+String wbAppId = getString(R.string.SINA_APP_ID);
+String ddAppId = getString(R.string.DD_APP_ID);
 SocialOptions options = SocialOptions.with(this)
         // 开启调试
         .debug(true)
@@ -112,13 +117,9 @@ SocialOptions options = SocialOptions.with(this)
         // 配置qq
         .qq(qqAppId)
         // 配置wx
-        .wechat(wxAppId, wxSecretKey)
-        // 配置sina
-        .sina(sinaAppId)
-        // 配置Sina的RedirectUrl，有默认值，如果是官网默认的不需要设置
-        .sinaRedirectUrl("http://open.manfenmm.com/bbpp/app/weibo/common.php")
-        // 配置Sina授权scope,有默认值，默认值 all
-        .sinaScope(SocialValues.SCOPE)
+        .wx(wxAppId, wxSecretKey)
+        // 配置wb
+        .wb(wbAppId, "http://open.manfenmm.com/bbpp/app/weibo/common.php")
         // 当缩略图因为各种原因无法获取时，将会使用默认图，避免分享中断
         .failImgRes(R.mipmap.ic_launcher_new)
         // 设置 token 有效期，有效期内不会重新获取 token

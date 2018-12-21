@@ -19,7 +19,7 @@ public class SocialValues {
 
     public static final String QQ_PKG = "com.tencent.mobileqq";
     public static final String WECHAT_PKG = "com.tencent.mm";
-    public static final String SINA_PKG = "com.sina.weibo";
+    public static final String SINA_PKG = "com.wb.weibo";
     public static final String DD_PKG = "com.alibaba.android.rimet";
 
     // 微信收藏
@@ -40,9 +40,9 @@ public class SocialValues {
     public static final String QQ_FAVORITE_PAGE = "cooperation.qqfav.widget.QfavJumpActivity";// 保存到qq收藏
 
     // 发送微博界面
-    public static final String WB_COMPOSER_PAGE = "com.sina.weibo.composerinde.ComposerDispatchActivity";
+    public static final String WB_COMPOSER_PAGE = "com.wb.weibo.composerinde.ComposerDispatchActivity";
     // 微博故事
-    public static final String WB_STORY_PAGE = "com.sina.weibo.story.publisher.StoryDispatcher";
+    public static final String WB_STORY_PAGE = "com.wb.weibo.story.publisher.StoryDispatcher";
 
     /**
      * 当前 DEMO 应用的回调页，第三方应用可以使用自己的回调页。
