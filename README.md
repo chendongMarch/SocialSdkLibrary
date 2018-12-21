@@ -94,9 +94,7 @@ defaultConfig {
 
 ## 初始化
 
-你需要在使用 SDK 之前进行初始化操作，建议放在 `Applicaton` 中进行。
-
-
+你需要在使用 SDK 之前进行初始化操作，建议放在 `Applicaton` 中进行
 ```java
 String qqAppId = getString(R.string.QQ_APP_ID);
 String wxAppId = getString(R.string.WX_APP_ID);
