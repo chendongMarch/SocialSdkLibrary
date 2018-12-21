@@ -1,0 +1,15 @@
+apply from: '../scripts/library.gradle'
+
+dependencies {
+    implementation libs.appcompat_v7
+}
+
+//apply plugin: 'bintray-release'
+//publish {
+//    userOrg = 'zfy'
+//    groupId = 'com.zfy'
+//    artifactId = 'common'
+//    publishVersion = '0.0.7'
+//    desc = 'common'
+//    website = 'https://github.com/Android-Modularity/common'
+//}
