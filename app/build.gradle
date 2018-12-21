@@ -1,0 +1,63 @@
+apply from: '../scripts/app.gradle'
+
+android {
+
+    defaultConfig {
+        applicationId "com.babypat"
+        manifestPlaceholders = [qq_id: "1104910200"]
+    }
+
+    //正式签名相关信息
+    signingConfigs {
+        babyphoto {
+            storeFile file("sja.jks")
+            storePassword project.storePassword
+            keyAlias project.keyAlias
+            keyPassword project.keyPassword
+            v2SigningEnabled false
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.babyphoto
+        }
+        debug {
+            signingConfig signingConfigs.babyphoto
+        }
+    }
+
+    sourceSets {
+        //定义编译时编译文件的路径
+        main {
+            res.srcDirs = ['src/main/res']
+            jniLibs.srcDirs = ['src/main/jniLibs']
+        }
+    }
+}
+
+//库依赖
+dependencies {
+
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    implementation project(':socialsdk')
+
+    implementation libs.flexbox
+    //
+    implementation libs.design
+    //
+    implementation libs.appcompat_v7
+    //
+    annotationProcessor libs.butterknifeProcessor
+    //
+    implementation libs.butterknife
+    //
+    implementation libs.gson
+
+    debugImplementation libs.leakCanaryDebug
+
+    releaseImplementation libs.leakCanaryRelease
+    implementation libs.okhttp3
+
+}

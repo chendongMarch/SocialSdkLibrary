@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tab_ly"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+
+
+        <Switch
+            android:id="@+id/switch_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:switchPadding="10dp"
+            android:text="选中为分享到空间"/>
+
+            <Button
+                android:id="@+id/clear_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="清除"/>
+        </LinearLayout>
+        <ScrollView
+            android:id="@+id/sv_content"
+            android:layout_width="match_parent"
+            android:layout_height="250dp">
+
+            <TextView
+                android:id="@+id/tv_info_display"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:padding="10dp"
+                android:textColor="#555"
+                android:textSize="16sp"/>
+        </ScrollView>
+
+        <com.google.android.flexbox.FlexboxLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:alignContent="stretch"
+            app:alignItems="stretch"
+            app:flexWrap="wrap">
+
+            <Button
+                android:id="@+id/btn_clear_token"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="清除token"/>
+
+            <Button
+                android:id="@+id/btn_login"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="登录"/>
+
+            <Button
+                android:id="@+id/btn_share_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="分享文字"/>
+
+            <Button
+                android:id="@+id/btn_share_img"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="分享本地图片"/>
+
+            <Button
+                android:id="@+id/btn_share_gif"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="分享本地gif图片"/>
+
+            <Button
+                android:id="@+id/btn_share_app"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="分享app"/>
+
+            <Button
+                android:id="@+id/btn_share_web"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="分享网页"/>
+
+            <Button
+                android:id="@+id/btn_share_music"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="分享音乐"/>
+
+            <Button
+                android:id="@+id/btn_share_video"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="分享视频"/>
+
+            <Button
+                android:id="@+id/btn_share_video_local"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="分享本地视频"/>
+
+        </com.google.android.flexbox.FlexboxLayout>
+    </LinearLayout>
+</ScrollView>

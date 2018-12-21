@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+
+    <!--qq-->
+    <string name="QQ_APP_ID">1104910200</string>
+    <string name="QQ_APPKEY">A6AqtYnKpg59yQ4N</string>
+
+    <!--微信-->
+    <string name="WX_APP_ID">wx4b8dbbca35b195c3</string>
+    <string name="WX_SECRET_KEY">0a3cb007291d0e59834ee3654f499171</string>
+
+    <!--新浪-->
+    <string name="SINA_APP_ID">2189645998</string>
+    <string name="SINA_APPSECRET">b5e3b6d2d80e5083b52a744e2f12655c</string>
+
+    <!--dd-->
+    <string name="DD_APP_ID">dingoag98ywrefwjeumuof</string>
+
+</resources>
