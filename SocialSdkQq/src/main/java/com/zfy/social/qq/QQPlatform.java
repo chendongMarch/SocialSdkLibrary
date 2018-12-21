@@ -26,6 +26,7 @@ import com.zfy.social.core.platform.IPlatform;
 import com.zfy.social.core.platform.PlatformFactory;
 import com.zfy.social.core.util.FileUtil;
 import com.zfy.social.core.util.SocialUtil;
+import com.zfy.social.qq.uikit.QQActionActivity;
 
 import java.util.ArrayList;
 
@@ -74,6 +75,11 @@ public class QQPlatform extends AbsPlatform {
     public void initOnShareListener(OnShareListener listener) {
         super.initOnShareListener(listener);
         this.mIUiListenerWrap = new IUiListenerWrap(listener);
+    }
+
+    @Override
+    public Class getUIKitClazz() {
+        return QQActionActivity.class;
     }
 
     @Override

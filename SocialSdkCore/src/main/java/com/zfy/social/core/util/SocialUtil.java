@@ -31,6 +31,9 @@ public class SocialUtil {
 
     public static final String TAG = "SocialSdk";
 
+    public static boolean isAppCachePath(Context context, String path) {
+        return path.contains(context.getPackageName());
+    }
 
     public static boolean hasPermission(Context context, String permission) {
         return Build.VERSION.SDK_INT < Build.VERSION_CODES.M

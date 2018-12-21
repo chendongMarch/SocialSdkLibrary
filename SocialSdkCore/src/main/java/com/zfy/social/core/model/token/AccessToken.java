@@ -91,7 +91,7 @@ public abstract class AccessToken {
     public static final String KEY_TIME = "_KEY_TIME";
 
     private static SharedPreferences getSp(Context context) {
-        return context.getSharedPreferences(TOKEN_STORE + context.getString(R.string.app_name), Context.MODE_PRIVATE);
+        return context.getSharedPreferences(TOKEN_STORE + context.getPackageName(), Context.MODE_PRIVATE);
     }
 
     public static <T> T getToken(Context context, String key, Class<T> tokenClazz) {

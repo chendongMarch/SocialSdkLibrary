@@ -30,6 +30,7 @@ import com.zfy.social.core.platform.PlatformFactory;
 import com.zfy.social.core.util.BitmapUtil;
 import com.zfy.social.core.util.FileUtil;
 import com.zfy.social.core.util.SocialUtil;
+import com.zfy.social.wb.uikit.WbActionActivity;
 
 import java.io.File;
 
@@ -47,8 +48,8 @@ public class WbPlatform extends AbsPlatform {
 
     private static final String TAG = WbPlatform.class.getSimpleName();
 
-    private WbShareHandler     mShareHandler;
-    private WbLoginHelper      mLoginHelper;
+    private WbShareHandler mShareHandler;
+    private WbLoginHelper mLoginHelper;
     private OpenApiShareHelper mOpenApiShareHelper;
 
     public static class Factory implements PlatformFactory {
@@ -66,6 +67,7 @@ public class WbPlatform extends AbsPlatform {
             }
             return platform;
         }
+
         @Override
         public int getTarget() {
             return Target.PLATFORM_WB;
@@ -76,6 +78,11 @@ public class WbPlatform extends AbsPlatform {
         super(appId, appName);
         AuthInfo authInfo = new AuthInfo(context, appId, redirectUrl, scope);
         WbSdk.install(context, authInfo);
+    }
+
+    @Override
+    public Class getUIKitClazz() {
+        return WbActionActivity.class;
     }
 
     @Override

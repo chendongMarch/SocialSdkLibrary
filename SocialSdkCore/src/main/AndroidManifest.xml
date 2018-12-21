@@ -9,16 +9,6 @@
 
     <application>
 
-        <!--用于发起请求和接受数据，同步生命周期-->
-        <activity
-            android:name="com.zfy.social.core.uikit.ActionActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar">
-            <intent-filter>
-                <action android:name="com.sina.weibo.sdk.action.ACTION_SDK_REQ_ACTIVITY"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </activity>
-
 
 
     </application>

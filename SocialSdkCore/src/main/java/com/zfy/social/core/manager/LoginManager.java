@@ -12,7 +12,6 @@ import com.zfy.social.core.listener.OnLoginListener;
 import com.zfy.social.core.model.LoginResult;
 import com.zfy.social.core.model.token.AccessToken;
 import com.zfy.social.core.platform.IPlatform;
-import com.zfy.social.core.uikit.ActionActivity;
 import com.zfy.social.core.util.SocialUtil;
 
 import java.lang.ref.WeakReference;
@@ -44,7 +43,7 @@ public class LoginManager {
             loginListener.onFailure(SocialError.make(SocialError.CODE_NOT_INSTALL));
             return;
         }
-        Intent intent = new Intent(context, ActionActivity.class);
+        Intent intent = new Intent(context, platform.getUIKitClazz());
         intent.putExtra(GlobalPlatform.KEY_ACTION_TYPE, GlobalPlatform.ACTION_TYPE_LOGIN);
         intent.putExtra(GlobalPlatform.KEY_LOGIN_TARGET, loginTarget);
         context.startActivity(intent);

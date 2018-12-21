@@ -18,7 +18,6 @@ import com.zfy.social.core.listener.OnShareListener;
 import com.zfy.social.core.model.ShareObj;
 import com.zfy.social.core.model.ShareObjChecker;
 import com.zfy.social.core.platform.IPlatform;
-import com.zfy.social.core.uikit.ActionActivity;
 import com.zfy.social.core.util.FileUtil;
 import com.zfy.social.core.util.SocialUtil;
 
@@ -108,13 +107,17 @@ public class ShareManager {
             onShareListener.onFailure(SocialError.make(SocialError.CODE_SHARE_OBJ_VALID, ShareObjChecker.getErrMsg()));
             return;
         }
-        // 是否有存储权限，读取缩略图片需要存储权限
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+        // 不是内存路径，有图片，但是没有存储权限，读取缩略图片需要存储权限
+        if (!SocialUtil.isAppCachePath(context, shareObj.getThumbImagePath())
+                && shareObj.hasImg()
+                && !SocialUtil.hasPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)) {
             onShareListener.onFailure(SocialError.make(SocialError.CODE_STORAGE_READ_ERROR));
             return;
         }
+        // 不是内部路径
         // 微博、本地、视频 需要写存储的权限
-        if (shareTarget == Target.SHARE_WB
+        if (!SocialUtil.isAppCachePath(context, shareObj.getThumbImagePath())
+                && shareTarget == Target.SHARE_WB
                 && shareObj.getShareObjType() == ShareObj.SHARE_TYPE_VIDEO
                 && !FileUtil.isHttpPath(shareObj.getMediaPath())
                 && !SocialUtil.hasPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -127,7 +130,8 @@ public class ShareManager {
             onShareListener.onFailure(SocialError.make(SocialError.CODE_NOT_INSTALL));
             return;
         }
-        Intent intent = new Intent(context, ActionActivity.class);
+
+        Intent intent = new Intent(context, platform.getUIKitClazz());
         intent.putExtra(GlobalPlatform.KEY_ACTION_TYPE, GlobalPlatform.ACTION_TYPE_SHARE);
         intent.putExtra(GlobalPlatform.KEY_SHARE_MEDIA_OBJ, shareObj);
         intent.putExtra(GlobalPlatform.KEY_SHARE_TARGET, shareTarget);

@@ -28,6 +28,11 @@ public interface IPlatform extends Recyclable {
     void onActivityResult(int requestCode, int resultCode, Intent data);
 
     /**
+     * @return 获取交互的 Activity 的 class
+     */
+     Class getUIKitClazz();
+
+    /**
      * 接收 Activity Intent
      *
      * @param intent intent
@@ -43,6 +48,7 @@ public interface IPlatform extends Recyclable {
 
     /**
      * 初始化分享监听
+     *
      * @param listener 分享回调
      */
     void initOnShareListener(OnShareListener listener);
@@ -55,16 +61,18 @@ public interface IPlatform extends Recyclable {
 
     /**
      * 发起登录
-     * @param activity act
+     *
+     * @param activity        act
      * @param onLoginListener 登录回调
      */
     void login(Activity activity, OnLoginListener onLoginListener);
 
     /**
      * 发起分享
-     * @param activity act
+     *
+     * @param activity    act
      * @param shareTarget 分享目标
-     * @param shareObj 分享对象
+     * @param shareObj    分享对象
      */
     void share(Activity activity, int shareTarget, ShareObj shareObj);
 

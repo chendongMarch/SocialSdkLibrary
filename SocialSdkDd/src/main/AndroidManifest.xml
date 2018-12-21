@@ -3,13 +3,22 @@
 
     <application>
 
+        <!--用于发起请求和接受数据，同步生命周期-->
+        <activity
+            android:name="com.zfy.social.dd.uikit.DDActionActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
         <!--dd-->
         <activity-alias
             android:name="${applicationId}.ddshare.DDShareActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:targetActivity="com.zfy.social.core.uikit.ActionActivity"
+            android:targetActivity="com.zfy.social.dd.uikit.DDActionActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"/>
     </application>
 </manifest>

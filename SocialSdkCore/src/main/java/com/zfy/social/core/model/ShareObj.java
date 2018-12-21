@@ -158,6 +158,12 @@ public class ShareObj implements Parcelable {
         setTargetUrl(targetUrl);
     }
 
+
+    public boolean hasImg() {
+        return shareObjType != SHARE_TYPE_OPEN_APP && shareObjType != SHARE_TYPE_TEXT;
+    }
+
+
     public Bundle getExtra() {
         return extra;
     }

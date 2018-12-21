@@ -1,7 +1,5 @@
 package com.zfy.social.core.common;
 
-import com.tencent.mm.opensdk.modelmsg.WXMiniProgramObject;
-
 /**
  * CreateAt : 2017/5/19
  * Describe : 常量类
@@ -13,9 +11,9 @@ public class SocialValues {
     /**
      * 微信小程序分享类型
      */
-    public static final int WX_MINI_TYPE_RELEASE = WXMiniProgramObject.MINIPTOGRAM_TYPE_RELEASE;
-    public static final int WX_MINI_TYPE_PREVIEW = WXMiniProgramObject.MINIPROGRAM_TYPE_PREVIEW;
-    public static final int WX_MINI_TYPE_TEST = WXMiniProgramObject.MINIPROGRAM_TYPE_TEST;
+    public static final int WX_MINI_TYPE_RELEASE = 0;
+    public static final int WX_MINI_TYPE_PREVIEW = 1;
+    public static final int WX_MINI_TYPE_TEST = 2;
 
     public static final String QQ_PKG = "com.tencent.mobileqq";
     public static final String WECHAT_PKG = "com.tencent.mm";

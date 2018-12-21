@@ -1,6 +1,7 @@
 package com.zfy.social.core.uikit;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,11 +15,20 @@ import com.zfy.social.core.platform.IPlatform;
  *
  * @author chendong
  */
-public class ActionActivity extends SocialReceiver {
+public class BaseActionActivity extends Activity {
 
-    public static final String TAG = ActionActivity.class.getSimpleName();
+    public static final String TAG = BaseActionActivity.class.getSimpleName();
 
     private boolean mIsNotFirstResume = false;
+
+    protected void handleResp(Object resp) {
+        IPlatform platform = getPlatform();
+        if (platform != null) {
+            platform.onResponse(resp);
+        }
+        checkFinish();
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,15 +69,6 @@ public class ActionActivity extends SocialReceiver {
         GlobalPlatform.release(this);
     }
 
-
-    @Override
-    void handleResp(Object resp) {
-        IPlatform platform = getPlatform();
-        if (platform != null) {
-            platform.onResponse(resp);
-        }
-        checkFinish();
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
