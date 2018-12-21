@@ -101,14 +101,9 @@ defaultConfig {
 String qqAppId = getString(R.string.QQ_APP_ID);
 String wxAppId = getString(R.string.WX_APP_ID);
 String wxSecretKey = getString(R.string.WX_SECRET_KEY);
-String sinaAppId = getString(R.string.SINA_APP_ID);
-String ddAppId = getString(R.string.DD_APP_ID);
-
-String qqAppId = getString(R.string.QQ_APP_ID);
-String wxAppId = getString(R.string.WX_APP_ID);
-String wxSecretKey = getString(R.string.WX_SECRET_KEY);
 String wbAppId = getString(R.string.SINA_APP_ID);
 String ddAppId = getString(R.string.DD_APP_ID);
+
 SocialOptions options = SocialOptions.with(this)
         // 开启调试
         .debug(true)
