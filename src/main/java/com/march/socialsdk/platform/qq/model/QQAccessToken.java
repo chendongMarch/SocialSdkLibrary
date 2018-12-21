@@ -1,7 +1,7 @@
 package com.march.socialsdk.platform.qq.model;
 
 import com.march.socialsdk.model.token.AccessToken;
-import com.march.socialsdk.platform.Target;
+import com.march.socialsdk.common.Target;
 
 /**
  * CreateAt : 2016/12/6

@@ -2,10 +2,11 @@ package com.march.socialsdk.platform;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 
-import com.march.socialsdk.listener.PlatformLifecycle;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.listener.OnShareListener;
+import com.march.socialsdk.listener.Recyclable;
 import com.march.socialsdk.model.ShareObj;
 
 /**
@@ -15,13 +16,30 @@ import com.march.socialsdk.model.ShareObj;
  * @author chendong
  */
 
-public interface IPlatform extends PlatformLifecycle {
+public interface IPlatform extends Recyclable {
 
     /**
-     * 检测参数配置是否正确
-     * @return 参数是否合法
+     * 接收 Activity onActivityResult
+     *
+     * @param requestCode requestCode
+     * @param resultCode  resultCode
+     * @param data        data
      */
-    boolean checkPlatformConfig();
+    void onActivityResult(int requestCode, int resultCode, Intent data);
+
+    /**
+     * 接收 Activity Intent
+     *
+     * @param intent intent
+     */
+    void handleIntent(Activity intent);
+
+    /**
+     * 接收登录分享结果
+     *
+     * @param resp resp
+     */
+    void onResponse(Object resp);
 
     /**
      * 初始化分享监听

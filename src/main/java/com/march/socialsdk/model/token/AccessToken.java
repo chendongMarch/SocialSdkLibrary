@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 
 import com.march.socialsdk.R;
 import com.march.socialsdk.SocialSdk;
-import com.march.socialsdk.platform.Target;
+import com.march.socialsdk.common.Target;
 import com.march.socialsdk.util.JsonUtil;
 
 /**

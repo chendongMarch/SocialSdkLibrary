@@ -10,15 +10,15 @@ import com.march.socialsdk.SocialSdkConfig;
 import com.march.socialsdk.common.SocialKeys;
 import com.march.socialsdk.common.SocialUtil;
 import com.march.socialsdk.common.SocialValues;
-import com.march.socialsdk.common.ThumbDataContinuation;
+import com.march.socialsdk.common.ThumbTask;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.LoginResult;
 import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.IPlatform;
-import com.march.socialsdk.platform.PlatformCreator;
-import com.march.socialsdk.platform.Target;
+import com.march.socialsdk.platform.PlatformFactory;
+import com.march.socialsdk.common.Target;
 import com.march.socialsdk.util.BitmapUtil;
 import com.march.socialsdk.util.FileUtil;
 import com.march.socialsdk.util.Util;
@@ -58,7 +58,7 @@ public class WxPlatform extends AbsPlatform {
     private IWXAPI mWxApi;
     private String mWxSecret;
 
-    public static class Creator implements PlatformCreator {
+    public static class Factory implements PlatformFactory {
         @Override
         public IPlatform create(Context context, int target) {
             IPlatform platform = null;
@@ -67,6 +67,11 @@ public class WxPlatform extends AbsPlatform {
                 platform = new WxPlatform(context, config.getWxAppId(), config.getWxSecretKey(), config.getAppName());
             }
             return platform;
+        }
+
+        @Override
+        public int getTarget() {
+            return Target.PLATFORM_WX;
         }
     }
 
@@ -247,7 +252,7 @@ public class WxPlatform extends AbsPlatform {
     // 分享 图片
     private void shareImage(final int shareTarget, final Activity activity, final ShareObj obj) {
         BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE_32)
-                .continueWith(new ThumbDataContinuation(TAG, "shareImage", mOnShareListener) {
+                .continueWith(new ThumbTask(TAG, "shareImage", mOnShareListener) {
                     @Override
                     public void onSuccess(byte[] thumbData) {
                         shareImage(shareTarget, obj.getSummary(), obj.getThumbImagePath(), thumbData);
@@ -299,7 +304,7 @@ public class WxPlatform extends AbsPlatform {
     // 分享 web
     private void shareWeb(final int shareTarget, Activity activity, final ShareObj obj) {
         BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE_32)
-                .continueWith(new ThumbDataContinuation(TAG, "shareWeb", mOnShareListener) {
+                .continueWith(new ThumbTask(TAG, "shareWeb", mOnShareListener) {
                     @Override
                     public void onSuccess(byte[] thumbData) {
                         WXWebpageObject webPage = new WXWebpageObject();
@@ -317,7 +322,7 @@ public class WxPlatform extends AbsPlatform {
     // 分享音乐
     private void shareMusic(final int shareTarget, Activity activity, final ShareObj obj) {
         BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE_32)
-                .continueWith(new ThumbDataContinuation(TAG, "shareMusic", mOnShareListener) {
+                .continueWith(new ThumbTask(TAG, "shareMusic", mOnShareListener) {
                     @Override
                     public void onSuccess(byte[] thumbData) {
                         WXMusicObject music = new WXMusicObject();
@@ -345,7 +350,7 @@ public class WxPlatform extends AbsPlatform {
             }
         } else {
             BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE_32)
-                    .continueWith(new ThumbDataContinuation(TAG, "shareVideo", mOnShareListener) {
+                    .continueWith(new ThumbTask(TAG, "shareVideo", mOnShareListener) {
                         @Override
                         public void onSuccess(byte[] thumbData) {
                             WXVideoObject video = new WXVideoObject();
@@ -377,7 +382,7 @@ public class WxPlatform extends AbsPlatform {
             return;
         }
         BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE_128)
-                .continueWith(new ThumbDataContinuation(TAG, "shareMini", mOnShareListener) {
+                .continueWith(new ThumbTask(TAG, "shareMini", mOnShareListener) {
                     @Override
                     public void onSuccess(byte[] thumbData) {
                         WXMiniProgramObject miniProgramObj = new WXMiniProgramObject();

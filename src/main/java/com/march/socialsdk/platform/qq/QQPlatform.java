@@ -16,8 +16,8 @@ import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.IPlatform;
-import com.march.socialsdk.platform.PlatformCreator;
-import com.march.socialsdk.platform.Target;
+import com.march.socialsdk.platform.PlatformFactory;
+import com.march.socialsdk.common.Target;
 import com.march.socialsdk.util.FileUtil;
 import com.march.socialsdk.util.Util;
 import com.tencent.connect.common.Constants;
@@ -48,7 +48,7 @@ public class QQPlatform extends AbsPlatform {
     private QQLoginHelper mQQLoginHelper;
     private IUiListenerWrap mIUiListenerWrap;
 
-    public static class Creator implements PlatformCreator {
+    public static class Factory implements PlatformFactory {
         @Override
         public IPlatform create(Context context, int target) {
             IPlatform platform = null;
@@ -57,6 +57,11 @@ public class QQPlatform extends AbsPlatform {
                 platform = new QQPlatform(context, config.getQqAppId(), config.getAppName());
             }
             return platform;
+        }
+
+        @Override
+        public int getTarget() {
+            return Target.PLATFORM_QQ;
         }
     }
 

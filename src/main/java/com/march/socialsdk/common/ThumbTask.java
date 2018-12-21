@@ -12,13 +12,13 @@ import bolts.Task;
  *
  * @author chendong
  */
-public abstract class ThumbDataContinuation implements Continuation<byte[], Object> {
+public abstract class ThumbTask implements Continuation<byte[], Object> {
 
     private String          tag;
     private String          msg;
     private OnShareListener onShareListener;
 
-    protected ThumbDataContinuation(String tag, String msg, OnShareListener onShareListener) {
+    protected ThumbTask(String tag, String msg, OnShareListener onShareListener) {
         this.tag = tag;
         this.msg = msg;
         this.onShareListener = onShareListener;

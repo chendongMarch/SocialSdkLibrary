@@ -1,5 +1,9 @@
 package com.march.socialsdk.common;
 
+import android.content.Context;
+import android.net.Uri;
+import android.os.Build;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -7,6 +11,8 @@ import com.march.socialsdk.SocialSdk;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.io.File;
 
 /**
  * CreateAt : 2018/12/21
@@ -25,6 +31,15 @@ public class SocialUtil {
             }
         }
         return false;
+    }
+
+    public static Uri fromFile(Context context, File file) {
+        //判断是否是AndroidN以及更高的版本
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return FileProvider.getUriForFile(context, context.getPackageName() + ".fileProvider", file);
+        } else {
+            return Uri.fromFile(file);
+        }
     }
 
     public static void e(String tag, String msg) {

@@ -1,4 +1,4 @@
-package com.march.socialsdk.platform;
+package com.march.socialsdk.common;
 
 import android.support.annotation.IntDef;
 

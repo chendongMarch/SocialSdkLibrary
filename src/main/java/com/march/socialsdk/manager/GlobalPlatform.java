@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 
 import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.platform.IPlatform;
-import com.march.socialsdk.platform.Target;
+import com.march.socialsdk.common.Target;
 
 /**
  * CreateAt : 2017/5/19

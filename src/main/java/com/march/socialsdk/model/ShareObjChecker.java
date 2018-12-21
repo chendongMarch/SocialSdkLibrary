@@ -1,7 +1,7 @@
 package com.march.socialsdk.model;
 
 
-import com.march.socialsdk.platform.Target;
+import com.march.socialsdk.common.Target;
 import com.march.socialsdk.util.FileUtil;
 import com.march.socialsdk.util.Util;
 

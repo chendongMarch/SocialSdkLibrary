@@ -8,7 +8,7 @@ import com.march.socialsdk.platform.IPlatform;
 
 /**
  * CreateAt : 2018/12/21
- * Describe :
+ * Describe : 获取平台对象
  *
  * @author chendong
  */
@@ -18,10 +18,6 @@ public class PlatformManager {
     public static @NonNull
     IPlatform getPlatform(Context context, int target) {
         return GlobalPlatform.makePlatform(context, target);
-    }
-
-    public static void recycle() {
-        GlobalPlatform.release(null);
     }
 
 }
