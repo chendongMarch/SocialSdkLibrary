@@ -130,7 +130,7 @@ public class FileUtil {
         // 映射文件名
         String suffix = FileUtil.getSuffix(url);
         suffix = TextUtils.isEmpty(suffix) ? ".png" : suffix;
-        String fileName = Util.getMD5(url) + suffix;
+        String fileName = SocialUtil.getMD5(url) + suffix;
         File saveFile = new File(SocialSdk.getConfig().getCacheDir(), fileName);
         return saveFile.getAbsolutePath();
     }
@@ -144,7 +144,7 @@ public class FileUtil {
      * @return 路径
      */
     public static String mapResId2LocalPath(Context context, int resId) {
-        String fileName = Util.getMD5(resId + "") + FileUtil.POINT_PNG;
+        String fileName = SocialUtil.getMD5(resId + "") + FileUtil.POINT_PNG;
         File saveFile = new File(SocialSdk.getConfig().getCacheDir(), fileName);
         if (saveFile.exists())
             return saveFile.getAbsolutePath();

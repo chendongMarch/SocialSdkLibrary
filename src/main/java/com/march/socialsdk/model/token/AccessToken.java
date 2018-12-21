@@ -88,6 +88,7 @@ public abstract class AccessToken {
     public static final String WECHAT_TOKEN_KEY = "WECHAT_TOKEN_KEY";
     public static final String SINA_TOKEN_KEY   = "SINA_TOKEN_KEY";
     public static final String QQ_TOKEN_KEY     = "QQ_TOKEN_KEY";
+    public static final String KEY_TIME = "_KEY_TIME";
 
     private static SharedPreferences getSp(Context context) {
         return context.getSharedPreferences(TOKEN_STORE + context.getString(R.string.app_name), Context.MODE_PRIVATE);
@@ -95,20 +96,24 @@ public abstract class AccessToken {
 
     public static <T> T getToken(Context context, String key, Class<T> tokenClazz) {
         SharedPreferences sp = getSp(context);
-        return JsonUtil.getObject(sp.getString(key, null), tokenClazz);
+        long time = sp.getLong(key + KEY_TIME, -1);
+        long currentTimeMillis = System.currentTimeMillis();
+        if (currentTimeMillis - time < SocialSdk.getConfig().getTokenExpires()) {
+            return JsonUtil.getObject(sp.getString(key, null), tokenClazz);
+        } else {
+            return null;
+        }
     }
 
     public static void saveToken(final Context context, final String key, final Object token) {
-        SocialSdk.getExecutorService().execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    SharedPreferences sp = getSp(context);
-                    String tokenJson = JsonUtil.getObject2Json(token);
-                    sp.edit().putString(key, tokenJson).apply();
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
+        SocialSdk.getExecutorService().execute(() -> {
+            try {
+                SharedPreferences sp = getSp(context);
+                String tokenJson = JsonUtil.getObject2Json(token);
+                sp.edit().putString(key, tokenJson).apply();
+                sp.edit().putLong(key + KEY_TIME, System.currentTimeMillis()).apply();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
 

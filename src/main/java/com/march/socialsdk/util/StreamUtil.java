@@ -1,7 +1,5 @@
 package com.march.socialsdk.util;
 
-import com.march.socialsdk.common.SocialUtil;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;

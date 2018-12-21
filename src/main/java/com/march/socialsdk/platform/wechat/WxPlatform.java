@@ -5,11 +5,11 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.march.socialsdk.SocialOptions;
 import com.march.socialsdk.SocialSdk;
-import com.march.socialsdk.SocialSdkConfig;
 import com.march.socialsdk.common.SocialKeys;
-import com.march.socialsdk.common.SocialUtil;
 import com.march.socialsdk.common.SocialValues;
+import com.march.socialsdk.common.Target;
 import com.march.socialsdk.common.ThumbTask;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnLoginListener;
@@ -18,10 +18,9 @@ import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformFactory;
-import com.march.socialsdk.common.Target;
 import com.march.socialsdk.util.BitmapUtil;
 import com.march.socialsdk.util.FileUtil;
-import com.march.socialsdk.util.Util;
+import com.march.socialsdk.util.SocialUtil;
 import com.tencent.mm.opensdk.constants.ConstantsAPI;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
@@ -62,8 +61,8 @@ public class WxPlatform extends AbsPlatform {
         @Override
         public IPlatform create(Context context, int target) {
             IPlatform platform = null;
-            SocialSdkConfig config = SocialSdk.getConfig();
-            if (!Util.isAnyEmpty(config.getWxAppId(), config.getWxSecretKey())) {
+            SocialOptions config = SocialSdk.getConfig();
+            if (!SocialUtil.isAnyEmpty(config.getWxAppId(), config.getWxSecretKey())) {
                 platform = new WxPlatform(context, config.getWxAppId(), config.getWxSecretKey(), config.getAppName());
             }
             return platform;

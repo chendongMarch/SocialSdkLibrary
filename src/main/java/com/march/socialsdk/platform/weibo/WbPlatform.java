@@ -5,9 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
+import com.march.socialsdk.SocialOptions;
 import com.march.socialsdk.SocialSdk;
-import com.march.socialsdk.SocialSdkConfig;
 import com.march.socialsdk.common.SocialValues;
+import com.march.socialsdk.common.Target;
 import com.march.socialsdk.common.ThumbTask;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnLoginListener;
@@ -15,10 +16,9 @@ import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformFactory;
-import com.march.socialsdk.common.Target;
 import com.march.socialsdk.util.BitmapUtil;
 import com.march.socialsdk.util.FileUtil;
-import com.march.socialsdk.util.Util;
+import com.march.socialsdk.util.SocialUtil;
 import com.sina.weibo.sdk.WbSdk;
 import com.sina.weibo.sdk.api.ImageObject;
 import com.sina.weibo.sdk.api.TextObject;
@@ -55,12 +55,12 @@ public class WbPlatform extends AbsPlatform {
         @Override
         public IPlatform create(Context context, int target) {
             WbPlatform platform = null;
-            SocialSdkConfig config = SocialSdk.getConfig();
+            SocialOptions config = SocialSdk.getConfig();
             String appId = config.getSinaAppId();
             String appName = config.getAppName();
             String redirectUrl = config.getSinaRedirectUrl();
             String scope = config.getSinaScope();
-            if (!Util.isAnyEmpty(appId, appName, redirectUrl, scope)) {
+            if (!SocialUtil.isAnyEmpty(appId, appName, redirectUrl, scope)) {
                 platform = new WbPlatform(context, appId, appName, redirectUrl, scope);
                 platform.setTarget(target);
             }
@@ -192,7 +192,7 @@ public class WbPlatform extends AbsPlatform {
 
     // 打开 app
     private void shareOpenApp(int shareTarget, Activity activity, ShareObj obj) {
-        boolean rst = Util.openApp(activity, SocialValues.SINA_PKG);
+        boolean rst = SocialUtil.openApp(activity, SocialValues.SINA_PKG);
         if (rst) {
             mOnShareListener.onSuccess();
         } else {

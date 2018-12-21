@@ -1,6 +1,6 @@
 package com.march.socialsdk.exception;
 
-import com.march.socialsdk.common.SocialUtil;
+import com.march.socialsdk.util.SocialUtil;
 
 /**
  * CreateAt : 2016/12/5
@@ -8,26 +8,27 @@ import com.march.socialsdk.common.SocialUtil;
  *
  * @author chendong
  */
-public class SocialError extends Exception {
+public class SocialError extends RuntimeException {
 
     public static final String TAG = SocialError.class.getSimpleName();
 
     public static final int CODE_OK = 1; // 成功
 
-    public static final int CODE_COMMON_ERROR         = 101; // 通用错误，未归类
-    public static final int CODE_NOT_INSTALL          = 102; // 没有安装应用
-    public static final int CODE_VERSION_LOW          = 103; // 版本过低，不支持
-    public static final int CODE_SHARE_OBJ_VALID      = 104; // 分享的对象参数有问题
+    public static final int CODE_COMMON_ERROR = 101; // 通用错误，未归类
+    public static final int CODE_NOT_INSTALL = 102; // 没有安装应用
+    public static final int CODE_VERSION_LOW = 103; // 版本过低，不支持
+    public static final int CODE_SHARE_OBJ_VALID = 104; // 分享的对象参数有问题
     public static final int CODE_SHARE_BY_INTENT_FAIL = 105; // 使用 Intent 分享失败
-    public static final int CODE_STORAGE_READ_ERROR   = 106; // 没有读存储的权限，获取分享缩略图将会失败
-    public static final int CODE_STORAGE_WRITE_ERROR  = 107; // 没有写存储的权限，微博分享视频copy操作将会失败
-    public static final int CODE_FILE_NOT_FOUND       = 108; // 文件不存在
-    public static final int CODE_SDK_ERROR            = 109; // sdk 返回错误
-    public static final int CODE_REQUEST_ERROR        = 110; // 网络请求发生错误
-    public static final int CODE_CANNOT_OPEN_ERROR    = 111; // 无法启动 app
-    public static final int CODE_PARSE_ERROR          = 112; // 数据解析错误
+    public static final int CODE_STORAGE_READ_ERROR = 106; // 没有读存储的权限，获取分享缩略图将会失败
+    public static final int CODE_STORAGE_WRITE_ERROR = 107; // 没有写存储的权限，微博分享视频copy操作将会失败
+    public static final int CODE_FILE_NOT_FOUND = 108; // 文件不存在
+    public static final int CODE_SDK_ERROR = 109; // sdk 返回错误
+    public static final int CODE_REQUEST_ERROR = 110; // 网络请求发生错误
+    public static final int CODE_CANNOT_OPEN_ERROR = 111; // 无法启动 app
+    public static final int CODE_PARSE_ERROR = 112; // 数据解析错误
     public static final int CODE_IMAGE_COMPRESS_ERROR = 113; // 图片压缩失败
     public static final int CODE_PARAM_ERROR = 114; // 参数错误
+    public static final int CODE_SDK_INIT_ERROR = 115; // SocialSdk 初始化错误
 
     private int code = CODE_OK;
     private String msg;

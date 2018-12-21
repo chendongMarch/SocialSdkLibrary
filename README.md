@@ -12,9 +12,12 @@
 
 博客地址 ：[快速接入微信微博QQ钉钉原生登录分享](http://zfyx.coding.me/article/3067853428/)
 
+
+🎉  2018.12.21 已经225颗🌟，着手准备拆分成不同平台库，方便灵活接入
+
 🎉  2018.9.26 项目获得了第202颗🌟，感谢新同事补星 2 个 😄
 
-🎉  2018.6.7 项目获得了第100颗🌟，最后一颗是我问同事要的🤦‍
+🎉  2018.6.7 项目获得了第100颗🌟，最后一颗是我问同事要的 🤦‍
 
 🎉  2018.5.12 修复内存问题、功能扩展 [稳定版本 1.1.0](https://github.com/chendongMarch/SocialSdkLibrary/releases/tag/1.1.0)
 
@@ -48,7 +51,7 @@
 🔥 扩展性：
 
 - 平台独立，项目以平台进行划分，各个平台之间完全独立，如果想仅支持部分平台，只需要删除 `platform` 包下该平台的具体实现即可。
-- 请求、JSON 解析等功能可从外部注入代理，对一些功能进行自定义的扩展。
+- 请求、`JSON` 解析等功能可从外部注入代理，对一些功能进行自定义的扩展。
 - 可以继承 `AbsPlatform` 接入其他平台分享，自定义扩展。
 
 🔥 功能性：针对实际项目需求进行扩展，例如在分享前统一对分享数据提供一次重新构造的机会。
@@ -63,7 +66,7 @@
 
 使用 **SocialSdk** 只需要关注以下几个文件：
 
-👉️ `SocialSdk.java` 结合 `SocialConfig.java` 用来进行授权信息的配置。
+👉️ `SocialSdk.java` 结合 `SocialOptions.java` 用来进行授权信息的配置。
 
 👉️ `Target.java` 类是单独分离出来的常量类，指向了登录和分享的具体目标。
 
@@ -81,15 +84,12 @@ defaultConfig {
 	manifestPlaceholders = [qq_id: "11049xxxxx"]
 }
 ```
-关于 `manifestPlaceholders` 的使用
 
-```bash
-当使用 manifestPlaceholders = [qq_id: "11049xxxxx"] 的方式时，之前声明的所有 manifestPlaceholders 都会被替换掉，只保留最后的。
+- 当使用 `manifestPlaceholders = [qq_id: "11049xxxxx"]` 的方式时，之前声明的所有 `manifestPlaceholders` 都会被替换掉，只保留最后的。
 
-当使用 manifestPlaceholders.qq_id = "11049xxxxx" 的方式时，会在原来的 manifestPlaceholders 中追加新的，同时也保留以前的。
+- 当使用 `manifestPlaceholders.qq_id = "11049xxxxx"` 的方式时，会在原来的 `manifestPlaceholders` 中追加新的，同时也保留以前的。
 
-建议的方式是，在 defaultConfig 中使用直接赋值的方式，而在 buildTypes 和 Favors 中使用追加的方式，避免将之前的覆盖掉。
-```
+- 建议的方式是，在 `defaultConfig` 中使用直接赋值的方式，而在 `buildTypes` 和 `Flavors` 中使用追加的方式，避免将之前的覆盖掉。
 
 
 ## 初始化
@@ -103,7 +103,8 @@ String wxAppId = getString(R.string.WX_APP_ID);
 String wxSecretKey = getString(R.string.WX_SECRET_KEY);
 String sinaAppId = getString(R.string.SINA_APP_ID);
 String ddAppId = getString(R.string.DD_APP_ID);
-SocialSdkConfig config = SocialSdkConfig.create(this)
+
+SocialOptions options = SocialOptions.with(this)
         // 开启调试
         .debug(true)
         // 配置钉钉
@@ -117,14 +118,18 @@ SocialSdkConfig config = SocialSdkConfig.create(this)
         // 配置Sina的RedirectUrl，有默认值，如果是官网默认的不需要设置
         .sinaRedirectUrl("http://open.manfenmm.com/bbpp/app/weibo/common.php")
         // 配置Sina授权scope,有默认值，默认值 all
-        .sinaScope(SocialConstants.SCOPE)
-        // 不加载钉钉和微博平台
-        .disablePlatform(Target.PLATFORM_DD)
-        .disablePlatform(Target.PLATFORM_WB)
+        .sinaScope(SocialValues.SCOPE)
         // 当缩略图因为各种原因无法获取时，将会使用默认图，避免分享中断
-        .defImageResId(R.mipmap.ic_launcher_new);
+        .failImgRes(R.mipmap.ic_launcher_new)
+        // 设置 token 有效期，有效期内不会重新获取 token，默认一天，如下设置为 12 小时
+        .tokenExpires(12 * 60 * 60 * 1000)
+        // 注册平台创建工厂
+        .registerPlatform(new QQPlatform.Factory())
+        .registerPlatform(new DDPlatform.Factory())
+        .registerPlatform(new WbPlatform.Factory())
+        .registerPlatform(new WxPlatform.Factory());
 // 👮 添加 config 数据，必须
-SocialSdk.init(config);
+SocialSdk.init(options);
 // 👮 添加自定义的 json 解析，必须，参考 temp 文件夹下的实现
 SocialSdk.setJsonAdapter(new GsonJsonAdapter());
 // 👮 请求处理类，如果使用了微博的 openApi 分享，这个是必须的，参考 temp 文件夹下的实现
@@ -133,7 +138,7 @@ SocialSdk.setRequestAdapter(new OkHttpRequestAdapter());
 
 ## adapter
 
-使用 `adapter` 这种模式主要参照了一些成熟的类库，目的是为了对外提供更好的扩展性，这部分内容可以关注 `SocialSdk.java`.
+使用 `adapter` 这种模式主要参照了一些成熟的类库，目的是为了提高和宿主项目的统一性，避免自己去引入多余的依赖，这部分内容可以关注 `SocialSdk.java`.
 
 - `IJsonAdapter`，负责 `Json` 解析，为了保持和宿主项目 `json` 解析框架的统一，是必须自定义添加的（没有内置一个实现是因为使用自带的 `JsonObject` 解析实在麻烦，又不想内置一个三方库进来，采取的这种折衷方案），提供一个 `Gson` 下的实现仅供参考 - [GsonJsonAdapter.java](https://github.com/chendongMarch/SocialSdkLibrary/blob/master/temp/GsonJsonAdapter.java)
 
@@ -258,7 +263,7 @@ localGifPath = new File(Environment.getExternalStorageDirectory(), "3.gif").getA
 netVideoPath = "http://7xtjec.com1.z0.glb.clouddn.com/export.mp4";
 netImagePath = "http://7xtjec.com1.z0.glb.clouddn.com/token.png";
 netMusicPath = "http://7xtjec.com1.z0.glb.clouddn.com/test_music.mp3";
-netMusicPath = "http://mp3.haoduoge.com/sSocialSdkConfig/2017-05-19/1495207225.mp3";
+netMusicPath = "http://mp3.haoduoge.com/test/2017-05-19/1495207225.mp3";
 targetUrl = "http://bbs.csdn.net/topics/391545021";
 
 
@@ -399,19 +404,21 @@ public class MyShareListener extends SimpleShareListener {
 
 
 ```java
-CODE_COMMON_ERROR         = 101; // 通用错误，未归类
-CODE_NOT_INSTALL          = 102; // 没有安装应用
-CODE_VERSION_LOW          = 103; // 版本过低，不支持
-CODE_SHARE_OBJ_VALID      = 104; // 分享的对象参数有问题
-CODE_SHARE_BY_INTENT_FAIL = 105; // 使用 Intent 分享失败
-CODE_STORAGE_READ_ERROR   = 106; // 没有读存储的权限，获取分享缩略图将会失败
-CODE_STORAGE_WRITE_ERROR  = 107; // 没有写存储的权限，微博分享视频copy操作将会失败
-CODE_FILE_NOT_FOUND       = 108; // 文件不存在
-CODE_SDK_ERROR            = 109; // sdk 返回错误
-CODE_REQUEST_ERROR        = 110; // 网络请求发生错误
-CODE_CANNOT_OPEN_ERROR    = 111; // 无法启动 app
-CODE_PARSE_ERROR          = 112; // 数据解析错误
-CODE_IMAGE_COMPRESS_ERROR = 113; // 图片压缩失败
+int CODE_COMMON_ERROR = 101; // 通用错误，未归类
+int CODE_NOT_INSTALL = 102; // 没有安装应用
+int CODE_VERSION_LOW = 103; // 版本过低，不支持
+int CODE_SHARE_OBJ_VALID = 104; // 分享的对象参数有问题
+int CODE_SHARE_BY_INTENT_FAIL = 105; // 使用 Intent 分享失败
+int CODE_STORAGE_READ_ERROR = 106; // 没有读存储的权限，获取分享缩略图将会失败
+int CODE_STORAGE_WRITE_ERROR = 107; // 没有写存储的权限，微博分享视频copy操作将会失败
+int CODE_FILE_NOT_FOUND = 108; // 文件不存在
+int CODE_SDK_ERROR = 109; // sdk 返回错误
+int CODE_REQUEST_ERROR = 110; // 网络请求发生错误
+int CODE_CANNOT_OPEN_ERROR = 111; // 无法启动 app
+int CODE_PARSE_ERROR = 112; // 数据解析错误
+int CODE_IMAGE_COMPRESS_ERROR = 113; // 图片压缩失败
+int CODE_PARAM_ERROR = 114; // 参数错误
+int CODE_SDK_INIT_ERROR = 115; // SocialSdk 初始化错误
 ```
 
 例如你可以这么做：

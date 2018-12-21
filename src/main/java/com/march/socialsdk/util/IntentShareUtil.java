@@ -7,8 +7,6 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import com.march.socialsdk.common.SocialUtil;
-
 import java.io.File;
 import java.util.List;
 

@@ -3,7 +3,7 @@ package com.march.socialsdk.model;
 
 import com.march.socialsdk.common.Target;
 import com.march.socialsdk.util.FileUtil;
-import com.march.socialsdk.util.Util;
+import com.march.socialsdk.util.SocialUtil;
 
 import java.lang.ref.WeakReference;
 
@@ -62,7 +62,7 @@ public class ShareObjChecker {
                         Target.SHARE_QQ_FRIENDS,
                         Target.SHARE_WX_FRIENDS,
                         Target.SHARE_DD)) {
-                    return isTitleSummaryValid(obj) && !Util.isAnyEmpty(obj.getMediaPath());
+                    return isTitleSummaryValid(obj) && !SocialUtil.isAnyEmpty(obj.getMediaPath());
                 }
                 // 网络视频
                 else if (FileUtil.isHttpPath(obj.getMediaPath())) {
@@ -87,7 +87,7 @@ public class ShareObjChecker {
     }
 
     private static boolean isTitleSummaryValid(ShareObj obj) {
-        boolean valid = !Util.isAnyEmpty(obj.getTitle(), obj.getSummary());
+        boolean valid = !SocialUtil.isAnyEmpty(obj.getTitle(), obj.getSummary());
         if (!valid) {
             sErrMsgRef = new ErrMsgRef("title summary 不能空", obj);
         }
@@ -106,7 +106,7 @@ public class ShareObjChecker {
     // url 合法
     private static boolean isUrlValid(ShareObj obj) {
         String targetUrl = obj.getTargetUrl();
-        boolean urlValid = !Util.isAnyEmpty(targetUrl) && FileUtil.isHttpPath(targetUrl);
+        boolean urlValid = !SocialUtil.isAnyEmpty(targetUrl) && FileUtil.isHttpPath(targetUrl);
         if (!urlValid) {
             sErrMsgRef = new ErrMsgRef("url : " + targetUrl + "  不能为空，且必须带有http协议头", obj);
         }
@@ -115,7 +115,7 @@ public class ShareObjChecker {
 
     // 音频视频
     private static boolean isMusicVideoVoiceValid(ShareObj obj) {
-        return isTitleSummaryValid(obj) && !Util.isAnyEmpty(obj.getMediaPath()) && isThumbLocalPathValid(obj);
+        return isTitleSummaryValid(obj) && !SocialUtil.isAnyEmpty(obj.getMediaPath()) && isThumbLocalPathValid(obj);
     }
 
     // 本地文件存在

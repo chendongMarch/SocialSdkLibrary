@@ -6,6 +6,7 @@ import android.util.SparseArray;
 import com.march.socialsdk.adapter.IJsonAdapter;
 import com.march.socialsdk.adapter.IRequestAdapter;
 import com.march.socialsdk.adapter.impl.DefaultRequestAdapter;
+import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformFactory;
 
@@ -20,25 +21,25 @@ import java.util.concurrent.Executors;
  */
 public class SocialSdk {
 
-    private static SocialSdkConfig              sSocialSdkConfig;
-    private static IJsonAdapter                 sJsonAdapter;
-    private static IRequestAdapter              sRequestAdapter;
-    private static ExecutorService              sExecutorService;
+    private static SocialOptions sSocialOptions;
+    private static IJsonAdapter sJsonAdapter;
+    private static IRequestAdapter sRequestAdapter;
+    private static ExecutorService sExecutorService;
 
-    public static SocialSdkConfig getConfig() {
-        if (sSocialSdkConfig == null) {
-            throw new IllegalStateException("invoke SocialSdk.init() first please");
+    public static SocialOptions getConfig() {
+        if (sSocialOptions == null) {
+            throw SocialError.make(SocialError.CODE_SDK_INIT_ERROR);
         }
-        return sSocialSdkConfig;
+        return sSocialOptions;
     }
 
-    public static void init(SocialSdkConfig config) {
-        sSocialSdkConfig = config;
+    public static void init(SocialOptions config) {
+        sSocialOptions = config;
     }
 
     public static IPlatform getPlatform(Context context, int target) {
-        SparseArray<PlatformFactory> platformFactoryArray = sSocialSdkConfig.getPlatformFactoryArray();
-        PlatformFactory platformFactory = platformFactoryArray.get(target);
+        SparseArray<PlatformFactory> array = sSocialOptions.getPlatformFactoryArray();
+        PlatformFactory platformFactory = array.get(target);
         if (platformFactory != null) {
             return platformFactory.create(context, target);
         }

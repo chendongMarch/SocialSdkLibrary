@@ -2,6 +2,7 @@ package com.march.socialsdk.common;
 
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnShareListener;
+import com.march.socialsdk.util.SocialUtil;
 
 import bolts.Continuation;
 import bolts.Task;
