@@ -1,6 +1,6 @@
 package com.march.socialsdk.exception;
 
-import com.march.socialsdk.util.SocialLogUtil;
+import com.march.socialsdk.common.SocialUtil;
 
 /**
  * CreateAt : 2016/12/5
@@ -8,7 +8,7 @@ import com.march.socialsdk.util.SocialLogUtil;
  *
  * @author chendong
  */
-public class SocialError extends Exception{
+public class SocialError extends Exception {
 
     public static final String TAG = SocialError.class.getSimpleName();
 
@@ -27,102 +27,75 @@ public class SocialError extends Exception{
     public static final int CODE_CANNOT_OPEN_ERROR    = 111; // 无法启动 app
     public static final int CODE_PARSE_ERROR          = 112; // 数据解析错误
     public static final int CODE_IMAGE_COMPRESS_ERROR = 113; // 图片压缩失败
+    public static final int CODE_PARAM_ERROR = 114; // 参数错误
 
-    private int errorCode = CODE_OK;
-    private String errorMsg;
-    private Exception mException;
+    private int code = CODE_OK;
+    private String msg;
+    private Exception error;
 
-
-    public SocialError(int errorCode) {
-        this.errorCode = errorCode;
-        switch (errorCode) {
-            case CODE_NOT_INSTALL:
-                append("应用未安装");
-                break;
-            case CODE_VERSION_LOW:
-                append("应用版本低,需要更高版本");
-                break;
-            case CODE_STORAGE_READ_ERROR:
-                append("没有获取到读SD卡的权限，这会导致图片缩略图无法获取");
-                break;
-            case CODE_STORAGE_WRITE_ERROR:
-                append("没有获取到写SD卡的权限，这会微博分享本地视频无法使用");
-                break;
-            case CODE_SDK_ERROR:
-                append("SDK 返回的错误信息");
-                break;
-            case CODE_COMMON_ERROR:
-                append("通用其他错误");
-                break;
-            case CODE_SHARE_OBJ_VALID:
-                append("分享的对象数据有问题");
-                break;
-            case CODE_SHARE_BY_INTENT_FAIL:
-                append("使用 intent 分享失败");
-                break;
-            case CODE_FILE_NOT_FOUND:
-                append("没有找到文件");
-                break;
-            case CODE_REQUEST_ERROR:
-                append("网络请求错误");
-                break;
-            case CODE_CANNOT_OPEN_ERROR:
-                append("app 无法唤醒");
-                break;
-            case CODE_PARSE_ERROR:
-                append("数据解析错误");
-                break;
-            case CODE_IMAGE_COMPRESS_ERROR:
-                append("图片压缩错误");
-                break;
-        }
+    public static SocialError make(int code) {
+        SocialError error = new SocialError();
+        error.code = code;
+        return error;
     }
 
-    public SocialError(int errCode,String message) {
-        this.errorMsg = message;
-        this.errorCode = errCode;
+    public static SocialError make(int code, String msg) {
+        SocialError error = new SocialError();
+        error.code = code;
+        error.msg = msg;
+        return error;
     }
 
-    public SocialError(int errorCode, Exception exception) {
-        this.errorCode = errorCode;
-        mException = exception;
+    public static SocialError make(int code, String msg, Exception exception) {
+        SocialError error = new SocialError();
+        error.code = code;
+        error.msg = msg;
+        error.error = exception;
+        return error;
     }
 
-    public SocialError exception(Exception ex) {
-        this.mException = ex;
-        return this;
+    private SocialError() {
     }
 
-    public int getErrorCode() {
-        return errorCode;
+
+    public int getCode() {
+        return code;
     }
 
-    public String getErrorMsg() {
-        return errorMsg;
+    public String getMsg() {
+        return msg;
     }
 
-    public void setErrorMsg(String errorMsg) {
-        this.errorMsg = errorMsg;
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 
     public void printStackTrace() {
-        SocialLogUtil.e(TAG, toString());
+        SocialUtil.e(TAG, toString());
+    }
+
+    public Exception getError() {
+        return error;
+    }
+
+    public void setError(Exception error) {
+        this.error = error;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder()
-                .append("errCode = ").append(errorCode)
-                .append(", errMsg = ").append(errorMsg).append("\n");
-        if (mException != null) {
-            sb.append("其他错误 : ").append(mException.getMessage());
-            mException.printStackTrace();
+                .append("errCode = ").append(code)
+                .append(", errMsg = ").append(msg).append("\n");
+        if (error != null) {
+            sb.append("其他错误 : ").append(error.getMessage());
+            error.printStackTrace();
         }
         return sb.toString();
     }
 
     public SocialError append(String msg) {
-        this.errorMsg = String.valueOf(errorMsg) + " ， " + msg;
+        this.msg = String.valueOf(this.msg) + " ， " + msg;
         return this;
     }
 

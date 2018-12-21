@@ -4,8 +4,8 @@ import android.annotation.SuppressLint;
 import android.text.TextUtils;
 
 import com.march.socialsdk.adapter.IRequestAdapter;
+import com.march.socialsdk.common.SocialUtil;
 import com.march.socialsdk.util.FileUtil;
-import com.march.socialsdk.util.SocialLogUtil;
 import com.march.socialsdk.util.StreamUtil;
 
 import java.io.File;
@@ -30,6 +30,8 @@ import javax.net.ssl.X509TrustManager;
  */
 public class DefaultRequestAdapter implements IRequestAdapter {
 
+    public static final String TAG = DefaultRequestAdapter.class.getSimpleName();
+
     private HttpURLConnection mConnection;
 
     @Override
@@ -43,7 +45,7 @@ public class DefaultRequestAdapter implements IRequestAdapter {
                 return StreamUtil.saveStreamToFile(file, openStream(url, isHttps(url)));
             }
         } catch (Exception e) {
-            SocialLogUtil.e(e);
+            SocialUtil.t(TAG, e);
         } finally {
             close();
         }
@@ -57,7 +59,7 @@ public class DefaultRequestAdapter implements IRequestAdapter {
         try {
             return StreamUtil.saveStreamToString(openStream(url, isHttps(url)));
         } catch (Exception e) {
-            SocialLogUtil.e(e);
+            SocialUtil.t(TAG, e);
         } finally {
             close();
         }

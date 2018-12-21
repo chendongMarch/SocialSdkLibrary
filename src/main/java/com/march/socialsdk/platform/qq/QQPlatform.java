@@ -8,7 +8,8 @@ import android.text.TextUtils;
 
 import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.SocialSdkConfig;
-import com.march.socialsdk.common.SocialConstants;
+import com.march.socialsdk.common.SocialUtil;
+import com.march.socialsdk.common.SocialValues;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.listener.OnShareListener;
@@ -18,7 +19,6 @@ import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.PlatformCreator;
 import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.util.FileUtil;
-import com.march.socialsdk.util.SocialLogUtil;
 import com.march.socialsdk.util.Util;
 import com.tencent.connect.common.Constants;
 import com.tencent.connect.share.QQShare;
@@ -61,7 +61,7 @@ public class QQPlatform extends AbsPlatform {
     }
 
 
-    QQPlatform(Context context, String appId, String appName) {
+    private QQPlatform(Context context, String appId, String appName) {
         super(appId, appName);
         mTencentApi = Tencent.createInstance(appId, context);
     }
@@ -98,11 +98,41 @@ public class QQPlatform extends AbsPlatform {
     public void login(Activity activity, OnLoginListener loginListener) {
         if (!mTencentApi.isSupportSSOLogin(activity)) {
             // 下载最新版
-            loginListener.onFailure(new SocialError(SocialError.CODE_VERSION_LOW));
+            loginListener.onFailure(SocialError.make(SocialError.CODE_VERSION_LOW));
             return;
         }
         mQQLoginHelper = new QQLoginHelper(activity, mTencentApi, loginListener);
         mQQLoginHelper.login();
+    }
+
+    @Override
+    protected void dispatchShare(Activity activity, int shareTarget, ShareObj obj) {
+        switch (obj.getShareObjType()) {
+            case ShareObj.SHARE_TYPE_OPEN_APP:
+                shareOpenApp(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_TEXT:
+                shareText(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_IMAGE:
+                shareImage(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_APP:
+                shareApp(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_WEB:
+                shareWeb(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_MUSIC:
+                shareMusic(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_VIDEO:
+                shareVideo(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_WX_MINI:
+                shareWeb(shareTarget, activity, obj);
+                break;
+        }
     }
 
 
@@ -122,21 +152,21 @@ public class QQPlatform extends AbsPlatform {
         return params;
     }
 
-    @Override
-    protected void shareOpenApp(int shareTarget, Activity activity, ShareObj obj) {
-        boolean rst = Util.openApp(activity, SocialConstants.QQ_PKG);
+    // 打开 app
+    private void shareOpenApp(int shareTarget, Activity activity, ShareObj obj) {
+        boolean rst = Util.openApp(activity, SocialValues.QQ_PKG);
         if (rst) {
             mOnShareListener.onSuccess();
         } else {
-            mOnShareListener.onFailure(new SocialError(SocialError.CODE_CANNOT_OPEN_ERROR, TAG + "#shareOpenApp#open app error"));
+            mOnShareListener.onFailure(SocialError.make(SocialError.CODE_CANNOT_OPEN_ERROR, TAG + "#shareOpenApp#open app error"));
         }
     }
 
 
-    @Override
-    public void shareText(int shareTarget, Activity activity, ShareObj shareMediaObj) {
+    // 分享文字
+    private void shareText(int shareTarget, Activity activity, ShareObj shareMediaObj) {
         if (shareTarget == Target.SHARE_QQ_FRIENDS) {
-            shareTextByIntent(activity, shareMediaObj, SocialConstants.QQ_PKG, SocialConstants.QQ_FRIENDS_PAGE);
+            shareTextByIntent(activity, shareMediaObj, SocialValues.QQ_PKG, SocialValues.QQ_FRIENDS_PAGE);
         } else if (shareTarget == Target.SHARE_QQ_ZONE) {
             final Bundle params = new Bundle();
             params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzonePublish.PUBLISH_TO_QZONE_TYPE_PUBLISHMOOD);
@@ -145,8 +175,8 @@ public class QQPlatform extends AbsPlatform {
         }
     }
 
-    @Override
-    public void shareImage(int shareTarget, Activity activity, ShareObj shareMediaObj) {
+    // 分享图片
+    private void shareImage(int shareTarget, Activity activity, ShareObj shareMediaObj) {
         if (shareTarget == Target.SHARE_QQ_FRIENDS) {
             // 可以兼容分享图片和gif
             Bundle params = buildCommonBundle("", shareMediaObj.getSummary(), "", shareTarget);
@@ -164,8 +194,8 @@ public class QQPlatform extends AbsPlatform {
         }
     }
 
-    @Override
-    public void shareApp(int shareTarget, Activity activity, ShareObj obj) {
+    // 分享 app
+    private void shareApp(int shareTarget, Activity activity, ShareObj obj) {
         if (shareTarget == Target.SHARE_QQ_FRIENDS) {
             Bundle params = buildCommonBundle(obj.getTitle(), obj.getSummary(), obj.getTargetUrl(), shareTarget);
             params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_APP);
@@ -177,9 +207,8 @@ public class QQPlatform extends AbsPlatform {
         }
     }
 
-
-    @Override
-    public void shareWeb(int shareTarget, Activity activity, ShareObj obj) {
+    // 分享网页
+    private void shareWeb(int shareTarget, Activity activity, ShareObj obj) {
         if (shareTarget == Target.SHARE_QQ_FRIENDS) {
             // 分享图文
             final Bundle params = buildCommonBundle(obj.getTitle(), obj.getSummary(), obj.getTargetUrl(), shareTarget);
@@ -202,8 +231,8 @@ public class QQPlatform extends AbsPlatform {
         }
     }
 
-    @Override
-    public void shareMusic(int shareTarget, Activity activity, ShareObj obj) {
+    // 分享音乐
+    private void shareMusic(int shareTarget, Activity activity, ShareObj obj) {
         if (shareTarget == Target.SHARE_QQ_FRIENDS) {
             Bundle params = buildCommonBundle(obj.getTitle(), obj.getSummary(), obj.getTargetUrl(), shareTarget);
             params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_AUDIO);
@@ -216,35 +245,34 @@ public class QQPlatform extends AbsPlatform {
         }
     }
 
-    @Override
-    public void shareVideo(int shareTarget, Activity activity, ShareObj obj) {
+    // 分享视频
+    private void shareVideo(int shareTarget, Activity activity, ShareObj obj) {
         if (shareTarget == Target.SHARE_QQ_FRIENDS) {
             if (FileUtil.isHttpPath(obj.getMediaPath())) {
-                SocialLogUtil.e(TAG, "qq不支持分享网络视频，使用web分享代替");
+                SocialUtil.e(TAG, "qq不支持分享网络视频，使用web分享代替");
                 obj.setTargetUrl(obj.getMediaPath());
                 shareWeb(shareTarget, activity, obj);
             } else if (FileUtil.isExist(obj.getMediaPath())){
-                shareVideoByIntent(activity, obj, SocialConstants.QQ_PKG, SocialConstants.QQ_FRIENDS_PAGE);
+                shareVideoByIntent(activity, obj, SocialValues.QQ_PKG, SocialValues.QQ_FRIENDS_PAGE);
             } else{
-                this.mIUiListenerWrap.onError(new SocialError(SocialError.CODE_FILE_NOT_FOUND));
+                this.mIUiListenerWrap.onError(SocialError.make(SocialError.CODE_FILE_NOT_FOUND));
             }
         } else if (shareTarget == Target.SHARE_QQ_ZONE) {
             // qq 空间支持本地文件发布
             if (FileUtil.isHttpPath(obj.getMediaPath())) {
-                SocialLogUtil.e(TAG, "qq空间网络视频，使用web形式分享");
+                SocialUtil.e(TAG, "qq空间网络视频，使用web形式分享");
                 shareWeb(shareTarget, activity, obj);
             } else if (FileUtil.isExist(obj.getMediaPath())) {
-                SocialLogUtil.e(TAG, "qq空间本地视频分享");
+                SocialUtil.e(TAG, "qq空间本地视频分享");
                 final Bundle params = new Bundle();
                 params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzonePublish.PUBLISH_TO_QZONE_TYPE_PUBLISHVIDEO);
                 params.putString(QzonePublish.PUBLISH_TO_QZONE_VIDEO_PATH, obj.getMediaPath());
                 mTencentApi.publishToQzone(activity, params, mIUiListenerWrap);
             } else {
-                this.mIUiListenerWrap.onError(new SocialError(SocialError.CODE_FILE_NOT_FOUND));
+                this.mIUiListenerWrap.onError(SocialError.make(SocialError.CODE_FILE_NOT_FOUND));
             }
         }
     }
-
 
     private class IUiListenerWrap implements IUiListener {
 
@@ -263,7 +291,7 @@ public class QQPlatform extends AbsPlatform {
         @Override
         public void onError(UiError uiError) {
             if (listener != null)
-                listener.onFailure(new SocialError(SocialError.CODE_SDK_ERROR, TAG + "#IUiListenerWrap#分享失败 " + parseUiError(uiError)));
+                listener.onFailure(SocialError.make(SocialError.CODE_SDK_ERROR, TAG + "#IUiListenerWrap#分享失败 " + parseUiError(uiError)));
         }
 
         public void onError(SocialError e) {
@@ -278,8 +306,7 @@ public class QQPlatform extends AbsPlatform {
         }
     }
 
-
-    public static String parseUiError(UiError e) {
+    static String parseUiError(UiError e) {
         return "code = " + e.errorCode + " ,msg = " + e.errorMessage + " ,detail=" + e.errorDetail;
     }
 

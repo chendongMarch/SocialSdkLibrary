@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
+import com.march.socialsdk.common.SocialUtil;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.LoginResult;
@@ -13,7 +14,6 @@ import com.march.socialsdk.model.token.AccessToken;
 import com.march.socialsdk.platform.IPlatform;
 import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.uikit.ActionActivity;
-import com.march.socialsdk.util.SocialLogUtil;
 
 import java.lang.ref.WeakReference;
 /**
@@ -39,14 +39,14 @@ public class LoginManager {
     public static void login(Context context, @Target.LoginTarget int loginTarget, OnLoginListener loginListener) {
         loginListener.onStart();
         sListener = loginListener;
-        IPlatform platform = PlatformManager.makePlatform(context, loginTarget);
+        IPlatform platform = GlobalPlatform.makePlatform(context, loginTarget);
         if (!platform.isInstall(context)) {
-            loginListener.onFailure(new SocialError(SocialError.CODE_NOT_INSTALL));
+            loginListener.onFailure(SocialError.make(SocialError.CODE_NOT_INSTALL));
             return;
         }
         Intent intent = new Intent(context, ActionActivity.class);
-        intent.putExtra(PlatformManager.KEY_ACTION_TYPE, PlatformManager.ACTION_TYPE_LOGIN);
-        intent.putExtra(PlatformManager.KEY_LOGIN_TARGET, loginTarget);
+        intent.putExtra(GlobalPlatform.KEY_ACTION_TYPE, GlobalPlatform.ACTION_TYPE_LOGIN);
+        intent.putExtra(GlobalPlatform.KEY_LOGIN_TARGET, loginTarget);
         context.startActivity(intent);
         if(context instanceof Activity) {
             ((Activity) context).overridePendingTransition(0, 0);
@@ -61,27 +61,27 @@ public class LoginManager {
      */
     static void _actionLogin(final Activity activity) {
         Intent intent = activity.getIntent();
-        int actionType = intent.getIntExtra(PlatformManager.KEY_ACTION_TYPE, PlatformManager.INVALID_PARAM);
-        int loginTarget = intent.getIntExtra(PlatformManager.KEY_LOGIN_TARGET, PlatformManager.INVALID_PARAM);
-        if (actionType == PlatformManager.INVALID_PARAM) {
-            SocialLogUtil.e(TAG, "_actionLogin actionType无效");
+        int actionType = intent.getIntExtra(GlobalPlatform.KEY_ACTION_TYPE, GlobalPlatform.INVALID_PARAM);
+        int loginTarget = intent.getIntExtra(GlobalPlatform.KEY_LOGIN_TARGET, GlobalPlatform.INVALID_PARAM);
+        if (actionType == GlobalPlatform.INVALID_PARAM) {
+            SocialUtil.e(TAG, "_actionLogin actionType无效");
             return;
         }
-        if (actionType != PlatformManager.ACTION_TYPE_LOGIN) {
+        if (actionType != GlobalPlatform.ACTION_TYPE_LOGIN) {
             return;
         }
-        if (loginTarget == PlatformManager.INVALID_PARAM) {
-            SocialLogUtil.e(TAG, "shareTargetType无效");
+        if (loginTarget == GlobalPlatform.INVALID_PARAM) {
+            SocialUtil.e(TAG, "shareTargetType无效");
             return;
         }
         if (sListener == null) {
-            SocialLogUtil.e(TAG, "请设置 OnLoginListener");
+            SocialUtil.e(TAG, "请设置 OnLoginListener");
             return;
         }
-        if (PlatformManager.getPlatform() == null) {
+        if (GlobalPlatform.getPlatform() == null) {
             return;
         }
-        PlatformManager.getPlatform().login(activity, new FinishLoginListener(activity));
+        GlobalPlatform.getPlatform().login(activity, new FinishLoginListener(activity));
     }
 
 
@@ -99,7 +99,7 @@ public class LoginManager {
         }
 
         private void finish() {
-            PlatformManager.release(mActivityWeakRef.get());
+            GlobalPlatform.release(mActivityWeakRef.get());
             sListener = null;
         }
 

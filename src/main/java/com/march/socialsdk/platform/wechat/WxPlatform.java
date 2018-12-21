@@ -2,11 +2,14 @@ package com.march.socialsdk.platform.wechat;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.SocialSdkConfig;
-import com.march.socialsdk.common.SocialConstants;
+import com.march.socialsdk.common.SocialKeys;
+import com.march.socialsdk.common.SocialUtil;
+import com.march.socialsdk.common.SocialValues;
 import com.march.socialsdk.common.ThumbDataContinuation;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnLoginListener;
@@ -18,7 +21,6 @@ import com.march.socialsdk.platform.PlatformCreator;
 import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.util.BitmapUtil;
 import com.march.socialsdk.util.FileUtil;
-import com.march.socialsdk.util.SocialLogUtil;
 import com.march.socialsdk.util.Util;
 import com.tencent.mm.opensdk.constants.ConstantsAPI;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
@@ -27,6 +29,7 @@ import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.opensdk.modelmsg.WXEmojiObject;
 import com.tencent.mm.opensdk.modelmsg.WXImageObject;
 import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
+import com.tencent.mm.opensdk.modelmsg.WXMiniProgramObject;
 import com.tencent.mm.opensdk.modelmsg.WXMusicObject;
 import com.tencent.mm.opensdk.modelmsg.WXTextObject;
 import com.tencent.mm.opensdk.modelmsg.WXVideoObject;
@@ -67,7 +70,6 @@ public class WxPlatform extends AbsPlatform {
         }
     }
 
-
     WxPlatform(Context context, String appId, String wxSecret, String appName) {
         super(appId, appName);
         this.mWxSecret = wxSecret;
@@ -87,7 +89,6 @@ public class WxPlatform extends AbsPlatform {
 
     @Override
     public void recycle() {
-
         mWxApi.detach();
         mWxApi = null;
     }
@@ -143,11 +144,11 @@ public class WxPlatform extends AbsPlatform {
                     break;
                 case BaseResp.ErrCode.ERR_SENT_FAILED:
                     // 分享失败
-                    mOnShareListener.onFailure(new SocialError(SocialError.CODE_SDK_ERROR, "分享失败"));
+                    mOnShareListener.onFailure(SocialError.make(SocialError.CODE_SDK_ERROR, "分享失败"));
                     break;
                 case BaseResp.ErrCode.ERR_AUTH_DENIED:
                     // 分享被拒绝
-                    mOnShareListener.onFailure(new SocialError(SocialError.CODE_SDK_ERROR, "分享被拒绝"));
+                    mOnShareListener.onFailure(SocialError.make(SocialError.CODE_SDK_ERROR, "分享被拒绝"));
                     break;
             }
         }
@@ -156,14 +157,14 @@ public class WxPlatform extends AbsPlatform {
     @Override
     public void login(Activity context, OnLoginListener loginListener) {
         if (!mWxApi.isWXAppSupportAPI()) {
-            loginListener.onFailure(new SocialError(SocialError.CODE_VERSION_LOW));
+            loginListener.onFailure(SocialError.make(SocialError.CODE_VERSION_LOW));
             return;
         }
         mWeChatLoginHelper = new WxLoginHelper(context, mWxApi, mAppId);
         mWeChatLoginHelper.login(mWxSecret, loginListener);
     }
 
-
+    // 获取分享目标
     private int getShareToWhere(int shareTarget) {
         int where = SendMessageToWX.Req.WXSceneSession;
         switch (shareTarget) {
@@ -180,7 +181,7 @@ public class WxPlatform extends AbsPlatform {
         return where;
     }
 
-
+    // 发送分享
     private void sendMsgToWx(WXMediaMessage msg, int shareTarget, String sign) {
         SendMessageToWX.Req req = new SendMessageToWX.Req();
         req.transaction = buildTransaction(sign);
@@ -188,22 +189,52 @@ public class WxPlatform extends AbsPlatform {
         req.scene = getShareToWhere(shareTarget);
         boolean sendResult = mWxApi.sendReq(req);
         if (!sendResult) {
-            mOnShareListener.onFailure(new SocialError(SocialError.CODE_SDK_ERROR, TAG + "#sendMsgToWx失败，可能是参数错误"));
+            mOnShareListener.onFailure(SocialError.make(SocialError.CODE_SDK_ERROR, TAG + "#sendMsgToWx失败，可能是参数错误"));
         }
     }
 
     @Override
-    protected void shareOpenApp(int shareTarget, Activity activity, ShareObj obj) {
+    protected void dispatchShare(Activity activity, int shareTarget, ShareObj obj) {
+        switch (obj.getShareObjType()) {
+            case ShareObj.SHARE_TYPE_OPEN_APP:
+                shareOpenApp(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_TEXT:
+                shareText(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_IMAGE:
+                shareImage(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_APP:
+                shareApp(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_WEB:
+                shareWeb(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_MUSIC:
+                shareMusic(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_VIDEO:
+                shareVideo(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_WX_MINI:
+                shareMiniProgram(shareTarget, activity, obj);
+                break;
+        }
+    }
+
+    // 分享 app
+    private void shareOpenApp(int shareTarget, Activity activity, ShareObj obj) {
         boolean rst = mWxApi.openWXApp();
         if (rst) {
             mOnShareListener.onSuccess();
         } else {
-            mOnShareListener.onFailure(new SocialError(SocialError.CODE_CANNOT_OPEN_ERROR));
+            mOnShareListener.onFailure(SocialError.make(SocialError.CODE_CANNOT_OPEN_ERROR));
         }
     }
 
-    @Override
-    public void shareText(int shareTarget, Activity activity, ShareObj obj) {
+    // 分享 文字
+    private void shareText(int shareTarget, Activity activity, ShareObj obj) {
         WXTextObject textObj = new WXTextObject();
         textObj.text = obj.getSummary();
         WXMediaMessage msg = new WXMediaMessage();
@@ -213,9 +244,9 @@ public class WxPlatform extends AbsPlatform {
         sendMsgToWx(msg, shareTarget, "text");
     }
 
-    @Override
-    public void shareImage(final int shareTarget, final Activity activity, final ShareObj obj) {
-        BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
+    // 分享 图片
+    private void shareImage(final int shareTarget, final Activity activity, final ShareObj obj) {
+        BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE_32)
                 .continueWith(new ThumbDataContinuation(TAG, "shareImage", mOnShareListener) {
                     @Override
                     public void onSuccess(byte[] thumbData) {
@@ -224,7 +255,7 @@ public class WxPlatform extends AbsPlatform {
                 }, Task.UI_THREAD_EXECUTOR);
     }
 
-
+    // 分享图片
     private void shareImage(final int shareTarget, String desc, final String localPath, byte[] thumbData) {
         if (shareTarget == Target.SHARE_WX_FRIENDS) {
             if (FileUtil.isGifFile(localPath)) {
@@ -237,6 +268,7 @@ public class WxPlatform extends AbsPlatform {
         }
     }
 
+    // 分享图片
     private void shareImage(int shareTarget, String localPath, byte[] thumbData) {
         // 文件大小不大于10485760  路径长度不大于10240
         WXImageObject imgObj = new WXImageObject();
@@ -247,6 +279,7 @@ public class WxPlatform extends AbsPlatform {
         sendMsgToWx(msg, shareTarget, "image");
     }
 
+    // 分享 emoji
     private void shareEmoji(int shareTarget, String localPath, String desc, byte[] thumbData) {
         WXEmojiObject emoji = new WXEmojiObject();
         emoji.emojiPath = localPath;
@@ -257,40 +290,15 @@ public class WxPlatform extends AbsPlatform {
         sendMsgToWx(msg, shareTarget, "emoji");
     }
 
-
-    @Override
-    public void shareApp(int shareTarget, Activity activity, ShareObj obj) {
-        SocialLogUtil.e(TAG, "微信不支持app分享，将以web形式分享");
+    // 分享 app
+    private void shareApp(int shareTarget, Activity activity, ShareObj obj) {
+        SocialUtil.e(TAG, "微信不支持app分享，将以web形式分享");
         shareWeb(shareTarget, activity, obj);
     }
 
-    @Override
-    public void shareWeb(final int shareTarget, Activity activity, final ShareObj obj) {
-//        com.march.socialsdk.workflow.Task.call(com.march.socialsdk.workflow.Task.BG, new CallAction<byte[]>() {
-//            @Override
-//            public byte[] call() {
-//                return BitmapUtil.getStaticSizeBitmapByteByPath(obj.getThumbImagePath(), THUMB_IMAGE_SIZE);
-//            }
-//        }).then(com.march.socialsdk.workflow.Task.UI, new TaskAction<byte[], Boolean>() {
-//            @Override
-//            public Boolean call(byte[] param) {
-//                WXWebpageObject webPage = new WXWebpageObject();
-//                webPage.webpageUrl = obj.getTargetUrl();
-//                WXMediaMessage msg = new WXMediaMessage(webPage);
-//                msg.title = obj.getTitle();
-//                msg.description = obj.getSummary();
-//                msg.thumbData = param;
-//                sendMsgToWx(msg, shareTarget, "web");
-//                return false;
-//            }
-//        }).error(new ErrorAction() {
-//            @Override
-//            public void error(Exception ex) {
-//                mOnShareListener.onFailure(new SocialError("share web error", ex));
-//            }
-//        }).execute();
-
-        BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
+    // 分享 web
+    private void shareWeb(final int shareTarget, Activity activity, final ShareObj obj) {
+        BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE_32)
                 .continueWith(new ThumbDataContinuation(TAG, "shareWeb", mOnShareListener) {
                     @Override
                     public void onSuccess(byte[] thumbData) {
@@ -306,10 +314,9 @@ public class WxPlatform extends AbsPlatform {
 
     }
 
-
-    @Override
-    public void shareMusic(final int shareTarget, Activity activity, final ShareObj obj) {
-        BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
+    // 分享音乐
+    private void shareMusic(final int shareTarget, Activity activity, final ShareObj obj) {
+        BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE_32)
                 .continueWith(new ThumbDataContinuation(TAG, "shareMusic", mOnShareListener) {
                     @Override
                     public void onSuccess(byte[] thumbData) {
@@ -326,18 +333,18 @@ public class WxPlatform extends AbsPlatform {
 
     }
 
-    @Override
-    public void shareVideo(final int shareTarget, Activity activity, final ShareObj obj) {
+    // 分享视频
+    private void shareVideo(final int shareTarget, Activity activity, final ShareObj obj) {
         if (shareTarget == Target.SHARE_WX_FRIENDS) {
             if (FileUtil.isHttpPath(obj.getMediaPath())) {
                 shareWeb(shareTarget, activity, obj);
             } else if (FileUtil.isExist(obj.getMediaPath())) {
-                shareVideoByIntent(activity, obj, SocialConstants.WECHAT_PKG, SocialConstants.WX_FRIEND_PAGE);
+                shareVideoByIntent(activity, obj, SocialValues.WECHAT_PKG, SocialValues.WX_FRIEND_PAGE);
             } else {
-                mOnShareListener.onFailure(new SocialError(SocialError.CODE_FILE_NOT_FOUND));
+                mOnShareListener.onFailure(SocialError.make(SocialError.CODE_FILE_NOT_FOUND));
             }
         } else {
-            BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
+            BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE_32)
                     .continueWith(new ThumbDataContinuation(TAG, "shareVideo", mOnShareListener) {
                         @Override
                         public void onSuccess(byte[] thumbData) {
@@ -351,7 +358,42 @@ public class WxPlatform extends AbsPlatform {
                         }
                     }, Task.UI_THREAD_EXECUTOR);
         }
+    }
 
+    // 分享小程序
+    private void shareMiniProgram(final int shareTarget, Activity activity, final ShareObj obj) {
+        Bundle extra = obj.getExtra();
+        if (extra == null) {
+            mOnShareListener.onFailure(SocialError.make(SocialError.CODE_PARAM_ERROR, "shareMiniProgram extra is null"));
+            return;
+        }
+        int type = extra.getInt(SocialKeys.KEY_WX_MINI_TYPE, -1);
+        String originId = extra.getString(SocialKeys.KEY_WX_MINI_ORIGIN_ID, "");
+        String pagePath = extra.getString(SocialKeys.KEY_WX_MINI_PATH, "");
+
+        if (type < 0 || SocialUtil.isAnyEmpty(originId, pagePath)) {
+            mOnShareListener.onFailure(SocialError.make(SocialError.CODE_PARAM_ERROR,
+                    "shareMiniProgram extra = " + extra.toString()));
+            return;
+        }
+        BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE_128)
+                .continueWith(new ThumbDataContinuation(TAG, "shareMini", mOnShareListener) {
+                    @Override
+                    public void onSuccess(byte[] thumbData) {
+                        WXMiniProgramObject miniProgramObj = new WXMiniProgramObject();
+                        miniProgramObj.webpageUrl = obj.getTargetUrl();
+                        miniProgramObj.miniprogramType = type;
+                        miniProgramObj.userName = originId; // 小程序原始id
+                        miniProgramObj.path = pagePath; // 小程序页面路径
+                        WXMediaMessage msg = new WXMediaMessage(miniProgramObj);
+                        msg.title = obj.getTitle(); // 小程序消息title
+                        msg.description = obj.getSummary(); // 小程序消息desc
+                        msg.thumbData = thumbData; // 小程序消息封面图片，小于128k
+                        // 目前只能分享给朋友
+                        sendMsgToWx(msg, Target.SHARE_WX_FRIENDS, "miniProgram");
+
+                    }
+                }, Task.UI_THREAD_EXECUTOR);
     }
 
 

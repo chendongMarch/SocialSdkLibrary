@@ -1,5 +1,7 @@
 package com.march.socialsdk.util;
 
+import com.march.socialsdk.common.SocialUtil;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -19,6 +21,7 @@ import java.net.HttpURLConnection;
  */
 public class StreamUtil {
 
+    public static final String TAG = StreamUtil.class.getSimpleName();
 
     // 关闭流
     public static void closeStream(Closeable... closeables) {
@@ -80,7 +83,7 @@ public class StreamUtil {
             bis.close();
             bos.close();
         } catch (Exception e) {
-            SocialLogUtil.t(e);
+            SocialUtil.t(TAG, e);
             return null;
         } finally {
             closeStream(bis, bos);

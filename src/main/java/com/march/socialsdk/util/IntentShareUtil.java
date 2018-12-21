@@ -7,6 +7,8 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import com.march.socialsdk.common.SocialUtil;
+
 import java.io.File;
 import java.util.List;
 
@@ -17,6 +19,8 @@ import java.util.List;
  * @author chendong
  */
 public class IntentShareUtil {
+
+    public static final String TAG = IntentShareUtil.class.getSimpleName();
 
     public static final int SHARE_REQ_CODE = 0x123;
 
@@ -75,7 +79,7 @@ public class IntentShareUtil {
         List<ResolveInfo> resolveInfos = activity.getPackageManager()
                 .queryIntentActivities(intent,PackageManager.GET_RESOLVED_FILTER);
         for (ResolveInfo resolveInfo : resolveInfos) {
-            SocialLogUtil.e(resolveInfo.activityInfo.packageName + " - " + resolveInfo.activityInfo.name);
+            SocialUtil.e(TAG,resolveInfo.activityInfo.packageName + " - " + resolveInfo.activityInfo.name);
         }
     }
 }

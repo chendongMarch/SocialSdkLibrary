@@ -1,5 +1,6 @@
-package com.march.socialsdk.util;
+package com.march.socialsdk.common;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.march.socialsdk.SocialSdk;
@@ -8,46 +9,38 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * CreateAt : 2016/12/22
- * Describe : log
+ * CreateAt : 2018/12/21
+ * Describe :
  *
  * @author chendong
  */
+public class SocialUtil {
 
-public class SocialLogUtil {
+    public static final String TAG = "SocialSdk";
 
-    public static final String TAG = "social-sdk";
-
-    private static String getMsg(Object msg) {
-        return msg == null ? "null" : msg.toString();
-    }
-
-    public static void e(String tag, Object msg) {
-        if (SocialSdk.getConfig().isDebug())
-            Log.e(tag + "|" + TAG, getMsg(msg));
-    }
-
-    public static void e(String tag, Object... msg) {
-        if (SocialSdk.getConfig().isDebug()) {
-            StringBuilder sb = new StringBuilder();
-            for (Object o : msg) {
-                sb.append(" ").append(getMsg(o)).append(" ");
+    public static boolean isAnyEmpty(String... strs) {
+        for (String str : strs) {
+            if (str == null || TextUtils.isEmpty(str)) {
+                return true;
             }
-            Log.e(tag + "|" + TAG, sb.toString());
+        }
+        return false;
+    }
+
+    public static void e(String tag, String msg) {
+        if (SocialSdk.getConfig().isDebug()) {
+            Log.e(TAG + "|" + tag, msg);
         }
     }
 
-    public static void e(Object msg) {
-        if (SocialSdk.getConfig().isDebug())
-            Log.e(TAG, getMsg(msg));
+    public static void t(String tag, Throwable throwable) {
+        Log.e(TAG + "|" + tag, throwable.getMessage(), throwable);
     }
-
-    public static void t(Throwable throwable) {
-        Log.e(TAG, throwable.getMessage(), throwable);
-    }
-
 
     public static void json(String tag, String json) {
+        if (!SocialSdk.getConfig().isDebug()) {
+            return;
+        }
         StringBuilder sb = new StringBuilder();
         if (json == null || json.trim().length() == 0) {
             sb.append("json isEmpty => ").append(json);
@@ -70,5 +63,4 @@ public class SocialLogUtil {
         }
         e(tag, sb.toString());
     }
-
 }

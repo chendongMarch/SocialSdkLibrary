@@ -7,7 +7,7 @@ import android.net.Uri;
 
 import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.SocialSdkConfig;
-import com.march.socialsdk.common.SocialConstants;
+import com.march.socialsdk.common.SocialValues;
 import com.march.socialsdk.common.ThumbDataContinuation;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnLoginListener;
@@ -18,7 +18,6 @@ import com.march.socialsdk.platform.PlatformCreator;
 import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.util.BitmapUtil;
 import com.march.socialsdk.util.FileUtil;
-import com.march.socialsdk.util.SocialLogUtil;
 import com.march.socialsdk.util.Util;
 import com.sina.weibo.sdk.WbSdk;
 import com.sina.weibo.sdk.api.ImageObject;
@@ -69,7 +68,7 @@ public class WbPlatform extends AbsPlatform {
         }
     }
 
-    WbPlatform(Context context, String appId, String appName, String redirectUrl, String scope) {
+    private WbPlatform(Context context, String appId, String appName, String redirectUrl, String scope) {
         super(appId, appName);
         AuthInfo authInfo = new AuthInfo(context, appId, redirectUrl, scope);
         WbSdk.install(context, authInfo);
@@ -86,7 +85,6 @@ public class WbPlatform extends AbsPlatform {
 
     @Override
     public void recycle() {
-
         mShareHandler = null;
         if (mLoginHelper != null) {
             mLoginHelper.recycle();
@@ -147,7 +145,7 @@ public class WbPlatform extends AbsPlatform {
                     break;
                 case WBConstants.ErrorCode.ERR_FAIL:
                     // 分享失败
-                    mOnShareListener.onFailure(new SocialError(SocialError.CODE_SDK_ERROR, TAG + "#微博分享失败"));
+                    mOnShareListener.onFailure(SocialError.make(SocialError.CODE_SDK_ERROR, TAG + "#微博分享失败"));
                     break;
             }
         }
@@ -159,28 +157,58 @@ public class WbPlatform extends AbsPlatform {
     }
 
     @Override
-    protected void shareOpenApp(int shareTarget, Activity activity, ShareObj obj) {
-        boolean rst = Util.openApp(activity, SocialConstants.SINA_PKG);
-        if (rst) {
-            mOnShareListener.onSuccess();
-        } else {
-            mOnShareListener.onFailure(new SocialError(SocialError.CODE_CANNOT_OPEN_ERROR, "open app error"));
+    protected void dispatchShare(Activity activity, int shareTarget, ShareObj obj) {
+        switch (obj.getShareObjType()) {
+            case ShareObj.SHARE_TYPE_OPEN_APP:
+                shareOpenApp(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_TEXT:
+                shareText(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_IMAGE:
+                shareImage(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_APP:
+                shareWeb(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_WEB:
+                shareWeb(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_MUSIC:
+                shareWeb(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_VIDEO:
+                shareVideo(shareTarget, activity, obj);
+                break;
+            case ShareObj.SHARE_TYPE_WX_MINI:
+                shareWeb(shareTarget, activity, obj);
+                break;
         }
     }
 
-    @Override
-    public void shareText(int shareTarget, Activity activity, final ShareObj obj) {
+    // 打开 app
+    private void shareOpenApp(int shareTarget, Activity activity, ShareObj obj) {
+        boolean rst = Util.openApp(activity, SocialValues.SINA_PKG);
+        if (rst) {
+            mOnShareListener.onSuccess();
+        } else {
+            mOnShareListener.onFailure(SocialError.make(SocialError.CODE_CANNOT_OPEN_ERROR, "open app error"));
+        }
+    }
+
+    // 分享文字
+    private void shareText(int shareTarget, Activity activity, final ShareObj obj) {
         WeiboMultiMessage multiMessage = new WeiboMultiMessage();
         multiMessage.textObject = getTextObj(obj.getSummary());
         makeWbShareHandler(activity).shareMessage(multiMessage, false);
     }
 
-    @Override
-    public void shareImage(int shareTarget, final Activity activity, final ShareObj obj) {
+    // 分享图片
+    private void shareImage(int shareTarget, final Activity activity, final ShareObj obj) {
         if (FileUtil.isGifFile(obj.getThumbImagePath())) {
             makeOpenApiShareHelper(activity).post(activity, obj);
         } else {
-            BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
+            BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE_32)
                     .continueWith(new ThumbDataContinuation(TAG, "shareImage", mOnShareListener) {
                         @Override
                         public void onSuccess(byte[] thumbData) {
@@ -194,15 +222,9 @@ public class WbPlatform extends AbsPlatform {
 
     }
 
-    @Override
-    public void shareApp(int shareTarget, Activity activity, ShareObj obj) {
-        SocialLogUtil.e(TAG, "sina不支持app分享，将以web形式分享");
-        shareWeb(shareTarget, activity, obj);
-    }
-
-    @Override
-    public void shareWeb(int shareTarget, final Activity activity, final ShareObj obj) {
-        BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE)
+    // 分享网页
+    private void shareWeb(int shareTarget, final Activity activity, final ShareObj obj) {
+        BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE_32)
                 .continueWith(new ThumbDataContinuation(TAG, "shareWeb", mOnShareListener) {
                     @Override
                     public void onSuccess(byte[] thumbData) {
@@ -214,13 +236,9 @@ public class WbPlatform extends AbsPlatform {
                 }, Task.UI_THREAD_EXECUTOR);
     }
 
-    @Override
-    public void shareMusic(int shareTarget, final Activity activity, final ShareObj obj) {
-        shareWeb(shareTarget, activity, obj);
-    }
 
-    @Override
-    public void shareVideo(int shareTarget, final Activity activity, final ShareObj obj) {
+    // 分享视频
+    private void shareVideo(int shareTarget, final Activity activity, final ShareObj obj) {
         String mediaPath = obj.getMediaPath();
         if (FileUtil.isExist(mediaPath)) {
             WeiboMultiMessage multiMessage = new WeiboMultiMessage();

@@ -2,7 +2,7 @@ package com.march.socialsdk;
 
 import android.content.Context;
 
-import com.march.socialsdk.common.SocialConstants;
+import com.march.socialsdk.common.SocialValues;
 import com.march.socialsdk.platform.Target;
 
 import java.io.File;
@@ -50,8 +50,8 @@ public class SocialSdkConfig {
         config.cacheDir = (shareDir.mkdirs() ? shareDir : context.getCacheDir()).getAbsolutePath();
         // init
         config.disablePlatforms = new ArrayList<>();
-        config.sinaRedirectUrl = SocialConstants.REDIRECT_URL;
-        config.sinaScope = SocialConstants.SCOPE;
+        config.sinaRedirectUrl = SocialValues.REDIRECT_URL;
+        config.sinaScope = SocialValues.SCOPE;
         config.debug = false;
         return config;
     }

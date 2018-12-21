@@ -4,9 +4,8 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.widget.ProgressBar;
 
-import com.march.socialsdk.manager.PlatformManager;
+import com.march.socialsdk.manager.GlobalPlatform;
 import com.march.socialsdk.platform.IPlatform;
 
 /**
@@ -24,20 +23,20 @@ public class ActionActivity extends SocialReceiver {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
         // for wx & dd
         if (getPlatform() != null) {
             getPlatform().handleIntent(this);
         }
-        PlatformManager.action(this, getIntent().getIntExtra(PlatformManager.KEY_ACTION_TYPE, -1));
+        GlobalPlatform.action(this, getIntent().getIntExtra(GlobalPlatform.KEY_ACTION_TYPE, -1));
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-        if (getPlatform() != null)
+        if (getPlatform() != null) {
             getPlatform().handleIntent(this);
+        }
     }
 
     @Override
@@ -57,7 +56,7 @@ public class ActionActivity extends SocialReceiver {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        PlatformManager.release(this);
+        GlobalPlatform.release(this);
     }
 
 
@@ -73,8 +72,9 @@ public class ActionActivity extends SocialReceiver {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (getPlatform() != null)
+        if (getPlatform() != null) {
             getPlatform().onActivityResult(requestCode, resultCode, data);
+        }
         checkFinish();
     }
 
@@ -95,12 +95,11 @@ public class ActionActivity extends SocialReceiver {
     }
 
     private IPlatform getPlatform() {
-        IPlatform platform = PlatformManager.getPlatform();
+        IPlatform platform = GlobalPlatform.getPlatform();
         if (platform == null) {
             checkFinish();
             return null;
         } else
             return platform;
     }
-
 }

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
+import com.march.socialsdk.common.SocialUtil;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.listener.Recyclable;
@@ -13,7 +14,6 @@ import com.march.socialsdk.platform.Target;
 import com.march.socialsdk.platform.weibo.model.SinaAccessToken;
 import com.march.socialsdk.platform.weibo.model.SinaUser;
 import com.march.socialsdk.util.JsonUtil;
-import com.march.socialsdk.util.SocialLogUtil;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.sina.weibo.sdk.auth.WbAuthListener;
 import com.sina.weibo.sdk.auth.WbConnectErrorMessage;
@@ -48,7 +48,7 @@ class WbLoginHelper implements Recyclable {
         JsonUtil.startJsonRequest("https://api.weibo.com/2/users/show.json?access_token=" + token.getToken() + "&uid=" + token.getUid(), SinaUser.class, new JsonUtil.Callback<SinaUser>() {
             @Override
             public void onSuccess(@NonNull SinaUser user) {
-                SocialLogUtil.e(TAG, JsonUtil.getObject2Json(user));
+                SocialUtil.e(TAG, JsonUtil.getObject2Json(user));
                 mOnLoginListener.onSuccess(new LoginResult(mLoginType, user, new SinaAccessToken(token)));
             }
 
@@ -76,7 +76,7 @@ class WbLoginHelper implements Recyclable {
 
             @Override
             public void onFailure(WbConnectErrorMessage msg) {
-                loginListener.onFailure(new SocialError(SocialError.CODE_SDK_ERROR, TAG + "#login#connect error," + msg.getErrorCode() + " " + msg.getErrorMessage()));
+                loginListener.onFailure(SocialError.make(SocialError.CODE_SDK_ERROR, TAG + "#login#connect error," + msg.getErrorCode() + " " + msg.getErrorMessage()));
             }
         });
     }
@@ -91,8 +91,7 @@ class WbLoginHelper implements Recyclable {
                 @Override
                 public void onSuccess(Oauth2AccessToken oauth2AccessToken) {
                     oauth2AccessToken.setBundle(null);
-
-                    SocialLogUtil.json("test", oauth2AccessToken.toString());
+                    SocialUtil.json("test", oauth2AccessToken.toString());
                     AccessToken.saveToken(activity, AccessToken.SINA_TOKEN_KEY, oauth2AccessToken);
                     listener.onSuccess(oauth2AccessToken);
                 }
