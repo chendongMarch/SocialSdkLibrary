@@ -41,7 +41,11 @@ dependencies {
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    implementation project(':socialsdk')
+    implementation project(':SocialSdkCore')
+    implementation project(':SocialSdkWb')
+    implementation project(':SocialSdkWx')
+    implementation project(':SocialSdkQq')
+    implementation project(':SocialSdkDd')
 
     implementation libs.flexbox
     //
