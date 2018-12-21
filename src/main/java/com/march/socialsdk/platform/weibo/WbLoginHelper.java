@@ -10,7 +10,7 @@ import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.listener.Recyclable;
 import com.march.socialsdk.model.LoginResult;
 import com.march.socialsdk.model.token.AccessToken;
-import com.march.socialsdk.platform.Target;
+import com.march.socialsdk.common.Target;
 import com.march.socialsdk.platform.weibo.model.SinaAccessToken;
 import com.march.socialsdk.platform.weibo.model.SinaUser;
 import com.march.socialsdk.util.JsonUtil;

@@ -3,11 +3,14 @@ package com.march.socialsdk.platform;
 import android.content.Context;
 
 /**
- * CreateAt : 2018/2/11
+ * CreateAt : 2018/12/21
  * Describe :
  *
  * @author chendong
  */
-public interface PlatformCreator {
+public interface PlatformFactory {
+
     IPlatform create(Context context, int target);
+
+    int getTarget();
 }

@@ -12,7 +12,7 @@ import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.LoginResult;
 import com.march.socialsdk.model.token.AccessToken;
 import com.march.socialsdk.platform.IPlatform;
-import com.march.socialsdk.platform.Target;
+import com.march.socialsdk.common.Target;
 import com.march.socialsdk.uikit.ActionActivity;
 
 import java.lang.ref.WeakReference;

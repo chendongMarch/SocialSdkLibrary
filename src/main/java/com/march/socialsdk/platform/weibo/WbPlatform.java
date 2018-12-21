@@ -8,14 +8,14 @@ import android.net.Uri;
 import com.march.socialsdk.SocialSdk;
 import com.march.socialsdk.SocialSdkConfig;
 import com.march.socialsdk.common.SocialValues;
-import com.march.socialsdk.common.ThumbDataContinuation;
+import com.march.socialsdk.common.ThumbTask;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnLoginListener;
 import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.platform.AbsPlatform;
 import com.march.socialsdk.platform.IPlatform;
-import com.march.socialsdk.platform.PlatformCreator;
-import com.march.socialsdk.platform.Target;
+import com.march.socialsdk.platform.PlatformFactory;
+import com.march.socialsdk.common.Target;
 import com.march.socialsdk.util.BitmapUtil;
 import com.march.socialsdk.util.FileUtil;
 import com.march.socialsdk.util.Util;
@@ -51,7 +51,7 @@ public class WbPlatform extends AbsPlatform {
     private WbLoginHelper      mLoginHelper;
     private OpenApiShareHelper mOpenApiShareHelper;
 
-    public static class Creator implements PlatformCreator {
+    public static class Factory implements PlatformFactory {
         @Override
         public IPlatform create(Context context, int target) {
             WbPlatform platform = null;
@@ -65,6 +65,10 @@ public class WbPlatform extends AbsPlatform {
                 platform.setTarget(target);
             }
             return platform;
+        }
+        @Override
+        public int getTarget() {
+            return Target.PLATFORM_WB;
         }
     }
 
@@ -209,7 +213,7 @@ public class WbPlatform extends AbsPlatform {
             makeOpenApiShareHelper(activity).post(activity, obj);
         } else {
             BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE_32)
-                    .continueWith(new ThumbDataContinuation(TAG, "shareImage", mOnShareListener) {
+                    .continueWith(new ThumbTask(TAG, "shareImage", mOnShareListener) {
                         @Override
                         public void onSuccess(byte[] thumbData) {
                             WeiboMultiMessage multiMessage = new WeiboMultiMessage();
@@ -225,7 +229,7 @@ public class WbPlatform extends AbsPlatform {
     // 分享网页
     private void shareWeb(int shareTarget, final Activity activity, final ShareObj obj) {
         BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE_32)
-                .continueWith(new ThumbDataContinuation(TAG, "shareWeb", mOnShareListener) {
+                .continueWith(new ThumbTask(TAG, "shareWeb", mOnShareListener) {
                     @Override
                     public void onSuccess(byte[] thumbData) {
                         WeiboMultiMessage multiMessage = new WeiboMultiMessage();

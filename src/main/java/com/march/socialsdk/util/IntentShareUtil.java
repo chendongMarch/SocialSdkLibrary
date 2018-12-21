@@ -34,7 +34,7 @@ public class IntentShareUtil {
 
     public static boolean shareImage(Activity activity, String path, String pkg, String targetActivity) {
         //由文件得到uri
-        Uri imageUri = Uri.fromFile(new File(path));
+        Uri imageUri = SocialUtil.fromFile(activity, new File(path));
         Intent shareIntent = new Intent();
         shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
         // shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList);
@@ -45,7 +45,7 @@ public class IntentShareUtil {
 
     public static boolean shareVideo(Activity activity, String path, String pkg, String targetActivity) {
         //由文件得到uri
-        Uri videoUri = Uri.fromFile(new File(path));
+        Uri videoUri = SocialUtil.fromFile(activity, new File(path));
         Intent shareIntent = new Intent();
         shareIntent.putExtra(Intent.EXTRA_STREAM, videoUri);
         // shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList);

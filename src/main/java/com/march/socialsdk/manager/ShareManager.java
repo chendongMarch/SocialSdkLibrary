@@ -18,7 +18,7 @@ import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.model.ShareObj;
 import com.march.socialsdk.model.ShareObjChecker;
 import com.march.socialsdk.platform.IPlatform;
-import com.march.socialsdk.platform.Target;
+import com.march.socialsdk.common.Target;
 import com.march.socialsdk.uikit.ActionActivity;
 import com.march.socialsdk.util.FileUtil;
 import com.march.socialsdk.util.Util;

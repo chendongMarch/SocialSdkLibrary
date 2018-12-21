@@ -6,12 +6,9 @@ import android.util.SparseArray;
 import com.march.socialsdk.adapter.IJsonAdapter;
 import com.march.socialsdk.adapter.IRequestAdapter;
 import com.march.socialsdk.adapter.impl.DefaultRequestAdapter;
-import com.march.socialsdk.common.SocialValues;
 import com.march.socialsdk.platform.IPlatform;
-import com.march.socialsdk.platform.PlatformCreator;
-import com.march.socialsdk.platform.Target;
+import com.march.socialsdk.platform.PlatformFactory;
 
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -26,7 +23,6 @@ public class SocialSdk {
     private static SocialSdkConfig              sSocialSdkConfig;
     private static IJsonAdapter                 sJsonAdapter;
     private static IRequestAdapter              sRequestAdapter;
-    private static SparseArray<PlatformCreator> sPlatformCreatorMap;
     private static ExecutorService              sExecutorService;
 
     public static SocialSdkConfig getConfig() {
@@ -38,50 +34,13 @@ public class SocialSdk {
 
     public static void init(SocialSdkConfig config) {
         sSocialSdkConfig = config;
-        actionRegisterPlatform();
     }
-
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Platform 注册
-    ///////////////////////////////////////////////////////////////////////////
-
-    private static void actionRegisterPlatform() {
-        if (sPlatformCreatorMap == null) {
-            sPlatformCreatorMap = new SparseArray<>();
-        }
-        Target.Mapping[] mappings = {
-                new Target.Mapping(Target.PLATFORM_QQ, SocialValues.QQ_CREATOR),
-                new Target.Mapping(Target.PLATFORM_WX, SocialValues.WX_CREATOR),
-                new Target.Mapping(Target.PLATFORM_WB, SocialValues.WB_CREATOR),
-                new Target.Mapping(Target.PLATFORM_DD, SocialValues.DD_CREATOR),
-        };
-        List<Integer> disablePlatforms = sSocialSdkConfig.getDisablePlatforms();
-        for (Target.Mapping mapping : mappings) {
-            if (!disablePlatforms.contains(mapping.platform)) {
-                PlatformCreator creator = makeCreator(mapping.creator);
-                if (creator != null) {
-                    sPlatformCreatorMap.put(mapping.platform, creator);
-                }
-
-            }
-        }
-    }
-
-    private static PlatformCreator makeCreator(String clazz) {
-        try {
-            return (PlatformCreator) Class.forName(clazz).newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
 
     public static IPlatform getPlatform(Context context, int target) {
-        PlatformCreator creator = sPlatformCreatorMap.get(target);
-        if (creator != null) {
-            return creator.create(context, target);
+        SparseArray<PlatformFactory> platformFactoryArray = sSocialSdkConfig.getPlatformFactoryArray();
+        PlatformFactory platformFactory = platformFactoryArray.get(target);
+        if (platformFactory != null) {
+            return platformFactory.create(context, target);
         }
         return null;
     }

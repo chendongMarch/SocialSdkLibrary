@@ -1,13 +1,12 @@
 package com.march.socialsdk;
 
 import android.content.Context;
+import android.util.SparseArray;
 
 import com.march.socialsdk.common.SocialValues;
-import com.march.socialsdk.platform.Target;
+import com.march.socialsdk.platform.PlatformFactory;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * CreateAt : 2017/5/20
@@ -40,16 +39,17 @@ public class SocialSdkConfig {
     private String        ddAppId;
     // 图片默认资源
     private int           defImageResId;
-    private List<Integer> disablePlatforms;
+
+    private SparseArray<PlatformFactory> platformFactoryArray;
 
     // 静态工厂
-    public static SocialSdkConfig create(Context context) {
+    public static SocialSdkConfig with(Context context) {
         SocialSdkConfig config = new SocialSdkConfig();
         config.appName = context.getString(R.string.app_name);
         File shareDir = new File(context.getExternalCacheDir(), SHARE_CACHE_DIR_NAME);
         config.cacheDir = (shareDir.mkdirs() ? shareDir : context.getCacheDir()).getAbsolutePath();
         // init
-        config.disablePlatforms = new ArrayList<>();
+        config.platformFactoryArray = new SparseArray<>();
         config.sinaRedirectUrl = SocialValues.REDIRECT_URL;
         config.sinaScope = SocialValues.SCOPE;
         config.debug = false;
@@ -60,13 +60,17 @@ public class SocialSdkConfig {
 
     }
 
-    public String getCacheDir() {
-        return cacheDir;
+    public SocialSdkConfig registerPlatform(PlatformFactory factory) {
+        platformFactoryArray.append(factory.getTarget(), factory);
+        return this;
     }
 
-    public SocialSdkConfig disablePlatform(@Target.PlatformTarget int platform) {
-        this.disablePlatforms.add(platform);
-        return this;
+    public SparseArray<PlatformFactory> getPlatformFactoryArray() {
+        return platformFactoryArray;
+    }
+
+    public String getCacheDir() {
+        return cacheDir;
     }
 
     public SocialSdkConfig dd(String ddAppId) {
@@ -159,10 +163,6 @@ public class SocialSdkConfig {
 
     public boolean isOnlyAuthCode() {
         return onlyAuthCode;
-    }
-
-    public List<Integer> getDisablePlatforms() {
-        return disablePlatforms;
     }
 
     @Override

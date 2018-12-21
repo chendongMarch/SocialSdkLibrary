@@ -2,7 +2,7 @@ package com.march.socialsdk.platform.weibo.model;
 
 import com.march.socialsdk.model.token.AccessToken;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
-import com.march.socialsdk.platform.Target;
+import com.march.socialsdk.common.Target;
 
 /**
  * CreateAt : 2017/5/21

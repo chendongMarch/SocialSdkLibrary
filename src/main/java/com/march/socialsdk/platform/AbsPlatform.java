@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.text.TextUtils;
 
+import com.march.socialsdk.common.Target;
 import com.march.socialsdk.exception.SocialError;
 import com.march.socialsdk.listener.OnShareListener;
 import com.march.socialsdk.model.ShareObj;
@@ -37,7 +38,6 @@ public abstract class AbsPlatform implements IPlatform {
         this.mAppName = appName;
     }
 
-    @Override
     public boolean checkPlatformConfig() {
         return !TextUtils.isEmpty(mAppId) && !TextUtils.isEmpty(mAppName);
     }
@@ -56,6 +56,17 @@ public abstract class AbsPlatform implements IPlatform {
         dispatchShare(activity, shareTarget, shareObj);
     }
 
+    /**
+     * 分享功能具体实现，由子类接管，方便更好的管理不兼容的类型
+     *
+     * @param shareTarget 分享的目标 {@link Target}
+     * @param activity    activity
+     * @param obj         ShareObj
+     */
+    protected abstract void dispatchShare(Activity activity, int shareTarget, ShareObj obj);
+
+
+
     protected void shareVideoByIntent(Activity activity, ShareObj obj, String pkg, String page) {
         boolean result = IntentShareUtil.shareVideo(activity, obj.getMediaPath(), pkg, page);
         if (result) {
@@ -73,15 +84,6 @@ public abstract class AbsPlatform implements IPlatform {
             this.mOnShareListener.onFailure(SocialError.make(SocialError.CODE_SHARE_BY_INTENT_FAIL, "shareText by intent" + pkg + "  " + page + " failure"));
         }
     }
-
-    /**
-     * 分享功能具体实现，由子类接管，方便更好的管理不兼容的类型
-     *
-     * @param shareTarget 分享的目标 {@link Target}
-     * @param activity    activity
-     * @param obj         ShareObj
-     */
-    protected abstract void dispatchShare(Activity activity, int shareTarget, ShareObj obj);
 
 
     ///////////////////////////////////////////////////////////////////////////
