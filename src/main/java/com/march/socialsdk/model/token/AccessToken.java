@@ -95,6 +95,9 @@ public abstract class AccessToken {
     }
 
     public static <T> T getToken(Context context, String key, Class<T> tokenClazz) {
+        if (SocialSdk.getConfig().getTokenExpires() <= 0) {
+            return null;
+        }
         SharedPreferences sp = getSp(context);
         long time = sp.getLong(key + KEY_TIME, -1);
         long currentTimeMillis = System.currentTimeMillis();
@@ -106,6 +109,9 @@ public abstract class AccessToken {
     }
 
     public static void saveToken(final Context context, final String key, final Object token) {
+        if (SocialSdk.getConfig().getTokenExpires() <= 0) {
+            return;
+        }
         SocialSdk.getExecutorService().execute(() -> {
             try {
                 SharedPreferences sp = getSp(context);

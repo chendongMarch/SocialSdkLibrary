@@ -121,7 +121,9 @@ SocialOptions options = SocialOptions.with(this)
         .sinaScope(SocialValues.SCOPE)
         // 当缩略图因为各种原因无法获取时，将会使用默认图，避免分享中断
         .failImgRes(R.mipmap.ic_launcher_new)
-        // 设置 token 有效期，有效期内不会重新获取 token，默认一天，如下设置为 12 小时
+        // 设置 token 有效期，有效期内不会重新获取 token
+        // 默认一天，如下设置为 12 小时
+        // 设置为0，将不会做持久化存储，每次获取最新的
         .tokenExpires(12 * 60 * 60 * 1000)
         // 注册平台创建工厂
         .registerPlatform(new QQPlatform.Factory())
