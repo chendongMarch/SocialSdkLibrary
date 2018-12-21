@@ -13,15 +13,15 @@ import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.march.socialsdk.util.SocialUtil;
-import com.march.socialsdk.exception.SocialError;
-import com.march.socialsdk.listener.OnLoginListener;
-import com.march.socialsdk.listener.OnShareListener;
-import com.march.socialsdk.manager.LoginManager;
-import com.march.socialsdk.manager.ShareManager;
-import com.march.socialsdk.model.LoginResult;
-import com.march.socialsdk.model.ShareObj;
-import com.march.socialsdk.common.Target;
+import com.zfy.social.core.util.SocialUtil;
+import com.zfy.social.core.exception.SocialError;
+import com.zfy.social.core.listener.OnLoginListener;
+import com.zfy.social.core.listener.OnShareListener;
+import com.zfy.social.core.manager.LoginManager;
+import com.zfy.social.core.manager.ShareManager;
+import com.zfy.social.core.model.LoginResult;
+import com.zfy.social.core.model.ShareObj;
+import com.zfy.social.core.common.Target;
 
 import java.io.File;
 

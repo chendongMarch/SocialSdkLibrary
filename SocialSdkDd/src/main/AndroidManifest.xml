@@ -1,2 +1,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.zfy.social.dd"/>
+          package="com.zfy.social.dd">
+
+    <application>
+
+        <!--dd-->
+        <activity-alias
+            android:name="${applicationId}.ddshare.DDShareActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:targetActivity="com.zfy.social.core.uikit.ActionActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"/>
+    </application>
+</manifest>

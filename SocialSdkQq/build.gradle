@@ -1,7 +1,8 @@
 apply from: '../scripts/library.gradle'
 
 dependencies {
-    implementation libs.appcompat_v7
+    compileOnly libs.soicalcore
+    implementation files('libs/open_sdk_r5923_lite.jar') // QQ
 }
 
 //apply plugin: 'bintray-release'

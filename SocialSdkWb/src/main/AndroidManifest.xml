@@ -1,2 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.zfy.social.wb"/>
+          package="com.zfy.social.wb">
+
+    <application>
+
+    </application>
+</manifest>
