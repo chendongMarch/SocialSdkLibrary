@@ -36,7 +36,7 @@ class SocialPlugin implements Plugin<Project> {
         // 创建闭包，接收参数
         project.extensions.create("social", SocialExtension.class)
         // 给 android {} 添加一个转换
-        android.registerTransform(new SocialConfigTransform(project))
+        // android.registerTransform(new SocialConfigTransform(project))
 
 
         variants.all { variant ->
@@ -68,15 +68,21 @@ class SocialPlugin implements Plugin<Project> {
 
     private static void addManifestPlaceholder(Project project, SocialExtension extension) {
         if (extension.qq.enable) {
-            project.android.defaultConfig.manifestPlaceholders.qq_id = extension.qq.appId
+            def addQqId = false
             project.android.buildTypes.all { buildType ->
+                addQqId = true
+                log "添加 mh, buildType => ${buildType} ${buildType.manifestPlaceholders}"
                 buildType.manifestPlaceholders.qq_id = extension.qq.appId
             }
             project.android.productFlavors.all { flavor ->
+                addQqId = true
+                log "添加 mh, flavor => ${flavor} ${flavor.manifestPlaceholders}"
                 flavor.manifestPlaceholders.qq_id = extension.qq.appId
             }
-            log "为 qq 添加 manifest holders，添加之后 => "
-            log(project.android.defaultConfig.manifestPlaceholders)
+            if (!addQqId) {
+                log "添加 mh, flavor => ${project.android.defaultConfig.manifestPlaceholders}"
+                project.android.defaultConfig.manifestPlaceholders.qq_id = extension.qq.appId
+            }
         }
     }
 
@@ -101,12 +107,15 @@ class SocialPlugin implements Plugin<Project> {
 
     // 根据配置准备依赖信息
     static void prepareDependencies(Project project, SocialExtension extension) {
-        def local = false
-        def coreLib = local ? 'project(":SocialSdkCore")' : 'com.zfy:social-sdk-core:0.0.2'
-        def wxLib = local ? 'project(":SocialSdkWx")  ' : 'com.zfy:social-sdk-wx:0.0.1'
-        def ddLib = local ? 'project(":SocialSdkDd")  ' : 'com.zfy:social-sdk-dd:0.0.1'
-        def qqLib = local ? 'project(":SocialSdkQq")  ' : 'com.zfy:social-sdk-qq:0.0.1'
-        def wbLib = local ? 'project(":SocialSdkWb")  ' : 'com.zfy:social-sdk-weibo:0.0.1'
+        if (extension.local) {
+            log "使用本地依赖，不使用远程依赖"
+            return
+        }
+        def coreLib = 'com.zfy:social-sdk-core:0.0.2'
+        def wxLib = 'com.zfy:social-sdk-wx:0.0.1'
+        def ddLib = 'com.zfy:social-sdk-dd:0.0.1'
+        def qqLib = 'com.zfy:social-sdk-qq:0.0.1'
+        def wbLib = 'com.zfy:social-sdk-weibo:0.0.1'
 
         log '依赖追加 =》 开始添加依赖'
         project.dependencies.add('implementation', coreLib)
@@ -130,7 +139,6 @@ class SocialPlugin implements Plugin<Project> {
 
     // 打印配置信息
     private static void printSocialConfig(SocialExtension extension) {
-        log("config.debug => ${extension.debug}")
         log("config.tokenExpireHour => ${extension.tokenExpireHour}")
 
         log("config.wxEnable => ${extension.wx.enable}")
@@ -164,9 +172,6 @@ package com.zfy.social.config;
  */
 public class SocialBuildConfig {
     
-    // 是否开启调试模式
-    public final boolean debug = ${extension.debug};
-   
     // 开启微信平台
     public final boolean wxEnable = ${extension.wx.enable};
     // 微信 appId

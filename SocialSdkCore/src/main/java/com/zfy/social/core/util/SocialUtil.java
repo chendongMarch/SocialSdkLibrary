@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.zfy.social.core.SocialSdk;
+import com.zfy.social.core.model.SocialBuildConfig;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -144,5 +145,25 @@ public class SocialUtil {
             }
         }
         e(tag, sb.toString());
+    }
+
+    public static SocialBuildConfig parseBuildConfig() {
+        try {
+            Object inst = Class.forName("com.zfy.social.config.SocialBuildConfig").newInstance();
+            String object2Json = JsonUtil.getObject2Json(inst);
+            Log.e("chendong", object2Json);
+            SocialBuildConfig buildConfig = JsonUtil.getObject(object2Json, SocialBuildConfig.class);
+            if (buildConfig != null) {
+                Log.e("chendong", buildConfig.toString());
+            }
+            return buildConfig;
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

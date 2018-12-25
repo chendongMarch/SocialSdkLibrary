@@ -5,7 +5,6 @@ android {
 
     defaultConfig {
         applicationId "com.babypat"
-        manifestPlaceholders = [origin: "origin"]
     }
 
     //正式签名相关信息
@@ -38,19 +37,23 @@ android {
 }
 
 social {
-    debug true
+    local true
     tokenExpireHour 24
     wx {
-        appId = 'wxAppId123'
-        appSecret = 'wxAppSecret123'
+        appId = 'wx4b8dbbca35b195c3'
+        appSecret = '0a3cb007291d0e59834ee3654f499171'
     }
     qq {
-        appId = 'qqAppId123'
+        appId = '1104910200'
+        appSecret = 'A6AqtYnKpg59yQ4N'
     }
     wb {
-        appId = 'wbAppId123'
-        url = 'http://test.com/test'
+        appId = '2189645998'
+        url = 'http://open.manfenmm.com/bbpp/app/weibo/common.php'
     }
+//    dd {
+//        appid = 'dingoag98ywrefwjeumuof'
+//    }
 }
 
 //库依赖
@@ -58,13 +61,14 @@ dependencies {
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 //
-//    implementation project('')
-//    implementation libs.social_wx
-//    implementation libs.social_qq
-//    implementation libs.social_wb
-//    implementation libs.social_dd
+    implementation project(':SocialSdkCore')
+    implementation project(':SocialSdkWx')
+    implementation project(':SocialSdkWb')
+    implementation project(':SocialSdkQq')
+//    implementation project(':SocialSdkDd')
 
     implementation libs.flexbox
+    implementation libs.multidex
     //
     implementation libs.design
     //

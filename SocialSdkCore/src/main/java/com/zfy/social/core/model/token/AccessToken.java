@@ -7,6 +7,8 @@ import com.zfy.social.core.SocialSdk;
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.util.JsonUtil;
 
+import java.util.concurrent.Executors;
+
 /**
  * CreateAt : 2017/5/21
  * Describe : token基类
@@ -111,7 +113,7 @@ public abstract class AccessToken {
         if (SocialSdk.getConfig().getTokenExpiresHoursMs() <= 0) {
             return;
         }
-        SocialSdk.getExecutorService().execute(() -> {
+        Executors.newSingleThreadExecutor().execute(() -> {
             try {
                 SharedPreferences sp = getSp(context);
                 String tokenJson = JsonUtil.getObject2Json(token);

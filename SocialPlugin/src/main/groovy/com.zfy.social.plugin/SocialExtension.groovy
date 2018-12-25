@@ -2,15 +2,12 @@ package com.zfy.social.plugin
 
 import com.zfy.social.plugin.extension.ConfigExtension
 import org.gradle.api.Action
-import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.util.ConfigureUtil
 
 class SocialExtension {
 
-    boolean debug           = false
-    int     tokenExpireHour = -1
-    int     appId = -1
-
+    int             tokenExpireHour = -1
+    boolean         local           = false
     // 微信配置
     ConfigExtension wx
     // qq 配置
@@ -55,14 +52,6 @@ class SocialExtension {
     void wb(Action<? super ConfigExtension> action) {
         if (wb == null) wb = new ConfigExtension()
         action.execute(wb)
-    }
-
-    def getDebug() {
-        return debug
-    }
-
-    void setDebug(debug) {
-        this.debug = debug
     }
 
     int getTokenExpireHour() {
@@ -121,11 +110,11 @@ class SocialExtension {
         this.wb = wb
     }
 
-    NamedDomainObjectContainer<ConfigExtension> getPlatforms() {
-        return platforms
+    boolean getLocal() {
+        return local
     }
 
-    void setPlatforms(NamedDomainObjectContainer<ConfigExtension> platforms) {
-        this.platforms = platforms
+    void setLocal(boolean local) {
+        this.local = local
     }
 }

@@ -28,22 +28,26 @@ public class JsonUtil {
 
         void onFailure(SocialError e);
     }
-
+ 
 
     public static <T> T getObject(String jsonString, Class<T> cls) {
         IJsonAdapter jsonAdapter = SocialSdk.getJsonAdapter();
-        if (jsonAdapter != null) {
-            try {
-                return jsonAdapter.toObj(jsonString, cls);
-            } catch (Exception e) {
-                SocialUtil.t(TAG, e);
-            }
+        if (jsonAdapter == null) {
+            return null;
+        }
+        try {
+            return jsonAdapter.toObj(jsonString, cls);
+        } catch (Exception e) {
+            SocialUtil.t(TAG, e);
         }
         return null;
     }
 
     public static String getObject2Json(Object object) {
         IJsonAdapter jsonAdapter = SocialSdk.getJsonAdapter();
+        if (jsonAdapter == null) {
+            return null;
+        }
         try {
             return jsonAdapter.toJson(object);
         } catch (Exception e) {
