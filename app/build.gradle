@@ -1,10 +1,11 @@
 apply from: '../scripts/app.gradle'
+apply plugin: 'com.zfy.social.plugin'
 
 android {
 
     defaultConfig {
         applicationId "com.babypat"
-        manifestPlaceholders = [qq_id: "1104910200"]
+        manifestPlaceholders = [origin: "origin"]
     }
 
     //正式签名相关信息
@@ -36,16 +37,32 @@ android {
     }
 }
 
+social {
+    debug true
+    tokenExpireHour 24
+    wx {
+        appId = 'wxAppId123'
+        appSecret = 'wxAppSecret123'
+    }
+    qq {
+        appId = 'qqAppId123'
+    }
+    wb {
+        appId = 'wbAppId123'
+        url = 'http://test.com/test'
+    }
+}
+
 //库依赖
 dependencies {
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-
-    implementation libs.soicalcore
-    implementation project(':SocialSdkWb')
-    implementation project(':SocialSdkWx')
-    implementation project(':SocialSdkQq')
-    implementation project(':SocialSdkDd')
+//
+//    implementation project('')
+//    implementation libs.social_wx
+//    implementation libs.social_qq
+//    implementation libs.social_wb
+//    implementation libs.social_dd
 
     implementation libs.flexbox
     //

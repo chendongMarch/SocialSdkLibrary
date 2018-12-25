@@ -40,7 +40,7 @@ public class SocialOptions {
     // 图片默认资源
     private int failImgRes;
     // token 有效时间，默认1天
-    private long tokenExpires = 24 * 60 * 60 * 1000;
+    private long tokenExpiresHours = 24;
     // 平台工厂注册
     private SparseArray<PlatformFactory> platformFactoryArray;
 
@@ -106,12 +106,10 @@ public class SocialOptions {
         return this;
     }
 
-
     public SocialOptions tokenExpires(long time) {
-        this.tokenExpires = time;
+        this.tokenExpiresHours = time;
         return this;
     }
-
 
     public SocialOptions failImgRes(int failImgRes) {
         this.failImgRes = failImgRes;
@@ -123,8 +121,19 @@ public class SocialOptions {
         return this;
     }
 
-    public long getTokenExpires() {
-        return tokenExpires;
+    public long getTokenExpiresHoursMs() {
+        if (tokenExpiresHours <= 0) {
+            return 0;
+        }
+        return tokenExpiresHours * 60 * 60 * 1000;
+    }
+
+    public long getTokenExpiresHours() {
+        if (tokenExpiresHours <= 0) {
+            return 0;
+        }
+        return tokenExpiresHours;
+
     }
 
     public SparseArray<PlatformFactory> getPlatformFactoryArray() {

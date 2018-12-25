@@ -5,12 +5,12 @@ dependencies {
     api libs.bolts
 }
 
-//apply plugin: 'bintray-release'
-//publish {
-//    userOrg = 'zfy'
-//    groupId = 'com.zfy'
-//    artifactId = 'common'
-//    publishVersion = '0.0.7'
-//    desc = 'common'
-//    website = 'https://github.com/Android-Modularity/common'
-//}
+apply plugin: 'bintray-release'
+publish {
+    userOrg = 'zfy'
+    groupId = 'com.zfy'
+    artifactId = 'social-sdk-core'
+    publishVersion = '0.0.2'
+    desc = 'SocialSdkCore'
+    website = 'https://github.com/chendongMarch/SocialSdkLibrary'
+}

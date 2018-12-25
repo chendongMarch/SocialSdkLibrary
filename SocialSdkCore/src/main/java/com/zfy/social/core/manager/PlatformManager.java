@@ -20,4 +20,11 @@ public class PlatformManager {
         return GlobalPlatform.makePlatform(context, target);
     }
 
+    public static boolean isInstall(Context context, int target) {
+        IPlatform iPlatform = GlobalPlatform.makePlatform(context, target);
+        boolean install = iPlatform.isInstall(context);
+        iPlatform.recycle();
+        return install;
+    }
+
 }

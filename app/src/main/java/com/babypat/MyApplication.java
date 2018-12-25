@@ -2,10 +2,9 @@ package com.babypat;
 
 import android.app.Application;
 
+import com.squareup.leakcanary.LeakCanary;
 import com.zfy.social.core.SocialOptions;
 import com.zfy.social.core.SocialSdk;
-import com.squareup.leakcanary.LeakCanary;
-import com.zfy.social.dd.DDPlatform;
 import com.zfy.social.qq.QQPlatform;
 import com.zfy.social.wb.WbPlatform;
 import com.zfy.social.wx.WxPlatform;
@@ -34,6 +33,7 @@ public class MyApplication extends Application {
         String wbAppId = getString(R.string.SINA_APP_ID);
         String ddAppId = getString(R.string.DD_APP_ID);
 
+
         SocialOptions options = SocialOptions.with(this)
                 // 开启调试
                 .debug(true)
@@ -53,7 +53,7 @@ public class MyApplication extends Application {
                 .tokenExpires(12 * 60 * 60 * 1000)
                 // 注册平台创建工厂
                 .registerPlatform(new QQPlatform.Factory())
-                .registerPlatform(new DDPlatform.Factory())
+                // .registerPlatform(new DDPlatform.Factory())
                 .registerPlatform(new WbPlatform.Factory())
                 .registerPlatform(new WxPlatform.Factory());
         // 👮 添加 config 数据，必须
