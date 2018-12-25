@@ -144,6 +144,7 @@ class SocialPlugin implements Plugin<Project> {
         log("config.wxEnable => ${extension.wx.enable}")
         log("config.wxAppId => ${extension.wx.appId}")
         log("config.wxAppSecret => ${extension.wx.appSecret}")
+        log("config.wxOnlyAuthCode => ${extension.wx.onlyAuthCode}")
 
         log("config.qqEnable => ${extension.qq.enable}")
         log("config.qqAppId => ${extension.qq.appId}")
@@ -178,6 +179,7 @@ public class SocialBuildConfig {
     public final String wxAppId = "${extension.wx.appId}";
     // 微信 secret 登录使用
     public final String wxAppSecret = "${extension.wx.appSecret}";
+    public final boolean wxOnlyAuthCode = "${extension.wx.onlyAuthCode}";
     
     // 开启 QQ 平台
     public final boolean qqEnable = ${extension.qq.enable};

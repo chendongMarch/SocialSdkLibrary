@@ -297,19 +297,62 @@ public class TestPlatformActivity extends AppCompatActivity {
                 ShareManager.share(mActivity, getShareTargetTo(), videoLocalObj, mOnShareListener);
                 break;
             case R.id.init_btn:
-                initSocialSDK2();
+                initSocialSDKSample();
                 break;
         }
     }
 
 
-    private void initSocialSDK2() {
+    private void initSocialSDKSample() {
         SocialOptions options = new SocialOptions.Builder(this)
+                // 调试模式，开启 log 输出
                 .debug(true)
+                // 加载缩略图失败时，降级使用资源图
                 .failImgRes(R.mipmap.ic_launcher_new)
+                // 添加自定义的 json 解析
                 .jsonAdapter(new GsonJsonAdapter())
+                // 请求处理类，如果使用了微博的 openApi 分享，这个是必须的
                 .requestAdapter(new OkHttpRequestAdapter())
+                // 构建
                 .build();
+        // 初始化
+        SocialSdk.init(options);
+    }
+
+
+    private void initSocialSDK() {
+
+        String qqAppId = getString(R.string.QQ_APP_ID);
+        String wxAppId = getString(R.string.WX_APP_ID);
+        String wxSecretKey = getString(R.string.WX_SECRET_KEY);
+        String wbAppId = getString(R.string.SINA_APP_ID);
+        String ddAppId = getString(R.string.DD_APP_ID);
+
+        SocialOptions options = new SocialOptions.Builder(this)
+                // 开启调试
+                .debug(true)
+
+                // 添加自定义的 json 解析
+                .jsonAdapter(new GsonJsonAdapter())
+                // 请求处理类，如果使用了微博的 openApi 分享，这个是必须的
+                .requestAdapter(new OkHttpRequestAdapter())
+
+                // 加载缩略图失败时，降级使用资源图
+                .failImgRes(R.mipmap.ic_launcher_new)
+                // 设置 token 有效期，单位小时，默认 24
+                .tokenExpiresHours(12)
+
+                // 配置钉钉
+                .dd(ddAppId)
+                // 配置qq
+                .qq(qqAppId)
+                // 配置wx, 第三个参数是是否只返回 code
+                .wx(wxAppId, wxSecretKey, false)
+                // 配置wb
+                .wb(wbAppId, "http://open.manfenmm.com/bbpp/app/weibo/common.php")
+
+                .build();
+        // 👮 添加 config 数据，必须
         SocialSdk.init(options);
     }
 
