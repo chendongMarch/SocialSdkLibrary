@@ -6,12 +6,11 @@ import android.util.SparseArray;
 import com.zfy.social.core.adapter.IJsonAdapter;
 import com.zfy.social.core.adapter.IRequestAdapter;
 import com.zfy.social.core.adapter.impl.DefaultRequestAdapter;
+import com.zfy.social.core.common.Target;
 import com.zfy.social.core.exception.SocialError;
 import com.zfy.social.core.platform.IPlatform;
 import com.zfy.social.core.platform.PlatformFactory;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import com.zfy.social.core.util.SocialUtil;
 
 /**
  * CreateAt : 2017/5/19
@@ -22,9 +21,11 @@ import java.util.concurrent.Executors;
 public class SocialSdk {
 
     private static SocialOptions sSocialOptions;
-    private static IJsonAdapter sJsonAdapter;
-    private static IRequestAdapter sRequestAdapter;
-    private static ExecutorService sExecutorService;
+
+    static IJsonAdapter sJsonAdapter;
+    static IRequestAdapter sRequestAdapter;
+
+    private static SparseArray<PlatformFactory> sPlatformFactories;
 
     public static SocialOptions getConfig() {
         if (sSocialOptions == null) {
@@ -35,35 +36,45 @@ public class SocialSdk {
 
     public static void init(SocialOptions config) {
         sSocialOptions = config;
+        // 自动注册平台
+        sPlatformFactories = new SparseArray<>();
+        if (sSocialOptions.isDdEnable()) {
+            registerPlatform(Target.PLATFORM_DD, "com.zfy.social.dd.DDPlatform$Factory");
+        }
+        if (sSocialOptions.isWxEnable()) {
+            registerPlatform(Target.PLATFORM_WX, "com.zfy.social.wx.WxPlatform$Factory");
+        }
+        if (sSocialOptions.isWbEnable()) {
+            registerPlatform(Target.PLATFORM_WB, "com.zfy.social.wb.WbPlatform$Factory");
+        }
+        if (sSocialOptions.isQqEnable()) {
+            registerPlatform(Target.PLATFORM_QQ, "com.zfy.social.qq.QQPlatform$Factory");
+        }
+    }
+
+    private static void registerPlatform(int target, String factoryClazz) {
+        try {
+            Object instance = Class.forName(factoryClazz).newInstance();
+            if (instance instanceof PlatformFactory) {
+                SocialUtil.e("chendong", "注册平台 " + target + " ," + instance.getClass().getName());
+                sPlatformFactories.append(target, (PlatformFactory) instance);
+            }
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public static IPlatform getPlatform(Context context, int target) {
-        SparseArray<PlatformFactory> array = sSocialOptions.getPlatformFactoryArray();
-        PlatformFactory platformFactory = array.get(target);
+        PlatformFactory platformFactory = sPlatformFactories.get(target);
         if (platformFactory != null) {
             return platformFactory.create(context, target);
         }
         return null;
     }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // JsonAdapter
-    ///////////////////////////////////////////////////////////////////////////
-
-    public static IJsonAdapter getJsonAdapter() {
-        if (sJsonAdapter == null) {
-            throw new IllegalStateException("为了不引入其他的json解析依赖，特地将这部分放出去，必须添加一个对应的 json 解析工具，参考代码 sample/GsonJsonAdapter.java");
-        }
-        return sJsonAdapter;
-    }
-
-    public static void setJsonAdapter(IJsonAdapter jsonAdapter) {
-        sJsonAdapter = jsonAdapter;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // RequestAdapter
-    ///////////////////////////////////////////////////////////////////////////
 
     public static IRequestAdapter getRequestAdapter() {
         if (sRequestAdapter == null) {
@@ -72,14 +83,9 @@ public class SocialSdk {
         return sRequestAdapter;
     }
 
-    public static void setRequestAdapter(IRequestAdapter requestAdapter) {
-        sRequestAdapter = requestAdapter;
+
+    public static IJsonAdapter getJsonAdapter() {
+        return sJsonAdapter;
     }
 
-    public static ExecutorService getExecutorService() {
-        if (sExecutorService == null) {
-            sExecutorService = Executors.newCachedThreadPool();
-        }
-        return sExecutorService;
-    }
 }

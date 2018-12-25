@@ -13,7 +13,9 @@ import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.zfy.social.core.util.SocialUtil;
+import com.zfy.social.core.SocialOptions;
+import com.zfy.social.core.SocialSdk;
+import com.zfy.social.core.common.Target;
 import com.zfy.social.core.exception.SocialError;
 import com.zfy.social.core.listener.OnLoginListener;
 import com.zfy.social.core.listener.OnShareListener;
@@ -21,7 +23,7 @@ import com.zfy.social.core.manager.LoginManager;
 import com.zfy.social.core.manager.ShareManager;
 import com.zfy.social.core.model.LoginResult;
 import com.zfy.social.core.model.ShareObj;
-import com.zfy.social.core.common.Target;
+import com.zfy.social.core.util.SocialUtil;
 
 import java.io.File;
 
@@ -237,7 +239,9 @@ public class TestPlatformActivity extends AppCompatActivity {
     // 图片，Gif分享 两种方式
     // openApi分享针对大图片相对慢一点,不会弹起新页面，优点是应用名称可以点亮，点击之后会跳转，申请高级权限后可以分享网络图片
     // 普通分享会弹起编辑页面，缺点是小尾巴不能点击
-    @OnClick({R.id.btn_login,
+    @OnClick({
+            R.id.init_btn,
+            R.id.btn_login,
             R.id.btn_share_video_local,
             R.id.btn_share_text,
             R.id.btn_share_img,
@@ -292,7 +296,21 @@ public class TestPlatformActivity extends AppCompatActivity {
                 videoLocalObj.setSummary(System.currentTimeMillis() + " [http://www.ibbpp.com]");
                 ShareManager.share(mActivity, getShareTargetTo(), videoLocalObj, mOnShareListener);
                 break;
+            case R.id.init_btn:
+                initSocialSDK2();
+                break;
         }
+    }
+
+
+    private void initSocialSDK2() {
+        SocialOptions options = new SocialOptions.Builder(this)
+                .debug(true)
+                .failImgRes(R.mipmap.ic_launcher_new)
+                .jsonAdapter(new GsonJsonAdapter())
+                .requestAdapter(new OkHttpRequestAdapter())
+                .build();
+        SocialSdk.init(options);
     }
 
 
