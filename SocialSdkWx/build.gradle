@@ -1,16 +1,17 @@
 apply from: '../scripts/library.gradle'
 
 dependencies {
-    compileOnly libs.soicalcore
+    compileOnly libs.social_core
+    compileOnly libs.appcompat_v7
     implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:5.1.6' // 微信
 }
 
-//apply plugin: 'bintray-release'
-//publish {
-//    userOrg = 'zfy'
-//    groupId = 'com.zfy'
-//    artifactId = 'common'
-//    publishVersion = '0.0.7'
-//    desc = 'common'
-//    website = 'https://github.com/Android-Modularity/common'
-//}
+apply plugin: 'bintray-release'
+publish {
+    userOrg = 'zfy'
+    groupId = 'com.zfy'
+    artifactId = 'social-sdk-wx'
+    publishVersion = '0.0.1'
+    desc = 'SocialSdkWx'
+    website = 'https://github.com/chendongMarch/SocialSdkLibrary'
+}

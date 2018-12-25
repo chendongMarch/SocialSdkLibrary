@@ -3,7 +3,6 @@ package com.zfy.social.core.model.token;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.zfy.social.core.R;
 import com.zfy.social.core.SocialSdk;
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.util.JsonUtil;
@@ -95,13 +94,13 @@ public abstract class AccessToken {
     }
 
     public static <T> T getToken(Context context, String key, Class<T> tokenClazz) {
-        if (SocialSdk.getConfig().getTokenExpires() <= 0) {
+        if (SocialSdk.getConfig().getTokenExpiresHoursMs() <= 0) {
             return null;
         }
         SharedPreferences sp = getSp(context);
         long time = sp.getLong(key + KEY_TIME, -1);
         long currentTimeMillis = System.currentTimeMillis();
-        if (currentTimeMillis - time < SocialSdk.getConfig().getTokenExpires()) {
+        if (currentTimeMillis - time < SocialSdk.getConfig().getTokenExpiresHoursMs()) {
             return JsonUtil.getObject(sp.getString(key, null), tokenClazz);
         } else {
             return null;
@@ -109,7 +108,7 @@ public abstract class AccessToken {
     }
 
     public static void saveToken(final Context context, final String key, final Object token) {
-        if (SocialSdk.getConfig().getTokenExpires() <= 0) {
+        if (SocialSdk.getConfig().getTokenExpiresHoursMs() <= 0) {
             return;
         }
         SocialSdk.getExecutorService().execute(() -> {

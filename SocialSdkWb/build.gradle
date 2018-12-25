@@ -1,16 +1,17 @@
 apply from: '../scripts/library.gradle'
 
 dependencies {
-    compileOnly libs.soicalcore
-    implementation 'com.sina.weibo.sdk:core:4.1.0:openDefaultRelease@aar' // 微博
+    compileOnly libs.social_core
+    compileOnly libs.appcompat_v7
+    implementation 'com.sina.weibo.sdk:core:4.3.6:openDefaultRelease@aar' // 微博
 }
 
-//apply plugin: 'bintray-release'
-//publish {
-//    userOrg = 'zfy'
-//    groupId = 'com.zfy'
-//    artifactId = 'common'
-//    publishVersion = '0.0.7'
-//    desc = 'common'
-//    website = 'https://github.com/Android-Modularity/common'
-//}
+apply plugin: 'bintray-release'
+publish {
+    userOrg = 'zfy'
+    groupId = 'com.zfy'
+    artifactId = 'social-sdk-weibo'
+    publishVersion = '0.0.1'
+    desc = 'SocialSdkWb'
+    website = 'https://github.com/chendongMarch/SocialSdkLibrary'
+}

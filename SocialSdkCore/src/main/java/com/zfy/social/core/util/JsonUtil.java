@@ -14,11 +14,10 @@ import bolts.Task;
 
 /**
  * CreateAt : 2016/12/3
- * Describe : 使用外部注入的 json 转换类，减轻类库的依赖
+ * Describe : 外部注入json模块
  *
  * @author chendong
  */
-
 public class JsonUtil {
 
     public static final String TAG = JsonUtil.class.getSimpleName();

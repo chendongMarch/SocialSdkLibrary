@@ -33,7 +33,7 @@ import java.util.ArrayList;
 /**
  * CreateAt : 2016/12/3
  * Describe : qq平台
- * 问题汇总：com.mTencentApi.tauth.AuthActivity需要添加（ <data android:scheme="tencent110557146" />）否则会一直返回分享取消
+ * 问题汇总：com.tencentApi.tauth.AuthActivity 需要添加（ <data android:scheme="tencent110557146" />）否则会一直返回分享取消
  * qq空间支持本地视频分享，网络视频使用web形式分享
  * qq好友不支持本地视频分享，支持网络视频分享
  *

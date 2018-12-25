@@ -1,0 +1,24 @@
+apply plugin: 'groovy'
+apply plugin: 'maven'
+
+targetCompatibility = JavaVersion.VERSION_1_7
+sourceCompatibility = JavaVersion.VERSION_1_7
+
+dependencies {
+    implementation gradleApi()
+    implementation localGroovy()
+    implementation 'com.android.tools.build:gradle:3.1.4'
+}
+
+repositories {
+    mavenCentral()
+}
+
+uploadArchives {
+    repositories.mavenDeployer {
+        repository(url: "file:///Users/march/AndroidPro/babyphoto_app/plugin")
+        pom.groupId = "com.zfy.social"
+        pom.artifactId = "plugin"
+        pom.version = "0.0.2"
+    }
+}
