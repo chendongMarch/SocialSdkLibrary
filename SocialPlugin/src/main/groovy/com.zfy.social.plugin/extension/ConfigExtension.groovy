@@ -1,14 +1,13 @@
 package com.zfy.social.plugin.extension
 
-import org.gradle.util.Configurable
-
-
 class ConfigExtension  {
 
-    String  appId     = ""
-    boolean enable    = true
-    String  appSecret = ""
-    String  url       = ""
+    String  appId        = ""
+    boolean enable       = true
+    String  appSecret    = ""
+    String  url          = ""
+    boolean onlyAuthCode = false
+
 
     String getAppId() {
         return appId
@@ -40,5 +39,13 @@ class ConfigExtension  {
 
     void setUrl(String url) {
         this.url = url
+    }
+
+    boolean getOnlyAuthCode() {
+        return onlyAuthCode
+    }
+
+    void setOnlyAuthCode(boolean onlyAuthCode) {
+        this.onlyAuthCode = onlyAuthCode
     }
 }

@@ -19,7 +19,7 @@ public class SocialBuildConfig {
     public String wxAppId = "";
     // 微信 secret 登录使用
     public String wxAppSecret = "";
-    public boolean onlyAuthCode = false;
+    public boolean wxOnlyAuthCode = false;
     // 开启 QQ 平台
     public boolean qqEnable = true;
     // qq appId

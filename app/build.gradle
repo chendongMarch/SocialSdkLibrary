@@ -42,6 +42,7 @@ social {
     wx {
         appId = 'wx4b8dbbca35b195c3'
         appSecret = '0a3cb007291d0e59834ee3654f499171'
+        onlyAuthCode = false
     }
     qq {
         appId = '1104910200'

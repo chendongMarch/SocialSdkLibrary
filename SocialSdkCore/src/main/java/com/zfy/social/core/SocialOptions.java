@@ -169,7 +169,7 @@ public class SocialOptions {
                     builder.wxSecretKey = buildConfig.wxAppSecret;
                 }
                 if (builder.wxOnlyAuthCode == null) {
-                    builder.wxOnlyAuthCode = buildConfig.onlyAuthCode;
+                    builder.wxOnlyAuthCode = buildConfig.wxOnlyAuthCode;
                 }
             }
             if (buildConfig.qqEnable) {
@@ -281,8 +281,8 @@ public class SocialOptions {
             return this;
         }
 
-        public Builder wx(String wxAppId, String wxSecretKey, boolean onlyAuthCode) {
-            this.wxOnlyAuthCode = onlyAuthCode;
+        public Builder wx(String wxAppId, String wxSecretKey, boolean wxOnlyAuthCode) {
+            this.wxOnlyAuthCode = wxOnlyAuthCode;
             this.wxSecretKey = wxSecretKey;
             this.wxAppId = wxAppId;
             this.wxEnable = true;
@@ -307,7 +307,7 @@ public class SocialOptions {
             return this;
         }
 
-        public Builder tokenExpires(int time) {
+        public Builder tokenExpiresHours(int time) {
             this.tokenExpiresHours = time;
             return this;
         }
