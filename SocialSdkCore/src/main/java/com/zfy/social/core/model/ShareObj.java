@@ -5,8 +5,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-import com.zfy.social.core.common.SocialKeys;
-
 /**
  * CreateAt : 2016/12/28
  * Describe :  多元化分享的对象，用于app|网页|视频|音频|声音 分享
@@ -25,10 +23,10 @@ public class ShareObj implements Parcelable {
     public static final int SHARE_TYPE_MUSIC = 0x45; // 分享音乐
     public static final int SHARE_TYPE_VIDEO = 0x46; // 分享视频
     public static final int SHARE_TYPE_OPEN_APP = 0x47; // 打开 app
-    public static final int SHARE_TYPE_WX_MINI = 0x48; // 微信小程序分享
+
 
     // 分享对象的类型
-    private int shareObjType;
+    private int type;
     // title 标题，如果不设置为app name
     private String title;
     // 概要，描述，desc
@@ -51,12 +49,41 @@ public class ShareObj implements Parcelable {
     // 附加信息
     private Bundle extra;
 
-    // 直接打开对应app
+
+    // 小程序专属参数
+    private String wxMiniOriginId;
+    private int wxMiniType;
+    private String wxMiniPagePath;
+    private boolean isWxMini;
+    // 短信专属参数
+    private String smsPhone;
+    private String smsBody;
+    private boolean isSms;
+    // 邮件专属参数
+    private String eMailAddress;
+    private String eMailSubject;
+    private String eMailBody;
+    private boolean isEMail;
+    // 复制内容
+    private String copyContent;
+    private boolean isClipboard;
+
+    /**
+     * 直接打开对应app
+     *
+     * @return ShareObj
+     */
     public static ShareObj buildOpenAppObj() {
         return new ShareObj(SHARE_TYPE_OPEN_APP);
     }
 
-    // 分享文字，qq 好友原本不支持，使用intent兼容
+    /**
+     * 分享文字，qq 好友原本不支持，使用intent兼容
+     *
+     * @param title   标题
+     * @param summary 描述
+     * @return ShareObj
+     */
     public static ShareObj buildTextObj(String title, String summary) {
         ShareObj shareObj = new ShareObj(SHARE_TYPE_TEXT);
         shareObj.setTitle(title);
@@ -64,14 +91,24 @@ public class ShareObj implements Parcelable {
         return shareObj;
     }
 
-    // 分享图片
+    /**
+     * 分享图片
+     *
+     * @param path 图片路径
+     * @return ShareObj
+     */
     public static ShareObj buildImageObj(String path) {
         ShareObj shareObj = new ShareObj(SHARE_TYPE_IMAGE);
         shareObj.setThumbImagePath(path);
         return shareObj;
     }
 
-    // 分享图片，带描述，qq微信好友会分为两条消息发送
+    /**
+     * 分享图片，带描述，qq微信好友会分为两条消息发送
+     * @param path 图片路径
+     * @param summary 描述
+     * @return ShareObj
+     */
     public static ShareObj buildImageObj(String path, String summary) {
         ShareObj shareObj = new ShareObj(SHARE_TYPE_IMAGE);
         shareObj.setThumbImagePath(path);
@@ -79,7 +116,15 @@ public class ShareObj implements Parcelable {
         return shareObj;
     }
 
-    // 应用分享，qq支持，其他平台使用 web 分享兼容
+    /**
+     * 应用分享，qq支持，其他平台使用 web 分享兼容
+     *
+     * @param title          标题
+     * @param summary        描述
+     * @param thumbImagePath 缩略图
+     * @param targetUrl      url
+     * @return ShareObj
+     */
     public static ShareObj buildAppObj(String title, String summary
             , String thumbImagePath, String targetUrl) {
         ShareObj shareObj = new ShareObj(SHARE_TYPE_APP);
@@ -87,7 +132,15 @@ public class ShareObj implements Parcelable {
         return shareObj;
     }
 
-    // 分享web，打开链接
+    /**
+     * 分享web，打开链接
+     *
+     * @param title          标题
+     * @param summary        描述
+     * @param thumbImagePath 缩略图
+     * @param targetUrl      url
+     * @return ShareObj
+     */
     public static ShareObj buildWebObj(String title, String summary
             , String thumbImagePath, String targetUrl) {
         ShareObj shareObj = new ShareObj(SHARE_TYPE_WEB);
@@ -95,27 +148,17 @@ public class ShareObj implements Parcelable {
         return shareObj;
     }
 
-    // 构建微信小程序分享对象
-    public static ShareObj buildWxMiniObj(String title,
-            String summary,
-            String thumbImagePath,
-            String targetUrl,
-            int releaseType, // 类型
-            String originId, // 原始 id
-            String pagePath // 页面路径
-    ) {
-        ShareObj shareObj = new ShareObj(SHARE_TYPE_WX_MINI);
-        shareObj.init(title, summary, thumbImagePath, targetUrl);
-        if (shareObj.extra == null) {
-            shareObj.extra = new Bundle();
-        }
-        shareObj.extra.putString(SocialKeys.KEY_WX_MINI_ORIGIN_ID, originId);
-        shareObj.extra.putInt(SocialKeys.KEY_WX_MINI_TYPE, releaseType);
-        shareObj.extra.putString(SocialKeys.KEY_WX_MINI_PATH, pagePath);
-        return shareObj;
-    }
 
-    // 分享音乐,qq空间不支持，使用web分享
+    /**
+     * 分享音乐,qq空间不支持，使用web分享
+     * @param title          标题
+     * @param summary        描述
+     * @param thumbImagePath 缩略图
+     * @param targetUrl      url
+     * @param mediaPath      多媒体地址
+     * @param duration       时长
+     * @return ShareObj
+     */
     public static ShareObj buildMusicObj(String title, String summary
             , String thumbImagePath, String targetUrl, String mediaPath, int duration) {
         ShareObj shareObj = new ShareObj(SHARE_TYPE_MUSIC);
@@ -125,9 +168,20 @@ public class ShareObj implements Parcelable {
         return shareObj;
     }
 
-    // 分享视频，
-    // 本地视频使用 intent 兼容，qq 空间本身支持本地视频发布
-    // 支持网络视频
+
+    /**
+     * 分享视频，
+     * 本地视频使用 intent 兼容，qq 空间本身支持本地视频发布
+     * 支持网络视频
+     *
+     * @param title          标题
+     * @param summary        描述
+     * @param thumbImagePath 缩略图
+     * @param targetUrl      url
+     * @param mediaPath      多媒体地址
+     * @param duration       时长
+     * @return ShareObj
+     */
     public static ShareObj buildVideoObj(String title, String summary
             , String thumbImagePath, String targetUrl, String mediaPath, int duration) {
         ShareObj shareObj = new ShareObj(SHARE_TYPE_VIDEO);
@@ -137,7 +191,14 @@ public class ShareObj implements Parcelable {
         return shareObj;
     }
 
-    // 本地视频
+    /**
+     * 本地视频
+     *
+     * @param title          标题
+     * @param summary        描述
+     * @param localVideoPath 本地视频地址
+     * @return ShareObj
+     */
     public static ShareObj buildVideoObj(String title, String summary, String localVideoPath) {
         ShareObj shareObj = new ShareObj(SHARE_TYPE_VIDEO);
         shareObj.setMediaPath(localVideoPath);
@@ -147,8 +208,62 @@ public class ShareObj implements Parcelable {
         return shareObj;
     }
 
-    private ShareObj(int shareObjType) {
-        this.shareObjType = shareObjType;
+
+    /**
+     * 设置小程序分享参数
+     *
+     * @param wxMiniOriginId // 小程序原始 id
+     * @param wxMiniType     // 类型 {@link com.zfy.social.core.common.SocialValues#WX_MINI_TYPE_RELEASE}
+     * @param wxMiniPagePath // 页面路径
+     */
+    public void setWxMiniParams(String wxMiniOriginId, int wxMiniType, String wxMiniPagePath) {
+        this.wxMiniOriginId = wxMiniOriginId;
+        this.wxMiniType = wxMiniType;
+        this.wxMiniPagePath = wxMiniPagePath;
+        this.isWxMini = true;
+    }
+
+    /**
+     * 设置短信分享参数
+     *
+     * @param smsPhone 手机号
+     * @param smsBody  信息内容
+     */
+    public void setSmsParams(String smsPhone, String smsBody) {
+        this.smsBody = smsBody;
+        this.smsPhone = smsPhone;
+        this.isSms = true;
+    }
+
+
+    /**
+     * 设置邮件参数
+     *
+     * @param eMailAddress 邮件地址
+     * @param eMailSubject 设置邮件主题
+     * @param eMailBody    邮件内容
+     */
+    public void setMailParams(String eMailAddress, String eMailSubject, String eMailBody) {
+        this.eMailAddress = eMailAddress;
+        this.eMailSubject = eMailSubject;
+        this.eMailBody = eMailBody;
+        this.isEMail = true;
+    }
+
+
+    /**
+     * 设置粘贴板复制
+     *
+     * @param copyContent 复制
+     */
+    public void setClipboardParams(String copyContent) {
+        this.copyContent = copyContent;
+        this.isClipboard = true;
+    }
+
+
+    private ShareObj(int type) {
+        this.type = type;
     }
 
     private void init(String title, String summary, String thumbImagePath, String targetUrl) {
@@ -160,7 +275,7 @@ public class ShareObj implements Parcelable {
 
 
     public boolean hasImg() {
-        return shareObjType != SHARE_TYPE_OPEN_APP && shareObjType != SHARE_TYPE_TEXT;
+        return type != SHARE_TYPE_OPEN_APP && type != SHARE_TYPE_TEXT;
     }
 
 
@@ -220,12 +335,12 @@ public class ShareObj implements Parcelable {
         return targetUrl;
     }
 
-    public int getShareObjType() {
-        return shareObjType;
+    public int getType() {
+        return type;
     }
 
-    public void setShareObjType(int shareObjType) {
-        this.shareObjType = shareObjType;
+    public void setType(int type) {
+        this.type = type;
     }
 
     public void setTargetUrl(String targetUrl) {
@@ -259,11 +374,114 @@ public class ShareObj implements Parcelable {
         this.mediaPath = mediaPath;
     }
 
+    public String getWxMiniOriginId() {
+        return wxMiniOriginId;
+    }
+
+    public void setWxMiniOriginId(String wxMiniOriginId) {
+        this.wxMiniOriginId = wxMiniOriginId;
+    }
+
+    public int getWxMiniType() {
+        return wxMiniType;
+    }
+
+    public void setWxMiniType(int wxMiniType) {
+        this.wxMiniType = wxMiniType;
+    }
+
+    public String getWxMiniPagePath() {
+        return wxMiniPagePath;
+    }
+
+    public void setWxMiniPagePath(String wxMiniPagePath) {
+        this.wxMiniPagePath = wxMiniPagePath;
+    }
+
+    public boolean isWxMini() {
+        return isWxMini;
+    }
+
+    public void setWxMini(boolean wxMini) {
+        isWxMini = wxMini;
+    }
+
+    public String getSmsPhone() {
+        return smsPhone;
+    }
+
+    public void setSmsPhone(String smsPhone) {
+        this.smsPhone = smsPhone;
+    }
+
+    public String getSmsBody() {
+        return smsBody;
+    }
+
+    public void setSmsBody(String smsBody) {
+        this.smsBody = smsBody;
+    }
+
+    public boolean isSms() {
+        return isSms;
+    }
+
+    public void setSms(boolean sms) {
+        isSms = sms;
+    }
+
+    public String geteMailAddress() {
+        return eMailAddress;
+    }
+
+    public void seteMailAddress(String eMailAddress) {
+        this.eMailAddress = eMailAddress;
+    }
+
+    public String geteMailSubject() {
+        return eMailSubject;
+    }
+
+    public void seteMailSubject(String eMailSubject) {
+        this.eMailSubject = eMailSubject;
+    }
+
+    public String geteMailBody() {
+        return eMailBody;
+    }
+
+    public void seteMailBody(String eMailBody) {
+        this.eMailBody = eMailBody;
+    }
+
+    public boolean isEMail() {
+        return isEMail;
+    }
+
+    public void setEMail(boolean EMail) {
+        isEMail = EMail;
+    }
+
+    public String getCopyContent() {
+        return copyContent;
+    }
+
+    public void setCopyContent(String copyContent) {
+        this.copyContent = copyContent;
+    }
+
+    public boolean isClipboard() {
+        return isClipboard;
+    }
+
+    public void setClipboard(boolean clipboard) {
+        isClipboard = clipboard;
+    }
 
     @Override
     public String toString() {
         return "ShareObj{" +
-                "shareObjType=" + shareObjType +
+                "type=" + type +
                 ", title='" + title + '\'' +
                 ", summary='" + summary + '\'' +
                 ", thumbImagePath='" + thumbImagePath + '\'' +
@@ -284,7 +502,7 @@ public class ShareObj implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.shareObjType);
+        dest.writeInt(this.type);
         dest.writeString(this.title);
         dest.writeString(this.summary);
         dest.writeString(this.thumbImagePath);
@@ -296,10 +514,23 @@ public class ShareObj implements Parcelable {
         dest.writeByte(this.isSinaWithPicture ? (byte) 1 : (byte) 0);
         dest.writeByte(this.isShareByIntent ? (byte) 1 : (byte) 0);
         dest.writeBundle(this.extra);
+        dest.writeString(this.wxMiniOriginId);
+        dest.writeInt(this.wxMiniType);
+        dest.writeString(this.wxMiniPagePath);
+        dest.writeByte(this.isWxMini ? (byte) 1 : (byte) 0);
+        dest.writeString(this.smsPhone);
+        dest.writeString(this.smsBody);
+        dest.writeByte(this.isSms ? (byte) 1 : (byte) 0);
+        dest.writeString(this.eMailAddress);
+        dest.writeString(this.eMailSubject);
+        dest.writeString(this.eMailBody);
+        dest.writeByte(this.isEMail ? (byte) 1 : (byte) 0);
+        dest.writeString(this.copyContent);
+        dest.writeByte(this.isClipboard ? (byte) 1 : (byte) 0);
     }
 
     protected ShareObj(Parcel in) {
-        this.shareObjType = in.readInt();
+        this.type = in.readInt();
         this.title = in.readString();
         this.summary = in.readString();
         this.thumbImagePath = in.readString();
@@ -311,6 +542,19 @@ public class ShareObj implements Parcelable {
         this.isSinaWithPicture = in.readByte() != 0;
         this.isShareByIntent = in.readByte() != 0;
         this.extra = in.readBundle();
+        this.wxMiniOriginId = in.readString();
+        this.wxMiniType = in.readInt();
+        this.wxMiniPagePath = in.readString();
+        this.isWxMini = in.readByte() != 0;
+        this.smsPhone = in.readString();
+        this.smsBody = in.readString();
+        this.isSms = in.readByte() != 0;
+        this.eMailAddress = in.readString();
+        this.eMailSubject = in.readString();
+        this.eMailBody = in.readString();
+        this.isEMail = in.readByte() != 0;
+        this.copyContent = in.readString();
+        this.isClipboard = in.readByte() != 0;
     }
 
     public static final Creator<ShareObj> CREATOR = new Creator<ShareObj>() {

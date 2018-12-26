@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
+import com.zfy.social.core.common.Target;
 import com.zfy.social.core.listener.OnLoginListener;
 import com.zfy.social.core.listener.OnShareListener;
 import com.zfy.social.core.listener.Recyclable;
@@ -76,4 +77,11 @@ public interface IPlatform extends Recyclable {
      */
     void share(Activity activity, int shareTarget, ShareObj shareObj);
 
+    /**
+     * 触发分享
+     * @param activity 上下文
+     * @param shareTarget 目标
+     * @param shareObj 数据
+     */
+    void actionShare(Activity activity, @Target.ShareTarget int shareTarget, ShareObj shareObj);
 }

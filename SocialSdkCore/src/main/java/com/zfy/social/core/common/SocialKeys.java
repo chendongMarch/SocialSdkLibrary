@@ -8,7 +8,11 @@ package com.zfy.social.core.common;
  */
 public class SocialKeys {
 
+    // 小程序参数
     public static final String KEY_WX_MINI_ORIGIN_ID = "KEY_ORIGIN_ID";
     public static final String KEY_WX_MINI_PATH = "KEY_WX_MINI_PATH";
     public static final String KEY_WX_MINI_TYPE = "KEY_WX_MINI_TYPE";
+
+
+    //
 }

@@ -17,6 +17,9 @@ public class Target {
     public static final int PLATFORM_WX = 0x12; // 微信登录
     public static final int PLATFORM_WB = 0x13; // 微博登录
     public static final int PLATFORM_DD = 0x14; // 微博登录
+    public static final int PLATFORM_SMS = 0x15; // 短信
+    public static final int PLATFORM_CLIPBOARD = 0x16; // 粘贴板
+    public static final int PLATFORM_EMAIL = 0x17; // 邮件
 
     public static final int LOGIN_QQ = 0x21; // qq 登录
     public static final int LOGIN_WX = 0x22; // 微信登录
@@ -28,22 +31,17 @@ public class Target {
     public static final int SHARE_WX_ZONE     = 0x34; // 微信朋友圈
     public static final int SHARE_WX_FAVORITE = 0x35; // 微信收藏
     public static final int SHARE_WB          = 0x36; // 新浪微博
-    public static final int SHARE_DD          = 0x38; // dingding 分享
+    public static final int SHARE_DD = 0x38; // 钉钉分享
+    public static final int SHARE_SMS = 0x39; // 钉钉分享
+    public static final int SHARE_EMAIL = 0x40; // 钉钉分享
+    public static final int SHARE_CLIPBOARD = 0x41; // 钉钉分享
 
-
-    public static class Mapping {
-        public Mapping( int platform,String creator) {
-            this.creator = creator;
-            this.platform = platform;
-        }
-
-        public String creator;
-        public int    platform;
-    }
 
     @IntDef({Target.SHARE_QQ_FRIENDS, Target.SHARE_QQ_ZONE,
             Target.SHARE_WX_FRIENDS, Target.SHARE_WX_ZONE, Target.SHARE_WX_FAVORITE,
-            Target.SHARE_WB, Target.SHARE_DD})
+            Target.SHARE_WB, Target.SHARE_DD,
+            Target.SHARE_EMAIL, Target.SHARE_CLIPBOARD, Target.SHARE_SMS,
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ShareTarget {
 
@@ -56,7 +54,9 @@ public class Target {
 
     }
 
-    @IntDef({Target.PLATFORM_WX, Target.PLATFORM_QQ, Target.PLATFORM_WB, Target.PLATFORM_DD})
+    @IntDef({Target.PLATFORM_WX, Target.PLATFORM_QQ,
+            Target.PLATFORM_WB, Target.PLATFORM_DD,
+            Target.PLATFORM_SMS, Target.PLATFORM_EMAIL, Target.PLATFORM_CLIPBOARD,})
     @Retention(RetentionPolicy.SOURCE)
     public @interface PlatformTarget {
 
@@ -81,6 +81,12 @@ public class Target {
             case Target.SHARE_DD:
             case Target.PLATFORM_DD:
                 return PLATFORM_DD;
+            case Target.SHARE_CLIPBOARD:
+                return PLATFORM_CLIPBOARD;
+            case Target.SHARE_SMS:
+                return PLATFORM_SMS;
+            case Target.SHARE_EMAIL:
+                return PLATFORM_EMAIL;
             default:
                 return -1;
         }
@@ -114,7 +120,16 @@ public class Target {
                 result = "微博普通分享";
                 break;
             case Target.SHARE_DD:
-                result = "丁丁分享";
+                result = "钉钉分享";
+                break;
+            case Target.SHARE_EMAIL:
+                result = "邮件分享";
+                break;
+            case Target.SHARE_SMS:
+                result = "短信分享";
+                break;
+            case Target.SHARE_CLIPBOARD:
+                result = "粘贴板分享";
                 break;
             default:
                 result = "未知类型";

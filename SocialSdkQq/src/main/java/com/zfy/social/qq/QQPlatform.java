@@ -25,6 +25,7 @@ import com.zfy.social.core.platform.AbsPlatform;
 import com.zfy.social.core.platform.IPlatform;
 import com.zfy.social.core.platform.PlatformFactory;
 import com.zfy.social.core.util.FileUtil;
+import com.zfy.social.core.util.IntentShareUtil;
 import com.zfy.social.core.util.SocialUtil;
 import com.zfy.social.qq.uikit.QQActionActivity;
 
@@ -117,7 +118,7 @@ public class QQPlatform extends AbsPlatform {
 
     @Override
     protected void dispatchShare(Activity activity, int shareTarget, ShareObj obj) {
-        switch (obj.getShareObjType()) {
+        switch (obj.getType()) {
             case ShareObj.SHARE_TYPE_OPEN_APP:
                 shareOpenApp(shareTarget, activity, obj);
                 break;
@@ -138,9 +139,6 @@ public class QQPlatform extends AbsPlatform {
                 break;
             case ShareObj.SHARE_TYPE_VIDEO:
                 shareVideo(shareTarget, activity, obj);
-                break;
-            case ShareObj.SHARE_TYPE_WX_MINI:
-                shareWeb(shareTarget, activity, obj);
                 break;
         }
     }
@@ -176,7 +174,7 @@ public class QQPlatform extends AbsPlatform {
     // 分享文字
     private void shareText(int shareTarget, Activity activity, ShareObj shareMediaObj) {
         if (shareTarget == Target.SHARE_QQ_FRIENDS) {
-            shareTextByIntent(activity, shareMediaObj, SocialValues.QQ_PKG, SocialValues.QQ_FRIENDS_PAGE);
+            IntentShareUtil.shareText(activity, shareMediaObj, SocialValues.QQ_PKG, SocialValues.QQ_FRIENDS_PAGE, mOnShareListener);
         } else if (shareTarget == Target.SHARE_QQ_ZONE) {
             final Bundle params = new Bundle();
             params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzonePublish.PUBLISH_TO_QZONE_TYPE_PUBLISHMOOD);
@@ -263,7 +261,7 @@ public class QQPlatform extends AbsPlatform {
                 obj.setTargetUrl(obj.getMediaPath());
                 shareWeb(shareTarget, activity, obj);
             } else if (FileUtil.isExist(obj.getMediaPath())){
-                shareVideoByIntent(activity, obj, SocialValues.QQ_PKG, SocialValues.QQ_FRIENDS_PAGE);
+                IntentShareUtil.shareVideo(activity, obj, SocialValues.QQ_PKG, SocialValues.QQ_FRIENDS_PAGE, mOnShareListener);
             } else{
                 this.mIUiListenerWrap.onError(SocialError.make(SocialError.CODE_FILE_NOT_FOUND));
             }
