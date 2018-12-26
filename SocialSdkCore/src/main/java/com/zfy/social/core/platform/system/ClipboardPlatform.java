@@ -46,6 +46,7 @@ public class ClipboardPlatform extends SystemPlatform {
                 clipboardManager.setPrimaryClip(textCd);
             } else {
                 mOnShareListener.onFailure(SocialError.make("ClipboardManager null"));
+                return;
             }
             mOnShareListener.onSuccess();
         }

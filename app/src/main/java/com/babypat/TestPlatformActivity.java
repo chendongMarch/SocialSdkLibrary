@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.zfy.social.core.SocialOptions;
 import com.zfy.social.core.SocialSdk;
@@ -251,7 +252,11 @@ public class TestPlatformActivity extends AppCompatActivity {
             R.id.btn_share_music,
             R.id.btn_share_video,
             R.id.btn_clear_token,
-            R.id.clear_btn})
+            R.id.clear_btn,
+            R.id.btn_share_sms,
+            R.id.btn_share_clipboard,
+            R.id.btn_share_email,
+    })
     public void clickBtn(View view) {
         initObj();
         switch (view.getId()) {
@@ -299,6 +304,18 @@ public class TestPlatformActivity extends AppCompatActivity {
             case R.id.init_btn:
                 initSocialSDKSample();
                 break;
+            case R.id.btn_share_sms:
+                webObj.setSmsParams("13611301719", "说啥呢");
+                ShareManager.share(mActivity, Target.SHARE_SMS, webObj, mOnShareListener);
+                break;
+            case R.id.btn_share_clipboard:
+                webObj.setClipboardParams("复制的内容");
+                ShareManager.share(mActivity, Target.SHARE_CLIPBOARD, webObj, mOnShareListener);
+                break;
+            case R.id.btn_share_email:
+                webObj.setEMailParams("1101873740@qq.com", "主题", "内容");
+                ShareManager.share(mActivity, Target.SHARE_EMAIL, webObj, mOnShareListener);
+                break;
         }
     }
 
@@ -317,6 +334,7 @@ public class TestPlatformActivity extends AppCompatActivity {
                 .build();
         // 初始化
         SocialSdk.init(options);
+        Toast.makeText(this,"初始化成功",Toast.LENGTH_SHORT).show();
     }
 
 

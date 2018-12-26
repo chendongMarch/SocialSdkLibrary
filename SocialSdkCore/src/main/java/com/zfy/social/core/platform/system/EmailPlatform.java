@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.text.TextUtils;
 
 import com.zfy.social.core.common.Target;
+import com.zfy.social.core.exception.SocialError;
 import com.zfy.social.core.model.ShareObj;
 import com.zfy.social.core.platform.IPlatform;
 import com.zfy.social.core.platform.PlatformFactory;

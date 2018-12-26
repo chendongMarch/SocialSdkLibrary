@@ -124,6 +124,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="分享本地视频"/>
+            <Button
+                android:id="@+id/btn_share_sms"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="短信"/>
+            <Button
+                android:id="@+id/btn_share_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="邮件"/>
+            <Button
+                android:id="@+id/btn_share_clipboard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="粘贴板"/>
 
         </com.google.android.flexbox.FlexboxLayout>
     </LinearLayout>
