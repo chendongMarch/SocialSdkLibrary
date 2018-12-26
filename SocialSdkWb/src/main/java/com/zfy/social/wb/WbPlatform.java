@@ -169,7 +169,7 @@ public class WbPlatform extends AbsPlatform {
 
     @Override
     protected void dispatchShare(Activity activity, int shareTarget, ShareObj obj) {
-        switch (obj.getShareObjType()) {
+        switch (obj.getType()) {
             case ShareObj.SHARE_TYPE_OPEN_APP:
                 shareOpenApp(shareTarget, activity, obj);
                 break;
@@ -190,9 +190,6 @@ public class WbPlatform extends AbsPlatform {
                 break;
             case ShareObj.SHARE_TYPE_VIDEO:
                 shareVideo(shareTarget, activity, obj);
-                break;
-            case ShareObj.SHARE_TYPE_WX_MINI:
-                shareWeb(shareTarget, activity, obj);
                 break;
         }
     }

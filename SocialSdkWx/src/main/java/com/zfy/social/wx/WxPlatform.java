@@ -22,7 +22,6 @@ import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.zfy.social.core.SocialOptions;
 import com.zfy.social.core.SocialSdk;
-import com.zfy.social.core.common.SocialKeys;
 import com.zfy.social.core.common.SocialValues;
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.common.ThumbTask;
@@ -35,6 +34,7 @@ import com.zfy.social.core.platform.IPlatform;
 import com.zfy.social.core.platform.PlatformFactory;
 import com.zfy.social.core.util.BitmapUtil;
 import com.zfy.social.core.util.FileUtil;
+import com.zfy.social.core.util.IntentShareUtil;
 import com.zfy.social.core.util.SocialUtil;
 import com.zfy.social.wx.uikit.WxActionActivity;
 
@@ -124,7 +124,7 @@ public class WxPlatform extends AbsPlatform {
                     // 用户同意  authResp.country;  authResp.lang;  authResp.state;
                     SendAuth.Resp authResp = (SendAuth.Resp) resp;
                     String authCode = authResp.code;
-                    if (SocialSdk.getConfig().isOnlyAuthCode()) {
+                    if (SocialSdk.getConfig().isWxOnlyAuthCode()) {
                         listener.onSuccess(new LoginResult(Target.LOGIN_WX, authCode));
                     } else {
                         mWeChatLoginHelper.getAccessTokenByCode(authCode);
@@ -202,7 +202,11 @@ public class WxPlatform extends AbsPlatform {
 
     @Override
     protected void dispatchShare(Activity activity, int shareTarget, ShareObj obj) {
-        switch (obj.getShareObjType()) {
+        if (obj.isWxMini()) {
+            shareMiniProgram(shareTarget, activity, obj);
+            return;
+        }
+        switch (obj.getType()) {
             case ShareObj.SHARE_TYPE_OPEN_APP:
                 shareOpenApp(shareTarget, activity, obj);
                 break;
@@ -223,9 +227,6 @@ public class WxPlatform extends AbsPlatform {
                 break;
             case ShareObj.SHARE_TYPE_VIDEO:
                 shareVideo(shareTarget, activity, obj);
-                break;
-            case ShareObj.SHARE_TYPE_WX_MINI:
-                shareMiniProgram(shareTarget, activity, obj);
                 break;
         }
     }
@@ -346,7 +347,7 @@ public class WxPlatform extends AbsPlatform {
             if (FileUtil.isHttpPath(obj.getMediaPath())) {
                 shareWeb(shareTarget, activity, obj);
             } else if (FileUtil.isExist(obj.getMediaPath())) {
-                shareVideoByIntent(activity, obj, SocialValues.WECHAT_PKG, SocialValues.WX_FRIEND_PAGE);
+                IntentShareUtil.shareVideo(activity, obj, SocialValues.WECHAT_PKG, SocialValues.WX_FRIEND_PAGE, mOnShareListener);
             } else {
                 mOnShareListener.onFailure(SocialError.make(SocialError.CODE_FILE_NOT_FOUND));
             }
@@ -374,11 +375,11 @@ public class WxPlatform extends AbsPlatform {
             mOnShareListener.onFailure(SocialError.make(SocialError.CODE_PARAM_ERROR, "shareMiniProgram extra is null"));
             return;
         }
-        int type = extra.getInt(SocialKeys.KEY_WX_MINI_TYPE, -1);
-        String originId = extra.getString(SocialKeys.KEY_WX_MINI_ORIGIN_ID, "");
-        String pagePath = extra.getString(SocialKeys.KEY_WX_MINI_PATH, "");
+        int wxMiniType = obj.getWxMiniType();
+        String originId = obj.getWxMiniOriginId();
+        String pagePath = obj.getWxMiniPagePath();
 
-        if (type < 0 || SocialUtil.isAnyEmpty(originId, pagePath)) {
+        if (wxMiniType < 0 || SocialUtil.isAnyEmpty(originId, pagePath)) {
             mOnShareListener.onFailure(SocialError.make(SocialError.CODE_PARAM_ERROR,
                     "shareMiniProgram extra = " + extra.toString()));
             return;
@@ -389,7 +390,7 @@ public class WxPlatform extends AbsPlatform {
                     public void onSuccess(byte[] thumbData) {
                         WXMiniProgramObject miniProgramObj = new WXMiniProgramObject();
                         miniProgramObj.webpageUrl = obj.getTargetUrl();
-                        miniProgramObj.miniprogramType = type;
+                        miniProgramObj.miniprogramType = wxMiniType;
                         miniProgramObj.userName = originId; // 小程序原始id
                         miniProgramObj.path = pagePath; // 小程序页面路径
                         WXMediaMessage msg = new WXMediaMessage(miniProgramObj);

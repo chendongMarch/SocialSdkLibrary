@@ -30,7 +30,7 @@ public class ShareObjChecker {
     }
 
     public static boolean checkObjValid(ShareObj obj, int shareTarget) {
-        switch (obj.getShareObjType()) {
+        switch (obj.getType()) {
             // 文字分享，title,summary 必须有
             case ShareObj.SHARE_TYPE_TEXT: //
             {

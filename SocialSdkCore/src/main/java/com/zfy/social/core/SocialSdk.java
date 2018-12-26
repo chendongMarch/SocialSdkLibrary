@@ -10,6 +10,9 @@ import com.zfy.social.core.common.Target;
 import com.zfy.social.core.exception.SocialError;
 import com.zfy.social.core.platform.IPlatform;
 import com.zfy.social.core.platform.PlatformFactory;
+import com.zfy.social.core.platform.system.ClipboardPlatform;
+import com.zfy.social.core.platform.system.EmailPlatform;
+import com.zfy.social.core.platform.system.SmsPlatform;
 import com.zfy.social.core.util.SocialUtil;
 
 /**
@@ -38,6 +41,10 @@ public class SocialSdk {
         sSocialOptions = config;
         // 自动注册平台
         sPlatformFactories = new SparseArray<>();
+        // 系统平台
+        sPlatformFactories.append(Target.PLATFORM_EMAIL, new EmailPlatform.Factory());
+        sPlatformFactories.append(Target.PLATFORM_SMS, new SmsPlatform.Factory());
+        sPlatformFactories.append(Target.PLATFORM_CLIPBOARD, new ClipboardPlatform.Factory());
         if (sSocialOptions.isDdEnable()) {
             registerPlatform(Target.PLATFORM_DD, "com.zfy.social.dd.DDPlatform$Factory");
         }

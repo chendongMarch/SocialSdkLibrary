@@ -34,6 +34,14 @@ public class SocialError extends RuntimeException {
     private String msg;
     private Exception error;
 
+
+    public static SocialError make(String msg) {
+        SocialError error = new SocialError();
+        error.code = CODE_COMMON_ERROR;
+        error.msg = msg;
+        return error;
+    }
+
     public static SocialError make(int code) {
         SocialError error = new SocialError();
         error.code = code;

@@ -23,6 +23,7 @@ import com.zfy.social.core.platform.AbsPlatform;
 import com.zfy.social.core.platform.IPlatform;
 import com.zfy.social.core.platform.PlatformFactory;
 import com.zfy.social.core.util.FileUtil;
+import com.zfy.social.core.util.IntentShareUtil;
 import com.zfy.social.core.util.SocialUtil;
 import com.zfy.social.dd.uikit.DDActionActivity;
 
@@ -110,7 +111,7 @@ public class DDPlatform extends AbsPlatform {
 
     @Override
     protected void dispatchShare(Activity activity, int shareTarget, ShareObj obj) {
-        switch (obj.getShareObjType()) {
+        switch (obj.getType()) {
             case ShareObj.SHARE_TYPE_OPEN_APP:
                 mDdShareApi.openDDApp();
                 break;
@@ -131,9 +132,6 @@ public class DDPlatform extends AbsPlatform {
                 break;
             case ShareObj.SHARE_TYPE_VIDEO:
                 shareVideo(shareTarget, activity, obj);
-                break;
-            case ShareObj.SHARE_TYPE_WX_MINI:
-                shareWeb(shareTarget, activity, obj);
                 break;
         }
     }
@@ -199,7 +197,7 @@ public class DDPlatform extends AbsPlatform {
         if (FileUtil.isHttpPath(obj.getMediaPath())) {
             shareWeb(shareTarget, activity, obj);
         } else if (FileUtil.isExist(obj.getMediaPath())) {
-            shareVideoByIntent(activity, obj, SocialValues.DD_PKG, SocialValues.DD_FRIEND_PAGE);
+            IntentShareUtil.shareVideo(activity, obj, SocialValues.DD_PKG, SocialValues.DD_FRIEND_PAGE, mOnShareListener);
         } else {
             mOnShareListener.onFailure(SocialError.make(SocialError.CODE_FILE_NOT_FOUND));
         }

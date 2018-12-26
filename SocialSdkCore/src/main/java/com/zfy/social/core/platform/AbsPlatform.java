@@ -8,8 +8,8 @@ import android.text.TextUtils;
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.exception.SocialError;
 import com.zfy.social.core.listener.OnShareListener;
+import com.zfy.social.core.manager.GlobalPlatform;
 import com.zfy.social.core.model.ShareObj;
-import com.zfy.social.core.util.IntentShareUtil;
 
 /**
  * CreateAt : 2016/12/3
@@ -66,23 +66,14 @@ public abstract class AbsPlatform implements IPlatform {
     protected abstract void dispatchShare(Activity activity, int shareTarget, ShareObj obj);
 
 
-
-    protected void shareVideoByIntent(Activity activity, ShareObj obj, String pkg, String page) {
-        boolean result = IntentShareUtil.shareVideo(activity, obj.getMediaPath(), pkg, page);
-        if (result) {
-            this.mOnShareListener.onSuccess();
-        } else {
-            this.mOnShareListener.onFailure(SocialError.make(SocialError.CODE_SHARE_BY_INTENT_FAIL, "shareVideo by intent" + pkg + "  " + page + " failure"));
-        }
-    }
-
-    protected void shareTextByIntent(Activity activity, ShareObj obj, String pkg, String page) {
-        boolean result = IntentShareUtil.shareText(activity, obj.getTitle(), obj.getSummary(), pkg, page);
-        if (result) {
-            this.mOnShareListener.onSuccess();
-        } else {
-            this.mOnShareListener.onFailure(SocialError.make(SocialError.CODE_SHARE_BY_INTENT_FAIL, "shareText by intent" + pkg + "  " + page + " failure"));
-        }
+    @Override
+    public void actionShare(Activity activity, int shareTarget, ShareObj shareObj) {
+        Intent intent = new Intent(activity, getUIKitClazz());
+        intent.putExtra(GlobalPlatform.KEY_ACTION_TYPE, GlobalPlatform.ACTION_TYPE_SHARE);
+        intent.putExtra(GlobalPlatform.KEY_SHARE_MEDIA_OBJ, shareObj);
+        intent.putExtra(GlobalPlatform.KEY_SHARE_TARGET, shareTarget);
+        activity.startActivity(intent);
+        activity.overridePendingTransition(0, 0);
     }
 
 
@@ -105,5 +96,6 @@ public abstract class AbsPlatform implements IPlatform {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
     }
+
 
 }
