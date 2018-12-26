@@ -6,18 +6,17 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
 
 import com.zfy.social.core.SocialSdk;
-import com.zfy.social.core.common.SocialValues;
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.exception.SocialError;
 import com.zfy.social.core.listener.OnShareListener;
 import com.zfy.social.core.model.ShareObj;
 import com.zfy.social.core.model.ShareObjChecker;
 import com.zfy.social.core.platform.IPlatform;
+import com.zfy.social.core.platform.system.SystemPlatform;
 import com.zfy.social.core.util.FileUtil;
 import com.zfy.social.core.util.SocialUtil;
 
@@ -130,7 +129,17 @@ public class ShareManager {
             onShareListener.onFailure(SocialError.make(SocialError.CODE_NOT_INSTALL));
             return;
         }
-        platform.actionShare(activity, shareTarget, shareObj);
+        if (platform instanceof SystemPlatform) {
+            platform.initOnShareListener(sListener);
+            platform.share(activity, shareTarget, shareObj);
+        } else {
+            Intent intent = new Intent(activity, platform.getUIKitClazz());
+            intent.putExtra(GlobalPlatform.KEY_ACTION_TYPE, GlobalPlatform.ACTION_TYPE_SHARE);
+            intent.putExtra(GlobalPlatform.KEY_SHARE_MEDIA_OBJ, shareObj);
+            intent.putExtra(GlobalPlatform.KEY_SHARE_TARGET, shareTarget);
+            activity.startActivity(intent);
+            activity.overridePendingTransition(0, 0);
+        }
     }
 
     /**
@@ -161,8 +170,9 @@ public class ShareManager {
                 && activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
             SocialUtil.e(TAG, "没有获取到读存储卡的权限，这可能导致某些分享不能进行");
         }
-        if (GlobalPlatform.getPlatform() == null)
+        if (GlobalPlatform.getPlatform() == null) {
             return;
+        }
         GlobalPlatform.getPlatform().initOnShareListener(new FinishShareListener(activity));
         GlobalPlatform.getPlatform().share(activity, shareTarget, shareObj);
     }

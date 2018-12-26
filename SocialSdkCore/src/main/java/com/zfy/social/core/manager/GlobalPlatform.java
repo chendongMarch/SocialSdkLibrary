@@ -5,8 +5,9 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.zfy.social.core.SocialSdk;
-import com.zfy.social.core.platform.IPlatform;
 import com.zfy.social.core.common.Target;
+import com.zfy.social.core.platform.IPlatform;
+import com.zfy.social.core.uikit.BaseActionActivity;
 
 /**
  * CreateAt : 2017/5/19
@@ -54,8 +55,10 @@ public class GlobalPlatform {
             sIPlatform.recycle();
             sIPlatform = null;
         }
-        if (activity != null && !activity.isFinishing()) {
-            activity.finish();
+        if (activity != null) {
+            if (activity instanceof BaseActionActivity && !activity.isFinishing()) {
+                activity.finish();
+            }
         }
     }
 

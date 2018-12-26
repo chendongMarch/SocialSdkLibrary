@@ -46,8 +46,7 @@ public class SmsPlatform extends SystemPlatform {
                 mOnShareListener.onFailure(SocialError.make("手机号为空"));
                 return;
             }
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setDataAndType(Uri.parse("smsto:" + smsPhone), "vnd.android-dir/mms-sms");
+            Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + smsPhone));
             intent.putExtra("sms_body", smsBody);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             activity.startActivity(intent);

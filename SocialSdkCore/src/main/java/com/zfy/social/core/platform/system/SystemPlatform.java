@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 
 import com.zfy.social.core.listener.OnLoginListener;
-import com.zfy.social.core.model.ShareObj;
 import com.zfy.social.core.platform.AbsPlatform;
 
 /**
@@ -20,18 +19,13 @@ public abstract class SystemPlatform extends AbsPlatform {
     }
 
     @Override
-    public void actionShare(Activity activity, int shareTarget, ShareObj shareObj) {
-        dispatchShare(activity, shareTarget, shareObj);
-    }
-
-    @Override
     public Class getUIKitClazz() {
         return null;
     }
 
     @Override
     public boolean isInstall(Context context) {
-        return false;
+        return true;
     }
 
     @Override

@@ -179,7 +179,7 @@ public class SocialBuildConfig {
     public final String wxAppId = "${extension.wx.appId}";
     // 微信 secret 登录使用
     public final String wxAppSecret = "${extension.wx.appSecret}";
-    public final boolean wxOnlyAuthCode = "${extension.wx.onlyAuthCode}";
+    public final boolean wxOnlyAuthCode = ${extension.wx.onlyAuthCode};
     
     // 开启 QQ 平台
     public final boolean qqEnable = ${extension.qq.enable};

@@ -243,7 +243,7 @@ public class ShareObj implements Parcelable {
      * @param eMailSubject 设置邮件主题
      * @param eMailBody    邮件内容
      */
-    public void setMailParams(String eMailAddress, String eMailSubject, String eMailBody) {
+    public void setEMailParams(String eMailAddress, String eMailSubject, String eMailBody) {
         this.eMailAddress = eMailAddress;
         this.eMailSubject = eMailSubject;
         this.eMailBody = eMailBody;
@@ -378,104 +378,56 @@ public class ShareObj implements Parcelable {
         return wxMiniOriginId;
     }
 
-    public void setWxMiniOriginId(String wxMiniOriginId) {
-        this.wxMiniOriginId = wxMiniOriginId;
-    }
 
     public int getWxMiniType() {
         return wxMiniType;
     }
 
-    public void setWxMiniType(int wxMiniType) {
-        this.wxMiniType = wxMiniType;
-    }
 
     public String getWxMiniPagePath() {
         return wxMiniPagePath;
     }
 
-    public void setWxMiniPagePath(String wxMiniPagePath) {
-        this.wxMiniPagePath = wxMiniPagePath;
-    }
 
     public boolean isWxMini() {
         return isWxMini;
     }
 
-    public void setWxMini(boolean wxMini) {
-        isWxMini = wxMini;
-    }
 
     public String getSmsPhone() {
         return smsPhone;
-    }
-
-    public void setSmsPhone(String smsPhone) {
-        this.smsPhone = smsPhone;
     }
 
     public String getSmsBody() {
         return smsBody;
     }
 
-    public void setSmsBody(String smsBody) {
-        this.smsBody = smsBody;
-    }
-
     public boolean isSms() {
         return isSms;
-    }
-
-    public void setSms(boolean sms) {
-        isSms = sms;
     }
 
     public String geteMailAddress() {
         return eMailAddress;
     }
 
-    public void seteMailAddress(String eMailAddress) {
-        this.eMailAddress = eMailAddress;
-    }
-
     public String geteMailSubject() {
         return eMailSubject;
-    }
-
-    public void seteMailSubject(String eMailSubject) {
-        this.eMailSubject = eMailSubject;
     }
 
     public String geteMailBody() {
         return eMailBody;
     }
 
-    public void seteMailBody(String eMailBody) {
-        this.eMailBody = eMailBody;
-    }
-
     public boolean isEMail() {
         return isEMail;
-    }
-
-    public void setEMail(boolean EMail) {
-        isEMail = EMail;
     }
 
     public String getCopyContent() {
         return copyContent;
     }
 
-    public void setCopyContent(String copyContent) {
-        this.copyContent = copyContent;
-    }
-
     public boolean isClipboard() {
         return isClipboard;
-    }
-
-    public void setClipboard(boolean clipboard) {
-        isClipboard = clipboard;
     }
 
     @Override

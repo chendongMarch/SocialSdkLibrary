@@ -77,11 +77,4 @@ public interface IPlatform extends Recyclable {
      */
     void share(Activity activity, int shareTarget, ShareObj shareObj);
 
-    /**
-     * 触发分享
-     * @param activity 上下文
-     * @param shareTarget 目标
-     * @param shareObj 数据
-     */
-    void actionShare(Activity activity, @Target.ShareTarget int shareTarget, ShareObj shareObj);
 }
