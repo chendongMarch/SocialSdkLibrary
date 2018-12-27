@@ -22,3 +22,13 @@ uploadArchives {
         pom.version = "0.0.2"
     }
 }
+
+apply plugin: 'bintray-release'
+publish {
+    userOrg = 'zfy'
+    groupId = 'com.zfy.social'
+    artifactId = 'plugin'
+    publishVersion = '0.0.1'
+    desc = 'SocialSdkPlugin'
+    website = 'https://github.com/chendongMarch/SocialSdkLibrary'
+}
