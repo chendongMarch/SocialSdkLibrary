@@ -24,17 +24,19 @@ import bolts.Task;
  *
  * @author chendong
  */
-public class OpenApiShareHelper {
+class OpenApiShareHelper {
 
     private WbLoginHelper mWbLoginHelper;
     private OnShareListener mOnShareListener;
+    private int mTarget;
 
-    OpenApiShareHelper(WbLoginHelper wbLoginHelper, OnShareListener onShareListener) {
+    OpenApiShareHelper(WbLoginHelper wbLoginHelper, OnShareListener onShareListener, int target) {
         mWbLoginHelper = wbLoginHelper;
         mOnShareListener = onShareListener;
+        mTarget = target;
     }
 
-    public void post(Activity activity, final ShareObj obj) {
+    void post(Activity activity, final ShareObj obj) {
         mWbLoginHelper.justAuth(activity, new WbAuthListenerImpl() {
             @Override
             public void onSuccess(final Oauth2AccessToken token) {
@@ -49,7 +51,7 @@ public class OpenApiShareHelper {
                     } else {
                         JSONObject jsonObject = new JSONObject(task.getResult());
                         if (jsonObject.has("id") && jsonObject.get("id") != null) {
-                            mOnShareListener.onSuccess();
+                            mOnShareListener.onSuccess(mTarget);
                             return true;
                         } else {
                             throw SocialError.make(SocialError.CODE_PARSE_ERROR, "open api 分享失败 " + task.getResult());

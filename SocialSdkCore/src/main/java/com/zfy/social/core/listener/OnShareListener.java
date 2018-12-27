@@ -22,7 +22,7 @@ public interface OnShareListener {
      */
     ShareObj onPrepareInBackground(int shareTarget, ShareObj obj) throws Exception;
 
-    void onSuccess();
+    void onSuccess(int target);
 
     void onFailure(SocialError e);
 

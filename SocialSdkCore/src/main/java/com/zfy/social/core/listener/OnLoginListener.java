@@ -13,7 +13,7 @@ public interface OnLoginListener {
 
     void onStart();
 
-    void onSuccess(LoginResult loginResult);
+    void onSuccess(LoginResult result);
 
     void onCancel();
 

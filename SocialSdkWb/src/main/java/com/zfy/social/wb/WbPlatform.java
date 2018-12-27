@@ -62,8 +62,7 @@ public class WbPlatform extends AbsPlatform {
             String redirectUrl = config.getWbRedirectUrl();
             String scope = config.getWbScope();
             if (!SocialUtil.isAnyEmpty(appId, appName, redirectUrl, scope)) {
-                platform = new WbPlatform(context, appId, appName, redirectUrl, scope);
-                platform.setTarget(target);
+                platform = new WbPlatform(context, appId, appName, target, redirectUrl, scope);
             }
             return platform;
         }
@@ -74,8 +73,8 @@ public class WbPlatform extends AbsPlatform {
         }
     }
 
-    private WbPlatform(Context context, String appId, String appName, String redirectUrl, String scope) {
-        super(appId, appName);
+    private WbPlatform(Context context, String appId, String appName, int target, String redirectUrl, String scope) {
+        super(context, appId, appName, target);
         AuthInfo authInfo = new AuthInfo(context, appId, redirectUrl, scope);
         WbSdk.install(context, authInfo);
     }
@@ -124,7 +123,7 @@ public class WbPlatform extends AbsPlatform {
     // 延迟创建 openApi 辅助
     private OpenApiShareHelper makeOpenApiShareHelper(Activity activity) {
         if (mOpenApiShareHelper == null) {
-            mOpenApiShareHelper = new OpenApiShareHelper(makeLoginHelper(activity), mOnShareListener);
+            mOpenApiShareHelper = new OpenApiShareHelper(makeLoginHelper(activity), mOnShareListener, mTarget);
         }
         return mOpenApiShareHelper;
     }
@@ -148,7 +147,7 @@ public class WbPlatform extends AbsPlatform {
             switch ((int) resp) {
                 case WBConstants.ErrorCode.ERR_OK:
                     // 分享成功
-                    mOnShareListener.onSuccess();
+                    mOnShareListener.onSuccess(mTarget);
                     break;
                 case WBConstants.ErrorCode.ERR_CANCEL:
                     // 分享取消
@@ -198,7 +197,7 @@ public class WbPlatform extends AbsPlatform {
     private void shareOpenApp(int shareTarget, Activity activity, ShareObj obj) {
         boolean rst = SocialUtil.openApp(activity, SocialValues.SINA_PKG);
         if (rst) {
-            mOnShareListener.onSuccess();
+            mOnShareListener.onSuccess(mTarget);
         } else {
             mOnShareListener.onFailure(SocialError.make(SocialError.CODE_CANNOT_OPEN_ERROR, "open app error"));
         }

@@ -84,19 +84,19 @@ public class IntentShareUtil {
         }
     }
 
-    public static void shareVideo(Context context, ShareObj obj, String pkg, String page, OnShareListener listener) {
+    public static void shareVideo(Context context, ShareObj obj, String pkg, String page, OnShareListener listener,int target) {
         boolean result = IntentShareUtil.shareVideo(context, obj.getMediaPath(), pkg, page);
         if (result) {
-            listener.onSuccess();
+            listener.onSuccess(target);
         } else {
             listener.onFailure(SocialError.make(SocialError.CODE_SHARE_BY_INTENT_FAIL, "shareVideo by intent" + pkg + "  " + page + " failure"));
         }
     }
 
-    public static void shareText(Context context, ShareObj obj, String pkg, String page, OnShareListener listener) {
+    public static void shareText(Context context, ShareObj obj, String pkg, String page, OnShareListener listener,int target) {
         boolean result = IntentShareUtil.shareText(context, obj.getTitle(), obj.getSummary(), pkg, page);
         if (result) {
-            listener.onSuccess();
+            listener.onSuccess(target);
         } else {
             listener.onFailure(SocialError.make(SocialError.CODE_SHARE_BY_INTENT_FAIL, "shareText by intent" + pkg + "  " + page + " failure"));
         }

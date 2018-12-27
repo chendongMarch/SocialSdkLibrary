@@ -17,7 +17,7 @@ import com.zfy.social.core.model.token.AccessToken;
 import com.zfy.social.core.util.JsonUtil;
 import com.zfy.social.core.util.SocialUtil;
 import com.zfy.social.wb.model.SinaAccessToken;
-import com.zfy.social.wb.model.SinaUser;
+import com.zfy.social.wb.model.WbUser;
 
 /**
  * CreateAt : 2016/12/5
@@ -30,13 +30,13 @@ class WbLoginHelper implements Recyclable {
 
     public static final String TAG = WbLoginHelper.class.getSimpleName();
 
-    private int             mLoginType;
+    private int mLoginTarget;
     private OnLoginListener mOnLoginListener;
     private SsoHandler      mSsoHandler;
 
     WbLoginHelper(Activity context) {
         this.mSsoHandler = new SsoHandler(context);
-        this.mLoginType = Target.LOGIN_WB;
+        this.mLoginTarget = Target.LOGIN_WB;
     }
 
     /**
@@ -45,11 +45,11 @@ class WbLoginHelper implements Recyclable {
      * @param token token
      */
     private void getUserInfo(final Oauth2AccessToken token) {
-        JsonUtil.startJsonRequest("https://api.weibo.com/2/users/show.json?access_token=" + token.getToken() + "&uid=" + token.getUid(), SinaUser.class, new JsonUtil.Callback<SinaUser>() {
+        JsonUtil.startJsonRequest("https://api.weibo.com/2/users/show.json?access_token=" + token.getToken() + "&uid=" + token.getUid(), WbUser.class, new JsonUtil.Callback<WbUser>() {
             @Override
-            public void onSuccess(@NonNull SinaUser user) {
+            public void onSuccess(@NonNull WbUser user) {
                 SocialUtil.e(TAG, JsonUtil.getObject2Json(user));
-                mOnLoginListener.onSuccess(new LoginResult(mLoginType, user, new SinaAccessToken(token)));
+                mOnLoginListener.onSuccess(new LoginResult(mLoginTarget, user, new SinaAccessToken(token)));
             }
 
             @Override

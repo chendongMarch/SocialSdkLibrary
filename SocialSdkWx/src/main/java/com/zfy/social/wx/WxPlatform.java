@@ -66,7 +66,7 @@ public class WxPlatform extends AbsPlatform {
             IPlatform platform = null;
             SocialOptions config = SocialSdk.getConfig();
             if (!SocialUtil.isAnyEmpty(config.getWxAppId(), config.getWxSecretKey())) {
-                platform = new WxPlatform(context, config.getWxAppId(), config.getWxSecretKey(), config.getAppName());
+                platform = new WxPlatform(context, config.getWxAppId(), config.getAppName(), target, config.getWxSecretKey());
             }
             return platform;
         }
@@ -77,8 +77,8 @@ public class WxPlatform extends AbsPlatform {
         }
     }
 
-    WxPlatform(Context context, String appId, String wxSecret, String appName) {
-        super(appId, appName);
+    private WxPlatform(Context context, String appId, String appName, int target, String wxSecret) {
+        super(context, appId, appName, target);
         this.mWxSecret = wxSecret;
         mWxApi = WXAPIFactory.createWXAPI(context, appId, true);
         mWxApi.registerApp(appId);
@@ -149,7 +149,7 @@ public class WxPlatform extends AbsPlatform {
             switch (baseResp.errCode) {
                 case BaseResp.ErrCode.ERR_OK:
                     // 分享成功
-                    mOnShareListener.onSuccess();
+                    mOnShareListener.onSuccess(mTarget);
                     break;
                 case BaseResp.ErrCode.ERR_USER_CANCEL:
                     // 分享取消
@@ -237,7 +237,7 @@ public class WxPlatform extends AbsPlatform {
     private void shareOpenApp(int shareTarget, Activity activity, ShareObj obj) {
         boolean rst = mWxApi.openWXApp();
         if (rst) {
-            mOnShareListener.onSuccess();
+            mOnShareListener.onSuccess(shareTarget);
         } else {
             mOnShareListener.onFailure(SocialError.make(SocialError.CODE_CANNOT_OPEN_ERROR));
         }
@@ -349,7 +349,7 @@ public class WxPlatform extends AbsPlatform {
             if (FileUtil.isHttpPath(obj.getMediaPath())) {
                 shareWeb(shareTarget, activity, obj);
             } else if (FileUtil.isExist(obj.getMediaPath())) {
-                IntentShareUtil.shareVideo(activity, obj, SocialValues.WECHAT_PKG, SocialValues.WX_FRIEND_PAGE, mOnShareListener);
+                IntentShareUtil.shareVideo(activity, obj, SocialValues.WECHAT_PKG, SocialValues.WX_FRIEND_PAGE, mOnShareListener, mTarget);
             } else {
                 mOnShareListener.onFailure(SocialError.make(SocialError.CODE_FILE_NOT_FOUND));
             }

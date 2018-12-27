@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.zfy.social.core.SocialOptions;
 import com.zfy.social.core.SocialSdk;
+import com.zfy.social.core.common.SocialValues;
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.exception.SocialError;
 import com.zfy.social.core.listener.OnLoginListener;
@@ -24,7 +25,11 @@ import com.zfy.social.core.manager.LoginManager;
 import com.zfy.social.core.manager.ShareManager;
 import com.zfy.social.core.model.LoginResult;
 import com.zfy.social.core.model.ShareObj;
+import com.zfy.social.core.model.user.SocialUser;
 import com.zfy.social.core.util.SocialUtil;
+import com.zfy.social.qq.model.QQUser;
+import com.zfy.social.wb.model.WbUser;
+import com.zfy.social.wx.model.WxUser;
 
 import java.io.File;
 
@@ -109,7 +114,7 @@ public class TestPlatformActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onSuccess() {
+            public void onSuccess(int target) {
                 showMsg("分享成功");
             }
 
@@ -138,9 +143,10 @@ public class TestPlatformActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onSuccess(LoginResult loginResult) {
-                Log.e(TAG, loginResult.toString());
-                updateDisplay(loginResult.toString());
+            public void onSuccess(LoginResult result) {
+                Log.e(TAG, result.toString());
+                updateDisplay(result.toString());
+
             }
 
             @Override
@@ -173,6 +179,36 @@ public class TestPlatformActivity extends AppCompatActivity {
         videoLocalObj = ShareObj.buildVideoObj("分享本地视频", "summary", localImagePath, targetUrl, localVideoPath, 0);
 
         musicObj = ShareObj.buildMusicObj("分享音乐", "summary", localImagePath, targetUrl, netMusicPath, 10);
+
+
+        OnShareListener listener = new OnShareListener() {
+            @Override
+            public void onStart(int shareTarget, ShareObj obj) {
+                // 分享开始
+            }
+
+            @Override
+            public ShareObj onPrepareInBackground(int shareTarget, ShareObj obj) throws Exception {
+                // 重写分享对象，例如给分享出去的图片加水印等
+                return null;
+            }
+
+            @Override
+            public void onSuccess(int target) {
+                // 分享成功
+            }
+
+            @Override
+            public void onFailure(SocialError e) {
+                // 分享失败
+            }
+
+            @Override
+            public void onCancel() {
+                // 分享被取消
+            }
+        };
+
     }
 
     public void onInitViews() {
@@ -339,6 +375,7 @@ public class TestPlatformActivity extends AppCompatActivity {
                 break;
             case R.id.btn_share_email:
                 webObj.setEMailParams("1101873740@qq.com", "主题", "内容");
+                webObj.setWxMiniParams("51299u9**q31",SocialValues.WX_MINI_TYPE_RELEASE,"/page/path");
                 ShareManager.share(mActivity, Target.SHARE_EMAIL, webObj, mOnShareListener);
                 break;
         }
