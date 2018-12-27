@@ -1,0 +1,51 @@
+// 获取 versionCode
+static def gitVersionCode() {
+    def cmd = 'git rev-list HEAD --count'
+    if (cmd.execute().text.trim() == "") {
+        return 10
+    }
+    return cmd.execute().text.trim().toInteger()
+}
+
+// 获取 versionName
+static def gitVersionName() {
+    def cmd = 'git describe --tags'
+    def version = cmd.execute().text.trim()
+
+    def pattern = "-(\\d+)-g"
+    def matcher = version =~ pattern
+
+    if (matcher) {
+        version = version.substring(0, matcher.start())
+    }
+    return version
+}
+
+// 通过taskName判断当前操作是否是在打release包
+def checkRelease() {
+    def runTasks = gradle.startParameter.taskNames
+    for (String task : runTasks) {
+        if (task.contains("assemble") && task.contains("release")) {
+            return true
+        }
+    }
+    return false
+}
+
+def checkTinkerBuild() {
+    def runTasks = gradle.startParameter.taskNames
+    for (String task : runTasks) {
+        if (task.contains("Tinker") || task.contains("tinker")) {
+            return true
+        }
+    }
+    return false
+}
+
+
+ext {
+    gitVersionName = this.&gitVersionName
+    gitVersionCode = this.&gitVersionCode
+    isRelease = checkRelease()
+    isTinkerBuild = checkTinkerBuild()
+}

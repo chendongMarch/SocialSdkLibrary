@@ -1,0 +1,73 @@
+apply plugin: 'com.android.application'
+apply from: '../scripts/utils.gradle'
+
+android {
+    compileSdkVersion versions.compileSdkVersion
+    defaultConfig {
+        minSdkVersion versions.minSdkVersion
+        targetSdkVersion versions.targetSdkVersion
+        versionCode gitVersionCode()
+        versionName gitVersionName()
+        multiDexEnabled true
+    }
+    // data binding
+    dataBinding {
+        enabled false
+    }
+
+    android {
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
+        }
+    }
+
+    sourceSets {
+        main {
+            res.srcDirs = ['src/main/res']
+            jniLibs.srcDirs = ['src/main/jniLibs']
+        }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+}
+
+// 整合打出包的路径
+android.applicationVariants.all { variant ->
+    def buildTypeName = variant.buildType.name
+    def versionName = variant.mergedFlavor.versionName
+    def versionCode = variant.mergedFlavor.versionCode
+    variant.outputs.all { output ->
+        outputFileName = "app_${versionName}_${versionCode}_${buildTypeName}.apk"
+    }
+}
+
+def copyApk() {
+    def dir = new File(getProjectDir().getPath() + "/build/outputs/apk/")
+    def files = dir.listFiles()
+    files.each { File file ->
+        def apkDir = rootDir.getAbsolutePath() + File.separator + 'products'
+        copy {
+            from file.getAbsolutePath()
+            into apkDir + File.separator + file.name
+        }
+    }
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name.equalsIgnoreCase('assemblerelease')
+            || task.name.equalsIgnoreCase('assembledebug')
+            || task.name.equalsIgnoreCase('assemblefortest')) {
+        task.doLast {
+            copyApk()
+        }
+    }
+}
+
+// add dependencies for app
+dependencies {
+
+}

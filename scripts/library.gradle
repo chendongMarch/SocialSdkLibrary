@@ -1,0 +1,31 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion versions.compileSdkVersion
+    defaultConfig {
+        minSdkVersion versions.minSdkVersion
+    }
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+    }
+    dataBinding {
+        enabled false
+    }
+    lintOptions {
+        abortOnError false
+    }
+    sourceSets {
+        main {
+            res.srcDirs = ['src/main/res']
+            jniLibs.srcDirs = ['src/main/jniLibs']
+        }
+    }
+}
+
+dependencies {
+//    add('api', libs.kotlin, {})
+//    add('annotationProcessor', libs.arouterCompiler, {})
+//    add('annotationProcessor', libs.butterknifeProcessor, {})
+//    add('annotationProcessor', lifecycle.compiler, {})
+}
