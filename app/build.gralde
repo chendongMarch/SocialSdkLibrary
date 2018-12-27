@@ -1,96 +1,4 @@
 
-# SocialSDK
-
-![](http://cdn1.showjoy.com/shop/images/20180828/MLI1YQGFQLZBRO3VKH6U1535432744013.png)
-
-<div style="width:100%;display: flex;height:30px;">
-
-<img  style="margin-right:20px;"  src="https://img.shields.io/circleci/project/github/badges/shields/master.svg"/>
-
-<img  style="margin-right:20px;"  src="https://img.shields.io/badge/version-0.0.3-blue.svg?maxAge=2592000"/>
-
-<img style="margin-right:20px;"  src="https://img.shields.io/github/stars/chendongMarch/SocialSdkLibrary.svg"/>
-
-<img  style="margin-right:20px;"  src="https://img.shields.io/github/forks/chendongMarch/SocialSdkLibrary.svg"/>
-
-<img style="margin-right:20px;" src="https://badge.juejin.im/entry/5a793a405188257a82111092/likes.svg?style=flat-square"/>
-
-</div>
-
-使用 **微博**、**QQ**、**微信**、**钉钉** 原生 `SDK` 接入，提供这些平台的登录、分享功能支持。针对业务逻辑对各个平台的接口进行封装，对外提供一致的表现，在减轻接入压力的同时，又能获得原生 `SDK` 最大的灵活性。
-
-项目地址 : [GitHub - SocialSdkLibrary](https://github.com/chendongMarch/SocialSdkLibrary)
-
-博客地址 ：[快速接入微信微博QQ钉钉原生登录分享](http://zfyx.coding.me/article/3067853428/)
-
-
----
-
-🎉  2018.12.27 完成 `gradle` 插件，拆分平台，自动化依赖，一个新台阶 🐶
-
-🎉  2018.12.21 已经225颗 🌟，着手准备拆分成不同平台库，方便灵活接入 ⛽️
-
-🎉  2018.9.26 项目获得了第202颗 🌟，感谢新同事补星 2 个 😄
-
-🎉  2018.6.7 项目获得了第100颗 🌟，最后一颗是我问同事要的 🤦‍
-
-🎉  2018.5.12 修复内存问题、功能扩展 [稳定版本 1.1.0](https://github.com/chendongMarch/SocialSdkLibrary/releases/tag/1.1.0) ❤️
-
-🎉  2018.2.12 支持钉钉分享 🆕
-
-🎉  2017.12.12 对代码进行简单重构并测试  [稳定版本 1.0.0](https://github.com/chendongMarch/SocialSdkLibrary/releases/tag/1.0.0) ❤️
-
-
-<!--more-->
-
-## 优势
-
-🔥 开源：没有彩蛋，没有彩蛋，没有彩蛋；
-
-🔥 简单：只需要关注登录、分享管理类和一个数据结构对象即可，不需要再关注平台的差异；
-
-🔥 轻量：仅包含三方 `SDK` 和一个简单的异步框架(38k)，网络请求、`JSON` 解析从外部注入，减少多余的依赖，保证与宿主项目高度统一；
-
-🔥 功能性：面向需求开发设计：
-
-- 在分享前可统一重写数据对象，用来做分享的切面，支持图片加水印等类似需求；
-- 支持短信、邮件、粘贴板等系统分享平台；
-
-🔥 兼容性：
-
-- 为多个平台提供外观一致的分享接口，若不支持，使用 `web` 分享兼容；
-- 支持直接使用网络图片分享，内置自动下载功能；
-- 使用 `Intent` 兼容不支持的数据模式，如支持本地视频分享，`qq` 的纯文字分享等等；
-
-
-## 开始接入
-
-STEP1: 添加插件依赖路径
-
-> project/build.gradle
-
-```js
-buildscript {
-    repositories {
-        maven { url "https://dl.bintray.com/zfy/maven" }
-    }
-    dependencies {
-        // 查看文初最新版本
-        classpath 'com.zfy.social:plugin:0.0.2'
-    }
-}
-
-allprojects {
-    repositories {
-        maven { url "https://dl.bintray.com/zfy/maven" }
-    }
-}
-```
-
-STEP2: 配置参数
-
-> app/build.gralde
-
 ```js
 // 引用插件
 apply plugin: 'com.zfy.social.plugin'
@@ -123,15 +31,26 @@ social {
 STEP3：初始化
 
 ```java
-private void initSocialSDK() {
-    SocialOptions options = new SocialOptions.Builder(this)
-            // 调试模式，开启 log 输出
-            .debug(true)
-            // 加载缩略图失败时，降级使用资源图
-            .failImgRes(R.mipmap.ic_launcher_new)
-            // 添加自定义的 json 解析
-            .jsonAdapter(new GsonJsonAdapter())
-            // 请求处理类，如果使用了微博的 openApi 分享，这个是必须的
+private void initSocialbuil)     repositoOp        maven { uew    }
+    dependencies {
+        // 查看文初最新��    ��        // 查看          classpath 'com.zfy.social: �    }
+}
+
+allprojects {
+    repositories {
+    �
+}
+
+a         repositoes        maven { uch    }
+}
+```
+
+STEP2: 配置参数
+
+> app/build.gralde
+
+`  }
+``     .jsonAdapter(new GsonJson``     .jsonAdapt      // 请求处理类，如果使用了微博的 openApi 分享，这个是必须的
             .requestAdapter(new OkHttpRequestAdapter())
             // token 失效时间，单位小时，默认马上失效
             .tokenExpiresHours(24)
