@@ -33,18 +33,18 @@ class QQLoginHelper {
 
     public static final String TAG = QQLoginHelper.class.getSimpleName();
 
-    private int loginType;
+    private int mLoginTarget;
     private Tencent mTencentApi;
     private WeakReference<Activity> mActivityRef;
-    private OnLoginListener onLoginListener;
-    private LoginUiListener loginUiListener;
+    private OnLoginListener mOnLoginListener;
+    private LoginUiListener mUiListener;
 
 
     QQLoginHelper(Activity activity, Tencent mTencentApi, OnLoginListener onQQLoginListener) {
         this.mActivityRef = new WeakReference<>(activity);
         this.mTencentApi = mTencentApi;
-        this.onLoginListener = onQQLoginListener;
-        this.loginType = Target.LOGIN_QQ;
+        this.mOnLoginListener = onQQLoginListener;
+        this.mLoginTarget = Target.LOGIN_QQ;
     }
 
     private Context getContext() {
@@ -52,29 +52,29 @@ class QQLoginHelper {
     }
 
     public QQAccessToken getToken() {
-        return AccessToken.getToken(getContext(), AccessToken.QQ_TOKEN_KEY, QQAccessToken.class);
+        return AccessToken.getToken(getContext(), mLoginTarget, QQAccessToken.class);
     }
 
     // 接受登录结果
     void handleResultData(Intent data) {
-        Tencent.handleResultData(data, this.loginUiListener);
+        Tencent.handleResultData(data, this.mUiListener);
     }
 
     // 登录
     public void login() {
         QQAccessToken qqToken = getToken();
         if (qqToken != null) {
-            mTencentApi.setAccessToken(qqToken.getAccess_token(), qqToken.getExpires_in() + "");
+            mTencentApi.setAccessToken(qqToken.getAccess_token(), String.valueOf(qqToken.getExpires_in()));
             mTencentApi.setOpenId(qqToken.getOpenid());
             if (mTencentApi.isSessionValid()) {
                 getUserInfo(qqToken);
             } else {
-                loginUiListener = new LoginUiListener();
-                mTencentApi.login(mActivityRef.get(), "all", loginUiListener);
+                mUiListener = new LoginUiListener();
+                mTencentApi.login(mActivityRef.get(), "all", mUiListener);
             }
         } else {
-            loginUiListener = new LoginUiListener();
-            mTencentApi.login(mActivityRef.get(), "all", loginUiListener);
+            mUiListener = new LoginUiListener();
+            mTencentApi.login(mActivityRef.get(), "all", mUiListener);
         }
     }
 
@@ -86,11 +86,11 @@ class QQLoginHelper {
             QQAccessToken qqToken = JsonUtil.getObject(jsonResponse.toString(), QQAccessToken.class);
             SocialUtil.e(TAG, "获取到 qq token = " + qqToken);
             if (qqToken == null) {
-                onLoginListener.onFailure(SocialError.make(SocialError.CODE_PARSE_ERROR, TAG + "#LoginUiListener#qq token is null, data = " + qqToken));
+                mOnLoginListener.onFailure(SocialError.make(SocialError.CODE_PARSE_ERROR, TAG + "#LoginUiListener#qq token is null, data = " + qqToken));
                 return;
             }
             // 保存token
-            AccessToken.saveToken(getContext(), AccessToken.QQ_TOKEN_KEY, qqToken);
+            AccessToken.saveToken(getContext(), mLoginTarget, qqToken);
             mTencentApi.setAccessToken(qqToken.getAccess_token(), qqToken.getExpires_in() + "");
             mTencentApi.setOpenId(qqToken.getOpenid());
             getUserInfo(qqToken);
@@ -99,12 +99,12 @@ class QQLoginHelper {
 
         @Override
         public void onError(UiError e) {
-            onLoginListener.onFailure(SocialError.make(SocialError.CODE_SDK_ERROR, TAG + "#LoginUiListener#获取用户信息失败 " + QQPlatform.parseUiError(e)));
+            mOnLoginListener.onFailure(SocialError.make(SocialError.CODE_SDK_ERROR, TAG + "#LoginUiListener#获取用户信息失败 " + QQPlatform.parseUiError(e)));
         }
 
         @Override
         public void onCancel() {
-            onLoginListener.onCancel();
+            mOnLoginListener.onCancel();
         }
     }
 
@@ -116,25 +116,25 @@ class QQLoginHelper {
             public void onComplete(Object object) {
                 QQUser qqUserInfo = JsonUtil.getObject(object.toString(), QQUser.class);
                 if (qqUserInfo == null) {
-                    if (onLoginListener != null) {
-                        onLoginListener.onFailure(SocialError.make(SocialError.CODE_PARSE_ERROR, TAG + "#getUserInfo#解析 qq user 错误, data = " + object.toString()));
+                    if (mOnLoginListener != null) {
+                        mOnLoginListener.onFailure(SocialError.make(SocialError.CODE_PARSE_ERROR, TAG + "#getUserInfo#解析 qq user 错误, data = " + object.toString()));
                     }
                 } else {
                     qqUserInfo.setOpenId(mTencentApi.getOpenId());
-                    if (onLoginListener != null) {
-                        onLoginListener.onSuccess(new LoginResult(loginType, qqUserInfo, qqToken));
+                    if (mOnLoginListener != null) {
+                        mOnLoginListener.onSuccess(new LoginResult(mLoginTarget, qqUserInfo, qqToken));
                     }
                 }
             }
 
             @Override
             public void onError(UiError e) {
-                onLoginListener.onFailure(SocialError.make(SocialError.CODE_SDK_ERROR, TAG + "#getUserInfo#qq获取用户信息失败  " + QQPlatform.parseUiError(e)));
+                mOnLoginListener.onFailure(SocialError.make(SocialError.CODE_SDK_ERROR, TAG + "#getUserInfo#qq获取用户信息失败  " + QQPlatform.parseUiError(e)));
             }
 
             @Override
             public void onCancel() {
-                onLoginListener.onCancel();
+                mOnLoginListener.onCancel();
             }
 
         });

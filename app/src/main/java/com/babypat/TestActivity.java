@@ -14,6 +14,9 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.babypat.adapter.GsonJsonAdapter;
+import com.babypat.adapter.OkHttpRequestAdapter;
+import com.babypat.platform.HuaweiPlatform;
 import com.zfy.social.core.SocialOptions;
 import com.zfy.social.core.SocialSdk;
 import com.zfy.social.core.common.SocialValues;
@@ -25,11 +28,7 @@ import com.zfy.social.core.manager.LoginManager;
 import com.zfy.social.core.manager.ShareManager;
 import com.zfy.social.core.model.LoginResult;
 import com.zfy.social.core.model.ShareObj;
-import com.zfy.social.core.model.user.SocialUser;
 import com.zfy.social.core.util.SocialUtil;
-import com.zfy.social.qq.model.QQUser;
-import com.zfy.social.wb.model.WbUser;
-import com.zfy.social.wx.model.WxUser;
 
 import java.io.File;
 
@@ -37,14 +36,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class TestPlatformActivity extends AppCompatActivity {
+public class TestActivity extends AppCompatActivity {
 
-    public static final String TAG = TestPlatformActivity.class.getSimpleName();
+    public static final String TAG = TestActivity.class.getSimpleName();
 
     @BindView(R.id.switch_btn) Switch mSwitchBtn;
     @BindView(R.id.tv_info_display) TextView mInfoTv;
     @BindView(R.id.tab_ly) TabLayout mTabLayout;
-    @BindView(R.id.sv_content) ScrollView mScrollView;
 
     private String localImagePath;
     private String netVideoPath;
@@ -79,10 +77,6 @@ public class TestPlatformActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         onInitDatas();
         onInitViews();
-    }
-
-    public void log(Object o) {
-        Log.e("TestPlatformActivity", o.toString());
     }
 
     public void showMsg(String msg) {
@@ -311,6 +305,7 @@ public class TestPlatformActivity extends AppCompatActivity {
             R.id.btn_share_clipboard,
             R.id.btn_share_email,
             R.id.btn_share_net_img,
+            R.id.huawei_btn,
     })
     public void clickBtn(View view) {
         if (!isInit) {
@@ -319,6 +314,9 @@ public class TestPlatformActivity extends AppCompatActivity {
         }
         initObj();
         switch (view.getId()) {
+            case R.id.huawei_btn:
+                LoginManager.login(mActivity, HuaweiPlatform.LOGIN_HUAWEI, mOnLoginListener);
+                break;
             case R.id.clear_btn:
                 mInfoTv.setText("");
                 break;
@@ -396,6 +394,7 @@ public class TestPlatformActivity extends AppCompatActivity {
                 .build();
         // 初始化
         SocialSdk.init(options);
+        SocialSdk.addPlatform(new HuaweiPlatform.Factory());
         Toast.makeText(this,"初始化成功",Toast.LENGTH_SHORT).show();
     }
 
@@ -441,8 +440,6 @@ public class TestPlatformActivity extends AppCompatActivity {
         String trim = mInfoTv.getText().toString().trim();
         String result = trim + "\n\n" + mPlatform[clickPos] + (mSwitchBtn.isChecked() ? "空间" : "") + "==============>\n" + msg + "\n";
         mInfoTv.setText(result);
-        mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
-
         SocialUtil.e(TAG, msg);
     }
 

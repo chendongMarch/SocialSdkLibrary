@@ -72,8 +72,21 @@ public class WxPlatform extends AbsPlatform {
         }
 
         @Override
-        public int getTarget() {
+        public int getPlatformTarget() {
             return Target.PLATFORM_WX;
+        }
+
+
+        @Override
+        public boolean checkShareTarget(int shareTarget) {
+            return shareTarget == Target.SHARE_WX_FAVORITE
+                    || shareTarget == Target.SHARE_WX_FRIENDS
+                    || shareTarget == Target.SHARE_WX_ZONE;
+        }
+
+        @Override
+        public boolean checkLoginTarget(int loginTarget) {
+            return loginTarget == Target.LOGIN_WX;
         }
     }
 

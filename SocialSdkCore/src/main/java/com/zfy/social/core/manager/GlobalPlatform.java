@@ -3,10 +3,12 @@ package com.zfy.social.core.manager;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.SparseArray;
 
 import com.zfy.social.core.SocialSdk;
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.platform.IPlatform;
+import com.zfy.social.core.platform.PlatformFactory;
 import com.zfy.social.core.uikit.BaseActionActivity;
 
 /**
@@ -35,7 +37,7 @@ public class GlobalPlatform {
         if (SocialSdk.getConfig() == null) {
             throw new IllegalArgumentException(Target.toDesc(target) + " SocialSdk.init() request");
         }
-        IPlatform platform = SocialSdk.getPlatform(context, target);
+        IPlatform platform = getPlatform(context, target);
         if (platform == null) {
             throw new IllegalArgumentException(Target.toDesc(target) + "  创建platform失败，请检查参数 " + SocialSdk.getConfig().toString());
         }
@@ -46,6 +48,23 @@ public class GlobalPlatform {
     // 获取当前持有的 platform
     public static IPlatform getPlatform() {
         return sIPlatform;
+    }
+
+
+    private static IPlatform getPlatform(Context context, int target) {
+        PlatformFactory platformFactory = null;
+        SparseArray<PlatformFactory> factories = SocialSdk.getPlatformFactories();
+        for (int i = 0; i < factories.size(); i++) {
+            PlatformFactory factory = factories.valueAt(i);
+            if (factory.checkLoginTarget(target) || factory.checkShareTarget(target)) {
+                platformFactory = factory;
+                break;
+            }
+        }
+        if (platformFactory != null) {
+            return platformFactory.create(context, target);
+        }
+        return null;
     }
 
     // 释放资源

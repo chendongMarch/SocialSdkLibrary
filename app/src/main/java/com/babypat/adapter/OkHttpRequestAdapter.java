@@ -1,4 +1,4 @@
-package com.babypat;
+package com.babypat.adapter;
 
 import android.text.TextUtils;
 

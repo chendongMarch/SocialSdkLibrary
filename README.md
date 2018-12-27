@@ -65,10 +65,16 @@ STEP1: 添加插件依赖路径
 ```js
 buildscript {
     repositories {
-        jcenter()
+        maven { url "https://dl.bintray.com/zfy/maven" }
     }
     dependencies {
         classpath 'com.zfy.social:plugin:0.0.2'
+    }
+}
+
+allprojects {
+    repositories {
+        maven { url "https://dl.bintray.com/zfy/maven" }
     }
 }
 ```

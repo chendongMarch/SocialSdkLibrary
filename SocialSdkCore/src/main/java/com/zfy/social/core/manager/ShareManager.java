@@ -11,7 +11,6 @@ import com.zfy.social.core.exception.SocialError;
 import com.zfy.social.core.listener.OnShareListener;
 import com.zfy.social.core.model.ShareObj;
 import com.zfy.social.core.platform.IPlatform;
-import com.zfy.social.core.platform.system.SystemPlatform;
 import com.zfy.social.core.util.FileUtil;
 import com.zfy.social.core.util.ShareObjCheckUtil;
 import com.zfy.social.core.util.SocialUtil;
@@ -119,7 +118,7 @@ public class ShareManager {
             onShareListener.onFailure(SocialError.make(SocialError.CODE_NOT_INSTALL));
             return;
         }
-        if (platform instanceof SystemPlatform) {
+        if (platform.getUIKitClazz() == null) {
             platform.initOnShareListener(sListener);
             platform.share(activity, shareTarget, shareObj);
         } else {

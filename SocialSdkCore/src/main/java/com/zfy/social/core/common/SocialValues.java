@@ -15,11 +15,17 @@ public class SocialValues {
     public static final int WX_MINI_TYPE_PREVIEW = 1;
     public static final int WX_MINI_TYPE_TEST = 2;
 
+    /**
+     * 平台包名
+     */
     public static final String QQ_PKG = "com.tencent.mobileqq";
     public static final String WECHAT_PKG = "com.tencent.mm";
     public static final String SINA_PKG = "com.wb.weibo";
     public static final String DD_PKG = "com.alibaba.android.rimet";
 
+    /**
+     * 平台页面
+     */
     // 微信收藏
     public static final String WX_FAVORITE_PAGE = "com.tencent.mm.ui.tools.AddFavoriteUI";
     // 微信选择好友
@@ -28,8 +34,6 @@ public class SocialValues {
     public static final String WX_LAUNCH_PAGE = "com.tencent.mm.ui.LauncherUI";
     // 钉钉分享界面
     public static final String DD_FRIEND_PAGE = "com.alibaba.android.rimet.biz.BokuiActivity";
-
-
     public static final String QQ_QZONE_PAGE = "com.qzonex.module.maxvideo.activity.QzonePublishVideoActivity";// qq空间app
     public static final String QQ_BROWSER_FAST_TRANS_PAGE = "com.tencent.mtt.browser.share.inhost.FastSpreadEntryActivity";//qq浏览器跨屏穿越
     public static final String QQ_FRIENDS_PAGE = "com.tencent.mobileqq.activity.JumpActivity";//qq选择好友、群、我的电脑

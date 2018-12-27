@@ -27,8 +27,8 @@ apply plugin: 'bintray-release'
 publish {
     userOrg = 'zfy'
     groupId = 'com.zfy.social'
-    artifactId = 'plugin'
-    publishVersion = '0.0.1'
+    artifactId = 'social-sdk-plugin'
+    publishVersion = '0.0.2'
     desc = 'SocialSdkPlugin'
     website = 'https://github.com/chendongMarch/SocialSdkLibrary'
 }

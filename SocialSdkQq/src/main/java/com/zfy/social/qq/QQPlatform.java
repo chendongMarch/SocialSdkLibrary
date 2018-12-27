@@ -61,8 +61,20 @@ public class QQPlatform extends AbsPlatform {
         }
 
         @Override
-        public int getTarget() {
+        public int getPlatformTarget() {
             return Target.PLATFORM_QQ;
+        }
+
+
+        @Override
+        public boolean checkShareTarget(int shareTarget) {
+            return shareTarget == Target.SHARE_QQ_FRIENDS
+                    || shareTarget == Target.SHARE_QQ_ZONE;
+        }
+
+        @Override
+        public boolean checkLoginTarget(int loginTarget) {
+            return loginTarget == Target.LOGIN_QQ;
         }
     }
 

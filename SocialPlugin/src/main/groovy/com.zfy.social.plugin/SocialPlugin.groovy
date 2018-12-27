@@ -4,6 +4,7 @@ import com.android.build.gradle.AppExtension
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.LibraryPlugin
+import com.zfy.social.plugin.extension.SocialExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -24,7 +25,6 @@ class SocialPlugin implements Plugin<Project> {
             log "当前位置为 Library Module"
             variants = project.android.libraryVariants
         }
-
         // android {}
         final def android
         if (hasApp) {
@@ -32,12 +32,10 @@ class SocialPlugin implements Plugin<Project> {
         } else {
             android = project.extensions.getByType(LibraryExtension)
         }
-
         // 创建闭包，接收参数
         project.extensions.create("social", SocialExtension.class)
         // 给 android {} 添加一个转换
         // android.registerTransform(new SocialConfigTransform(project))
-
 
         variants.all { variant ->
 
@@ -111,13 +109,13 @@ class SocialPlugin implements Plugin<Project> {
             log "使用本地依赖，不使用远程依赖"
             return
         }
-        def coreLib = 'com.zfy:social-sdk-core:0.0.2'
-        def wxLib = 'com.zfy:social-sdk-wx:0.0.1'
-        def ddLib = 'com.zfy:social-sdk-dd:0.0.1'
-        def qqLib = 'com.zfy:social-sdk-qq:0.0.1'
-        def wbLib = 'com.zfy:social-sdk-weibo:0.0.1'
+        def coreLib = 'com.zfy:social-sdk-core:0.0.4'
+        def wxLib = 'com.zfy:social-sdk-wx:0.0.4'
+        def ddLib = 'com.zfy:social-sdk-dd:0.0.4'
+        def qqLib = 'com.zfy:social-sdk-qq:0.0.4'
+        def wbLib = 'com.zfy:social-sdk-weibo:0.0.4'
 
-        log '依赖追加 =》 开始添加依赖'
+        log '依赖追加 => 开始添加依赖'
         project.dependencies.add('implementation', coreLib)
         if (extension.qq.enable) {
             log "依赖追加 => 添加 QQ 平台，appId = ${extension.qq.appId}"

@@ -30,7 +30,7 @@ class WxLoginHelper {
 
     private static final String BASE_URL = "https://api.weixin.qq.com/sns";
 
-    private int mLoginType;
+    private int mLoginTarget;
     private WeakReference<Context> mContextRef;
     private IWXAPI mIWXAPI;
     private String mAppId;
@@ -41,11 +41,11 @@ class WxLoginHelper {
         this.mContextRef = new WeakReference<>(context.getApplicationContext());
         this.mIWXAPI = iwxapi;
         this.mAppId = appId;
-        this.mLoginType = Target.LOGIN_WX;
+        this.mLoginTarget = Target.LOGIN_WX;
     }
 
     private WeChatAccessToken getToken() {
-        return AccessToken.getToken(mContextRef.get(), AccessToken.WECHAT_TOKEN_KEY, WeChatAccessToken.class);
+        return AccessToken.getToken(mContextRef.get(), mLoginTarget, WeChatAccessToken.class);
 
     }
     /**
@@ -88,7 +88,7 @@ class WxLoginHelper {
                 // 获取到access_token
                 if (newToken.isNoError()) {
                     SocialUtil.e(TAG, "刷新token成功 token = " + newToken);
-                    AccessToken.saveToken(mContextRef.get(), AccessToken.WECHAT_TOKEN_KEY, newToken);
+                    AccessToken.saveToken(mContextRef.get(), mLoginTarget, newToken);
                     // 刷新完成，获取用户信息
                     getUserInfoByValidToken(newToken);
                 } else {
@@ -117,7 +117,7 @@ class WxLoginHelper {
             public void onSuccess(@NonNull WeChatAccessToken token) {
                 // 获取到access_token
                 if (token.isNoError()) {
-                    AccessToken.saveToken(mContextRef.get(), AccessToken.WECHAT_TOKEN_KEY, token);
+                    AccessToken.saveToken(mContextRef.get(), mLoginTarget, token);
                     getUserInfoByValidToken(token);
                 } else {
                     SocialError exception = SocialError.make(SocialError.CODE_REQUEST_ERROR, TAG + "#getAccessTokenByCode#获取access_token失败 code = " + token.getErrcode() + "  msg = " + token.getErrmsg());
@@ -176,7 +176,7 @@ class WxLoginHelper {
             public void onSuccess(@NonNull WxUser wxUserInfo) {
                 SocialUtil.e(TAG, "获取到用户信息" + wxUserInfo.toString());
                 if (wxUserInfo.isNoError()) {
-                    mOnLoginListener.onSuccess(new LoginResult(mLoginType, wxUserInfo, token));
+                    mOnLoginListener.onSuccess(new LoginResult(mLoginTarget, wxUserInfo, token));
                 } else {
                     mOnLoginListener.onFailure(SocialError.make(SocialError.CODE_REQUEST_ERROR, TAG + "#getUserInfoByValidToken#login code = " + wxUserInfo.getErrcode() + " ,msg = " + wxUserInfo.getErrmsg()));
                 }

@@ -82,7 +82,7 @@ class WbLoginHelper implements Recyclable {
     }
 
     public void justAuth(final Activity activity, final WbAuthListener listener) {
-        Oauth2AccessToken token = AccessToken.getToken(activity, AccessToken.SINA_TOKEN_KEY, Oauth2AccessToken.class);
+        Oauth2AccessToken token = AccessToken.getToken(activity, mLoginTarget, Oauth2AccessToken.class);
         if (token != null && token.isSessionValid() && token.getExpiresTime() > System.currentTimeMillis()) {
             listener.onSuccess(token);
         } else {
@@ -92,7 +92,7 @@ class WbLoginHelper implements Recyclable {
                 public void onSuccess(Oauth2AccessToken oauth2AccessToken) {
                     oauth2AccessToken.setBundle(null);
                     SocialUtil.json("test", oauth2AccessToken.toString());
-                    AccessToken.saveToken(activity, AccessToken.SINA_TOKEN_KEY, oauth2AccessToken);
+                    AccessToken.saveToken(activity, mLoginTarget, oauth2AccessToken);
                     listener.onSuccess(oauth2AccessToken);
                 }
 

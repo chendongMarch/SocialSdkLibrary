@@ -1,7 +1,6 @@
 apply from: '../scripts/library.gradle'
 
 dependencies {
-    // compileOnly libs.social_core
     compileOnly project(':SocialSdkCore')
     compileOnly libs.appcompat_v7
     implementation files('libs/open_sdk_r5923_lite.jar') // QQ
@@ -12,7 +11,7 @@ publish {
     userOrg = 'zfy'
     groupId = 'com.zfy'
     artifactId = 'social-sdk-qq'
-    publishVersion = '0.0.1'
+    publishVersion = '0.0.4'
     desc = 'SocialSdkQq'
     website = 'https://github.com/chendongMarch/SocialSdkLibrary'
 }
