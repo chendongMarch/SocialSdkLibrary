@@ -29,15 +29,6 @@ public abstract class AbsPlatform implements IPlatform {
     protected String mAppName;
     protected int mTarget;
 
-    public void setTarget(int target) {
-        mTarget = target;
-    }
-
-    public AbsPlatform(String appId, String appName) {
-        this.mAppId = appId;
-        this.mAppName = appName;
-    }
-
     public AbsPlatform(Context context, String appId, String appName, int target) {
         mAppId = appId;
         mAppName = appName;

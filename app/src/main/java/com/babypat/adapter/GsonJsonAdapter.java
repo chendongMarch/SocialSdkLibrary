@@ -1,4 +1,4 @@
-package com.babypat;
+package com.babypat.adapter;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

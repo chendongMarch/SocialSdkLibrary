@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import com.zfy.social.core.SocialSdk;
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.util.JsonUtil;
+import com.zfy.social.core.util.SocialUtil;
 
 import java.util.concurrent.Executors;
 
@@ -86,63 +87,52 @@ public abstract class AccessToken {
 
     private static final String TOKEN_STORE = "TOKEN_STORE";
 
-    public static final String WECHAT_TOKEN_KEY = "WECHAT_TOKEN_KEY";
-    public static final String SINA_TOKEN_KEY   = "SINA_TOKEN_KEY";
-    public static final String QQ_TOKEN_KEY     = "QQ_TOKEN_KEY";
     public static final String KEY_TIME = "_KEY_TIME";
+    public static final String KEY_TOKEN = "_KEY_TOKEN";
 
     private static SharedPreferences getSp(Context context) {
         return context.getSharedPreferences(TOKEN_STORE + context.getPackageName(), Context.MODE_PRIVATE);
     }
 
-    public static <T> T getToken(Context context, String key, Class<T> tokenClazz) {
+    public static <T> T getToken(final Context context, final int target, final Class<T> tokenClazz) {
         if (SocialSdk.getConfig().getTokenExpiresHoursMs() <= 0) {
             return null;
         }
+        int platformTarget = SocialUtil.mapPlatformTarget(target);
         SharedPreferences sp = getSp(context);
-        long time = sp.getLong(key + KEY_TIME, -1);
+        long time = sp.getLong(platformTarget + KEY_TIME, -1);
         long currentTimeMillis = System.currentTimeMillis();
         if (currentTimeMillis - time < SocialSdk.getConfig().getTokenExpiresHoursMs()) {
-            return JsonUtil.getObject(sp.getString(key, null), tokenClazz);
+            return JsonUtil.getObject(sp.getString(platformTarget + KEY_TOKEN, null), tokenClazz);
         } else {
             return null;
         }
     }
 
-    public static void saveToken(final Context context, final String key, final Object token) {
+    public static void saveToken(final Context context, final int target, final Object token) {
         if (SocialSdk.getConfig().getTokenExpiresHoursMs() <= 0) {
             return;
         }
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
+                int platformTarget = SocialUtil.mapPlatformTarget(target);
                 SharedPreferences sp = getSp(context);
+                if (token == null) {
+                    sp.edit().putString(platformTarget + KEY_TOKEN, "").apply();
+                    sp.edit().putLong(platformTarget + KEY_TIME, 0).apply();
+                    return;
+                }
                 String tokenJson = JsonUtil.getObject2Json(token);
-                sp.edit().putString(key, tokenJson).apply();
-                sp.edit().putLong(key + KEY_TIME, System.currentTimeMillis()).apply();
+                sp.edit().putString(platformTarget + KEY_TOKEN, tokenJson).apply();
+                sp.edit().putLong(platformTarget + KEY_TIME, System.currentTimeMillis()).apply();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
-
     }
 
     // 清理平台 token
-    public static void clearToken(Context context, @Target.LoginTarget int platform) {
-        String key = null;
-        switch (platform) {
-            case Target.LOGIN_QQ:
-                key = QQ_TOKEN_KEY;
-                break;
-            case Target.LOGIN_WB:
-                key = SINA_TOKEN_KEY;
-                break;
-            case Target.LOGIN_WX:
-                key = WECHAT_TOKEN_KEY;
-                break;
-        }
-        if (key != null) {
-            SharedPreferences.Editor edit = getSp(context).edit();
-            edit.remove(key).apply();
-        }
+    public static void clearToken(Context context, int target) {
+        saveToken(context, target, null);
     }
 }

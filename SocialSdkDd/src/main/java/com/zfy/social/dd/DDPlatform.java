@@ -48,8 +48,13 @@ public class DDPlatform extends AbsPlatform {
         }
 
         @Override
-        public int getTarget() {
+        public int getPlatformTarget() {
             return Target.PLATFORM_DD;
+        }
+
+        @Override
+        public boolean checkShareTarget(int shareTarget) {
+            return shareTarget == Target.SHARE_DD;
         }
     }
 

@@ -5,11 +5,9 @@ import com.android.build.api.transform.*
 import com.android.build.gradle.internal.pipeline.TransformManager
 import org.gradle.api.Project
 
-public class SocialConfigTransform extends Transform {
-
+class SocialConfigTransform extends Transform {
 
     Project project
-
     SocialConfigTransform(Project project) {
         this.project = project
     }

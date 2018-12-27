@@ -1,4 +1,4 @@
-package com.zfy.social.plugin
+package com.zfy.social.plugin.extension
 
 import com.zfy.social.plugin.extension.ConfigExtension
 import org.gradle.api.Action

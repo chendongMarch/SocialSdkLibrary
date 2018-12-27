@@ -52,10 +52,10 @@ public class MyApplication extends Application {
 //                // 设置为0，将不会做持久化存储，每次获取最新的
 //                .tokenExpiresHours(12 * 60 * 60 * 1000)
 //                // 注册平台创建工厂
-//                .registerPlatform(new QQPlatform.Factory())
-//                // .registerPlatform(new DDPlatform.Factory())
-//                .registerPlatform(new WbPlatform.Factory())
-//                .registerPlatform(new WxPlatform.Factory());
+//                .addPlatform(new QQPlatform.Factory())
+//                // .addPlatform(new DDPlatform.Factory())
+//                .addPlatform(new WbPlatform.Factory())
+//                .addPlatform(new WxPlatform.Factory());
 //        // 👮 添加 config 数据，必须
 //        SocialSdk.init(options);
 //        // 👮 添加自定义的 json 解析，必须，参考 temp 文件夹下的实现

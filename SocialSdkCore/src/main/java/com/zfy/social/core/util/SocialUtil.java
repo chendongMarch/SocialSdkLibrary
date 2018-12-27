@@ -9,11 +9,11 @@ import android.os.Build;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.zfy.social.core.SocialSdk;
-import com.zfy.social.core.common.SocialValues;
-import com.zfy.social.core.common.Target;
 import com.zfy.social.core.model.SocialBuildConfig;
+import com.zfy.social.core.platform.PlatformFactory;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -183,35 +183,14 @@ public class SocialUtil {
     }
 
 
-
-
-    /**
-     * 打开平台 app
-     *
-     * @param context ctx
-     * @param target  平台
-     * @return 是否成功打开
-     */
-    public static boolean openApp(Context context, int target) {
-        int platform = Target.mapPlatform(target);
-        String pkgName = null;
-        switch (platform) {
-            case Target.SHARE_QQ_FRIENDS:
-            case Target.SHARE_QQ_ZONE:
-                pkgName = SocialValues.QQ_PKG;
-                break;
-            case Target.SHARE_WX_FRIENDS:
-            case Target.SHARE_WX_ZONE:
-            case Target.SHARE_WX_FAVORITE:
-                pkgName = SocialValues.WECHAT_PKG;
-                break;
-            case Target.SHARE_WB:
-                pkgName = SocialValues.SINA_PKG;
-                break;
-            case Target.SHARE_DD:
-                pkgName = SocialValues.DD_PKG;
-                break;
+    public static int mapPlatformTarget(int target) {
+        SparseArray<PlatformFactory> factories = SocialSdk.getPlatformFactories();
+        for (int i = 0; i < factories.size(); i++) {
+            PlatformFactory factory = factories.valueAt(i);
+            if (factory.getPlatformTarget() == target || factory.checkShareTarget(target) || factory.checkLoginTarget(target)) {
+                return factory.getPlatformTarget();
+            }
         }
-        return !TextUtils.isEmpty(pkgName) && SocialUtil.openApp(context, pkgName);
+        return -1;
     }
 }

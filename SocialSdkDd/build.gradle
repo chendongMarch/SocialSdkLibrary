@@ -1,7 +1,6 @@
 apply from: '../scripts/library.gradle'
 
 dependencies {
-    // compileOnly libs.social_core
     compileOnly project(':SocialSdkCore')
     compileOnly libs.appcompat_v7
     implementation 'com.alibaba.android:ddsharesdk:1.1.0' // 钉钉
@@ -12,7 +11,7 @@ publish {
     userOrg = 'zfy'
     groupId = 'com.zfy'
     artifactId = 'social-sdk-dd'
-    publishVersion = '0.0.1'
+    publishVersion = '0.0.4'
     desc = 'SocialSdkDd'
     website = 'https://github.com/chendongMarch/SocialSdkLibrary'
 }

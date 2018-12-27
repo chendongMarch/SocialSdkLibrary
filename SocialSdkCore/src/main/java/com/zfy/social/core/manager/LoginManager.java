@@ -32,7 +32,7 @@ public class LoginManager {
      * @param loginTarget   登陆类型
      * @param loginListener 登陆监听
      */
-    public static void login(Activity activity, @Target.LoginTarget int loginTarget, OnLoginListener loginListener) {
+    public static void login(Activity activity, int loginTarget, OnLoginListener loginListener) {
         loginListener.onStart();
         sListener = loginListener;
         IPlatform platform = GlobalPlatform.makePlatform(activity, loginTarget);
@@ -40,11 +40,15 @@ public class LoginManager {
             loginListener.onFailure(SocialError.make(SocialError.CODE_NOT_INSTALL));
             return;
         }
-        Intent intent = new Intent(activity, platform.getUIKitClazz());
-        intent.putExtra(GlobalPlatform.KEY_ACTION_TYPE, GlobalPlatform.ACTION_TYPE_LOGIN);
-        intent.putExtra(GlobalPlatform.KEY_LOGIN_TARGET, loginTarget);
-        activity.startActivity(intent);
-        activity.overridePendingTransition(0, 0);
+        if (platform.getUIKitClazz() == null) {
+            GlobalPlatform.getPlatform().login(activity, loginListener);
+        } else {
+            Intent intent = new Intent(activity, platform.getUIKitClazz());
+            intent.putExtra(GlobalPlatform.KEY_ACTION_TYPE, GlobalPlatform.ACTION_TYPE_LOGIN);
+            intent.putExtra(GlobalPlatform.KEY_LOGIN_TARGET, loginTarget);
+            activity.startActivity(intent);
+            activity.overridePendingTransition(0, 0);
+        }
     }
 
 
@@ -130,8 +134,7 @@ public class LoginManager {
         AccessToken.clearToken(context, Target.LOGIN_WB);
     }
 
-    public static void clearToken(Context context, @Target.LoginTarget int loginTarget) {
+    public static void clearToken(Context context, int loginTarget) {
         AccessToken.clearToken(context, loginTarget);
     }
-
 }

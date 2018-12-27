@@ -13,28 +13,28 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class Target {
 
-    public static final int PLATFORM_QQ = 0x11; // qq 登录
-    public static final int PLATFORM_WX = 0x12; // 微信登录
-    public static final int PLATFORM_WB = 0x13; // 微博登录
-    public static final int PLATFORM_DD = 0x14; // 微博登录
-    public static final int PLATFORM_SMS = 0x15; // 短信
-    public static final int PLATFORM_CLIPBOARD = 0x16; // 粘贴板
-    public static final int PLATFORM_EMAIL = 0x17; // 邮件
+    public static final int PLATFORM_QQ = 100; // qq 登录
+    public static final int PLATFORM_WX = 101; // 微信登录
+    public static final int PLATFORM_WB = 102; // 微博登录
+    public static final int PLATFORM_DD = 103; // 微博登录
+    public static final int PLATFORM_SMS = 104; // 短信
+    public static final int PLATFORM_CLIPBOARD = 105; // 粘贴板
+    public static final int PLATFORM_EMAIL = 106; // 邮件
 
-    public static final int LOGIN_QQ = 0x21; // qq 登录
-    public static final int LOGIN_WX = 0x22; // 微信登录
-    public static final int LOGIN_WB = 0x23; // 微博登录
+    public static final int LOGIN_QQ = 200; // qq 登录
+    public static final int LOGIN_WX = 201; // 微信登录
+    public static final int LOGIN_WB = 202; // 微博登录
 
-    public static final int SHARE_QQ_FRIENDS  = 0x31; // qq好友
-    public static final int SHARE_QQ_ZONE     = 0x32; // qq空间
-    public static final int SHARE_WX_FRIENDS  = 0x33; // 微信好友
-    public static final int SHARE_WX_ZONE     = 0x34; // 微信朋友圈
-    public static final int SHARE_WX_FAVORITE = 0x35; // 微信收藏
-    public static final int SHARE_WB          = 0x36; // 新浪微博
-    public static final int SHARE_DD = 0x38; // 钉钉分享
-    public static final int SHARE_SMS = 0x39; // 短信分享
-    public static final int SHARE_EMAIL = 0x40; // 邮件分享
-    public static final int SHARE_CLIPBOARD = 0x41; // 粘贴板分享
+    public static final int SHARE_QQ_FRIENDS = 300; // qq好友
+    public static final int SHARE_QQ_ZONE = 301; // qq空间
+    public static final int SHARE_WX_FRIENDS = 302; // 微信好友
+    public static final int SHARE_WX_ZONE = 303; // 微信朋友圈
+    public static final int SHARE_WX_FAVORITE = 304; // 微信收藏
+    public static final int SHARE_WB = 305; // 新浪微博
+    public static final int SHARE_DD = 306; // 钉钉分享
+    public static final int SHARE_SMS = 307; // 短信分享
+    public static final int SHARE_EMAIL = 308; // 邮件分享
+    public static final int SHARE_CLIPBOARD = 309; // 粘贴板分享
 
 
     @IntDef({Target.SHARE_QQ_FRIENDS, Target.SHARE_QQ_ZONE,
@@ -62,35 +62,6 @@ public class Target {
 
     }
 
-    public static int mapPlatform(int target) {
-        switch (target) {
-            case Target.PLATFORM_QQ:
-            case Target.LOGIN_QQ:
-            case Target.SHARE_QQ_FRIENDS:
-            case Target.SHARE_QQ_ZONE:
-                return PLATFORM_QQ;
-            case Target.PLATFORM_WX:
-            case Target.LOGIN_WX:
-            case Target.SHARE_WX_FRIENDS:
-            case Target.SHARE_WX_ZONE:
-                return PLATFORM_WX;
-            case Target.LOGIN_WB:
-            case Target.SHARE_WB:
-            case Target.PLATFORM_WB:
-                return PLATFORM_WB;
-            case Target.SHARE_DD:
-            case Target.PLATFORM_DD:
-                return PLATFORM_DD;
-            case Target.SHARE_CLIPBOARD:
-                return PLATFORM_CLIPBOARD;
-            case Target.SHARE_SMS:
-                return PLATFORM_SMS;
-            case Target.SHARE_EMAIL:
-                return PLATFORM_EMAIL;
-            default:
-                return -1;
-        }
-    }
 
     public static String toDesc(int target) {
         String result;

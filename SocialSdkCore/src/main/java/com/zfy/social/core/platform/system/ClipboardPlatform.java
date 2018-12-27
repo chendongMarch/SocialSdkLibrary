@@ -28,8 +28,13 @@ public class ClipboardPlatform extends SystemPlatform {
         }
 
         @Override
-        public int getTarget() {
-            return Target.PLATFORM_WX;
+        public int getPlatformTarget() {
+            return Target.PLATFORM_CLIPBOARD;
+        }
+
+        @Override
+        public boolean checkShareTarget(int shareTarget) {
+            return shareTarget == Target.SHARE_CLIPBOARD;
         }
     }
 

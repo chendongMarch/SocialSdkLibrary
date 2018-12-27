@@ -3,18 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="#fff">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-
-        <Button
-            android:id="@+id/init_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="初始化"/>
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tab_ly"
@@ -41,24 +37,17 @@
                 android:layout_height="wrap_content"
                 android:text="清除"/>
         </LinearLayout>
-        <ScrollView
-            android:id="@+id/sv_content"
-            android:layout_width="match_parent"
-            android:layout_height="250dp">
 
-            <TextView
-                android:id="@+id/tv_info_display"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="left"
-                android:padding="10dp"
-                android:textColor="#555"
-                android:textSize="16sp"/>
-        </ScrollView>
+        <TextView
+            android:id="@+id/tv_info_display"
+            android:layout_width="match_parent"
+            android:layout_height="350dp"
+            android:padding="10dp"
+            android:textColor="#555"
+            tools:text="sss"
+            android:textSize="14sp"/>
 
         <com.google.android.flexbox.FlexboxLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:alignContent="stretch"
@@ -66,10 +55,33 @@
             app:flexWrap="wrap">
 
             <Button
+                android:id="@+id/init_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="初始化"/>
+
+
+            <Button
                 android:id="@+id/btn_clear_token"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="清除token"/>
+
+            <Button
+                android:id="@+id/huawei_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="华为登录"/>
+
+        </com.google.android.flexbox.FlexboxLayout>
+
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:alignContent="stretch"
+            app:alignItems="stretch"
+            app:flexWrap="wrap">
 
             <Button
                 android:id="@+id/btn_login"

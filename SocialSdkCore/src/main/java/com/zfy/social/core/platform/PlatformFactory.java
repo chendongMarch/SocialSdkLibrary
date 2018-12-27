@@ -12,5 +12,13 @@ public interface PlatformFactory {
 
     IPlatform create(Context context, int target);
 
-    int getTarget();
+    int getPlatformTarget();
+
+    default boolean checkShareTarget(int shareTarget) {
+        return false;
+    }
+
+    default boolean checkLoginTarget(int loginTarget) {
+        return false;
+    }
 }

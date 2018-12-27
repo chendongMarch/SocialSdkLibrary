@@ -26,8 +26,13 @@ public class EmailPlatform extends SystemPlatform {
         }
 
         @Override
-        public int getTarget() {
-            return Target.PLATFORM_WX;
+        public int getPlatformTarget() {
+            return Target.PLATFORM_EMAIL;
+        }
+
+        @Override
+        public boolean checkShareTarget(int shareTarget) {
+            return shareTarget == Target.SHARE_EMAIL;
         }
     }
 

@@ -68,8 +68,19 @@ public class WbPlatform extends AbsPlatform {
         }
 
         @Override
-        public int getTarget() {
+        public int getPlatformTarget() {
             return Target.PLATFORM_WB;
+        }
+
+
+        @Override
+        public boolean checkShareTarget(int shareTarget) {
+            return shareTarget == Target.SHARE_WB;
+        }
+
+        @Override
+        public boolean checkLoginTarget(int loginTarget) {
+            return loginTarget == Target.LOGIN_WB;
         }
     }
 
