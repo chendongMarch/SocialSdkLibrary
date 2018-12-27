@@ -20,10 +20,11 @@ import com.zfy.social.core.util.SocialUtil;
  */
 public class ClipboardPlatform extends SystemPlatform {
 
+
     public static class Factory implements PlatformFactory {
         @Override
         public IPlatform create(Context context, int target) {
-            return new ClipboardPlatform();
+            return new ClipboardPlatform(context, null, null, target);
         }
 
         @Override
@@ -32,9 +33,10 @@ public class ClipboardPlatform extends SystemPlatform {
         }
     }
 
-    private ClipboardPlatform() {
-        super(null, null);
+    private ClipboardPlatform(Context context, String appId, String appName, int target) {
+        super(context, appId, appName, target);
     }
+
 
     @Override
     protected void dispatchShare(Activity activity, int shareTarget, ShareObj obj) {
@@ -48,7 +50,7 @@ public class ClipboardPlatform extends SystemPlatform {
                 mOnShareListener.onFailure(SocialError.make("ClipboardManager null"));
                 return;
             }
-            mOnShareListener.onSuccess();
+            mOnShareListener.onSuccess(mTarget);
         }
     }
 

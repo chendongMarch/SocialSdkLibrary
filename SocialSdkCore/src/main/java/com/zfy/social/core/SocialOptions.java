@@ -201,7 +201,7 @@ public class SocialOptions {
             builder.wxOnlyAuthCode = false;
         }
         if (builder.tokenExpiresHours < 0) {
-            builder.tokenExpiresHours = 24;
+            builder.tokenExpiresHours = 0;
         }
         this.debug = builder.debug;
         this.appName = builder.appName;

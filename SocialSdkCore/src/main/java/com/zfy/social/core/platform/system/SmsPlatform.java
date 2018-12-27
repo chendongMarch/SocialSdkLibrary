@@ -24,7 +24,7 @@ public class SmsPlatform extends SystemPlatform {
     public static class Factory implements PlatformFactory {
         @Override
         public IPlatform create(Context context, int target) {
-            return new SmsPlatform();
+            return new SmsPlatform(context, null, null, target);
         }
 
         @Override
@@ -33,8 +33,8 @@ public class SmsPlatform extends SystemPlatform {
         }
     }
 
-    private SmsPlatform() {
-        super(null, null);
+    private SmsPlatform(Context context, String appId, String appName, int target) {
+        super(context, appId, appName, target);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class SmsPlatform extends SystemPlatform {
             intent.putExtra("sms_body", smsBody);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             activity.startActivity(intent);
-            mOnShareListener.onSuccess();
+            mOnShareListener.onSuccess(shareTarget);
         }
     }
 }

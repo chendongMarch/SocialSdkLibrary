@@ -37,12 +37,12 @@ android {
 }
 
 social {
-    local true
-    tokenExpireHour 24
+    local true // 使用本地依赖
+    tokenExpireHour 24 // token 失效时间，单位小时，
     wx {
         appId = 'wx4b8dbbca35b195c3'
         appSecret = '0a3cb007291d0e59834ee3654f499171'
-        onlyAuthCode = false
+        onlyAuthCode = false // 微信授权仅返回 code
     }
     qq {
         appId = '1104910200'

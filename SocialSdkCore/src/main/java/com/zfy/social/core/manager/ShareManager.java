@@ -10,10 +10,10 @@ import com.zfy.social.core.common.Target;
 import com.zfy.social.core.exception.SocialError;
 import com.zfy.social.core.listener.OnShareListener;
 import com.zfy.social.core.model.ShareObj;
-import com.zfy.social.core.util.ShareObjCheckUtil;
 import com.zfy.social.core.platform.IPlatform;
 import com.zfy.social.core.platform.system.SystemPlatform;
 import com.zfy.social.core.util.FileUtil;
+import com.zfy.social.core.util.ShareObjCheckUtil;
 import com.zfy.social.core.util.SocialUtil;
 
 import java.io.File;
@@ -196,9 +196,9 @@ public class ShareManager {
         }
 
         @Override
-        public void onSuccess() {
+        public void onSuccess(int target) {
             if (sListener != null) {
-                sListener.onSuccess();
+                sListener.onSuccess(target);
             }
             finish();
         }

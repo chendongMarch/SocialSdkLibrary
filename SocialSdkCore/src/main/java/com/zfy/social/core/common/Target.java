@@ -32,9 +32,9 @@ public class Target {
     public static final int SHARE_WX_FAVORITE = 0x35; // 微信收藏
     public static final int SHARE_WB          = 0x36; // 新浪微博
     public static final int SHARE_DD = 0x38; // 钉钉分享
-    public static final int SHARE_SMS = 0x39; // 钉钉分享
-    public static final int SHARE_EMAIL = 0x40; // 钉钉分享
-    public static final int SHARE_CLIPBOARD = 0x41; // 钉钉分享
+    public static final int SHARE_SMS = 0x39; // 短信分享
+    public static final int SHARE_EMAIL = 0x40; // 邮件分享
+    public static final int SHARE_CLIPBOARD = 0x41; // 粘贴板分享
 
 
     @IntDef({Target.SHARE_QQ_FRIENDS, Target.SHARE_QQ_ZONE,

@@ -100,9 +100,9 @@ public class LoginManager {
         }
 
         @Override
-        public void onSuccess(LoginResult loginResult) {
+        public void onSuccess(LoginResult result) {
             if (sListener != null) {
-                sListener.onSuccess(loginResult);
+                sListener.onSuccess(result);
             }
             finish();
         }

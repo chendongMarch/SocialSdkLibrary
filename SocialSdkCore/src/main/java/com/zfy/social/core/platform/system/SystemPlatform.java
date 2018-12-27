@@ -14,8 +14,9 @@ import com.zfy.social.core.platform.AbsPlatform;
  */
 public abstract class SystemPlatform extends AbsPlatform {
 
-    public SystemPlatform(String appId, String appName) {
-        super(appId, appName);
+
+    public SystemPlatform(Context context, String appId, String appName, int target) {
+        super(context, appId, appName, target);
     }
 
     @Override

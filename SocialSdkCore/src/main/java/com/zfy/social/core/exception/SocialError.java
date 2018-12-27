@@ -17,7 +17,6 @@ public class SocialError extends RuntimeException {
     public static final int CODE_COMMON_ERROR = 101; // 通用错误，未归类
     public static final int CODE_NOT_INSTALL = 102; // 没有安装应用
     public static final int CODE_VERSION_LOW = 103; // 版本过低，不支持
-    public static final int CODE_SHARE_OBJ_VALID = 104; // 分享的对象参数有问题
     public static final int CODE_SHARE_BY_INTENT_FAIL = 105; // 使用 Intent 分享失败
     public static final int CODE_STORAGE_READ_ERROR = 106; // 没有读存储的权限，获取分享缩略图将会失败
     public static final int CODE_STORAGE_WRITE_ERROR = 107; // 没有写存储的权限，微博分享视频copy操作将会失败

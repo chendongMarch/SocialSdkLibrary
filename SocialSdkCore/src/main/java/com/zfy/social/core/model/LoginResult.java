@@ -13,36 +13,36 @@ import com.zfy.social.core.model.user.SocialUser;
 public class LoginResult {
 
     // 登陆的类型，对应 Target.LOGIN_QQ 等。。。
-    private int         type;
+    private int target;
     // 返回的基本用户信息
     // 针对登录类型可强转为 WbUser,WxUser,QQUser 来获取更加丰富的信息
-    private SocialUser  socialUser;
-    // 本次登陆的 token 信息，openid,unionid,token,expires_in
+    private SocialUser socialUser;
+    // 本次登陆的 token 信息，openId, unionId,token,expires_in
     private AccessToken accessToken;
-    //
-    private String      wxAuthCode;
+    // 授权码，如果 onlyAuthCode 为 true, 将会返回它
+    private String wxAuthCode;
 
-    public LoginResult(int type, SocialUser baseUser, AccessToken baseToken) {
-        this.type = type;
+    public LoginResult(int target, SocialUser baseUser, AccessToken baseToken) {
+        this.target = target;
         socialUser = baseUser;
         accessToken = baseToken;
     }
 
-    public LoginResult(int type, String wxAuthCode) {
-        this.type = type;
+    public LoginResult(int target, String wxAuthCode) {
+        this.target = target;
         this.wxAuthCode = wxAuthCode;
     }
 
-    public int getType() {
-        return type;
+    public int getTarget() {
+        return target;
     }
 
     public SocialUser getSocialUser() {
         return socialUser;
     }
 
-    public void setType(int type) {
-        this.type = type;
+    public void setTarget(int target) {
+        this.target = target;
     }
 
     public void setSocialUser(SocialUser socialUser) {
@@ -68,7 +68,7 @@ public class LoginResult {
     @Override
     public String toString() {
         return "LoginResult{" +
-                "type=" + type +
+                "target=" + target +
                 ", socialUser=" + socialUser +
                 ", accessToken=" + accessToken +
                 ", wxAuthCode='" + wxAuthCode + '\'' +

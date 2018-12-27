@@ -4,10 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.text.TextUtils;
 
 import com.zfy.social.core.common.Target;
-import com.zfy.social.core.exception.SocialError;
 import com.zfy.social.core.model.ShareObj;
 import com.zfy.social.core.platform.IPlatform;
 import com.zfy.social.core.platform.PlatformFactory;
@@ -24,7 +22,7 @@ public class EmailPlatform extends SystemPlatform {
     public static class Factory implements PlatformFactory {
         @Override
         public IPlatform create(Context context, int target) {
-            return new EmailPlatform();
+            return new EmailPlatform(context, null, null, target);
         }
 
         @Override
@@ -33,8 +31,8 @@ public class EmailPlatform extends SystemPlatform {
         }
     }
 
-    private EmailPlatform() {
-        super(null, null);
+    private EmailPlatform(Context context, String appId, String appName, int target) {
+        super(context, appId, appName, target);
     }
 
     @Override
@@ -50,7 +48,7 @@ public class EmailPlatform extends SystemPlatform {
             intent.putExtra(Intent.EXTRA_TEXT, mailBody);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             activity.startActivity(intent);
-            mOnShareListener.onSuccess();
+            mOnShareListener.onSuccess(mTarget);
         }
     }
 }

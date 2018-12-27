@@ -9,7 +9,7 @@ import com.zfy.social.core.model.user.SocialUser;
  * @author SINA
  * @since 2013-11-24
  */
-public class SinaUser extends SocialUser {
+public class WbUser extends SocialUser {
 
     ///////////////////////////////////////////////////////////////////////////
 // {

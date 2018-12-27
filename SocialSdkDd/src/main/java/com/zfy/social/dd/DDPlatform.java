@@ -42,7 +42,7 @@ public class DDPlatform extends AbsPlatform {
             IPlatform platform = null;
             SocialOptions config = SocialSdk.getConfig();
             if (!SocialUtil.isAnyEmpty(config.getDdAppId())) {
-                platform = new DDPlatform(context, config.getDdAppId(), config.getAppName());
+                platform = new DDPlatform(context, config.getDdAppId(), config.getAppName(), target);
             }
             return platform;
         }
@@ -55,8 +55,8 @@ public class DDPlatform extends AbsPlatform {
 
     private IDDShareApi mDdShareApi;
 
-    private DDPlatform(Context context, String appId, String appName) {
-        super(appId, appName);
+    private DDPlatform(Context context, String appId, String appName, int target) {
+        super(context, appId, appName, target);
         mDdShareApi = DDShareApiFactory.createDDShareApi(context, appId, false);
     }
 
@@ -85,7 +85,7 @@ public class DDPlatform extends AbsPlatform {
         int errCode = baseResp.mErrCode;
         switch (errCode) {
             case BaseResp.ErrCode.ERR_OK:
-                mOnShareListener.onSuccess();
+                mOnShareListener.onSuccess(mTarget);
                 break;
             case BaseResp.ErrCode.ERR_AUTH_DENIED:
             case BaseResp.ErrCode.ERR_SENT_FAILED:
@@ -197,7 +197,7 @@ public class DDPlatform extends AbsPlatform {
         if (FileUtil.isHttpPath(obj.getMediaPath())) {
             shareWeb(shareTarget, activity, obj);
         } else if (FileUtil.isExist(obj.getMediaPath())) {
-            IntentShareUtil.shareVideo(activity, obj, SocialValues.DD_PKG, SocialValues.DD_FRIEND_PAGE, mOnShareListener);
+            IntentShareUtil.shareVideo(activity, obj, SocialValues.DD_PKG, SocialValues.DD_FRIEND_PAGE, mOnShareListener,mTarget);
         } else {
             mOnShareListener.onFailure(SocialError.make(SocialError.CODE_FILE_NOT_FOUND));
         }

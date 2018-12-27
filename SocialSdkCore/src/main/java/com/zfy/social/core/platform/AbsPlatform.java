@@ -2,6 +2,7 @@ package com.zfy.social.core.platform;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
@@ -24,9 +25,9 @@ public abstract class AbsPlatform implements IPlatform {
     protected static final int THUMB_IMAGE_SIZE_128 = 128 * 1024;
 
     protected OnShareListener mOnShareListener;
-    protected String          mAppId;
-    protected String          mAppName;
-    protected int             mTarget;
+    protected String mAppId;
+    protected String mAppName;
+    protected int mTarget;
 
     public void setTarget(int target) {
         mTarget = target;
@@ -35,6 +36,12 @@ public abstract class AbsPlatform implements IPlatform {
     public AbsPlatform(String appId, String appName) {
         this.mAppId = appId;
         this.mAppName = appName;
+    }
+
+    public AbsPlatform(Context context, String appId, String appName, int target) {
+        mAppId = appId;
+        mAppName = appName;
+        mTarget = target;
     }
 
     public boolean checkPlatformConfig() {
@@ -52,6 +59,7 @@ public abstract class AbsPlatform implements IPlatform {
             mOnShareListener.onFailure(SocialError.make(SocialError.CODE_PARAM_ERROR, "obj is null"));
             return;
         }
+        mTarget = shareTarget;
         dispatchShare(activity, shareTarget, shareObj);
     }
 
