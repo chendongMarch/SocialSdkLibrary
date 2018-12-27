@@ -34,10 +34,6 @@ public class SocialUtil {
 
     public static final String TAG = "SocialSdk";
 
-    public static boolean isAppCachePath(Context context, String path) {
-        return path.contains(context.getPackageName());
-    }
-
     public static boolean hasPermission(Context context, String permission) {
         return Build.VERSION.SDK_INT < Build.VERSION_CODES.M
                 || context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
@@ -94,6 +90,16 @@ public class SocialUtil {
             return "";
         }
     }
+
+    public static boolean isAnyEq(int shareTarget, int... targets) {
+        for (int target : targets) {
+            if (target == shareTarget) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static boolean isAnyEmpty(String... strs) {
         for (String str : strs) {
             if (str == null || TextUtils.isEmpty(str)) {
@@ -177,42 +183,7 @@ public class SocialUtil {
     }
 
 
-    /**
-     * 发送短信分享
-     *
-     * @param context ctx
-     * @param phone   手机号
-     * @param msg     内容
-     */
-    public static void sendSms(Context context, String phone, String msg) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        if (TextUtils.isEmpty(phone))
-            phone = "";
-        intent.setData(Uri.parse("smsto:" + phone));
-        intent.putExtra("sms_body", msg);
-        intent.setType("vnd.android-dir/mms-sms");
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
-    }
 
-    /**
-     * 发送邮件分享
-     *
-     * @param context ctx
-     * @param mailto  email
-     * @param subject 主题
-     * @param msg     内容
-     */
-    public static void sendEmail(Context context, String mailto, String subject, String msg) {
-        Intent intent = new Intent(Intent.ACTION_SENDTO);
-        if (TextUtils.isEmpty(mailto))
-            mailto = "";
-        intent.setData(Uri.parse("mailto:" + mailto));
-        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
-        intent.putExtra(Intent.EXTRA_TEXT, msg);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
-    }
 
     /**
      * 打开平台 app

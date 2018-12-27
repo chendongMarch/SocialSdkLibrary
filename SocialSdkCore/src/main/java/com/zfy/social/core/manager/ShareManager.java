@@ -10,7 +10,7 @@ import com.zfy.social.core.common.Target;
 import com.zfy.social.core.exception.SocialError;
 import com.zfy.social.core.listener.OnShareListener;
 import com.zfy.social.core.model.ShareObj;
-import com.zfy.social.core.model.ShareObjChecker;
+import com.zfy.social.core.util.ShareObjCheckUtil;
 import com.zfy.social.core.platform.IPlatform;
 import com.zfy.social.core.platform.system.SystemPlatform;
 import com.zfy.social.core.util.FileUtil;
@@ -103,7 +103,7 @@ public class ShareManager {
     // 开始分享
     private static void doShare(Activity activity, @Target.ShareTarget int shareTarget, ShareObj shareObj, OnShareListener onShareListener) {
         try {
-            ShareObjChecker.checkShareObjParams(activity, shareTarget, shareObj);
+            ShareObjCheckUtil.checkShareObjParams(activity, shareTarget, shareObj);
         } catch (Exception e) {
             e.printStackTrace();
             if (e instanceof SocialError) {
