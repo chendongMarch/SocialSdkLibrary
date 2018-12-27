@@ -90,6 +90,12 @@
                 android:text="分享本地图片"/>
 
             <Button
+                android:id="@+id/btn_share_net_img"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="分享网络图片"/>
+
+            <Button
                 android:id="@+id/btn_share_gif"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

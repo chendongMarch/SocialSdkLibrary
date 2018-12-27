@@ -52,9 +52,9 @@ social {
         appId = '2189645998'
         url = 'http://open.manfenmm.com/bbpp/app/weibo/common.php'
     }
-//    dd {
-//        appid = 'dingoag98ywrefwjeumuof'
-//    }
+    dd {
+        appId = 'dingoag98ywrefwjeumuof'
+    }
 }
 
 //库依赖
@@ -66,7 +66,7 @@ dependencies {
     implementation project(':SocialSdkWx')
     implementation project(':SocialSdkWb')
     implementation project(':SocialSdkQq')
-//    implementation project(':SocialSdkDd')
+    implementation project(':SocialSdkDd')
 
     implementation libs.flexbox
     implementation libs.multidex

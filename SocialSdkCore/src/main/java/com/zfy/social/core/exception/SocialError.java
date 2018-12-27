@@ -29,6 +29,8 @@ public class SocialError extends RuntimeException {
     public static final int CODE_IMAGE_COMPRESS_ERROR = 113; // 图片压缩失败
     public static final int CODE_PARAM_ERROR = 114; // 参数错误
     public static final int CODE_SDK_INIT_ERROR = 115; // SocialSdk 初始化错误
+    public static final int CODE_PREPARE_BG_ERROR = 116; // 执行 prepareOnBackground 时错误
+    public static final int CODE_NOT_SUPPORT = 117; // 不支持
 
     private int code = CODE_OK;
     private String msg;

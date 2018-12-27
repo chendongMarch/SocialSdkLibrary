@@ -51,6 +51,7 @@ public class TestPlatformActivity extends AppCompatActivity {
 
     private ShareObj textObj;
     private ShareObj imageObj;
+    private ShareObj netImageObj;
     private ShareObj imageGifObj;
     private ShareObj videoObj;
     private ShareObj videoLocalObj;
@@ -60,6 +61,8 @@ public class TestPlatformActivity extends AppCompatActivity {
     private OnShareListener mOnShareListener;
     private OnLoginListener mOnLoginListener;
     private String[] mPlatform;
+
+    private boolean isInit;
 
     Activity mActivity;
 
@@ -88,7 +91,7 @@ public class TestPlatformActivity extends AppCompatActivity {
 
         localGifPath = new File(Environment.getExternalStorageDirectory(), "3.gif").getAbsolutePath();
         netVideoPath = "http://7xtjec.com1.z0.glb.clouddn.com/export.mp4";
-        netImagePath = "http://thirdwx.qlogo.cn/mmopen/vi_32/52eZlEWhZMnBsTShxYoLAux0QCj7qx4QpcptCfBYwO65FDI7rYucAlQgplrgk8NFMZWiaMh8GhnUsIFr3JgFOKw/132";
+        netImagePath = "https://images.pexels.com/photos/1688568/pexels-photo-1688568.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500";
         netMusicPath = "http://7xtjec.com1.z0.glb.clouddn.com/test_music.mp3";
         targetUrl = "https://mp.weixin.qq.com/s/Z7Kp_xstwOU7ipLNERRQdA";
         localVideoPath = new File(Environment.getExternalStorageDirectory(), "4.mp4").getAbsolutePath();
@@ -161,12 +164,13 @@ public class TestPlatformActivity extends AppCompatActivity {
 
         textObj = ShareObj.buildTextObj("分享文字", "summary");
         imageObj = ShareObj.buildImageObj(localImagePath);
+        netImageObj = ShareObj.buildImageObj(netImagePath);
         imageGifObj = ShareObj.buildImageObj(localGifPath);
         appObj = ShareObj.buildAppObj("分享app", "summary", localImagePath, targetUrl);
-        webObj = ShareObj.buildWebObj("分享web", "summary", localImagePath, targetUrl);
+        webObj = ShareObj.buildWebObj("分享web", "summary", netImagePath, targetUrl);
 //        webObj = ShareObj.buildWebObj(title, desc, share_img, share_url);
         videoObj = ShareObj.buildVideoObj("分享视频", "summary", localImagePath, targetUrl, netVideoPath, 10);
-        videoLocalObj = ShareObj.buildVideoObj("分享本地视频", "summary", localVideoPath);
+        videoLocalObj = ShareObj.buildVideoObj("分享本地视频", "summary", localImagePath, targetUrl, localVideoPath, 0);
 
         musicObj = ShareObj.buildMusicObj("分享音乐", "summary", localImagePath, targetUrl, netMusicPath, 10);
     }
@@ -180,6 +184,10 @@ public class TestPlatformActivity extends AppCompatActivity {
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+                if (!isInit) {
+                    Toast.makeText(mActivity,"请先初始化",Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 clickPos = tab.getPosition();
                 updateDisplay("切换到 " + mPlatform[clickPos]);
             }
@@ -237,11 +245,22 @@ public class TestPlatformActivity extends AppCompatActivity {
         }
     }
 
+    @OnClick({R.id.init_btn})
+    public void clickView(View view) {
+        switch (view.getId()) {
+            case R.id.init_btn:
+                isInit = true;
+                initSocialSDKSample();
+                break;
+            default:
+                break;
+        }
+    }
+
     // 图片，Gif分享 两种方式
     // openApi分享针对大图片相对慢一点,不会弹起新页面，优点是应用名称可以点亮，点击之后会跳转，申请高级权限后可以分享网络图片
     // 普通分享会弹起编辑页面，缺点是小尾巴不能点击
     @OnClick({
-            R.id.init_btn,
             R.id.btn_login,
             R.id.btn_share_video_local,
             R.id.btn_share_text,
@@ -256,8 +275,13 @@ public class TestPlatformActivity extends AppCompatActivity {
             R.id.btn_share_sms,
             R.id.btn_share_clipboard,
             R.id.btn_share_email,
+            R.id.btn_share_net_img,
     })
     public void clickBtn(View view) {
+        if (!isInit) {
+            Toast.makeText(mActivity,"请先初始化",Toast.LENGTH_SHORT).show();
+            return;
+        }
         initObj();
         switch (view.getId()) {
             case R.id.clear_btn:
@@ -276,6 +300,10 @@ public class TestPlatformActivity extends AppCompatActivity {
             case R.id.btn_share_img:
                 imageObj.setSummary(System.currentTimeMillis() + " [http://www.ibbpp.com]");
                 ShareManager.share(mActivity, getShareTargetTo(), imageObj, mOnShareListener);
+                break;
+            case R.id.btn_share_net_img:
+                netImageObj.setSummary(System.currentTimeMillis() + " [http://www.ibbpp.com]");
+                ShareManager.share(mActivity, getShareTargetTo(), netImageObj, mOnShareListener);
                 break;
             case R.id.btn_share_gif:
                 imageGifObj.setSummary(System.currentTimeMillis() + " [http://www.ibbpp.com]");
@@ -300,9 +328,6 @@ public class TestPlatformActivity extends AppCompatActivity {
             case R.id.btn_share_video_local:
                 videoLocalObj.setSummary(System.currentTimeMillis() + " [http://www.ibbpp.com]");
                 ShareManager.share(mActivity, getShareTargetTo(), videoLocalObj, mOnShareListener);
-                break;
-            case R.id.init_btn:
-                initSocialSDKSample();
                 break;
             case R.id.btn_share_sms:
                 webObj.setSmsParams("13611301719", "说啥呢");
@@ -330,6 +355,7 @@ public class TestPlatformActivity extends AppCompatActivity {
                 .jsonAdapter(new GsonJsonAdapter())
                 // 请求处理类，如果使用了微博的 openApi 分享，这个是必须的
                 .requestAdapter(new OkHttpRequestAdapter())
+                .tokenExpiresHours(0)
                 // 构建
                 .build();
         // 初始化

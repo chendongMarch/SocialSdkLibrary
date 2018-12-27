@@ -1,10 +1,8 @@
 package com.zfy.social.core.manager;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.exception.SocialError;
@@ -25,31 +23,28 @@ public class LoginManager {
 
     public static final String TAG = LoginManager.class.getSimpleName();
 
-    static OnLoginListener sListener;
+    private static OnLoginListener sListener;
 
     /**
      * 开始登陆，供外面使用
      *
-     * @param context       context
+     * @param activity       context
      * @param loginTarget   登陆类型
      * @param loginListener 登陆监听
      */
-    @TargetApi(Build.VERSION_CODES.ECLAIR)
-    public static void login(Context context, @Target.LoginTarget int loginTarget, OnLoginListener loginListener) {
+    public static void login(Activity activity, @Target.LoginTarget int loginTarget, OnLoginListener loginListener) {
         loginListener.onStart();
         sListener = loginListener;
-        IPlatform platform = GlobalPlatform.makePlatform(context, loginTarget);
-        if (!platform.isInstall(context)) {
+        IPlatform platform = GlobalPlatform.makePlatform(activity, loginTarget);
+        if (!platform.isInstall(activity)) {
             loginListener.onFailure(SocialError.make(SocialError.CODE_NOT_INSTALL));
             return;
         }
-        Intent intent = new Intent(context, platform.getUIKitClazz());
+        Intent intent = new Intent(activity, platform.getUIKitClazz());
         intent.putExtra(GlobalPlatform.KEY_ACTION_TYPE, GlobalPlatform.ACTION_TYPE_LOGIN);
         intent.putExtra(GlobalPlatform.KEY_LOGIN_TARGET, loginTarget);
-        context.startActivity(intent);
-        if(context instanceof Activity) {
-            ((Activity) context).overridePendingTransition(0, 0);
-        }
+        activity.startActivity(intent);
+        activity.overridePendingTransition(0, 0);
     }
 
 
@@ -80,21 +75,23 @@ public class LoginManager {
         if (GlobalPlatform.getPlatform() == null) {
             return;
         }
-        GlobalPlatform.getPlatform().login(activity, new FinishLoginListener(activity));
+        GlobalPlatform.getPlatform().login(activity, new OnLoginListenerWrap(activity));
     }
 
 
-    static class FinishLoginListener implements OnLoginListener {
+    static class OnLoginListenerWrap implements OnLoginListener {
 
         private WeakReference<Activity> mActivityWeakRef;
 
-        FinishLoginListener(Activity activity) {
+        OnLoginListenerWrap(Activity activity) {
             mActivityWeakRef = new WeakReference<>(activity);
         }
 
         @Override
         public void onStart() {
-            if (sListener != null) sListener.onStart();
+            if (sListener != null) {
+                sListener.onStart();
+            }
         }
 
         private void finish() {
@@ -104,19 +101,25 @@ public class LoginManager {
 
         @Override
         public void onSuccess(LoginResult loginResult) {
-            if (sListener != null) sListener.onSuccess(loginResult);
+            if (sListener != null) {
+                sListener.onSuccess(loginResult);
+            }
             finish();
         }
 
         @Override
         public void onCancel() {
-            if (sListener != null) sListener.onCancel();
+            if (sListener != null) {
+                sListener.onCancel();
+            }
             finish();
         }
 
         @Override
         public void onFailure(SocialError e) {
-            if (sListener != null) sListener.onFailure(e);
+            if (sListener != null) {
+                sListener.onFailure(e);
+            }
             finish();
         }
     }

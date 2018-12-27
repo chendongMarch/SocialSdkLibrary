@@ -6,8 +6,11 @@
         <!--用于发起请求和接受数据，同步生命周期-->
         <activity
             android:name="com.zfy.social.dd.uikit.DDActionActivity"
+            android:launchMode="singleInstance"
+            android:exported="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar">
             <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
@@ -17,8 +20,13 @@
             android:name="${applicationId}.ddshare.DDShareActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true"
-            android:screenOrientation="portrait"
+            android:launchMode="singleInstance"
             android:targetActivity="com.zfy.social.dd.uikit.DDActionActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"/>
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity-alias>
     </application>
 </manifest>

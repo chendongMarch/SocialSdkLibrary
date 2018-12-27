@@ -33,7 +33,6 @@ public class ShareObj implements Parcelable {
     private String summary;
     // 缩略图地址，必传
     private String thumbImagePath;
-    private String thumbImagePathNet;
     // 启动url，点击之后指向的url，启动新的网页
     private String targetUrl;
     // 资源url,音视频播放源
@@ -191,23 +190,6 @@ public class ShareObj implements Parcelable {
         return shareObj;
     }
 
-    /**
-     * 本地视频
-     *
-     * @param title          标题
-     * @param summary        描述
-     * @param localVideoPath 本地视频地址
-     * @return ShareObj
-     */
-    public static ShareObj buildVideoObj(String title, String summary, String localVideoPath) {
-        ShareObj shareObj = new ShareObj(SHARE_TYPE_VIDEO);
-        shareObj.setMediaPath(localVideoPath);
-        shareObj.setShareByIntent(true);
-        shareObj.setTitle(title);
-        shareObj.setSummary(summary);
-        return shareObj;
-    }
-
 
     /**
      * 设置小程序分享参数
@@ -274,11 +256,6 @@ public class ShareObj implements Parcelable {
     }
 
 
-    public boolean hasImg() {
-        return type != SHARE_TYPE_OPEN_APP && type != SHARE_TYPE_TEXT;
-    }
-
-
     public Bundle getExtra() {
         return extra;
     }
@@ -325,7 +302,6 @@ public class ShareObj implements Parcelable {
 
     public void setThumbImagePath(String thumbImagePath) {
         this.thumbImagePath = thumbImagePath;
-        this.thumbImagePathNet = thumbImagePath;
     }
 
     public String getTargetUrl() {
@@ -353,14 +329,6 @@ public class ShareObj implements Parcelable {
 
     public void setDuration(int duration) {
         this.duration = duration;
-    }
-
-    public boolean isShareByIntent() {
-        return isShareByIntent;
-    }
-
-    public void setShareByIntent(boolean shareByIntent) {
-        isShareByIntent = shareByIntent;
     }
 
     public String getMediaPath() {
@@ -437,7 +405,6 @@ public class ShareObj implements Parcelable {
                 ", title='" + title + '\'' +
                 ", summary='" + summary + '\'' +
                 ", thumbImagePath='" + thumbImagePath + '\'' +
-                ", thumbImagePathNet='" + thumbImagePathNet + '\'' +
                 ", targetUrl='" + targetUrl + '\'' +
                 ", mediaPath='" + mediaPath + '\'' +
                 ", duration=" + duration +
@@ -458,7 +425,6 @@ public class ShareObj implements Parcelable {
         dest.writeString(this.title);
         dest.writeString(this.summary);
         dest.writeString(this.thumbImagePath);
-        dest.writeString(this.thumbImagePathNet);
         dest.writeString(this.targetUrl);
         dest.writeString(this.mediaPath);
         dest.writeInt(this.duration);
@@ -486,7 +452,6 @@ public class ShareObj implements Parcelable {
         this.title = in.readString();
         this.summary = in.readString();
         this.thumbImagePath = in.readString();
-        this.thumbImagePathNet = in.readString();
         this.targetUrl = in.readString();
         this.mediaPath = in.readString();
         this.duration = in.readInt();
