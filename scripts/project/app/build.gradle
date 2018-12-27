@@ -1,0 +1,44 @@
+apply from: '../scripts/app.gradle'
+
+android {
+
+    defaultConfig {
+        applicationId "applicationId"
+        ndk {
+            abiFilters 'armeabi'
+        }
+    }
+
+    //正式签名相关信息
+    signingConfigs {
+        sign {
+            storeFile file(keyPath)
+            storePassword keyPwd
+            keyAlias alias
+            keyPassword storePwd
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.sign
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField "int", "Environment", "1" // 环境变量，1开发，2测试，3正式
+        }
+        debug {
+            signingConfig signingConfigs.sign
+            buildConfigField "int", "Environment", "3" // 环境变量，1开发，2测试，3正式
+        }
+    }
+
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+}
+
+dependencies {
+    implementation libs.cardView_v7
+}

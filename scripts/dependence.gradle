@@ -1,0 +1,171 @@
+//
+// 声明 android 版本
+// android {
+//     compileSdkVersion versions.compileSdkVersion
+//     defaultConfig {
+//         minSdkVersion versions.minSdkVersion
+//         targetSdkVersion versions.targetSdkVersion
+//     }
+// }
+// 添加依赖
+// dependencies {
+//     implementation libs.appcompat_v7
+//     implementation libs.okhttp3
+//     implementation libs.glide
+// }
+// $ ./gradlew clean build bintrayUpload -PbintrayUser=BINTRAY_USERNAME -PbintrayKey=BINTRAY_KEY -PdryRun=false
+ext {
+
+    // 官方支持库的版本
+    support_version = '27.1.1'
+    dbflow_version = "4.0.0-beta2"
+    fresco_version = '1.3.0'
+    lifecycle_version = '1.1.1'
+    kotlin_version = '1.2.31'
+
+    versions = [
+            compileSdkVersion: 27,
+            minSdkVersion    : 16,
+            targetSdkVersion : 27,
+    ]
+
+    // 官方支持库
+    support = [
+            /*************************************** SDK *************************************/
+            // Google support
+            design         : "com.android.support:design:${support_version}",
+            appcompat_v7   : "com.android.support:appcompat-v7:$support_version",
+            recyclerView_v7: "com.android.support:recyclerview-v7:${support_version}",
+            cardView_v7    : "com.android.support:cardview-v7:${support_version}",
+            constraint     : "com.android.support.constraint:constraint-layout:1.1.3",
+    ]
+
+    lifecycle = [
+            extensions: "android.arch.lifecycle:extensions:${lifecycle_version}",
+            runtime   : "android.arch.lifecycle:runtime:${lifecycle_version}",
+            compiler  : "android.arch.lifecycle:compiler:${lifecycle_version}",
+    ]
+
+    databinding = [
+            bindingAdapter  : 'me.tatarka.bindingcollectionadapter2:bindingcollectionadapter:2.3.0-beta3',
+            bindingAdapterRv: 'me.tatarka.bindingcollectionadapter2:bindingcollectionadapter-recyclerview:2.3.0-beta3',
+    ]
+
+    libs = [
+            social_core: 'com.zfy:social-sdk-core:0.0.2',
+            social_qq: 'com.zfy:social-sdk-qq:0.0.1',
+            social_dd: 'com.zfy:social-sdk-dd:0.0.1',
+            social_wx: 'com.zfy:social-sdk-wx:0.0.1',
+            social_wb: 'com.zfy:social-sdk-weibo:0.0.1',
+
+            kotlin              : "org.jetbrains.kotlin:kotlin-stdlib-jre7:${kotlin_version}",
+            arouterApi          : 'com.alibaba:arouter-api:1.4.0',
+            arouterCompiler     : 'com.alibaba:arouter-compiler:1.2.1',
+            /*************************************** SDK *************************************/
+            // Google support
+            design              : "com.android.support:design:${support_version}",
+            appcompat_v7        : "com.android.support:appcompat-v7:$support_version",
+            support_v4          : "com.android.support:support-v4:$support_version",
+            recyclerView_v7     : "com.android.support:recyclerview-v7:${support_version}",
+            cardView_v7         : "com.android.support:cardview-v7:${support_version}",
+            multidex            : 'com.android.support:multidex:1.0.2',
+            constraint          : "com.android.support.constraint:constraint-layout:1.1.3",
+            support_fragment    : "com.android.support:support-fragment:${support_version}",
+            /*************************************** 数据库 ***************************************/
+            // green dao
+            greendao            : 'org.greenrobot:greendao:2.2.0',
+            // db flow
+            dbflow_processor    : "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflow_version}",
+            dbflow_core         : "com.github.Raizlabs.DBFlow:dbflow-core:${dbflow_version}",
+            dbflow              : "com.github.Raizlabs.DBFlow:dbflow:${dbflow_version}",
+
+            /*********************************** 图像 *************************************/
+            // 图片加载
+            glide               : 'com.github.bumptech.glide:glide:3.7.0',
+            glide4              : 'com.github.bumptech.glide:glide:4.7.1',
+            glide4Compiler      : 'com.github.bumptech.glide:compiler:4.7.1',
+            glideOkHttp         : 'com.github.bumptech.glide:okhttp3-integration:4.7.1',
+            // fresco
+            fresco              : "com.facebook.fresco:fresco:${fresco_version}",
+            animated_gif        : "com.facebook.fresco:animated-gif:${fresco_version}",
+            animated_webp       : "com.facebook.fresco:animated-webp:${fresco_version}",
+            webpsupport         : "com.facebook.fresco:webpsupport:${fresco_version}",
+            // 缩放 image view
+            PhotoView           : 'com.github.chrisbanes:PhotoView:1.2.6',
+
+            /*********************************** 控件 *************************************/
+            // 下拉加载库
+            ultra_ptr           : 'in.srain.cube:ultra-ptr:1.0.11',
+            // google flex
+            flexbox             : 'com.google.android:flexbox:0.2.7',
+
+            /********************************** 网络与数据解析 *******************************/
+            // gson解析
+            gson                : 'com.google.code.gson:gson:2.4',
+            fastjson            : 'com.alibaba:fastjson:1.2.9',
+            // network
+            okhttp3             : 'com.squareup.okhttp3:okhttp:3.10.0',
+            retrofit            : 'com.squareup.retrofit2:retrofit:2.4.0',
+            converter_gson      : 'com.squareup.retrofit2:converter-gson:2.4.0',
+            adapter_rxjava2     : 'com.squareup.retrofit2:adapter-rxjava2:2.4.0',
+            logging_interceptor : 'com.squareup.okhttp3:logging-interceptor:3.8.0',
+            // 调试工具类库
+            stetho              : 'com.facebook.stetho:stetho:1.5.0',
+            stetho_okhttp3      : 'com.facebook.stetho:stetho-okhttp3:1.5.0',
+            cookie              : 'com.github.franmontiel:PersistentCookieJar:v1.0.1',
+
+            /********************************** 响应式 ***************************************/
+            // rx base
+            rxjava2             : 'io.reactivex.rxjava2:rxjava:2.1.12',
+            rxandroid           : 'io.reactivex.rxjava2:rxandroid:2.0.2',
+
+            /********************************** 辅助优化 ***********************************/
+            //内存检测
+            leakCanaryDebug     : "com.squareup.leakcanary:leakcanary-android:1.5.4",
+            leakCanaryRelease   : "com.squareup.leakcanary:leakcanary-android-no-op:1.5.4",
+
+            /************************************** 常用 ***********************************/
+            // 文件缓存 lru
+            disklrucache        : 'com.jakewharton:disklrucache:2.0.1',
+            // 线程调度+任务管理
+            bolts               : 'com.parse.bolts:bolts-tasks:1.4.0',
+            // 事件总线
+            eventbus            : 'org.greenrobot:eventbus:3.1.1',
+            // 控件注解
+            butterknife         : 'com.jakewharton:butterknife:8.8.1',
+            butterknifeProcessor: 'com.jakewharton:butterknife-compiler:8.8.1',
+
+            /************************************** 其他 ***********************************/
+            // zxing
+            zxing               : "com.google.zxing:core:3.3.0",
+            walle               : "com.meituan.android.walle:library:1.1.6",
+            mmkv                : 'com.tencent:mmkv:1.0.10',
+            /************************************** 自定义 ***********************************/
+            common              : 'com.zfy:common:0.0.7',
+            assistant           : 'com.zfy:assistant:0.0.1',
+            lightadapter          : 'com.zfy:lightadapter:0.0.1',
+            // 滑动选中
+            slidingSelect         : 'com.march.slidingselect:slidingselect:0.0.1',
+
+            /************************************** 第三方 ***********************************/
+            aliPay                : 'com.alibaba.alipay:alipaySingle:20160825@jar',
+            wechatSocial          : 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:5.1.4',
+            wechatPay             : 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:5.1.4',
+            buglyUpgradeCrashReport: 'com.tencent.bugly:crashreport_upgrade:1.3.5',
+            buglyTinker           : 'com.tencent.tinker:tinker-android-lib:1.9.6',
+            /************************************** 继续扩展 ***********************************/
+
+            utilcode              : 'com.blankj:utilcode:1.17.1',
+            BRVAH                 : 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.42',
+            bgaBanner             : 'cn.bingoogolapple:bga-banner:2.2.4@aar',
+            roundImgView          : 'com.makeramen:roundedimageview:2.3.0',
+            smartRefresh          : 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-14',
+            smartRefreshHeader  : 'com.scwang.smartrefresh:SmartRefreshHeader:1.1.0-alpha-14',
+            immersionBar        : 'com.gyf.immersionbar:immersionbar:2.3.2-beta01',
+            room                : 'android.arch.persistence.room:runtime:1.1.1',
+            roomCompiler        : 'android.arch.persistence.room:compiler:1.1.1',
+            pictureSelector     : 'com.github.LuckSiege.PictureSelector:picture_library:v2.2.3',
+            rxdownload          : 'zlc.season:rxdownload:1.1.1'
+
+    ]
+}
