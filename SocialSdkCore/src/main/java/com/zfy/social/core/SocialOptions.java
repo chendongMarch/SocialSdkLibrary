@@ -337,8 +337,9 @@ public class SocialOptions {
             if (TextUtils.isEmpty(appName)) {
                 appName = context.getString(R.string.app_name);
             }
-            File shareDir = new File(context.getExternalCacheDir(), SHARE_CACHE_DIR_NAME);
-            cacheDir = (shareDir.mkdirs() ? shareDir : context.getCacheDir()).getAbsolutePath();
+            File storageDir = new File(context.getExternalCacheDir(), SHARE_CACHE_DIR_NAME);
+            storageDir.mkdirs();
+            this.cacheDir = storageDir.getAbsolutePath();
             wbScope = SocialValues.SCOPE;
             return new SocialOptions(this);
         }

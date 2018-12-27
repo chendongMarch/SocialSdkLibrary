@@ -1,12 +1,8 @@
 package com.zfy.social.core.manager;
 
-import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.text.TextUtils;
 
 import com.zfy.social.core.SocialSdk;
@@ -37,7 +33,7 @@ public class ShareManager {
 
     public static final String TAG = ShareManager.class.getSimpleName();
 
-    static OnShareListener sListener;
+    private static OnShareListener sListener;
 
     /**
      * 开始分享，供外面调用
@@ -45,18 +41,17 @@ public class ShareManager {
      * @param activity         context
      * @param shareTarget     分享目标
      * @param shareObj        分享对象
-     * @param onShareListener 分享监听
+     * @param listener 分享监听
      */
-    public static void share(final Activity activity, @Target.ShareTarget final int shareTarget,
-            final ShareObj shareObj, final OnShareListener onShareListener) {
-        onShareListener.onStart(shareTarget, shareObj);
+    public static void share(final Activity activity, @Target.ShareTarget final int shareTarget, final ShareObj shareObj, final OnShareListener listener) {
+        listener.onStart(shareTarget, shareObj);
         Task.callInBackground(() -> {
             prepareImageInBackground(activity, shareObj);
-            ShareObj temp = null;
+            ShareObj temp;
             try {
-                temp = onShareListener.onPrepareInBackground(shareTarget, shareObj);
+                temp = listener.onPrepareInBackground(shareTarget, shareObj);
             } catch (Exception e) {
-                SocialUtil.t(TAG, e);
+                throw SocialError.make(SocialError.CODE_PREPARE_BG_ERROR, "onPrepareInBackground error");
             }
             if (temp != null) {
                 return temp;
@@ -64,17 +59,24 @@ public class ShareManager {
                 return shareObj;
             }
         }).continueWith(task -> {
-            if (task.isFaulted() || task.getResult() == null) {
-                SocialError exception = SocialError.make(SocialError.CODE_COMMON_ERROR, "onPrepareInBackground error", task.getError());
-                onShareListener.onFailure(exception);
-                return null;
+            if (task.isFaulted()) {
+                throw task.getError();
             }
-            doShare(activity, shareTarget, task.getResult(), onShareListener);
+            if (task.getResult() == null) {
+                throw SocialError.make(SocialError.CODE_COMMON_ERROR, "ShareManager#share Result is Null");
+            }
+            doShare(activity, shareTarget, task.getResult(), listener);
             return true;
         }, Task.UI_THREAD_EXECUTOR).continueWith(task -> {
             if (task.isFaulted()) {
-                SocialError exception = SocialError.make(SocialError.CODE_COMMON_ERROR, "ShareManager.share() error", task.getError());
-                onShareListener.onFailure(exception);
+                SocialError error;
+                Exception exception = task.getError();
+                if (exception instanceof SocialError) {
+                    error = (SocialError) exception;
+                } else {
+                    error = SocialError.make(SocialError.CODE_COMMON_ERROR, "ShareManager#share() error", exception);
+                }
+                listener.onFailure(error);
             }
             return true;
         });
@@ -99,28 +101,16 @@ public class ShareManager {
 
 
     // 开始分享
-    @TargetApi(Build.VERSION_CODES.ECLAIR)
     private static void doShare(Activity activity, @Target.ShareTarget int shareTarget, ShareObj shareObj, OnShareListener onShareListener) {
-        // 对象是否完整
-        if (!ShareObjChecker.checkObjValid(shareObj, shareTarget)) {
-            onShareListener.onFailure(SocialError.make(SocialError.CODE_SHARE_OBJ_VALID, ShareObjChecker.getErrMsg()));
-            return;
-        }
-        // 不是内存路径，有图片，但是没有存储权限，读取缩略图片需要存储权限
-        if (!SocialUtil.isAppCachePath(activity, shareObj.getThumbImagePath())
-                && shareObj.hasImg()
-                && !SocialUtil.hasPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            onShareListener.onFailure(SocialError.make(SocialError.CODE_STORAGE_READ_ERROR));
-            return;
-        }
-        // 不是内部路径
-        // 微博、本地、视频 需要写存储的权限
-        if (!SocialUtil.isAppCachePath(activity, shareObj.getThumbImagePath())
-                && shareTarget == Target.SHARE_WB
-                && shareObj.getType() == ShareObj.SHARE_TYPE_VIDEO
-                && !FileUtil.isHttpPath(shareObj.getMediaPath())
-                && !SocialUtil.hasPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            onShareListener.onFailure(SocialError.make(SocialError.CODE_STORAGE_WRITE_ERROR));
+        try {
+            ShareObjChecker.checkShareObjParams(activity, shareTarget, shareObj);
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (e instanceof SocialError) {
+                onShareListener.onFailure((SocialError) e);
+            } else {
+                onShareListener.onFailure(SocialError.make(SocialError.CODE_COMMON_ERROR, "ShareManager#doShare check obj", e));
+            }
             return;
         }
         sListener = onShareListener;
@@ -152,10 +142,12 @@ public class ShareManager {
         int actionType = intent.getIntExtra(KEY_ACTION_TYPE, GlobalPlatform.INVALID_PARAM);
         int shareTarget = intent.getIntExtra(GlobalPlatform.KEY_SHARE_TARGET, GlobalPlatform.INVALID_PARAM);
         ShareObj shareObj = intent.getParcelableExtra(GlobalPlatform.KEY_SHARE_MEDIA_OBJ);
-        if (actionType != GlobalPlatform.ACTION_TYPE_SHARE)
+        if (actionType != GlobalPlatform.ACTION_TYPE_SHARE) {
+            SocialUtil.e(TAG, "actionType 错误");
             return;
+        }
         if (shareTarget == GlobalPlatform.INVALID_PARAM) {
-            SocialUtil.e(TAG, "shareTargetType无效");
+            SocialUtil.e(TAG, "shareTarget Type 无效");
             return;
         }
         if (shareObj == null) {
@@ -166,34 +158,35 @@ public class ShareManager {
             SocialUtil.e(TAG, "请设置 OnShareListener");
             return;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                && activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-            SocialUtil.e(TAG, "没有获取到读存储卡的权限，这可能导致某些分享不能进行");
-        }
         if (GlobalPlatform.getPlatform() == null) {
             return;
         }
-        GlobalPlatform.getPlatform().initOnShareListener(new FinishShareListener(activity));
+        GlobalPlatform.getPlatform().initOnShareListener(new OnShareListenerWrap(activity));
         GlobalPlatform.getPlatform().share(activity, shareTarget, shareObj);
     }
 
-    static class FinishShareListener implements OnShareListener {
+
+    // 用于分享结束后，回收资源
+    static class OnShareListenerWrap implements OnShareListener {
 
         private WeakReference<Activity> mActivityRef;
 
-        FinishShareListener(Activity activity) {
+        OnShareListenerWrap(Activity activity) {
             mActivityRef = new WeakReference<>(activity);
         }
 
         @Override
         public void onStart(int shareTarget, ShareObj obj) {
-            if (sListener != null) sListener.onStart(shareTarget, obj);
+            if (sListener != null) {
+                sListener.onStart(shareTarget, obj);
+            }
         }
 
         @Override
         public ShareObj onPrepareInBackground(int shareTarget, ShareObj obj) throws Exception {
-            if (sListener != null)
+            if (sListener != null) {
                 return sListener.onPrepareInBackground(shareTarget, obj);
+            }
             return null;
         }
 
@@ -204,21 +197,27 @@ public class ShareManager {
 
         @Override
         public void onSuccess() {
-            if (sListener != null) sListener.onSuccess();
+            if (sListener != null) {
+                sListener.onSuccess();
+            }
             finish();
         }
 
 
         @Override
         public void onCancel() {
-            if (sListener != null) sListener.onCancel();
+            if (sListener != null) {
+                sListener.onCancel();
+            }
             finish();
         }
 
 
         @Override
         public void onFailure(SocialError e) {
-            if (sListener != null) sListener.onFailure(e);
+            if (sListener != null) {
+                sListener.onFailure(e);
+            }
             finish();
         }
     }

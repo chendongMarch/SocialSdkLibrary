@@ -45,6 +45,7 @@ import bolts.Task;
  * Describe : 微信平台
  * [分享与收藏文档](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419317340&token=&lang=zh_CN)
  * [微信登录文档](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419317851&token=&lang=zh_CN)
+ * [公告-取消 cancel 事件](https://open.weixin.qq.com/cgi-bin/announce?spm=a311a.9588098.0.0&action=getannouncement&key=11534138374cE6li&version=)
  * <p>
  * 缩略图不超过 32kb
  * 源文件不超过 10M
@@ -106,8 +107,9 @@ public class WxPlatform extends AbsPlatform {
 
     @Override
     public void handleIntent(Activity activity) {
-        if (activity instanceof IWXAPIEventHandler && mWxApi != null)
+        if (activity instanceof IWXAPIEventHandler && mWxApi != null) {
             mWxApi.handleIntent(activity.getIntent(), (IWXAPIEventHandler) activity);
+        }
     }
 
     @Override
@@ -352,6 +354,10 @@ public class WxPlatform extends AbsPlatform {
                 mOnShareListener.onFailure(SocialError.make(SocialError.CODE_FILE_NOT_FOUND));
             }
         } else {
+            if (FileUtil.isExist(obj.getMediaPath())) {
+                mOnShareListener.onFailure(SocialError.make(SocialError.CODE_NOT_SUPPORT, "微信朋友圈不支持本地视频分享"));
+                return;
+            }
             BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE_32)
                     .continueWith(new ThumbTask(TAG, "shareVideo", mOnShareListener) {
                         @Override

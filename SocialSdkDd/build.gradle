@@ -4,7 +4,7 @@ dependencies {
     // compileOnly libs.social_core
     compileOnly project(':SocialSdkCore')
     compileOnly libs.appcompat_v7
-    implementation files('libs/libddshare.jar') // 钉钉
+    implementation 'com.alibaba.android:ddsharesdk:1.1.0' // 钉钉
 }
 
 apply plugin: 'bintray-release'

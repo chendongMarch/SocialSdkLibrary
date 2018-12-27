@@ -127,10 +127,7 @@ public class FileUtil {
      * @return 映射的本地路径
      */
     public static String mapUrl2LocalPath(String url) {
-        // 映射文件名
-        String suffix = FileUtil.getSuffix(url);
-        suffix = TextUtils.isEmpty(suffix) ? ".png" : suffix;
-        String fileName = SocialUtil.getMD5(url) + suffix;
+        String fileName = SocialUtil.getMD5(url);
         File saveFile = new File(SocialSdk.getConfig().getCacheDir(), fileName);
         return saveFile.getAbsolutePath();
     }
