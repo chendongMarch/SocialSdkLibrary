@@ -9,6 +9,10 @@
 
 博客地址 ：[快速接入微信微博QQ钉钉原生登录分享](http://zfyx.coding.me/article/3067853428/)
 
+> **当前最新版本 0.0.2**
+
+---
+
 🎉  2018.12.27 完成 `gradle` 插件，拆分平台，自动化依赖，一个新台阶 🐶
 
 🎉  2018.12.21 已经225颗 🌟，着手准备拆分成不同平台库，方便灵活接入 ⛽️
@@ -40,20 +44,20 @@
 
 🔥 开源：没有彩蛋，没有彩蛋，没有彩蛋；
 
-🔥 简单：只需要关注登录、分享管理类和一个数据结构对象即可，不需要再关注平台的差异。
+🔥 简单：只需要关注登录、分享管理类和一个数据结构对象即可，不需要再关注平台的差异；
 
-🔥 轻量：仅包含三方 `SDK` 和一个简单的异步框架(38k)，网络请求、`JSON` 解析从外部注入，减少多余的依赖，保证与宿主项目高度统一。
+🔥 轻量：仅包含三方 `SDK` 和一个简单的异步框架(38k)，网络请求、`JSON` 解析从外部注入，减少多余的依赖，保证与宿主项目高度统一；
 
 🔥 功能性：面向需求开发设计：
 
-- 在分享前可统一重写数据对象，用来做分享的切面，支持图片加水印等类似需求。
-- 支持短信、邮件、粘贴板等系统分享平台。
+- 在分享前可统一重写数据对象，用来做分享的切面，支持图片加水印等类似需求；
+- 支持短信、邮件、粘贴板等系统分享平台；
 
 🔥 兼容性：
 
-- 为多个平台提供外观一致的分享接口，若不支持，使用 `web` 分享兼容。
-- 支持直接使用网络图片分享，内置自动下载功能。
-- 使用 `Intent` 兼容不支持的数据模式，如支持本地视频分享，`qq` 的纯文字分享等等。
+- 为多个平台提供外观一致的分享接口，若不支持，使用 `web` 分享兼容；
+- 支持直接使用网络图片分享，内置自动下载功能；
+- 使用 `Intent` 兼容不支持的数据模式，如支持本地视频分享，`qq` 的纯文字分享等等；
 
 
 ## 开始接入
@@ -68,6 +72,7 @@ buildscript {
         maven { url "https://dl.bintray.com/zfy/maven" }
     }
     dependencies {
+        // 查看文初最新版本
         classpath 'com.zfy.social:plugin:0.0.2'
     }
 }
@@ -293,7 +298,11 @@ ShareObj videoObj = ShareObj.buildVideoObj("分享视频", "summary", localImage
 ShareObj videoLocalObj = ShareObj.buildVideoObj("分享本地视频", "summary", localImagePath, targetUrl, localVideoPath, 0);
 // 分享音乐
 ShareObj musicObj = ShareObj.buildMusicObj("分享音乐", "summary", localImagePath, targetUrl, netMusicPath, 10);
+```
 
+针对一些不能被统一的参数使用扩展的参数支持：
+
+```java
 // 使 ShareObj 支持短信分享
 webObj.setSmsParams("13611301719", "说啥呢");
 // 使 ShareObj 支持粘贴板分享
