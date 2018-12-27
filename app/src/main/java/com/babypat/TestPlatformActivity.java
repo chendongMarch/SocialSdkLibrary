@@ -146,7 +146,6 @@ public class TestPlatformActivity extends AppCompatActivity {
             public void onSuccess(LoginResult result) {
                 Log.e(TAG, result.toString());
                 updateDisplay(result.toString());
-
             }
 
             @Override

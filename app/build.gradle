@@ -1,5 +1,5 @@
 apply from: '../scripts/app.gradle'
-apply plugin: 'com.zfy.social.plugin'
+apply plugin: 'socialsdk'
 
 android {
 

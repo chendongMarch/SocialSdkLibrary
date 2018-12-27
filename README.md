@@ -58,14 +58,13 @@
 
 ## 开始接入
 
-### 添加插件依赖路径
+STEP1: 添加插件依赖路径
 
 > project/build.gradle
 
 ```js
 buildscript {
     repositories {
-        maven { url "file:///Users/march/AndroidPro/babyphoto_app/plugin" }
         jcenter()
     }
     dependencies {
@@ -74,7 +73,7 @@ buildscript {
 }
 ```
 
-### 参数配置
+STEP2: 配置参数
 
 > app/build.gralde
 
@@ -107,7 +106,7 @@ social {
 }
 ```
 
-### 初始化
+STEP3：初始化
 
 ```java
 private void initSocialSDK() {
@@ -128,9 +127,7 @@ private void initSocialSDK() {
 }
 ```
 
-### Adapter
-
-项目内使用了 `JSON` 解析，网络请求等功能，但是又不想引入多余的框架，所以才用了宿主项目注入的方式，保证和宿主项目统一。
+说一下 `Adapter`，项目内使用了 `JSON` 解析，网络请求等功能，但是又不想引入多余的框架，所以才用了宿主项目注入的方式，保证和宿主项目统一。
 
 - `IJsonAdapter`，必须 ！负责完成 `Json` 解析和序列化，提供一个 `Gson` 下的实现仅供参考 - [GsonJsonAdapter.java](https://github.com/chendongMarch/SocialSdkLibrary/blob/master/temp/GsonJsonAdapter.java)；
 

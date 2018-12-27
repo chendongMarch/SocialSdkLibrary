@@ -76,7 +76,8 @@ public class SocialSdk {
     }
 
     public static IPlatform getPlatform(Context context, int target) {
-        PlatformFactory platformFactory = sPlatformFactories.get(target);
+        int platform = Target.mapPlatform(target);
+        PlatformFactory platformFactory = sPlatformFactories.get(platform);
         if (platformFactory != null) {
             return platformFactory.create(context, target);
         }
