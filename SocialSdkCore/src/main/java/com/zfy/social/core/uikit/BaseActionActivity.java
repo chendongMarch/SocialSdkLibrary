@@ -1,6 +1,5 @@
 package com.zfy.social.core.uikit;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
@@ -26,9 +25,8 @@ public class BaseActionActivity extends Activity {
         if (platform != null) {
             platform.onResponse(resp);
         }
-        checkFinish();
+        checkFinish(false);
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +55,7 @@ public class BaseActionActivity extends Activity {
                 getPlatform().handleIntent(this);
             }
             // 留在目标 app 后在返回会再次 resume
-            checkFinish();
+            checkFinish(true);
         } else {
             mIsNotFirstResume = true;
         }
@@ -76,19 +74,25 @@ public class BaseActionActivity extends Activity {
         if (getPlatform() != null) {
             getPlatform().onActivityResult(requestCode, resultCode, data);
         }
-        checkFinish();
+        checkFinish(false);
     }
 
 
-    @TargetApi(Build.VERSION_CODES.ECLAIR)
-    private void checkFinish() {
+    public void checkFinish(boolean postFinish) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             if (!isFinishing() && !isDestroyed()) {
+                if (postFinish) {
+                    GlobalPlatform.onUIFinished();
+                }
                 finish();
                 overridePendingTransition(0, 0);
+
             }
         } else {
             if (!isFinishing()) {
+                if (postFinish) {
+                    GlobalPlatform.onUIFinished();
+                }
                 finish();
                 overridePendingTransition(0, 0);
             }
@@ -98,7 +102,7 @@ public class BaseActionActivity extends Activity {
     private IPlatform getPlatform() {
         IPlatform platform = GlobalPlatform.getPlatform();
         if (platform == null) {
-            checkFinish();
+            checkFinish(false);
             return null;
         } else
             return platform;

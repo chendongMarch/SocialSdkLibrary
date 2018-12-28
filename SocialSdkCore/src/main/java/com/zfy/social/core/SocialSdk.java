@@ -28,7 +28,7 @@ public class SocialSdk {
 
     private static SparseArray<PlatformFactory> sPlatformFactories;
 
-    public static SocialOptions getConfig() {
+    public static SocialOptions opts() {
         if (sSocialOptions == null) {
             throw SocialError.make(SocialError.CODE_SDK_INIT_ERROR);
         }

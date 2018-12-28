@@ -40,7 +40,7 @@ public class DDPlatform extends AbsPlatform {
         @Override
         public IPlatform create(Context context, int target) {
             IPlatform platform = null;
-            SocialOptions config = SocialSdk.getConfig();
+            SocialOptions config = SocialSdk.opts();
             if (!SocialUtil.isAnyEmpty(config.getDdAppId())) {
                 platform = new DDPlatform(context, config.getDdAppId(), config.getAppName(), target);
             }

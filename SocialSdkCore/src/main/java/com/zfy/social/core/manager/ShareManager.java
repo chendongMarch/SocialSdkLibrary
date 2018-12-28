@@ -33,6 +33,7 @@ public class ShareManager {
     public static final String TAG = ShareManager.class.getSimpleName();
 
     private static OnShareListener sListener;
+    private static int sCurShareTarget;
 
     /**
      * 开始分享，供外面调用
@@ -43,6 +44,7 @@ public class ShareManager {
      * @param listener 分享监听
      */
     public static void share(final Activity activity, @Target.ShareTarget final int shareTarget, final ShareObj shareObj, final OnShareListener listener) {
+        sCurShareTarget = -1;
         listener.onStart(shareTarget, shareObj);
         Task.callInBackground(() -> {
             prepareImageInBackground(activity, shareObj);
@@ -89,15 +91,14 @@ public class ShareManager {
             File file = SocialSdk.getRequestAdapter().getFile(thumbImagePath);
             if (FileUtil.isExist(file)) {
                 shareObj.setThumbImagePath(file.getAbsolutePath());
-            } else if (SocialSdk.getConfig().getFailImgRes() > 0) {
-                String localPath = FileUtil.mapResId2LocalPath(context, SocialSdk.getConfig().getFailImgRes());
+            } else if (SocialSdk.opts().getFailImgRes() > 0) {
+                String localPath = FileUtil.mapResId2LocalPath(context, SocialSdk.opts().getFailImgRes());
                 if (FileUtil.isExist(localPath)) {
                     shareObj.setThumbImagePath(localPath);
                 }
             }
         }
     }
-
 
     // 开始分享
     private static void doShare(Activity activity, @Target.ShareTarget int shareTarget, ShareObj shareObj, OnShareListener onShareListener) {
@@ -122,6 +123,7 @@ public class ShareManager {
             platform.initOnShareListener(sListener);
             platform.share(activity, shareTarget, shareObj);
         } else {
+            sCurShareTarget = shareTarget;
             Intent intent = new Intent(activity, platform.getUIKitClazz());
             intent.putExtra(GlobalPlatform.KEY_ACTION_TYPE, GlobalPlatform.ACTION_TYPE_SHARE);
             intent.putExtra(GlobalPlatform.KEY_SHARE_MEDIA_OBJ, shareObj);
@@ -164,6 +166,15 @@ public class ShareManager {
         GlobalPlatform.getPlatform().share(activity, shareTarget, shareObj);
     }
 
+    static void postFinishEvent() {
+        if (sCurShareTarget != -1 && sListener != null) {
+            if (SocialSdk.opts().isShareSuccessIfStay()) {
+                sListener.onSuccess(sCurShareTarget);
+            } else {
+                sListener.onFailure(SocialError.make(SocialError.CODE_STAY_OTHER_APP));
+            }
+        }
+    }
 
     // 用于分享结束后，回收资源
     static class OnShareListenerWrap implements OnShareListener {

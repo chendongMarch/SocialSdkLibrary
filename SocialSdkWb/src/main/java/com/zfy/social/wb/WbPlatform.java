@@ -56,7 +56,7 @@ public class WbPlatform extends AbsPlatform {
         @Override
         public IPlatform create(Context context, int target) {
             WbPlatform platform = null;
-            SocialOptions config = SocialSdk.getConfig();
+            SocialOptions config = SocialSdk.opts();
             String appId = config.getWbAppId();
             String appName = config.getAppName();
             String redirectUrl = config.getWbRedirectUrl();

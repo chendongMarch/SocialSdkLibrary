@@ -95,22 +95,23 @@ public abstract class AccessToken {
     }
 
     public static <T> T getToken(final Context context, final int target, final Class<T> tokenClazz) {
-        if (SocialSdk.getConfig().getTokenExpiresHoursMs() <= 0) {
+        if (SocialSdk.opts().getTokenExpiresHoursMs() <= 0) {
             return null;
         }
         int platformTarget = SocialUtil.mapPlatformTarget(target);
         SharedPreferences sp = getSp(context);
         long time = sp.getLong(platformTarget + KEY_TIME, -1);
         long currentTimeMillis = System.currentTimeMillis();
-        if (currentTimeMillis - time < SocialSdk.getConfig().getTokenExpiresHoursMs()) {
-            return JsonUtil.getObject(sp.getString(platformTarget + KEY_TOKEN, null), tokenClazz);
+        if (currentTimeMillis - time < SocialSdk.opts().getTokenExpiresHoursMs()) {
+            T object = JsonUtil.getObject(sp.getString(platformTarget + KEY_TOKEN, null), tokenClazz);
+            return object;
         } else {
             return null;
         }
     }
 
     public static void saveToken(final Context context, final int target, final Object token) {
-        if (SocialSdk.getConfig().getTokenExpiresHoursMs() <= 0) {
+        if (SocialSdk.opts().getTokenExpiresHoursMs() <= 0) {
             return;
         }
         Executors.newSingleThreadExecutor().execute(() -> {
@@ -123,6 +124,7 @@ public abstract class AccessToken {
                     return;
                 }
                 String tokenJson = JsonUtil.getObject2Json(token);
+
                 sp.edit().putString(platformTarget + KEY_TOKEN, tokenJson).apply();
                 sp.edit().putLong(platformTarget + KEY_TIME, System.currentTimeMillis()).apply();
             } catch (Exception e) {

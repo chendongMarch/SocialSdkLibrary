@@ -64,7 +64,7 @@ public class WxPlatform extends AbsPlatform {
         @Override
         public IPlatform create(Context context, int target) {
             IPlatform platform = null;
-            SocialOptions config = SocialSdk.getConfig();
+            SocialOptions config = SocialSdk.opts();
             if (!SocialUtil.isAnyEmpty(config.getWxAppId(), config.getWxSecretKey())) {
                 platform = new WxPlatform(context, config.getWxAppId(), config.getAppName(), target, config.getWxSecretKey());
             }
@@ -139,7 +139,7 @@ public class WxPlatform extends AbsPlatform {
                     // 用户同意  authResp.country;  authResp.lang;  authResp.state;
                     SendAuth.Resp authResp = (SendAuth.Resp) resp;
                     String authCode = authResp.code;
-                    if (SocialSdk.getConfig().isWxOnlyAuthCode()) {
+                    if (SocialSdk.opts().isWxOnlyAuthCode()) {
                         listener.onSuccess(new LoginResult(Target.LOGIN_WX, authCode));
                     } else {
                         mWeChatLoginHelper.getAccessTokenByCode(authCode);
