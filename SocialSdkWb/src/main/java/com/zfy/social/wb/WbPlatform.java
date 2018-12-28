@@ -3,6 +3,7 @@ package com.zfy.social.wb;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 
 import com.sina.weibo.sdk.WbSdk;
@@ -27,6 +28,7 @@ import com.zfy.social.core.model.ShareObj;
 import com.zfy.social.core.platform.AbsPlatform;
 import com.zfy.social.core.platform.IPlatform;
 import com.zfy.social.core.platform.PlatformFactory;
+import com.zfy.social.core.uikit.BaseActionActivity;
 import com.zfy.social.core.util.BitmapUtil;
 import com.zfy.social.core.util.FileUtil;
 import com.zfy.social.core.util.SocialUtil;
@@ -53,6 +55,7 @@ public class WbPlatform extends AbsPlatform {
     private OpenApiShareHelper mOpenApiShareHelper;
 
     public static class Factory implements PlatformFactory {
+
         @Override
         public IPlatform create(Context context, int target) {
             WbPlatform platform = null;
@@ -106,21 +109,12 @@ public class WbPlatform extends AbsPlatform {
 
     @Override
     public void recycle() {
-        mShareHandler = null;
         if (mLoginHelper != null) {
             mLoginHelper.recycle();
         }
+        mShareHandler = null;
         mLoginHelper = null;
         mOpenApiShareHelper = null;
-    }
-
-    // 延迟获取 ShareHandler
-    private WbShareHandler makeWbShareHandler(Activity activity) {
-        if (mShareHandler == null) {
-            mShareHandler = new WbShareHandler(activity);
-            mShareHandler.registerApp();
-        }
-        return mShareHandler;
     }
 
     // 延迟创建 login helper
@@ -140,15 +134,19 @@ public class WbPlatform extends AbsPlatform {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (mLoginHelper != null)
+    public void onActivityResult(BaseActionActivity activity, int requestCode, int resultCode, Intent data) {
+        if (mLoginHelper != null) {
             mLoginHelper.authorizeCallBack(requestCode, resultCode, data);
+        }
+        if (mOnShareListener != null && activity instanceof WbShareCallback && mShareHandler != null) {
+            mShareHandler.doResultIntent(data, (WbShareCallback) activity);
+        }
     }
 
     @Override
     public void handleIntent(Activity activity) {
         if (mOnShareListener != null && activity instanceof WbShareCallback && mShareHandler != null) {
-            makeWbShareHandler(activity).doResultIntent(activity.getIntent(), (WbShareCallback) activity);
+            mShareHandler.doResultIntent(activity.getIntent(), (WbShareCallback) activity);
         }
     }
 
@@ -179,6 +177,10 @@ public class WbPlatform extends AbsPlatform {
 
     @Override
     protected void dispatchShare(Activity activity, int shareTarget, ShareObj obj) {
+        mShareHandler = new WbShareHandler(activity);
+        mShareHandler.setProgressColor(Color.RED);
+        mShareHandler.registerApp();
+        
         switch (obj.getType()) {
             case ShareObj.SHARE_TYPE_OPEN_APP:
                 shareOpenApp(shareTarget, activity, obj);
@@ -218,7 +220,7 @@ public class WbPlatform extends AbsPlatform {
     private void shareText(int shareTarget, Activity activity, final ShareObj obj) {
         WeiboMultiMessage multiMessage = new WeiboMultiMessage();
         multiMessage.textObject = getTextObj(obj.getSummary());
-        makeWbShareHandler(activity).shareMessage(multiMessage, false);
+        mShareHandler.shareMessage(multiMessage, false);
     }
 
     // 分享图片
@@ -233,7 +235,7 @@ public class WbPlatform extends AbsPlatform {
                             WeiboMultiMessage multiMessage = new WeiboMultiMessage();
                             multiMessage.imageObject = getImageObj(obj.getThumbImagePath(), thumbData);
                             multiMessage.textObject = getTextObj(obj.getSummary());
-                            makeWbShareHandler(activity).shareMessage(multiMessage, false);
+                            mShareHandler.shareMessage(multiMessage, false);
                         }
                     }, Task.UI_THREAD_EXECUTOR);
         }
@@ -249,7 +251,7 @@ public class WbPlatform extends AbsPlatform {
                         WeiboMultiMessage multiMessage = new WeiboMultiMessage();
                         checkAddTextAndImageObj(multiMessage, obj, thumbData);
                         multiMessage.mediaObject = getWebObj(obj, thumbData);
-                        makeWbShareHandler(activity).shareMessage(multiMessage, false);
+                        mShareHandler.shareMessage(multiMessage, false);
                     }
                 }, Task.UI_THREAD_EXECUTOR);
     }
@@ -262,7 +264,7 @@ public class WbPlatform extends AbsPlatform {
             WeiboMultiMessage multiMessage = new WeiboMultiMessage();
             checkAddTextAndImageObj(multiMessage, obj, null);
             multiMessage.videoSourceObject = getVideoObj(obj, null);
-            makeWbShareHandler(activity).shareMessage(multiMessage, false);
+            mShareHandler.shareMessage(multiMessage, false);
         } else {
             shareWeb(shareTarget, activity, obj);
         }

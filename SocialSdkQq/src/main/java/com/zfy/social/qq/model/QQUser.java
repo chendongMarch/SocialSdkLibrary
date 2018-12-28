@@ -187,6 +187,7 @@ public class QQUser extends SocialUser {
         this.is_yellow_year_vip = is_yellow_year_vip;
     }
 
+    @Override
     public String getOpenId() {
         return openId;
     }
@@ -220,6 +221,11 @@ public class QQUser extends SocialUser {
 
     @Override
     public String getUserId() {
+        return openId;
+    }
+
+    @Override
+    public String getUnionId() {
         return openId;
     }
 

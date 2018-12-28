@@ -4,11 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
-import com.zfy.social.core.common.Target;
 import com.zfy.social.core.listener.OnLoginListener;
 import com.zfy.social.core.listener.OnShareListener;
 import com.zfy.social.core.listener.Recyclable;
 import com.zfy.social.core.model.ShareObj;
+import com.zfy.social.core.uikit.BaseActionActivity;
 
 /**
  * CreateAt : 2016/12/28
@@ -19,14 +19,8 @@ import com.zfy.social.core.model.ShareObj;
 
 public interface IPlatform extends Recyclable {
 
-    /**
-     * 接收 Activity onActivityResult
-     *
-     * @param requestCode requestCode
-     * @param resultCode  resultCode
-     * @param data        data
-     */
-    void onActivityResult(int requestCode, int resultCode, Intent data);
+    void onActivityResult(BaseActionActivity activity, int requestCode, int resultCode, Intent data);
+
 
     /**
      * @return 获取交互的 Activity 的 class

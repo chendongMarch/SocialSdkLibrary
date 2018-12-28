@@ -24,6 +24,7 @@ import com.zfy.social.core.model.ShareObj;
 import com.zfy.social.core.platform.AbsPlatform;
 import com.zfy.social.core.platform.IPlatform;
 import com.zfy.social.core.platform.PlatformFactory;
+import com.zfy.social.core.uikit.BaseActionActivity;
 import com.zfy.social.core.util.FileUtil;
 import com.zfy.social.core.util.IntentShareUtil;
 import com.zfy.social.core.util.SocialUtil;
@@ -106,7 +107,7 @@ public class QQPlatform extends AbsPlatform {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(BaseActionActivity activity, int requestCode, int resultCode, Intent data) {
         if (requestCode == Constants.REQUEST_QQ_SHARE || requestCode == Constants.REQUEST_QZONE_SHARE) {
             if (mIUiListenerWrap != null)
                 Tencent.handleResultData(data, mIUiListenerWrap);

@@ -72,7 +72,7 @@ public class BaseActionActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (getPlatform() != null) {
-            getPlatform().onActivityResult(requestCode, resultCode, data);
+            getPlatform().onActivityResult(this, requestCode, resultCode, data);
         }
         checkFinish(false);
     }

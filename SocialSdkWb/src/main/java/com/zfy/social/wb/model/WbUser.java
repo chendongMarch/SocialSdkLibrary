@@ -505,6 +505,16 @@ public class WbUser extends SocialUser {
     }
 
     @Override
+    public String getUnionId() {
+        return id;
+    }
+
+    @Override
+    public String getOpenId() {
+        return id;
+    }
+
+    @Override
     public String getUserNickName() {
         return screen_name;
     }

@@ -5,12 +5,9 @@
 
         <!--用于发起请求和接受数据，同步生命周期-->
         <activity
+            android:launchMode="singleTop"
             android:name="com.zfy.social.wb.uikit.WbActionActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar">
-            <intent-filter>
-                <action android:name="com.sina.weibo.sdk.action.ACTION_SDK_REQ_ACTIVITY"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
         </activity>
 
     </application>
