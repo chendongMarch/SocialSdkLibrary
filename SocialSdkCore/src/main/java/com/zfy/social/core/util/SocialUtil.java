@@ -119,7 +119,7 @@ public class SocialUtil {
     }
 
     public static void e(String tag, String msg) {
-        if (SocialSdk.getConfig().isDebug()) {
+        if (SocialSdk.opts().isDebug()) {
             Log.e(TAG + "|" + tag, msg);
         }
     }
@@ -129,7 +129,7 @@ public class SocialUtil {
     }
 
     public static void json(String tag, String json) {
-        if (!SocialSdk.getConfig().isDebug()) {
+        if (!SocialSdk.opts().isDebug()) {
             return;
         }
         StringBuilder sb = new StringBuilder();

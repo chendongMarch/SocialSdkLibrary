@@ -76,7 +76,7 @@ buildscript {
     }
     dependencies {
         // 查看文初最新版本
-        classpath 'com.zfy.social:plugin:0.0.2'
+        classpath 'com.zfy.social:plugin:x.y.z'
     }
 }
 

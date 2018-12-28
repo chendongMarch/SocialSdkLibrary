@@ -34,12 +34,12 @@ public class GlobalPlatform {
 
     static @NonNull
     IPlatform makePlatform(Context context, int target) {
-        if (SocialSdk.getConfig() == null) {
+        if (SocialSdk.opts() == null) {
             throw new IllegalArgumentException(Target.toDesc(target) + " SocialSdk.init() request");
         }
         IPlatform platform = getPlatform(context, target);
         if (platform == null) {
-            throw new IllegalArgumentException(Target.toDesc(target) + "  创建platform失败，请检查参数 " + SocialSdk.getConfig().toString());
+            throw new IllegalArgumentException(Target.toDesc(target) + "  创建platform失败，请检查参数 " + SocialSdk.opts().toString());
         }
         sIPlatform = platform;
         return platform;
@@ -74,8 +74,8 @@ public class GlobalPlatform {
             sIPlatform = null;
         }
         if (activity != null) {
-            if (activity instanceof BaseActionActivity && !activity.isFinishing()) {
-                activity.finish();
+            if (activity instanceof BaseActionActivity) {
+                ((BaseActionActivity) activity).checkFinish(false);
             }
         }
     }
@@ -93,5 +93,9 @@ public class GlobalPlatform {
                 ShareManager._actionShare(activity);
                 break;
         }
+    }
+
+    public static void onUIFinished() {
+        ShareManager.postFinishEvent();
     }
 }

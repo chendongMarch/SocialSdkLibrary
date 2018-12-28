@@ -53,7 +53,7 @@ public class QQPlatform extends AbsPlatform {
         @Override
         public IPlatform create(Context context, int target) {
             IPlatform platform = null;
-            SocialOptions config = SocialSdk.getConfig();
+            SocialOptions config = SocialSdk.opts();
             if (!SocialUtil.isAnyEmpty(config.getQqAppId(), config.getAppName())) {
                 platform = new QQPlatform(context, config.getQqAppId(), config.getAppName(), target);
             }

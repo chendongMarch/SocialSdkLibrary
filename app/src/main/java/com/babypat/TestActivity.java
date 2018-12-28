@@ -9,7 +9,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -385,11 +384,15 @@ public class TestActivity extends AppCompatActivity {
                 .debug(true)
                 // 加载缩略图失败时，降级使用资源图
                 .failImgRes(R.mipmap.ic_launcher_new)
+                // token 保留时间，但是小时，默认不保留
+                .tokenExpiresHours(24)
+                // 分享如果停留在第三放将会返回成功，默认返回失败
+                .shareSuccessIfStay(true)
                 // 添加自定义的 json 解析
                 .jsonAdapter(new GsonJsonAdapter())
                 // 请求处理类，如果使用了微博的 openApi 分享，这个是必须的
                 .requestAdapter(new OkHttpRequestAdapter())
-                .tokenExpiresHours(0)
+
                 // 构建
                 .build();
         // 初始化

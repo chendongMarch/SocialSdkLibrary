@@ -44,6 +44,7 @@ public class SocialOptions {
     private int failImgRes;
     // token 有效时间，默认1天
     private long tokenExpiresHours;
+    private boolean shareSuccessIfStay;
 
     private boolean wxEnable;
     private boolean qqEnable;
@@ -113,10 +114,6 @@ public class SocialOptions {
         return wxOnlyAuthCode;
     }
 
-    public static String getShareCacheDirName() {
-        return SHARE_CACHE_DIR_NAME;
-    }
-
     public boolean isWxEnable() {
         return wxEnable;
     }
@@ -131,6 +128,10 @@ public class SocialOptions {
 
     public boolean isDdEnable() {
         return ddEnable;
+    }
+
+    public boolean isShareSuccessIfStay() {
+        return shareSuccessIfStay;
     }
 
     @Override
@@ -203,6 +204,7 @@ public class SocialOptions {
         if (builder.tokenExpiresHours < 0) {
             builder.tokenExpiresHours = 0;
         }
+        this.shareSuccessIfStay = builder.shareSuccessIfStay;
         this.debug = builder.debug;
         this.appName = builder.appName;
         this.wxAppId = builder.wxAppId;
@@ -247,8 +249,13 @@ public class SocialOptions {
         private String ddAppId;
         // 图片默认资源
         private int failImgRes;
+        // token 失效时间，默认立刻失效
         private int tokenExpiresHours = -1;
+        // 如果留在三方应用，是回调成功还是失败，默认是失败
+        private boolean shareSuccessIfStay;
+        // json 解析框架注入
         private IJsonAdapter jsonAdapter;
+        // 网络请求框架注入
         private IRequestAdapter requestAdapter;
 
         private boolean wxEnable;
@@ -309,6 +316,11 @@ public class SocialOptions {
 
         public Builder tokenExpiresHours(int time) {
             this.tokenExpiresHours = time;
+            return this;
+        }
+
+        public Builder shareSuccessIfStay(boolean shareSuccessIfStay) {
+            this.shareSuccessIfStay = shareSuccessIfStay;
             return this;
         }
 

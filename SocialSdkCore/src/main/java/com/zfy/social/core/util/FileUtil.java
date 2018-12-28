@@ -128,7 +128,7 @@ public class FileUtil {
      */
     public static String mapUrl2LocalPath(String url) {
         String fileName = SocialUtil.getMD5(url);
-        File saveFile = new File(SocialSdk.getConfig().getCacheDir(), fileName);
+        File saveFile = new File(SocialSdk.opts().getCacheDir(), fileName);
         return saveFile.getAbsolutePath();
     }
 
@@ -142,7 +142,7 @@ public class FileUtil {
      */
     public static String mapResId2LocalPath(Context context, int resId) {
         String fileName = SocialUtil.getMD5(resId + "") + FileUtil.POINT_PNG;
-        File saveFile = new File(SocialSdk.getConfig().getCacheDir(), fileName);
+        File saveFile = new File(SocialSdk.opts().getCacheDir(), fileName);
         if (saveFile.exists())
             return saveFile.getAbsolutePath();
         Bitmap bitmap = null;
