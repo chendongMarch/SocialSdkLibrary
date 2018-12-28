@@ -158,6 +158,16 @@ public class WxUser extends SocialUser {
     }
 
     @Override
+    public String getOpenId() {
+        return openid;
+    }
+
+    @Override
+    public String getUnionId() {
+        return unionid;
+    }
+
+    @Override
     public String getUserNickName() {
         return nickname;
     }

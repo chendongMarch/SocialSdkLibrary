@@ -24,6 +24,10 @@ public abstract class SocialUser {
 
     public abstract String getUserId();
 
+    public abstract String getUnionId();
+
+    public abstract String getOpenId();
+
     public abstract String getUserNickName();
 
     public abstract int getUserGender();

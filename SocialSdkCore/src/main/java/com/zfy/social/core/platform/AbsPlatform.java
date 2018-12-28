@@ -10,6 +10,7 @@ import com.zfy.social.core.common.Target;
 import com.zfy.social.core.exception.SocialError;
 import com.zfy.social.core.listener.OnShareListener;
 import com.zfy.social.core.model.ShareObj;
+import com.zfy.social.core.uikit.BaseActionActivity;
 
 /**
  * CreateAt : 2016/12/3
@@ -80,9 +81,6 @@ public abstract class AbsPlatform implements IPlatform {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
+    public void onActivityResult(BaseActionActivity activity, int requestCode, int resultCode, Intent data) {
     }
-
-
 }

@@ -12,7 +12,7 @@ publish {
     userOrg = 'zfy'
     groupId = 'com.zfy'
     artifactId = 'social-sdk-weibo'
-    publishVersion = '0.0.4'
+    publishVersion = '0.0.5'
     desc = 'SocialSdkWb'
     website = 'https://github.com/chendongMarch/SocialSdkLibrary'
 }

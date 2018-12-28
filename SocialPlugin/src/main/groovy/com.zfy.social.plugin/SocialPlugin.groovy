@@ -109,11 +109,11 @@ class SocialPlugin implements Plugin<Project> {
             log "使用本地依赖，不使用远程依赖"
             return
         }
-        def coreLib = 'com.zfy:social-sdk-core:0.0.4'
-        def wxLib = 'com.zfy:social-sdk-wx:0.0.4'
-        def ddLib = 'com.zfy:social-sdk-dd:0.0.4'
-        def qqLib = 'com.zfy:social-sdk-qq:0.0.4'
-        def wbLib = 'com.zfy:social-sdk-weibo:0.0.4'
+        def coreLib = 'com.zfy:social-sdk-core:0.0.5'
+        def wxLib = 'com.zfy:social-sdk-wx:0.0.5'
+        def ddLib = 'com.zfy:social-sdk-dd:0.0.5'
+        def qqLib = 'com.zfy:social-sdk-qq:0.0.5'
+        def wbLib = 'com.zfy:social-sdk-weibo:0.0.5'
 
         log '依赖追加 => 开始添加依赖'
         project.dependencies.add('implementation', coreLib)

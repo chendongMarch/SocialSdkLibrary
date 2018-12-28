@@ -77,7 +77,6 @@ public class DDPlatform extends AbsPlatform {
 
     @Override
     public void handleIntent(Activity activity) {
-        super.handleIntent(activity);
         mDdShareApi.handleIntent(activity.getIntent(), (IDDAPIEventHandler) activity);
     }
 
