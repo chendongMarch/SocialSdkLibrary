@@ -11,17 +11,17 @@
 
 博客地址 ：[快速接入微信微博QQ钉钉原生登录分享](http://zfyx.coding.me/article/3067853428/)
 
-<div style="width:100%;display: flex;height:50px;">
+<div style="width:100%;display: flex;height:50px;margin-bottom:20px;">
 
-<img  style="margin-right:20px;"  src="https://img.shields.io/circleci/project/github/badges/shields/master.svg"/>
+<img  style="margin-right:50px;"  src="https://img.shields.io/circleci/project/github/badges/shields/master.svg"/>
 
-<img  style="margin-right:20px;"  src="https://img.shields.io/badge/version-0.0.4-blue.svg?maxAge=2592000"/>
+<img  style="margin-right:50px;"  src="https://img.shields.io/badge/version-0.0.4-blue.svg?maxAge=2592000"/>
 
-<img style="margin-right:20px;"  src="https://img.shields.io/github/stars/chendongMarch/SocialSdkLibrary.svg"/>
+<img style="margin-right:50px;"  src="https://img.shields.io/github/stars/chendongMarch/SocialSdkLibrary.svg"/>
 
-<img  style="margin-right:20px;"  src="https://img.shields.io/github/forks/chendongMarch/SocialSdkLibrary.svg"/>
+<img  style="margin-right:50px;"  src="https://img.shields.io/github/forks/chendongMarch/SocialSdkLibrary.svg"/>
 
-<img style="margin-right:20px;" src="https://badge.juejin.im/entry/5a793a405188257a82111092/likes.svg?style=flat-square"/>
+<img style="margin-right:50px;" src="https://badge.juejin.im/entry/5a793a405188257a82111092/likes.svg?style=flat-square"/>
 
 </div>
 
