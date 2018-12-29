@@ -134,6 +134,8 @@ SocialOptions options = new SocialOptions.Builder(this)
         .tokenExpiresHours(24)
         // 分享如果停留在第三放将会返回成功，默认返回失败
         .shareSuccessIfStay(true)
+        // 微博 loading 窗颜色
+        .wbProgressColor(Color.YELLOW)
         // 添加自定义的 json 解析
         .jsonAdapter(new GsonJsonAdapter())
         // 请求处理类，如果使用了微博的 openApi 分享，这个是必须的

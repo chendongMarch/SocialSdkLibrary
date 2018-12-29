@@ -4,12 +4,13 @@
 
 这里也同样提供一种手动接入的方案，从某些方面来说，它更容易理解一些；
 
-不过我不会花很多精力维护这边，主要还是推荐使用插件接入啦。。
 
 > app / build.gradle
 
 ```gradle
+// 依赖核心库
 implementation "com.zfy:social-sdk-core:0.0.5"
+// 依赖不同的平台库
 implementation "com.zfy:social-sdk-wx:0.0.5"
 implementation "com.zfy:social-sdk-dd:0.0.5"
 implementation "com.zfy:social-sdk-qq:0.0.5"
@@ -50,3 +51,4 @@ SocialOptions options = new SocialOptions.Builder(this)
 SocialSdk.init(options);
 ```
 
+其他的内容和主文档一致，只是接入方式和初始化方式有些小差别；
