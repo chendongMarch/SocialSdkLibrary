@@ -6,8 +6,9 @@ import org.gradle.util.ConfigureUtil
 
 class SocialExtension {
 
-    int             tokenExpireHour = -1
     boolean         local           = false
+
+    ConfigExtension core
     // 微信配置
     ConfigExtension wx
     // qq 配置
@@ -17,6 +18,15 @@ class SocialExtension {
     // wb 配置
     ConfigExtension wb
 
+
+    ConfigExtension core(Closure closure) {
+        return core(ConfigureUtil.configureUsing(closure))
+    }
+
+    void core(Action<? super ConfigExtension> action) {
+        if (wx == null) wx = new ConfigExtension()
+        action.execute(wx)
+    }
 
     ConfigExtension wx(Closure closure) {
         return wx(ConfigureUtil.configureUsing(closure))
@@ -54,12 +64,16 @@ class SocialExtension {
         action.execute(wb)
     }
 
-    int getTokenExpireHour() {
-        return tokenExpireHour
+    ConfigExtension getCore() {
+        if (core == null) {
+            core = new ConfigExtension()
+            core.enable = false
+        }
+        return core
     }
 
-    void setTokenExpireHour(int tokenExpireHour) {
-        this.tokenExpireHour = tokenExpireHour
+    void setCore(ConfigExtension core) {
+        this.core = core
     }
 
     ConfigExtension getWx() {

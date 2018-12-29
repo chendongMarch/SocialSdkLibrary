@@ -93,14 +93,13 @@ STEP2: 配置参数
 
 ```js
 // 引用插件
-apply plugin: 'com.zfy.social.plugin'
+apply plugin: 'socialsdk'
 // android 配置模块
 android {
 	...
 }
 // social sdk 配置模块
-social {
-    tokenExpireHour 24 // token 失效时间，单位小时，默认马上失效
+socialsdk {
     wx {
         appId = 'wx4b8db***5b195c3'
         appSecret = '0a3cb007291d0e5***3654f499171'
@@ -117,6 +116,7 @@ social {
     dd {
         appId = 'dingo***wrefwjeumuof'
     }
+    local false // 使用本地依赖
 }
 ```
 

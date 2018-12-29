@@ -18,8 +18,8 @@ uploadArchives {
     repositories.mavenDeployer {
         repository(url: "file:///Users/march/AndroidPro/babyphoto_app/plugin")
         pom.groupId = "com.zfy.social"
-        pom.artifactId = "plugin"
-        pom.version = "0.0.2"
+        pom.artifactId = "social-sdk-plugin"
+        pom.version = "local"
     }
 }
 

@@ -3,8 +3,8 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.zfy.social</groupId>
-  <artifactId>plugin</artifactId>
-  <version>0.0.2</version>
+  <artifactId>social-sdk-plugin</artifactId>
+  <version>local</version>
   <dependencies>
     <dependency>
       <groupId>com.android.tools.build</groupId>

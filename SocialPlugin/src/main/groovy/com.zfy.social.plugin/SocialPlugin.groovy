@@ -4,6 +4,7 @@ import com.android.build.gradle.AppExtension
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.LibraryPlugin
+import com.zfy.social.plugin.extension.ConfigExtension
 import com.zfy.social.plugin.extension.SocialExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -33,7 +34,7 @@ class SocialPlugin implements Plugin<Project> {
             android = project.extensions.getByType(LibraryExtension)
         }
         // 创建闭包，接收参数
-        project.extensions.create("social", SocialExtension.class)
+        project.extensions.create("socialsdk", SocialExtension.class)
         // 给 android {} 添加一个转换
         // android.registerTransform(new SocialConfigTransform(project))
 
@@ -41,7 +42,7 @@ class SocialPlugin implements Plugin<Project> {
 
             def variantData = variant.variantData
             def scope = variantData.scope
-            SocialExtension extension = project.social
+            SocialExtension extension = project.socialsdk
 
             // 打印编译信息
             log "variantData = ${variantData} ${scope}"
@@ -60,7 +61,7 @@ class SocialPlugin implements Plugin<Project> {
 
         project.task('readSocialConfig').doLast {
             log "欢迎使用 SocialSDK Plugin"
-            printSocialConfig(project.social)
+            printSocialConfig(project.socialsdk)
         }
     }
 
@@ -103,17 +104,29 @@ class SocialPlugin implements Plugin<Project> {
         }
     }
 
+    static String version(ConfigExtension configExtension, def defaultVersion) {
+        if (configExtension.version != null) {
+            return configExtension.version
+        }
+        return defaultVersion
+    }
     // 根据配置准备依赖信息
     static void prepareDependencies(Project project, SocialExtension extension) {
         if (extension.local) {
             log "使用本地依赖，不使用远程依赖"
             return
         }
-        def coreLib = 'com.zfy:social-sdk-core:0.0.5'
-        def wxLib = 'com.zfy:social-sdk-wx:0.0.5'
-        def ddLib = 'com.zfy:social-sdk-dd:0.0.5'
-        def qqLib = 'com.zfy:social-sdk-qq:0.0.5'
-        def wbLib = 'com.zfy:social-sdk-weibo:0.0.5'
+        def coreV = version(extension.core, "0.0.5")
+        def wxV = version(extension.wx, "0.0.5")
+        def qqV = version(extension.qq, "0.0.5")
+        def wbV = version(extension.wb, "0.0.5")
+        def ddV = version(extension.dd, "0.0.5")
+
+        def coreLib = "com.zfy:social-sdk-core:${coreV}"
+        def wxLib = "com.zfy:social-sdk-wx:${wxV}"
+        def ddLib = "com.zfy:social-sdk-dd:${ddV}"
+        def qqLib = "com.zfy:social-sdk-qq:${qqV}"
+        def wbLib = "com.zfy:social-sdk-weibo:${wbV}"
 
         log '依赖追加 => 开始添加依赖'
         project.dependencies.add('implementation', coreLib)
@@ -137,7 +150,6 @@ class SocialPlugin implements Plugin<Project> {
 
     // 打印配置信息
     private static void printSocialConfig(SocialExtension extension) {
-        log("config.tokenExpireHour => ${extension.tokenExpireHour}")
 
         log("config.wxEnable => ${extension.wx.enable}")
         log("config.wxAppId => ${extension.wx.appId}")
@@ -195,11 +207,6 @@ public class SocialBuildConfig {
     public final String wbAppId = "${extension.wb.appId}";
     // wb redirect url
     public final String wbRedirectUrl = "${extension.wb.url}";
-    
-    // 设置 token 有效期，有效期内不会重新获取 token
-    // 默认一天，如下设置为 12 小时
-    // 设置为0，将不会做持久化存储，每次获取最新的
-    public final long tokenExpireHour = ${extension.tokenExpireHour};
 }
 """
         File outputDir = variant.getVariantData().getScope().getBuildConfigSourceOutputDir()
