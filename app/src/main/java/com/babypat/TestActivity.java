@@ -27,7 +27,11 @@ import com.zfy.social.core.manager.LoginManager;
 import com.zfy.social.core.manager.ShareManager;
 import com.zfy.social.core.model.LoginResult;
 import com.zfy.social.core.model.ShareObj;
+import com.zfy.social.core.model.user.SocialUser;
 import com.zfy.social.core.util.SocialUtil;
+import com.zfy.social.qq.model.QQUser;
+import com.zfy.social.wb.model.WbUser;
+import com.zfy.social.wx.model.WxUser;
 
 import java.io.File;
 
@@ -436,6 +440,53 @@ public class TestActivity extends AppCompatActivity {
                 .build();
         // 👮 添加 config 数据，必须
         SocialSdk.init(options);
+
+
+        OnLoginListener listener = new OnLoginListener() {
+            @Override
+            public void onStart() {
+                // 当登录开始时触发
+            }
+
+            @Override
+            public void onSuccess(LoginResult result) {
+                // 登录成功，获取用户信息
+                SocialUser socialUser = result.getSocialUser();
+            }
+
+            @Override
+            public void onCancel() {
+                // 登录取消
+            }
+
+            @Override
+            public void onFailure(SocialError e) {
+                // 登录失败
+            }
+        };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
 
