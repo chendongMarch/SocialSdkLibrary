@@ -14,11 +14,7 @@ public interface PlatformFactory {
 
     int getPlatformTarget();
 
-    default boolean checkShareTarget(int shareTarget) {
-        return false;
-    }
+    boolean checkShareTarget(int shareTarget);
 
-    default boolean checkLoginTarget(int loginTarget) {
-        return false;
-    }
+    boolean checkLoginTarget(int loginTarget);
 }

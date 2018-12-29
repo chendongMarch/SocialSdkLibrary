@@ -36,6 +36,11 @@ public class SmsPlatform extends SystemPlatform {
         public boolean checkShareTarget(int shareTarget) {
             return shareTarget == Target.SHARE_SMS;
         }
+
+        @Override
+        public boolean checkLoginTarget(int loginTarget) {
+            return false;
+        }
     }
 
     private SmsPlatform(Context context, String appId, String appName, int target) {
