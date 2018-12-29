@@ -11,7 +11,7 @@
 
 博客地址 ：[快速接入微信微博QQ钉钉原生登录分享](http://zfyx.coding.me/article/3067853428/)
 
-<div style="width:100%;display: flex;height:30px;">
+<div style="width:100%;display: flex;height:50px;">
 
 <img  style="margin-right:20px;"  src="https://img.shields.io/circleci/project/github/badges/shields/master.svg"/>
 
@@ -47,7 +47,7 @@
 
 🔥 开源：没有彩蛋，没有彩蛋，没有彩蛋；
 
-🔥 简单：只需要关注登录、分享管理类和一个数据结构对象即可，不需要再关注平台的差异；
+🔥 简单：只需要关注登录、分享管理类和一个数据结构对象即可，不需要再关注平台之间的差异；
 
 🔥 轻量：仅包含三方 `SDK` 和一个简单的异步框架(38k)，网络请求、`JSON` 解析从外部注入，减少多余的依赖，保证与宿主项目高度统一；
 
@@ -67,7 +67,7 @@
 
 **STEP1**: 添加插件依赖路径
 
-> project/build.gradle
+> project / build.gradle
 
 ```js
 buildscript {
@@ -89,15 +89,17 @@ allprojects {
 
 **STEP2**: 配置参数，注意与 `android` 同级
 
-> app/build.gralde
+> app / build.gralde
 
 ```js
 // 引用插件
 apply plugin: 'socialsdk'
+
 // android 配置模块
 android {
 	...
 }
+
 // socialsdk 配置模块
 socialsdk {
     wx {
@@ -120,7 +122,7 @@ socialsdk {
 }
 ```
 
-STEP3：初始化
+**STEP3**：初始化
 
 ```java
 SocialOptions options = new SocialOptions.Builder(this)
@@ -184,21 +186,6 @@ OnLoginListener listener = new OnLoginListener() {
     public void onSuccess(LoginResult result) {
         // 登录成功，获取用户信息
         SocialUser socialUser = result.getSocialUser();
-        // 基本信息可以从 SocialUser 在获取到
-        String userNickName = socialUser.getUserNickName();
-        // 强转为平台用户，可以拿到更多信息
-        int target = result.getTarget();
-        switch (target) {
-            case Target.LOGIN_QQ:
-                QQUser qqUser = (QQUser) socialUser;
-                break;
-            case Target.LOGIN_WB:
-                WbUser wbUser = (WbUser) socialUser;
-                break;
-            case Target.LOGIN_WX:
-                WxUser wxUser = (WxUser) socialUser;
-                break;
-        }
     }
     @Override
     public void onCancel() {
@@ -210,6 +197,34 @@ OnLoginListener listener = new OnLoginListener() {
     }
 };
 ```
+
+获取更多用户信息：
+
+```java
+SocialUser socialUser = loginResult.getSocialUser();
+// 基本信息可以从 SocialUser 在获取到
+String userNickName = socialUser.getUserNickName();
+// 获取 openId
+String openId = socialUser.getOpenId();
+// 微信获取 unionId，其他平台仍旧返回 openId
+String unionId = socialUser.getUnionId();
+// 获取 userId，微信返回 unionId, 其他平台返回 openId
+String userId = socialUser.getUserId();
+// 强转为平台用户，可以拿到更多信息
+int target = result.getTarget();
+switch (target) {
+    case Target.LOGIN_QQ:
+        QQUser qqUser = (QQUser) socialUser;
+        break;
+    case Target.LOGIN_WB:
+        WbUser wbUser = (WbUser) socialUser;
+        break;
+    case Target.LOGIN_WX:
+        WxUser wxUser = (WxUser) socialUser;
+        break;
+}
+```
+
 发起登录：
 
 ```java
