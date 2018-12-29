@@ -3,7 +3,6 @@ package com.zfy.social.wb;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 
 import com.sina.weibo.sdk.WbSdk;
@@ -178,7 +177,9 @@ public class WbPlatform extends AbsPlatform {
     @Override
     protected void dispatchShare(Activity activity, int shareTarget, ShareObj obj) {
         mShareHandler = new WbShareHandler(activity);
-        mShareHandler.setProgressColor(Color.RED);
+        if (SocialSdk.opts().getWbProgressColor() > 0) {
+            mShareHandler.setProgressColor(SocialSdk.opts().getWbProgressColor());
+        }
         mShareHandler.registerApp();
         
         switch (obj.getType()) {

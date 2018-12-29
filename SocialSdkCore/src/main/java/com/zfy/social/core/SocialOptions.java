@@ -22,29 +22,27 @@ public class SocialOptions {
 
     private static final String SHARE_CACHE_DIR_NAME = "toShare";
 
-    // 调试配置
     private boolean debug;
-    // 应用名
     private String appName;
-    // 微信配置
+
     private String wxAppId;
     private String wxSecretKey;
     private boolean wxOnlyAuthCode;
-    // qq 配置
+
     private String qqAppId;
-    // 微博配置
+
     private String wbAppId;
     private String wbRedirectUrl;
     private String wbScope;
-    // 钉钉配置
+    private int wbProgressColor;
+
     private String ddAppId;
-    // 存储路径，不允许更改
+
     private String cacheDir;
-    // 图片默认资源
     private int failImgRes;
-    // token 有效时间，默认1天
     private long tokenExpiresHours;
     private boolean shareSuccessIfStay;
+
 
     private boolean wxEnable;
     private boolean qqEnable;
@@ -126,6 +124,10 @@ public class SocialOptions {
         return wbEnable;
     }
 
+    public int getWbProgressColor() {
+        return wbProgressColor;
+    }
+
     public boolean isDdEnable() {
         return ddEnable;
     }
@@ -204,6 +206,7 @@ public class SocialOptions {
         if (builder.tokenExpiresHours < 0) {
             builder.tokenExpiresHours = 0;
         }
+        this.wbProgressColor = builder.wbProgressColor;
         this.shareSuccessIfStay = builder.shareSuccessIfStay;
         this.debug = builder.debug;
         this.appName = builder.appName;
@@ -245,6 +248,7 @@ public class SocialOptions {
         private String wbAppId;
         private String wbRedirectUrl;
         private String wbScope;
+        private int wbProgressColor;
         // 钉钉配置
         private String ddAppId;
         // 图片默认资源
@@ -321,6 +325,11 @@ public class SocialOptions {
 
         public Builder shareSuccessIfStay(boolean shareSuccessIfStay) {
             this.shareSuccessIfStay = shareSuccessIfStay;
+            return this;
+        }
+
+        public Builder wbProgressColor(int color) {
+            this.wbProgressColor = color;
             return this;
         }
 
