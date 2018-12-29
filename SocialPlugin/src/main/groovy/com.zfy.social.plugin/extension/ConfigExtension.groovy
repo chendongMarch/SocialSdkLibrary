@@ -2,12 +2,20 @@ package com.zfy.social.plugin.extension
 
 class ConfigExtension  {
 
+    String  version      = null
     String  appId        = ""
     boolean enable       = true
     String  appSecret    = ""
     String  url          = ""
     boolean onlyAuthCode = false
 
+    String getVersion() {
+        return version
+    }
+
+    void setVersion(String version) {
+        this.version = version
+    }
 
     String getAppId() {
         return appId

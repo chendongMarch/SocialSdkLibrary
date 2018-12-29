@@ -36,7 +36,7 @@ android {
     }
 }
 
-social {
+socialsdk {
     local true // 使用本地依赖
     wx {
         appId = 'wx4b8dbbca35b195c3'
