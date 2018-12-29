@@ -255,13 +255,15 @@ LoginManager.clearToken(context, Target.LOGIN_QQ);
 
 针对业务逻辑和 `SDK` 设计，将分享数据类型划分为 7 种类型，他们能涵盖大多数业务场景，分别是：
 
-> 开启 App 类型，打开渠道应用；
-> 文字类型，纯文本分享；
-> 图片类型(jpg, png, gif(要求能动))；
-> App 推广类型；
-> 网页链接类型；
-> 音频分享类型；
-> 视频分享类型；
+```bash
+开启 App 类型，打开渠道应用；
+文字类型，纯文本分享；
+图片类型(jpg, png, gif(要求能动))；
+App 推广类型；
+网页链接类型；
+音频分享类型；
+视频分享类型；
+```
 
 为了保证每个平台都有封闭且统一的外观，如果某个平台不兼容某种类型的分享，将会使用 `web` 分享的方式代替；比如微信不支持 `app` 分享，分享出去之后时 `web` 分享的模式。
 
@@ -377,7 +379,8 @@ ShareManager.share(mActivity, Target.SHARE_QQ_FRIENDS, imageObj, mOnShareListene
 @Override
 public ShareObj onPrepareInBackground(int shareTarget,ShareObj obj) {
     // 重构分享对象，不需要时返回 null 即可
-    return null;
+    obj.setTitle(obj.getTitle() + "/哈哈哈");
+    return obj;
 }
 ```
 
