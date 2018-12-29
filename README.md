@@ -15,7 +15,7 @@
 
 <img  style="margin-right:20px;"  src="https://img.shields.io/circleci/project/github/badges/shields/master.svg"/>
 
-<img  style="margin-right:20px;"  src="https://img.shields.io/badge/version-0.0.3-blue.svg?maxAge=2592000"/>
+<img  style="margin-right:20px;"  src="https://img.shields.io/badge/version-0.0.4-blue.svg?maxAge=2592000"/>
 
 <img style="margin-right:20px;"  src="https://img.shields.io/github/stars/chendongMarch/SocialSdkLibrary.svg"/>
 
@@ -65,7 +65,7 @@
 
 ## 开始接入
 
-STEP1: 添加插件依赖路径
+**STEP1**: 添加插件依赖路径
 
 > project/build.gradle
 
@@ -75,8 +75,8 @@ buildscript {
         maven { url "https://dl.bintray.com/zfy/maven" }
     }
     dependencies {
-        // 查看文初最新版本
-        classpath 'com.zfy.social:plugin:x.y.z'
+        // 请查看文初最新版本，这边可能忘记更新！！！
+        classpath 'com.zfy.social:social-sdk-plugin:0.0.4'
     }
 }
 
@@ -87,7 +87,7 @@ allprojects {
 }
 ```
 
-STEP2: 配置参数
+**STEP2**: 配置参数，注意与 `android` 同级
 
 > app/build.gralde
 
@@ -98,7 +98,7 @@ apply plugin: 'socialsdk'
 android {
 	...
 }
-// social sdk 配置模块
+// socialsdk 配置模块
 socialsdk {
     wx {
         appId = 'wx4b8db***5b195c3'
@@ -123,22 +123,21 @@ socialsdk {
 STEP3：初始化
 
 ```java
-private void initSocialSDK() {
-    SocialOptions options = new SocialOptions.Builder(this)
-            // 调试模式，开启 log 输出
-            .debug(true)
-            // 加载缩略图失败时，降级使用资源图
-            .failImgRes(R.mipmap.ic_launcher_new)
-            // 添加自定义的 json 解析
-            .jsonAdapter(new GsonJsonAdapter())
-            // 请求处理类，如果使用了微博的 openApi 分享，这个是必须的
-            .requestAdapter(new OkHttpRequestAdapter())
-            // token 失效时间，单位小时，默认马上失效
-            .tokenExpiresHours(24)
-            // 构建
-            .build();
-    SocialSdk.init(options);
-}
+SocialOptions options = new SocialOptions.Builder(this)
+        // 调试模式，开启 log 输出
+        .debug(true)
+        // 加载缩略图失败时，降级使用资源图
+        .failImgRes(R.mipmap.ic_launcher_new)
+        // token 保留时间，单位小时，默认不保留
+        .tokenExpiresHours(24)
+        // 分享如果停留在第三放将会返回成功，默认返回失败
+        .shareSuccessIfStay(true)
+        // 添加自定义的 json 解析
+        .jsonAdapter(new GsonJsonAdapter())
+        // 请求处理类，如果使用了微博的 openApi 分享，这个是必须的
+        .requestAdapter(new OkHttpRequestAdapter())
+        // 构建
+        .build();
 ```
 
 说一下 `Adapter`，项目内使用了 `JSON` 解析，网络请求等功能，但是又不想引入多余的框架，所以才用了宿主项目注入的方式，保证和宿主项目统一。
