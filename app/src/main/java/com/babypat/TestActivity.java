@@ -27,11 +27,7 @@ import com.zfy.social.core.manager.LoginManager;
 import com.zfy.social.core.manager.ShareManager;
 import com.zfy.social.core.model.LoginResult;
 import com.zfy.social.core.model.ShareObj;
-import com.zfy.social.core.model.user.SocialUser;
 import com.zfy.social.core.util.SocialUtil;
-import com.zfy.social.qq.model.QQUser;
-import com.zfy.social.wb.model.WbUser;
-import com.zfy.social.wx.model.WxUser;
 
 import java.io.File;
 
@@ -417,17 +413,16 @@ public class TestActivity extends AppCompatActivity {
         SocialOptions options = new SocialOptions.Builder(this)
                 // 开启调试
                 .debug(true)
-
                 // 添加自定义的 json 解析
                 .jsonAdapter(new GsonJsonAdapter())
                 // 请求处理类，如果使用了微博的 openApi 分享，这个是必须的
                 .requestAdapter(new OkHttpRequestAdapter())
-
                 // 加载缩略图失败时，降级使用资源图
                 .failImgRes(R.mipmap.ic_launcher_new)
                 // 设置 token 有效期，单位小时，默认 24
                 .tokenExpiresHours(12)
-
+                // 分享如果停留在第三放将会返回成功，默认返回失败
+                .shareSuccessIfStay(true)
                 // 配置钉钉
                 .dd(ddAppId)
                 // 配置qq
@@ -436,57 +431,9 @@ public class TestActivity extends AppCompatActivity {
                 .wx(wxAppId, wxSecretKey, false)
                 // 配置wb
                 .wb(wbAppId, "http://open.manfenmm.com/bbpp/app/weibo/common.php")
-
                 .build();
         // 👮 添加 config 数据，必须
         SocialSdk.init(options);
-
-
-        OnLoginListener listener = new OnLoginListener() {
-            @Override
-            public void onStart() {
-                // 当登录开始时触发
-            }
-
-            @Override
-            public void onSuccess(LoginResult result) {
-                // 登录成功，获取用户信息
-                SocialUser socialUser = result.getSocialUser();
-            }
-
-            @Override
-            public void onCancel() {
-                // 登录取消
-            }
-
-            @Override
-            public void onFailure(SocialError e) {
-                // 登录失败
-            }
-        };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
 

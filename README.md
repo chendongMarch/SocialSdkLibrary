@@ -427,3 +427,13 @@ listener = new OnShareListener() {
     }
 };
 ```
+
+## 扩展新的平台？
+
+参考这里 [HuaweiPlatform.java](https://github.com/chendongMarch/SocialSdkLibrary/blob/master/app/src/main/java/com/babypat/platform/HuaweiPlatform.java)
+
+向 `SocialSdk` 注册构建工厂：
+
+```java
+SocialSdk.addPlatform(new HuaweiPlatform.Factory());
+```
