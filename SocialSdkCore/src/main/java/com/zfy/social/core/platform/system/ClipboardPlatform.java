@@ -36,6 +36,11 @@ public class ClipboardPlatform extends SystemPlatform {
         public boolean checkShareTarget(int shareTarget) {
             return shareTarget == Target.SHARE_CLIPBOARD;
         }
+
+        @Override
+        public boolean checkLoginTarget(int loginTarget) {
+            return false;
+        }
     }
 
     private ClipboardPlatform(Context context, String appId, String appName, int target) {

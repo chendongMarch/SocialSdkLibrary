@@ -35,6 +35,11 @@ public class HuaweiPlatform extends AbsPlatform {
         }
 
         @Override
+        public boolean checkShareTarget(int shareTarget) {
+            return false;
+        }
+
+        @Override
         public boolean checkLoginTarget(int loginTarget) {
             return loginTarget == LOGIN_HUAWEI;
         }

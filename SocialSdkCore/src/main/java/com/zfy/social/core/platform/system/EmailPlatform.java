@@ -34,6 +34,11 @@ public class EmailPlatform extends SystemPlatform {
         public boolean checkShareTarget(int shareTarget) {
             return shareTarget == Target.SHARE_EMAIL;
         }
+
+        @Override
+        public boolean checkLoginTarget(int loginTarget) {
+            return false;
+        }
     }
 
     private EmailPlatform(Context context, String appId, String appName, int target) {

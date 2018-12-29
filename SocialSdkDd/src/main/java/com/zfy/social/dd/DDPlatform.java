@@ -56,6 +56,11 @@ public class DDPlatform extends AbsPlatform {
         public boolean checkShareTarget(int shareTarget) {
             return shareTarget == Target.SHARE_DD;
         }
+
+        @Override
+        public boolean checkLoginTarget(int loginTarget) {
+            return false;
+        }
     }
 
     private IDDShareApi mDdShareApi;
