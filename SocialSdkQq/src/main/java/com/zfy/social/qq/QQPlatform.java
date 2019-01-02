@@ -3,6 +3,8 @@ package com.zfy.social.qq;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.TextUtils;
 
@@ -31,6 +33,7 @@ import com.zfy.social.core.util.SocialUtil;
 import com.zfy.social.qq.uikit.QQActionActivity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * CreateAt : 2016/12/3
@@ -103,7 +106,23 @@ public class QQPlatform extends AbsPlatform {
 
     @Override
     public boolean isInstall(Context context) {
-        return mTencentApi.isQQInstalled(context);
+        return isQQInstalled(context);
+    }
+
+    // sdk 里面的方法，没法判断 tim 和 qq 轻聊版
+    public boolean isQQInstalled(Context context) {
+        PackageManager pm = context.getPackageManager();
+        List packages = pm.getInstalledPackages(0);
+        if (packages == null) {
+            return false;
+        }
+        for (int i = 0; i < packages.size(); ++i) {
+            String pkName = ((PackageInfo) packages.get(i)).packageName;
+            if (SocialUtil.isAnyEq(pkName, SocialValues.QQ_PKG, SocialValues.TIM_PKG, SocialValues.QQLITE_PKG)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -169,6 +188,8 @@ public class QQPlatform extends AbsPlatform {
         // 加了这个会自动打开qq空间发布
         if (shareTarget == Target.SHARE_QQ_ZONE)
             params.putInt(QQShare.SHARE_TO_QQ_EXT_INT, QQShare.SHARE_TO_QQ_FLAG_QZONE_AUTO_OPEN);
+
+        params.putString(QQShare.SHARE_TO_QQ_ARK_INFO, "ask return key");
         return params;
     }
 
@@ -186,7 +207,7 @@ public class QQPlatform extends AbsPlatform {
     // 分享文字
     private void shareText(int shareTarget, Activity activity, ShareObj shareMediaObj) {
         if (shareTarget == Target.SHARE_QQ_FRIENDS) {
-            IntentShareUtil.shareText(activity, shareMediaObj, SocialValues.QQ_PKG, SocialValues.QQ_FRIENDS_PAGE, mOnShareListener,mTarget);
+            IntentShareUtil.shareQQText(activity, shareMediaObj, mTarget, mOnShareListener);
         } else if (shareTarget == Target.SHARE_QQ_ZONE) {
             final Bundle params = new Bundle();
             params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzonePublish.PUBLISH_TO_QZONE_TYPE_PUBLISHMOOD);
@@ -273,7 +294,7 @@ public class QQPlatform extends AbsPlatform {
                 obj.setTargetUrl(obj.getMediaPath());
                 shareWeb(shareTarget, activity, obj);
             } else if (FileUtil.isExist(obj.getMediaPath())){
-                IntentShareUtil.shareVideo(activity, obj, SocialValues.QQ_PKG, SocialValues.QQ_FRIENDS_PAGE, mOnShareListener,mTarget);
+                IntentShareUtil.shareQQVideo(activity, obj, mTarget, mOnShareListener);
             } else{
                 this.mIUiListenerWrap.onError(SocialError.make(SocialError.CODE_FILE_NOT_FOUND));
             }

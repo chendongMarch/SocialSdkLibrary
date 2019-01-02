@@ -37,7 +37,7 @@ android {
 }
 
 socialsdk {
-    local false // 使用本地依赖
+    local true // 使用本地依赖
     wx {
         appId = 'wx4b8dbbca35b195c3'
         appSecret = '0a3cb007291d0e59834ee3654f499171'
@@ -61,11 +61,11 @@ dependencies {
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-//     implementation project(':SocialSdkCore')
-//     implementation project(':SocialSdkWx')
-//     implementation project(':SocialSdkWb')
-//     implementation project(':SocialSdkQq')
-//     implementation project(':SocialSdkDd')
+     implementation project(':SocialSdkCore')
+     implementation project(':SocialSdkWx')
+     implementation project(':SocialSdkWb')
+     implementation project(':SocialSdkQq')
+     implementation project(':SocialSdkDd')
 
     implementation libs.flexbox
     implementation libs.multidex

@@ -89,11 +89,15 @@ class QQLoginHelper {
                 mOnLoginListener.onFailure(SocialError.make(SocialError.CODE_PARSE_ERROR, TAG + "#LoginUiListener#qq token is null, data = " + qqToken));
                 return;
             }
-            // 保存token
-            AccessToken.saveToken(getContext(), mLoginTarget, qqToken);
-            mTencentApi.setAccessToken(qqToken.getAccess_token(), qqToken.getExpires_in() + "");
-            mTencentApi.setOpenId(qqToken.getOpenid());
-            getUserInfo(qqToken);
+            if (qqToken.getRet() == 100030) {
+                mTencentApi.reAuth(mActivityRef.get(), "all", mUiListener);
+            } else {
+                // 保存token
+                AccessToken.saveToken(getContext(), mLoginTarget, qqToken);
+                mTencentApi.setAccessToken(qqToken.getAccess_token(), qqToken.getExpires_in() + "");
+                mTencentApi.setOpenId(qqToken.getOpenid());
+                getUserInfo(qqToken);
+            }
         }
 
 

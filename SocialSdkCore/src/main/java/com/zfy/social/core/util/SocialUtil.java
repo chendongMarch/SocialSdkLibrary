@@ -100,6 +100,15 @@ public class SocialUtil {
         return false;
     }
 
+    public static boolean isAnyEq(String dest, String... source) {
+        for (String s : source) {
+            if (s.equals(dest)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static boolean isAnyEmpty(String... strs) {
         for (String str : strs) {
             if (str == null || TextUtils.isEmpty(str)) {
