@@ -36,23 +36,34 @@ android {
     }
 }
 
+def getLocalProperties() {
+    Properties localProperties = new Properties()
+    File file = project.rootProject.file('local.properties')
+    if (file.exists()) {
+        localProperties.load(file.newReader("UTF-8")) // 解决 gradle properties 中文乱码
+    }
+    return localProperties
+}
+
+// get Local Properties
+Properties prop = getLocalProperties()
 socialsdk {
     local false // 使用本地依赖
     wx {
-        appId = 'wx4b8dbbca35b195c3'
-        appSecret = '0a3cb007291d0e59834ee3654f499171'
-        onlyAuthCode = false // 微信授权仅返回 code
+        appId = prop.get('wxAppId')
+        appSecret = prop.get('wxAppSecret')
+        onlyAuthCode = prop.get('wxOnlyAuthCode') // 微信授权仅返回 code
     }
     qq {
-        appId = '1104910200'
-        appSecret = 'A6AqtYnKpg59yQ4N'
+        appId = prop.get('qqAppId')
+        appSecret = prop.get('qqAppSecret')
     }
     wb {
-        appId = '2189645998'
-        url = 'http://open.manfenmm.com/bbpp/app/weibo/common.php'
+        appId = prop.get('wbAppId')
+        url = prop.get('wbUrl')
     }
     dd {
-        appId = 'dingoag98ywrefwjeumuof'
+        appId = prop.get('ddAppId')
     }
 }
 

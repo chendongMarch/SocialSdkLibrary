@@ -6,17 +6,17 @@ import org.gradle.util.ConfigureUtil
 
 class SocialExtension {
 
-    boolean         local           = false
+    public boolean local = false
 
-    ConfigExtension core
+    public ConfigExtension core
     // 微信配置
-    ConfigExtension wx
+    public ConfigExtension wx
     // qq 配置
-    ConfigExtension qq
+    public ConfigExtension qq
     // dd 配置
-    ConfigExtension dd
+    public ConfigExtension dd
     // wb 配置
-    ConfigExtension wb
+    public ConfigExtension wb
 
 
     ConfigExtension core(Closure closure) {

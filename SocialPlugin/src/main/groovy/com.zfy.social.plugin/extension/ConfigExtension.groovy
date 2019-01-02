@@ -2,12 +2,12 @@ package com.zfy.social.plugin.extension
 
 class ConfigExtension  {
 
-    String  version      = null
-    String  appId        = ""
-    boolean enable       = true
-    String  appSecret    = ""
-    String  url          = ""
-    boolean onlyAuthCode = false
+    public String  version      = null
+    public String  appId        = ""
+    public boolean enable       = true
+    public String  appSecret    = ""
+    public String  url          = ""
+    public boolean onlyAuthCode = false
 
     String getVersion() {
         return version
