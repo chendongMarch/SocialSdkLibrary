@@ -3,7 +3,7 @@
 
 ![](http://cdn1.showjoy.com/shop/images/20180828/MLI1YQGFQLZBRO3VKH6U1535432744013.png)
 
-> Easier 、Lighter 、 More Business-Oriented
+> 最新版本(0.0.7)   Easier 、Lighter 、 More Business-Oriented
 
 以更简单、更轻量、更加面向业务需求为设计目标，提供 **微博**、**微信**、**QQ**、**Tim**、**QQ 轻聊版**、**钉钉** 的登陆分享功能支持；
 
