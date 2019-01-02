@@ -3,9 +3,9 @@
 
 ![](http://cdn1.showjoy.com/shop/images/20180828/MLI1YQGFQLZBRO3VKH6U1535432744013.png)
 
+> Easier 、Lighter 、 More Business-Oriented
 
-
-使用 **微博**、**QQ**、**微信**、**钉钉** 原生 `SDK` 接入，提供这些平台的登录、分享功能支持。针对业务逻辑对各个平台的接口进行封装，对外提供一致的表现，在减轻接入压力的同时，又能获得原生 `SDK` 最大的灵活性。
+以更简单、更轻量、更加面向业务需求为设计目标，提供 **微博**、**微信**、**QQ**、**Tim**、**QQ 轻聊版**、**钉钉** 的登陆分享功能支持；
 
 项目地址 : [GitHub - SocialSdkLibrary](https://github.com/chendongMarch/SocialSdkLibrary)
 
