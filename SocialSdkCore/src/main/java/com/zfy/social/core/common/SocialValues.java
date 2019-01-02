@@ -19,6 +19,8 @@ public class SocialValues {
      * 平台包名
      */
     public static final String QQ_PKG = "com.tencent.mobileqq";
+    public static final String TIM_PKG = "com.tencent.tim";
+    public static final String QQLITE_PKG = "com.tencent.qqlite";
     public static final String WECHAT_PKG = "com.tencent.mm";
     public static final String SINA_PKG = "com.wb.weibo";
     public static final String DD_PKG = "com.alibaba.android.rimet";
