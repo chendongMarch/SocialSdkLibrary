@@ -15,7 +15,7 @@
 
 <img  style="margin-right:20px;height:20px"  src="https://img.shields.io/circleci/project/github/badges/shields/master.svg"/>
 
-<img  style="margin-right:20px;height:20px"  src="https://img.shields.io/badge/version-0.0.6-blue.svg?maxAge=2592000"/>
+<img  style="margin-right:20px;height:20px"  src="https://img.shields.io/badge/version-0.0.7-blue.svg?maxAge=2592000"/>
 
 <img style="margin-right:20px;height:20px"  src="https://img.shields.io/github/stars/chendongMarch/SocialSdkLibrary.svg"/>
 
@@ -75,7 +75,7 @@ buildscript {
     }
     dependencies {
         // 请查看文初最新版本，这边可能忘记更新！！！
-        classpath 'com.zfy.social:social-sdk-plugin:0.0.6'
+        classpath 'com.zfy.social:social-sdk-plugin:0.0.7'
     }
 }
 
