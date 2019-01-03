@@ -196,7 +196,7 @@ public class SocialUtil {
         SparseArray<PlatformFactory> factories = SocialSdk.getPlatformFactories();
         for (int i = 0; i < factories.size(); i++) {
             PlatformFactory factory = factories.valueAt(i);
-            if (factory.getPlatformTarget() == target || factory.checkShareTarget(target) || factory.checkLoginTarget(target)) {
+            if (isPlatform(factory, target)) {
                 return factory.getPlatformTarget();
             }
         }

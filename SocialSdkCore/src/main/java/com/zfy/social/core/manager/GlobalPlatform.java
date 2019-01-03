@@ -35,7 +35,6 @@ public class GlobalPlatform {
 
     static @NonNull
     IPlatform makePlatform(Context context, int target) {
-        int platformTarget = SocialUtil.mapPlatformTarget(target);
         if (SocialSdk.opts() == null) {
             throw new IllegalArgumentException(Target.toDesc(target) + " SocialSdk.init() request");
         }
