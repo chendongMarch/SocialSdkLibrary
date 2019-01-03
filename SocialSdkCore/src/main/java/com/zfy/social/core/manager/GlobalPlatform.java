@@ -10,6 +10,7 @@ import com.zfy.social.core.common.Target;
 import com.zfy.social.core.platform.IPlatform;
 import com.zfy.social.core.platform.PlatformFactory;
 import com.zfy.social.core.uikit.BaseActionActivity;
+import com.zfy.social.core.util.SocialUtil;
 
 /**
  * CreateAt : 2017/5/19
@@ -34,6 +35,7 @@ public class GlobalPlatform {
 
     static @NonNull
     IPlatform makePlatform(Context context, int target) {
+        int platformTarget = SocialUtil.mapPlatformTarget(target);
         if (SocialSdk.opts() == null) {
             throw new IllegalArgumentException(Target.toDesc(target) + " SocialSdk.init() request");
         }
@@ -56,7 +58,7 @@ public class GlobalPlatform {
         SparseArray<PlatformFactory> factories = SocialSdk.getPlatformFactories();
         for (int i = 0; i < factories.size(); i++) {
             PlatformFactory factory = factories.valueAt(i);
-            if (factory.checkLoginTarget(target) || factory.checkShareTarget(target)) {
+            if (SocialUtil.isPlatform(factory, target)) {
                 platformFactory = factory;
                 break;
             }

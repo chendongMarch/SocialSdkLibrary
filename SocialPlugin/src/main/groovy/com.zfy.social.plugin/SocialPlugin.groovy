@@ -116,7 +116,7 @@ class SocialPlugin implements Plugin<Project> {
             log "使用本地依赖，不使用远程依赖"
             return
         }
-        def coreV = version(extension.core, "0.0.7")
+        def coreV = version(extension.core, "0.0.8")
         def wxV = version(extension.wx, "0.0.7")
         def qqV = version(extension.qq, "0.0.7")
         def wbV = version(extension.wb, "0.0.7")

@@ -202,4 +202,9 @@ public class SocialUtil {
         }
         return -1;
     }
+
+
+    public static boolean isPlatform(PlatformFactory factory, int target) {
+        return factory.getPlatformTarget() == target || factory.checkShareTarget(target) || factory.checkLoginTarget(target);
+    }
 }

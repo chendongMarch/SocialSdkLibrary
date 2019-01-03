@@ -24,8 +24,8 @@ class SocialExtension {
     }
 
     void core(Action<? super ConfigExtension> action) {
-        if (wx == null) wx = new ConfigExtension()
-        action.execute(wx)
+        if (core == null) core = new ConfigExtension()
+        action.execute(core)
     }
 
     ConfigExtension wx(Closure closure) {
