@@ -168,11 +168,7 @@ public class SocialUtil {
         try {
             Object inst = Class.forName("com.zfy.social.config.SocialBuildConfig").newInstance();
             String object2Json = JsonUtil.getObject2Json(inst);
-            Log.e("chendong", object2Json);
             SocialBuildConfig buildConfig = JsonUtil.getObject(object2Json, SocialBuildConfig.class);
-            if (buildConfig != null) {
-                Log.e("chendong", buildConfig.toString());
-            }
             return buildConfig;
         } catch (InstantiationException e) {
             e.printStackTrace();

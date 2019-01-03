@@ -118,7 +118,7 @@ class SocialPlugin implements Plugin<Project> {
         }
         def coreV = version(extension.core, "0.0.8")
         def wxV = version(extension.wx, "0.0.7")
-        def qqV = version(extension.qq, "0.0.7")
+        def qqV = version(extension.qq, "0.0.8")
         def wbV = version(extension.wb, "0.0.7")
         def ddV = version(extension.dd, "0.0.7")
 

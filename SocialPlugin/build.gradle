@@ -28,7 +28,7 @@ publish {
     userOrg = 'zfy'
     groupId = 'com.zfy.social'
     artifactId = 'social-sdk-plugin'
-    publishVersion = '0.0.8'
+    publishVersion = '0.0.9'
     desc = 'SocialSdkPlugin'
     website = 'https://github.com/chendongMarch/SocialSdkLibrary'
 }
