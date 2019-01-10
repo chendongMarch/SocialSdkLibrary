@@ -24,9 +24,9 @@ ext {
     kotlin_version = '1.2.31'
 
     versions = [
-            compileSdkVersion: 27,
+            compileSdkVersion: 28,
             minSdkVersion    : 16,
-            targetSdkVersion : 27,
+            targetSdkVersion : 28,
     ]
 
     // 官方支持库

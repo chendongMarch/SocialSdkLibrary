@@ -6,7 +6,8 @@
         <!--用于发起请求和接受数据，同步生命周期-->
         <activity
             android:name="com.zfy.social.qq.uikit.QQActionActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:exported="true">
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>

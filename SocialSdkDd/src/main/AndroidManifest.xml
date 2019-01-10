@@ -18,11 +18,10 @@
         <!--dd-->
         <activity-alias
             android:name="${applicationId}.ddshare.DDShareActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:exported="true"
             android:launchMode="singleInstance"
             android:targetActivity="com.zfy.social.dd.uikit.DDActionActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
+            android:exported="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>

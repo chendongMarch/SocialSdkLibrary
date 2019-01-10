@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="ActionUI" parent="@android:style/Theme.Translucent.NoTitleBar">
+
+    </style>
+</resources>

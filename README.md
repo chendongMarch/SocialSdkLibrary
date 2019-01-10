@@ -100,24 +100,24 @@ android {
 }
 
 // socialsdk 配置模块
+Properties prop = getLocalProperties()
 socialsdk {
     wx {
-        appId = 'wx4b8db***5b195c3'
-        appSecret = '0a3cb007291d0e5***3654f499171'
-        onlyAuthCode = false // 微信授权仅返回 code
+        appId = prop.get('wxAppId')
+        appSecret = prop.get('wxAppSecret')
+        onlyAuthCode = Boolean.parseBoolean(prop.get('wxOnlyAuthCode'))
     }
     qq {
-        appId = '1104***200'
-        appSecret = 'A6AqtY***g59yQ4N'
+        appId = prop.get('qqAppId')
+        appSecret = prop.get('qqAppSecret')
     }
     wb {
-        appId = '218***998'
-        url = 'http://open.manfenmm.com/***/***'
+        appId = prop.get('wbAppId')
+        url = prop.get('wbUrl')
     }
     dd {
-        appId = 'dingo***wrefwjeumuof'
+        appId = prop.get('ddAppId')
     }
-    local false // 使用本地依赖
 }
 ```
 
