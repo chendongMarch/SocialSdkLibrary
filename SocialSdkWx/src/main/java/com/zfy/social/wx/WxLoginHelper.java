@@ -35,6 +35,7 @@ class WxLoginHelper {
     private IWXAPI mIWXAPI;
     private String mAppId;
     private String mSecretKey;
+    private String mAuthCode;
     private OnLoginListener mOnLoginListener;
 
     WxLoginHelper(Context context, IWXAPI iwxapi, String appId) {
@@ -111,6 +112,8 @@ class WxLoginHelper {
      * @param code code
      */
     public void getAccessTokenByCode(String code) {
+        mAuthCode = code;
+
         SocialUtil.e(TAG, "使用code获取access_token " + code);
         JsonUtil.startJsonRequest(buildGetTokenUrl(code), WeChatAccessToken.class, new JsonUtil.Callback<WeChatAccessToken>() {
             @Override
@@ -176,7 +179,9 @@ class WxLoginHelper {
             public void onSuccess(@NonNull WxUser wxUserInfo) {
                 SocialUtil.e(TAG, "获取到用户信息" + wxUserInfo.toString());
                 if (wxUserInfo.isNoError()) {
-                    mOnLoginListener.onSuccess(new LoginResult(mLoginTarget, wxUserInfo, token));
+                    LoginResult result = new LoginResult(mLoginTarget, wxUserInfo, token);
+                    result.setWxAuthCode(mAuthCode);
+                    mOnLoginListener.onSuccess(result);
                 } else {
                     mOnLoginListener.onFailure(SocialError.make(SocialError.CODE_REQUEST_ERROR, TAG + "#getUserInfoByValidToken#login code = " + wxUserInfo.getErrcode() + " ,msg = " + wxUserInfo.getErrmsg()));
                 }
