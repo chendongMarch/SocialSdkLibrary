@@ -1,5 +1,6 @@
 apply from: '../scripts/app.gradle'
 apply plugin: 'socialsdk'
+apply plugin: 'testbuildsrc'
 
 android {
 
@@ -45,14 +46,18 @@ def getLocalProperties() {
     return localProperties
 }
 
+testbuildsrc {
+    message = 'test chendong'
+}
+
 // get Local Properties
 Properties prop = getLocalProperties()
 socialsdk {
-    local false // 使用本地依赖
+    local true // 使用本地依赖
     wx {
         appId = prop.get('wxAppId')
         appSecret = prop.get('wxAppSecret')
-        onlyAuthCode = prop.get('wxOnlyAuthCode') // 微信授权仅返回 code
+        onlyAuthCode = Boolean.parseBoolean(prop.get('wxOnlyAuthCode'))
     }
     qq {
         appId = prop.get('qqAppId')
@@ -72,11 +77,12 @@ dependencies {
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-//     implementation project(':SocialSdkCore')
-//     implementation project(':SocialSdkWx')
-//     implementation project(':SocialSdkWb')
-//     implementation project(':SocialSdkQq')
-//     implementation project(':SocialSdkDd')
+     implementation project(':SocialSdkCore')
+     implementation project(':SocialSdkWx')
+     implementation project(':SocialSdkWb')
+     implementation project(':SocialSdkQq')
+     implementation project(':SocialSdkDd')
+
 
     implementation libs.flexbox
     implementation libs.multidex
