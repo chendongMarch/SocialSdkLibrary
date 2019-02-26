@@ -10,6 +10,9 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 class SocialPlugin implements Plugin<Project> {
+
+    static boolean pluginDebug = true
+
     void apply(Project project) {
         // 插件位置
         def hasApp = project.plugins.withType(AppPlugin)
@@ -43,7 +46,7 @@ class SocialPlugin implements Plugin<Project> {
             def variantData = variant.variantData
             def scope = variantData.scope
             SocialExtension extension = project.socialsdk
-
+            pluginDebug = extension.debug
             // 打印编译信息
             log "variantData = ${variantData} ${scope}"
             log "当前调试模式 debugable = ${variant.buildType.isDebuggable()}"
@@ -56,7 +59,6 @@ class SocialPlugin implements Plugin<Project> {
             prepareDependencies(project, extension)
             // 添加自动生成代码的任务
             appendGenerateSocialConfigTask(project, scope, variant, extension)
-
         }
 
         project.task('readSocialConfig').doLast {
@@ -70,16 +72,16 @@ class SocialPlugin implements Plugin<Project> {
             def addQqId = false
             project.android.buildTypes.all { buildType ->
                 addQqId = true
-                log "添加 mh, buildType => ${buildType} ${buildType.manifestPlaceholders}"
+                log "添加 manifestPlaceholder, buildType => ${buildType}"
                 buildType.manifestPlaceholders.qq_id = extension.qq.appId
             }
             project.android.productFlavors.all { flavor ->
                 addQqId = true
-                log "添加 mh, flavor => ${flavor} ${flavor.manifestPlaceholders}"
+                log "添加 manifestPlaceholder, flavor => ${flavor}"
                 flavor.manifestPlaceholders.qq_id = extension.qq.appId
             }
             if (!addQqId) {
-                log "添加 mh, flavor => ${project.android.defaultConfig.manifestPlaceholders}"
+                log "添加 manifestPlaceholder, default config"
                 project.android.defaultConfig.manifestPlaceholders.qq_id = extension.qq.appId
             }
         }
@@ -95,12 +97,29 @@ class SocialPlugin implements Plugin<Project> {
         generateSocialConfigTask.doLast {
             createConfigJava(variant, extension)
         }
-        // 设置 task 依赖于生成BuildConfig 的 task，然后在生成 BuildConfig 后生成我们的类
-        String generateBuildConfigTaskName = variant.getVariantData().getScope().getGenerateBuildConfigTask().name
-        def generateBuildConfigTask = project.tasks.getByName(generateBuildConfigTaskName)
-        if (generateBuildConfigTask) {
-            generateSocialConfigTask.dependsOn generateBuildConfigTask
-            generateBuildConfigTask.finalizedBy generateSocialConfigTask
+        try {
+            // 设置 task 依赖于生成BuildConfig 的 task，然后在生成 BuildConfig 后生成我们的类
+            String generateBuildConfigTaskName = variant.getVariantData().getScope().getGenerateBuildConfigTask().name
+            def generateBuildConfigTask = project.tasks.getByName(generateBuildConfigTaskName)
+            if (generateBuildConfigTask) {
+                generateSocialConfigTask.dependsOn generateBuildConfigTask
+                generateBuildConfigTask.finalizedBy generateSocialConfigTask
+            }
+
+        } catch (e) {
+            e.printStackTrace()
+            def taskNames = project.tasks.getNames()
+            for (String taskName : taskNames) {
+                if (taskName.startsWith("generate")
+                        && taskName.endsWith("BuildConfig")
+                        && !taskName.contains("AndroidTest")) {
+                    def generateBuildConfigTask = project.tasks.getByName(taskName)
+                    if (generateBuildConfigTask) {
+                        generateSocialConfigTask.dependsOn generateBuildConfigTask
+                        generateBuildConfigTask.finalizedBy generateSocialConfigTask
+                    }
+                }
+            }
         }
     }
 
@@ -169,7 +188,9 @@ class SocialPlugin implements Plugin<Project> {
 
     // 日志打印
     private static void log(msg) {
-        println "social: ${msg}"
+        if (pluginDebug) {
+            println "social: ${msg}"
+        }
     }
 
     // 生成配置代码

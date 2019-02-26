@@ -8,6 +8,8 @@ class SocialExtension {
 
     public boolean local = false
 
+    public boolean debug = true
+    
     public ConfigExtension core
     // 微信配置
     public ConfigExtension wx
@@ -130,5 +132,13 @@ class SocialExtension {
 
     void setLocal(boolean local) {
         this.local = local
+    }
+
+    boolean getDebug() {
+        return debug
+    }
+
+    void setDebug(boolean debug) {
+        this.debug = debug
     }
 }
