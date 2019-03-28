@@ -30,8 +30,6 @@ import com.zfy.social.dd.uikit.DDActionActivity;
 /**
  * CreateAt : 2018/2/11
  * Describe : 钉钉分享
- * 文档：https://open-doc.dingtalk.com/doc2/detail.htm?spm=0.0.0.0.MZqdJG&treeId=178&articleId=104982&docType=1
- *
  * @author chendong
  */
 public class DDPlatform extends AbsPlatform {

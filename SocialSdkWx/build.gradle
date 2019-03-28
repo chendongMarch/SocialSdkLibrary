@@ -12,7 +12,7 @@ publish {
     userOrg = 'zfy'
     groupId = 'com.zfy'
     artifactId = 'social-sdk-wx'
-    publishVersion = '0.0.7'
+    publishVersion = '0.1.0'
     desc = 'SocialSdkWx'
     website = 'https://github.com/chendongMarch/SocialSdkLibrary'
 }

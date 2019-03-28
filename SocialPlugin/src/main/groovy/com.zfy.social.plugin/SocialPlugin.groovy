@@ -135,11 +135,11 @@ class SocialPlugin implements Plugin<Project> {
             log "使用本地依赖，不使用远程依赖"
             return
         }
-        def coreV = version(extension.core, "0.0.8")
-        def wxV = version(extension.wx, "0.0.7")
-        def qqV = version(extension.qq, "0.0.8")
-        def wbV = version(extension.wb, "0.0.7")
-        def ddV = version(extension.dd, "0.0.7")
+        def coreV = version(extension.core, "0.1.0")
+        def wxV = version(extension.wx, "0.1.0")
+        def qqV = version(extension.qq, "0.1.0")
+        def wbV = version(extension.wb, "0.1.0")
+        def ddV = version(extension.dd, "0.1.0")
 
         def coreLib = "com.zfy:social-sdk-core:${coreV}"
         def wxLib = "com.zfy:social-sdk-wx:${wxV}"
