@@ -3,7 +3,7 @@
 
 ![](http://cdn1.showjoy.com/shop/images/20180828/MLI1YQGFQLZBRO3VKH6U1535432744013.png)
 
-> 最新版本(0.0.9)   Easier 、Lighter 、 More Business-Oriented
+> 最新版本(0.1.1)   Easier 、Lighter 、 More Business-Oriented
 
 以更简单、更轻量、更加面向业务需求为设计目标，提供 **微博**、**微信**、**QQ**、**Tim**、**QQ 轻聊版**、**钉钉** 的登陆分享功能支持；
 
@@ -15,7 +15,7 @@
 
 <img  style="margin-right:20px;height:20px"  src="https://img.shields.io/circleci/project/github/badges/shields/master.svg"/>
 
-<img  style="margin-right:20px;height:20px"  src="https://img.shields.io/badge/version-0.0.9-blue.svg?maxAge=2592000"/>
+<img  style="margin-right:20px;height:20px"  src="https://img.shields.io/badge/version-0.1.1-blue.svg?maxAge=2592000"/>
 
 <img style="margin-right:20px;height:20px"  src="https://img.shields.io/github/stars/chendongMarch/SocialSdkLibrary.svg"/>
 
@@ -87,7 +87,7 @@ buildscript {
     }
     dependencies {
         // 请查看文初最新版本，这边可能忘记更新！！！
-        classpath 'com.zfy.social:social-sdk-plugin:0.0.9'
+        classpath 'com.zfy.social:social-sdk-plugin:0.1.1'
     }
 }
 
@@ -474,27 +474,32 @@ SocialSdk.addPlatform(new HuaweiPlatform.Factory());
 ## 相关文档
 
 QQ：
-[QQ 登录分享文档](http://wiki.open.qq.com/wiki/QQ%E7%94%A8%E6%88%B7%E8%83%BD%E5%8A%9B)
-[QQ SDK 下载](http://wiki.open.qq.com/wiki/mobile/SDK%E4%B8%8B%E8%BD%BD)
-QQ  设计资源
-http://wiki.connect.qq.com/%E8%A7%86%E8%A7%89%E7%B4%A0%E6%9D%90%E4%B8%8B%E8%BD%BD
+- [QQ 登录分享文档](http://wiki.open.qq.com/wiki/QQ%E7%94%A8%E6%88%B7%E8%83%BD%E5%8A%9B)
+- [QQ SDK 下载](http://wiki.open.qq.com/wiki/mobile/SDK%E4%B8%8B%E8%BD%BD)
+- [QQ 设计资源](http://wiki.connect.qq.com/%E8%A7%86%E8%A7%89%E7%B4%A0%E6%9D%90%E4%B8%8B%E8%BD%BD)
 
 
 微信：
-[分享与收藏文档](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419317340&token=&lang=zh_CN)
-[微信登录文档](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419317851&token=&lang=zh_CN)
-[微信SDK](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419319167&token=&lang=zh_CN)
-[微信设计资源](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419319171&token=&lang=zh_CN)
+
+- [分享与收藏文档](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419317340&token=&lang=zh_CN)
+- [微信登录文档](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419317851&token=&lang=zh_CN)
+- [微信SDK](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419319167&token=&lang=zh_CN)
+- [微信设计资源](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419319171&token=&lang=zh_CN)
+- [分享与收藏文档](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419317340&token=&lang=zh_CN)
+- [微信登录文档](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419317851&token=&lang=zh_CN)
+- [公告-取消 cancel 事件](https://open.weixin.qq.com/cgi-bin/announce?spm=a311a.9588098.0.0&action=getannouncement&key=11534138374cE6li&version=)
 
 微博：
-[微博开放平台](http://open.weibo.com/wiki/%E7%A7%BB%E5%8A%A8%E5%BA%94%E7%94%A8%E4%BB%8B%E7%BB%8D)
-[GitHub(大多数资源还是在 git 上)](https://github.com/sinaweibosdk/weibo_android_sdk)
-[openApi 文档](http://open.weibo.com/wiki/%E5%BE%AE%E5%8D%9AAPI)
-[微博设计资源](http://open.weibo.com/wiki/%E5%BE%AE%E5%8D%9A%E6%A0%87%E8%AF%86%E4%B8%8B%E8%BD%BD)
+
+- [微博开放平台](http://open.weibo.com/wiki/%E7%A7%BB%E5%8A%A8%E5%BA%94%E7%94%A8%E4%BB%8B%E7%BB%8D)
+- [GitHub(大多数资源还是在 git 上)](https://github.com/sinaweibosdk/weibo_android_sdk)
+- [openApi 文档](http://open.weibo.com/wiki/%E5%BE%AE%E5%8D%9AAPI)
+- [微博设计资源](http://open.weibo.com/wiki/%E5%BE%AE%E5%8D%9A%E6%A0%87%E8%AF%86%E4%B8%8B%E8%BD%BD)
 
 钉钉：
-[钉钉分享文档](https://open-doc.dingtalk.com/docs/doc.htm?spm=a219a.7629140.0.0.15nVTL&treeId=178&articleId=104986&docType=1)
-[钉钉设计资源](https://open-doc.dingtalk.com/microapp/kn6zg7/tnrhmb)
+
+- [钉钉分享文档](https://open-doc.dingtalk.com/docs/doc.htm?spm=a219a.7629140.0.0.15nVTL&treeId=178&articleId=104986&docType=1)-
+- [钉钉设计资源](https://open-doc.dingtalk.com/microapp/kn6zg7/tnrhmb)
 
 
 各个平台依赖版本：

@@ -9,12 +9,12 @@
 
 ```gradle
 // 依赖核心库
-implementation "com.zfy:social-sdk-core:0.0.6"
+implementation "com.zfy:social-sdk-core:0.1.0"
 // 依赖不同的平台库
-implementation "com.zfy:social-sdk-wx:0.0.6"
-implementation "com.zfy:social-sdk-dd:0.0.6"
-implementation "com.zfy:social-sdk-qq:0.0.6"
-implementation "com.zfy:social-sdk-weibo:0.0.6"
+implementation "com.zfy:social-sdk-wx:0.1.0"
+implementation "com.zfy:social-sdk-dd:0.1.0"
+implementation "com.zfy:social-sdk-qq:0.1.0"
+implementation "com.zfy:social-sdk-wb:0.1.0"
 ```
 
 在代码中初始化：
