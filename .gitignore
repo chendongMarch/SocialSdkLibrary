@@ -55,3 +55,4 @@ captures/
 
 node_modules/
 
+*.jks
