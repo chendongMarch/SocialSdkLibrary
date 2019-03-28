@@ -19,6 +19,8 @@ public interface OnShareListener {
      *
      * @param shareTarget 分享目标
      * @param obj         shareMediaObj
+     * @return 处理后的 Obj
+     * @throws Exception e
      */
     ShareObj onPrepareInBackground(int shareTarget, ShareObj obj) throws Exception;
 
