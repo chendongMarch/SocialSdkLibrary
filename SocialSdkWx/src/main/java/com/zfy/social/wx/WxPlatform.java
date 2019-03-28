@@ -7,6 +7,7 @@ import android.text.TextUtils;
 
 import com.tencent.mm.opensdk.constants.ConstantsAPI;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
+import com.tencent.mm.opensdk.modelbiz.SubscribeMiniProgramMsg;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.opensdk.modelmsg.WXEmojiObject;
@@ -387,6 +388,12 @@ public class WxPlatform extends AbsPlatform {
         }
     }
 
+    private void subscribeMiniProgram(final int shareTarget, Activity activity, final ShareObj obj) {
+        SubscribeMiniProgramMsg.Req req = new SubscribeMiniProgramMsg.Req();
+        req.miniProgramAppId = obj.getWxMiniOriginId();
+        mWxApi.sendReq(req);
+    }
+
     // 分享小程序
     private void shareMiniProgram(final int shareTarget, Activity activity, final ShareObj obj) {
         Bundle extra = obj.getExtra();
@@ -403,6 +410,7 @@ public class WxPlatform extends AbsPlatform {
                     "shareMiniProgram extra = " + extra.toString()));
             return;
         }
+
         BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE_128)
                 .continueWith(new ThumbTask(TAG, "shareMini", mOnShareListener) {
                     @Override
@@ -412,6 +420,7 @@ public class WxPlatform extends AbsPlatform {
                         miniProgramObj.miniprogramType = wxMiniType;
                         miniProgramObj.userName = originId; // 小程序原始id
                         miniProgramObj.path = pagePath; // 小程序页面路径
+                        miniProgramObj.withShareTicket = true;
                         WXMediaMessage msg = new WXMediaMessage(miniProgramObj);
                         msg.title = obj.getTitle(); // 小程序消息title
                         msg.description = obj.getSummary(); // 小程序消息desc
