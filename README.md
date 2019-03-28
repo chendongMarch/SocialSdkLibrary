@@ -100,6 +100,25 @@ allprojects {
 
 **STEP2**: 配置参数，注意与 `android` 同级
 
+> project / local.properties
+
+配置你的 `appId` 和 `appKey`;
+
+```
+wxAppId = wx4b8xxxb195c3
+wxAppSecret = 0a3cxxxxxx654f499171
+wxOnlyAuthCode = false
+
+qqAppId = 110xxx0200
+qqAppSecret = A6Aqxxx9yQ4N
+
+
+wbAppId = 2xxx5998
+wbUrl = http://open.manfenmm.com/bxx/common.php
+
+ddAppId = dingoxxxefwjeumuof
+```
+
 > app / build.gralde
 
 ```js
@@ -450,3 +469,51 @@ listener = new OnShareListener() {
 ```java
 SocialSdk.addPlatform(new HuaweiPlatform.Factory());
 ```
+
+
+## 相关文档
+
+QQ：
+[QQ 登录分享文档](http://wiki.open.qq.com/wiki/QQ%E7%94%A8%E6%88%B7%E8%83%BD%E5%8A%9B)
+[QQ SDK 下载](http://wiki.open.qq.com/wiki/mobile/SDK%E4%B8%8B%E8%BD%BD)
+QQ  设计资源
+http://wiki.connect.qq.com/%E8%A7%86%E8%A7%89%E7%B4%A0%E6%9D%90%E4%B8%8B%E8%BD%BD
+
+
+微信：
+[分享与收藏文档](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419317340&token=&lang=zh_CN)
+[微信登录文档](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419317851&token=&lang=zh_CN)
+[微信SDK](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419319167&token=&lang=zh_CN)
+[微信设计资源](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419319171&token=&lang=zh_CN)
+
+微博：
+[微博开放平台](http://open.weibo.com/wiki/%E7%A7%BB%E5%8A%A8%E5%BA%94%E7%94%A8%E4%BB%8B%E7%BB%8D)
+[GitHub(大多数资源还是在 git 上)](https://github.com/sinaweibosdk/weibo_android_sdk)
+[openApi 文档](http://open.weibo.com/wiki/%E5%BE%AE%E5%8D%9AAPI)
+[微博设计资源](http://open.weibo.com/wiki/%E5%BE%AE%E5%8D%9A%E6%A0%87%E8%AF%86%E4%B8%8B%E8%BD%BD)
+
+钉钉：
+[钉钉分享文档](https://open-doc.dingtalk.com/docs/doc.htm?spm=a219a.7629140.0.0.15nVTL&treeId=178&articleId=104986&docType=1)
+[钉钉设计资源](https://open-doc.dingtalk.com/microapp/kn6zg7/tnrhmb)
+
+
+各个平台依赖版本：
+
+钉钉：
+com.alibaba.android:ddsharesdk:1.1.0
+
+微信：
+com.tencent.mm.opensdk:wechat-sdk-android-without-mta:5.3.1
+
+QQ:
+libs/open_sdk_r6019_lite.jar
+
+微博：
+com.sina.weibo.sdk:core:4.3.7:openDefaultRelease@aar
+
+
+
+
+
+
+
