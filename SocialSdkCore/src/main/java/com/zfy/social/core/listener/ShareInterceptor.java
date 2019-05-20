@@ -12,6 +12,6 @@ import com.zfy.social.core.model.ShareObj;
  */
 public interface ShareInterceptor {
 
-    ShareObj intercept(Context context, ShareObj obj);
+    ShareObj intercept(Context context, int target, ShareObj obj);
 
 }

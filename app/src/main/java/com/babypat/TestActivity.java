@@ -91,7 +91,7 @@ public class TestActivity extends AppCompatActivity {
 
         localGifPath = new File(Environment.getExternalStorageDirectory(), "3.gif").getAbsolutePath();
         netVideoPath = "http://7xtjec.com1.z0.glb.clouddn.com/export.mp4";
-        netImagePath = "https://images.pexels.com/photos/1688568/pexels-photo-1688568.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500";
+        netImagePath = "http://s3.hixd.com/129721.jpg";
         netMusicPath = "http://7xtjec.com1.z0.glb.clouddn.com/test_music.mp3";
         targetUrl = "https://mp.weixin.qq.com/s/Z7Kp_xstwOU7ipLNERRQdA";
         localVideoPath = new File(Environment.getExternalStorageDirectory(), "4.mp4").getAbsolutePath();
@@ -354,7 +354,7 @@ public class TestActivity extends AppCompatActivity {
                 // 请求处理类，如果使用了微博的 openApi 分享，这个是必须的
                 .requestAdapter(new OkHttpRequestAdapter())
                 // 添加分享拦截器
-                .addShareInterceptor((context, obj) -> {
+                .addShareInterceptor((context, r, obj) -> {
                     obj.setSummary("被重新组装" + obj.getSummary());
                     return null;
                 })

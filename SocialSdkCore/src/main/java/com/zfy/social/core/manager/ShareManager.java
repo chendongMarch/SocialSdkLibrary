@@ -15,6 +15,7 @@ import com.zfy.social.core.exception.SocialError;
 import com.zfy.social.core.listener.OnShareListener;
 import com.zfy.social.core.listener.OnShareStateListener;
 import com.zfy.social.core.listener.ShareInterceptor;
+import com.zfy.social.core.model.LoginResult;
 import com.zfy.social.core.model.ShareObj;
 import com.zfy.social.core.model.ShareResult;
 import com.zfy.social.core.platform.IPlatform;
@@ -41,7 +42,7 @@ public class ShareManager {
 
     public static final String TAG = ShareManager.class.getSimpleName();
 
-    private static _ShareMgr sShareMgr;
+    private static _InternalMgr sMgr;
 
 
     // 分享
@@ -51,29 +52,37 @@ public class ShareManager {
             final ShareObj shareObj,
             final OnShareStateListener listener
     ) {
-        if (sShareMgr != null) {
-            sShareMgr.onHostActivityDestroy();
+        if (sMgr != null) {
+            sMgr.onHostActivityDestroy();
         }
-        sShareMgr = new _ShareMgr();
-        sShareMgr.preShare(activity, shareTarget, shareObj, listener);
+        if (sMgr == null) {
+            sMgr = new _InternalMgr();
+        }
+        sMgr.preShare(activity, shareTarget, shareObj, listener);
+    }
+
+    public static void clear() {
+        if (sMgr != null) {
+            sMgr.onHostActivityDestroy();
+        }
     }
 
     // 开始分享
     static void actionShare(Activity activity) {
-        if (sShareMgr != null) {
-            sShareMgr.postShare(activity);
+        if (sMgr != null) {
+            sMgr.postShare(activity);
         }
     }
 
     // 发起分享的页面被销毁
     static void onUIDestroy() {
-        if (sShareMgr != null) {
-            sShareMgr.onUIDestroy();
+        if (sMgr != null) {
+            sMgr.onUIDestroy();
         }
     }
 
 
-    private static class _ShareMgr implements LifecycleObserver {
+    private static class _InternalMgr implements LifecycleObserver {
 
         private OnShareStateListener stateListener;
         private OnShareListenerWrap shareListener;
@@ -108,7 +117,6 @@ public class ShareManager {
             stateListener = null;
             shareListener = null;
             fakeActivity = null;
-            sShareMgr = null;
             SocialUtil.e("chendong", "分享过程结束，回收资源");
         }
 
@@ -138,7 +146,7 @@ public class ShareManager {
             currentTarget = -1;
             listener.onState(ShareResult.startOf(shareTarget, currentObj));
             Task.callInBackground(() -> {
-                currentObj = execInterceptors(activity, currentObj);
+                currentObj = execInterceptors(activity, currentTarget, currentObj);
                 return currentObj;
             }, cts.getToken()).continueWith(task -> {
                 if (task.isFaulted()) {
@@ -206,7 +214,7 @@ public class ShareManager {
                 intent.putExtra(GlobalPlatform.KEY_SHARE_MEDIA_OBJ, shareObj);
                 intent.putExtra(GlobalPlatform.KEY_SHARE_TARGET, shareTarget);
                 activity.startActivity(intent);
-                activity.overridePendingTransition(0, 0);
+                activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
         }
 
@@ -216,6 +224,7 @@ public class ShareManager {
          * @param activity 透明 activity
          */
         private void postShare(Activity activity) {
+            stateListener.onState(ShareResult.stateOf(LoginResult.STATE_FAKE_ACTIVITY_ATTACH, currentTarget, currentObj));
             fakeActivity = new WeakReference<>(activity);
             Intent intent = activity.getIntent();
             int actionType = intent.getIntExtra(KEY_ACTION_TYPE, GlobalPlatform.INVALID_PARAM);
@@ -255,12 +264,12 @@ public class ShareManager {
             }
         }
 
-        private ShareObj execInterceptors(Context context, ShareObj obj) {
+        private ShareObj execInterceptors(Context context, int target, ShareObj obj) {
             ShareObj result = obj;
             List<ShareInterceptor> interceptors = SocialSdk.getShareInterceptors();
             if (interceptors != null && interceptors.size() > 0) {
                 for (ShareInterceptor interceptor : interceptors) {
-                    ShareObj temp = interceptor.intercept(context, result);
+                    ShareObj temp = interceptor.intercept(context, target, result);
                     if (temp != null) {
                         result = temp;
                     }
@@ -272,7 +281,10 @@ public class ShareManager {
 
     public static class ImgInterceptor implements ShareInterceptor {
         @Override
-        public ShareObj intercept(Context context, ShareObj obj) {
+        public ShareObj intercept(Context context, int target, ShareObj obj) {
+            if (target == Target.SHARE_CLIPBOARD || target == Target.SHARE_SMS || target == Target.SHARE_EMAIL) {
+                return obj;
+            }
             String thumbImagePath = obj.getThumbImagePath();
             // 图片路径为网络路径，下载为本地图片
             if (!TextUtils.isEmpty(thumbImagePath) && FileUtil.isHttpPath(thumbImagePath)) {
@@ -310,29 +322,32 @@ public class ShareManager {
         @Override
         public void onSuccess(int target) {
             if (listener != null) {
-                listener.onState(ShareResult.successOf(target, sShareMgr.currentObj));
+                listener.onState(ShareResult.successOf(target, sMgr.currentObj));
+                listener.onState(ShareResult.completeOf(sMgr.currentTarget, sMgr.currentObj));
             }
             clear();
-            sShareMgr.onProcessFinished();
+            sMgr.onProcessFinished();
         }
 
         @Override
         public void onCancel() {
             if (listener != null) {
-                listener.onState(ShareResult.cancelOf(sShareMgr.currentTarget, sShareMgr.currentObj));
+                listener.onState(ShareResult.cancelOf(sMgr.currentTarget, sMgr.currentObj));
+                listener.onState(ShareResult.completeOf(sMgr.currentTarget, sMgr.currentObj));
             }
             clear();
-            sShareMgr.onProcessFinished();
+            sMgr.onProcessFinished();
         }
 
 
         @Override
         public void onFailure(SocialError e) {
             if (listener != null) {
-                listener.onState(ShareResult.failOf(sShareMgr.currentTarget, sShareMgr.currentObj, e));
+                listener.onState(ShareResult.failOf(sMgr.currentTarget, sMgr.currentObj, e));
+                listener.onState(ShareResult.completeOf(sMgr.currentTarget, sMgr.currentObj));
             }
             clear();
-            sShareMgr.onProcessFinished();
+            sMgr.onProcessFinished();
         }
 
         private void clear() {

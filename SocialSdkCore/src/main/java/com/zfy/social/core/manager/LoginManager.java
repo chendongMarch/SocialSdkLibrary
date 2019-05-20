@@ -45,8 +45,16 @@ public class LoginManager {
         if (sMgr != null) {
             sMgr.onHostActivityDestroy();
         }
-        sMgr = new _InternalMgr();
+        if (sMgr == null) {
+            sMgr = new _InternalMgr();
+        }
         sMgr.preLogin(activity, target, listener);
+    }
+
+    public static void clear() {
+        if (sMgr != null) {
+            sMgr.onHostActivityDestroy();
+        }
     }
 
     /**
@@ -88,7 +96,7 @@ public class LoginManager {
         @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         public void onHostActivityDestroy() {
             onProcessFinished();
-            SocialUtil.e("chendong", "页面销毁，回收资源");
+            SocialUtil.e(TAG, "页面销毁，回收资源");
         }
 
         // 流程结束，回收资源
@@ -104,8 +112,7 @@ public class LoginManager {
             stateListener = null;
             wrapListener = null;
             fakeActivity = null;
-            sMgr = null;
-            SocialUtil.e("chendong", "分享过程结束，回收资源");
+            SocialUtil.e(TAG, "分享过程结束，回收资源");
         }
 
 
@@ -133,6 +140,7 @@ public class LoginManager {
             intent.putExtra(GlobalPlatform.KEY_LOGIN_TARGET, target);
             activity.startActivity(intent);
             activity.overridePendingTransition(0, 0);
+
         }
 
         /**
@@ -141,6 +149,7 @@ public class LoginManager {
          * @param activity 透明 activity
          */
         private void postLogin(Activity activity) {
+            stateListener.onState(LoginResult.stateOf(LoginResult.STATE_FAKE_ACTIVITY_ATTACH, currentTarget));
             fakeActivity = new WeakReference<>(activity);
             Intent intent = activity.getIntent();
             int actionType = intent.getIntExtra(GlobalPlatform.KEY_ACTION_TYPE, GlobalPlatform.INVALID_PARAM);
@@ -190,6 +199,7 @@ public class LoginManager {
         public void onSuccess(LoginResult result) {
             if (listener != null) {
                 listener.onState(result);
+                listener.onState(LoginResult.completeOf(sMgr.currentTarget));
             }
             clear();
             sMgr.onProcessFinished();
@@ -199,6 +209,7 @@ public class LoginManager {
         public void onCancel() {
             if (listener != null) {
                 listener.onState(LoginResult.cancelOf(sMgr.currentTarget));
+                listener.onState(LoginResult.completeOf(sMgr.currentTarget));
             }
             clear();
             sMgr.onProcessFinished();
@@ -209,6 +220,7 @@ public class LoginManager {
         public void onFailure(SocialError e) {
             if (listener != null) {
                 listener.onState(LoginResult.failOf(sMgr.currentTarget, e));
+                listener.onState(LoginResult.completeOf(sMgr.currentTarget));
             }
             clear();
             sMgr.onProcessFinished();
