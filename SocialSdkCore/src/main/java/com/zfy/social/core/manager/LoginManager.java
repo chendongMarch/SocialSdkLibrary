@@ -154,7 +154,7 @@ public class LoginManager {
          * @param activity 透明 activity
          */
         private void postLogin(Activity activity) {
-            stateListener.onState(originActivity.get(), LoginResult.stateOf(LoginResult.STATE_FAKE_ACTIVITY_ATTACH, currentTarget));
+            stateListener.onState(originActivity.get(), LoginResult.stateOf(LoginResult.STATE_ACTIVE, currentTarget));
             fakeActivity = new WeakReference<>(activity);
             Intent intent = activity.getIntent();
             int actionType = intent.getIntExtra(GlobalPlatform.KEY_ACTION_TYPE, GlobalPlatform.INVALID_PARAM);

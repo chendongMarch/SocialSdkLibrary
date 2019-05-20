@@ -227,13 +227,23 @@ LoginResult {
 ```java
 new OnLoginStateListener() {
     @Override
-    public void onState(LoginResult result) {
+    public void onState(Activity act, LoginResult result) {
         switch (result.state) {
+            case LoginResult.STATE_START:
+                // 登录开始
+                break;
+            case LoginResult.STATE_COMPLETE:
+                // 登录完成
+                break;
+            case LoginResult.STATE_ACTIVE:
+                // 透明 Activity 开启
+                break;
             case LoginResult.STATE_SUCCESS:
                 // 登录成功
                 break;
             case LoginResult.STATE_FAIL:
                 // 登录失败
+                result.error
                 break;
             case LoginResult.STATE_CANCEL:
                 // 登录取消
@@ -384,25 +394,26 @@ webObj.setWxMiniParams("51299u9**q31",SocialValues.WX_MINI_TYPE_RELEASE,"/page/p
 ```java
 new OnShareStateListener() {
     @Override
-    public void onState(ShareResult result) {
+    public void onState(Activity act, ShareResult result) {
         switch (result.state) {
+            case LoginResult.STATE_START:
+                // 分享开始
+                break;
+            case LoginResult.STATE_COMPLETE:
+                // 分享完成
+                break;
+            case LoginResult.STATE_ACTIVE:
+                // 透明 Activity 开启
+                break;
             case ShareResult.STATE_SUCCESS:
-                showMsg("分享成功");
+                // 分享成功
                 break;
             case ShareResult.STATE_FAIL:
                 SocialError e = result.error;
-                showMsg("分享失败  " + e.toString());
-                // 如下因为没有存储权限导致失败，请求权限
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (e.getCode() == SocialError.CODE_STORAGE_READ_ERROR) {
-                        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
-                    } else if (e.getCode() == SocialError.CODE_STORAGE_WRITE_ERROR) {
-                        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 100);
-                    }
-                }
+                // 分享失败
                 break;
             case ShareResult.STATE_CANCEL:
-                showMsg("分享取消");
+                // 分享取消
                 break;
         }
     }
@@ -502,19 +513,24 @@ int CODE_NOT_SUPPORT = 117; // 不支持
 例如你可以这么做：
 
 ```java
-listener = new OnShareListener() {
-	...
-    @Override
-    public void onFailure(SocialError e) {
-        showMsg("分享失败  " + e.toString());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (e.getCode() == SocialError.CODE_STORAGE_READ_ERROR) {
-                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
-            } else if (e.getCode() == SocialError.CODE_STORAGE_WRITE_ERROR) {
-                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 100);
+listener = new OnShareStateListener() {
+	@Override
+        public void onState(Activity act, ShareResult result) {
+            switch (result.state) {
+                case ShareResult.STATE_FAIL:
+                    SocialError e = result.error;
+                    showMsg("分享失败  " + e.toString());
+                    // 如下因为没有存储权限导致失败，请求权限
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (e.getCode() == SocialError.CODE_STORAGE_READ_ERROR) {
+                            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
+                        } else if (e.getCode() == SocialError.CODE_STORAGE_WRITE_ERROR) {
+                            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 100);
+                        }
+                    }
+                    break;
             }
         }
-    }
 };
 ```
 
