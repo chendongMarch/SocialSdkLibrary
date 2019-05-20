@@ -99,7 +99,7 @@ public class TestActivity extends AppCompatActivity {
         initObj();
         mOnShareListener = new OnShareStateListener() {
             @Override
-            public void onState(ShareResult result) {
+            public void onState(Activity activity, ShareResult result) {
                 switch (result.state) {
                     case ShareResult.STATE_SUCCESS:
                         showMsg("分享成功");
@@ -124,7 +124,7 @@ public class TestActivity extends AppCompatActivity {
 
         mOnLoginListener = new OnLoginStateListener() {
             @Override
-            public void onState(LoginResult result) {
+            public void onState(Activity activity,LoginResult result) {
                 switch (result.state) {
                     case LoginResult.STATE_SUCCESS:
                         Log.e(TAG, result.toString());

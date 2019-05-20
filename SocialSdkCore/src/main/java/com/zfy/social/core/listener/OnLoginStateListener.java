@@ -1,5 +1,7 @@
 package com.zfy.social.core.listener;
 
+import android.app.Activity;
+
 import com.zfy.social.core.model.LoginResult;
 
 /**
@@ -9,5 +11,5 @@ import com.zfy.social.core.model.LoginResult;
  * @author chendong
  */
 public interface OnLoginStateListener {
-    void onState(LoginResult result);
+    void onState(Activity activity, LoginResult result);
 }

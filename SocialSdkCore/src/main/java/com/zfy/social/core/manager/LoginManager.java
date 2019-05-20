@@ -92,6 +92,7 @@ public class LoginManager {
         private int currentTarget;
 
         private WeakReference<Activity> fakeActivity;
+        private WeakReference<Activity> originActivity;
 
         @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         public void onHostActivityDestroy() {
@@ -107,6 +108,9 @@ public class LoginManager {
             if (fakeActivity != null) {
                 GlobalPlatform.release(fakeActivity.get());
                 fakeActivity.clear();
+            }
+            if (originActivity != null) {
+                originActivity.clear();
             }
             currentTarget = -1;
             stateListener = null;
@@ -130,9 +134,10 @@ public class LoginManager {
 
             stateListener = listener;
             currentTarget = target;
+            originActivity = new WeakReference<>(activity);
             IPlatform platform = GlobalPlatform.newPlatformByTarget(activity, target);
             if (!platform.isInstall(activity)) {
-                stateListener.onState(LoginResult.failOf(target, SocialError.make(SocialError.CODE_NOT_INSTALL)));
+                stateListener.onState(originActivity.get(), LoginResult.failOf(target, SocialError.make(SocialError.CODE_NOT_INSTALL)));
                 return;
             }
             Intent intent = new Intent(activity, platform.getUIKitClazz());
@@ -149,7 +154,7 @@ public class LoginManager {
          * @param activity 透明 activity
          */
         private void postLogin(Activity activity) {
-            stateListener.onState(LoginResult.stateOf(LoginResult.STATE_FAKE_ACTIVITY_ATTACH, currentTarget));
+            stateListener.onState(originActivity.get(), LoginResult.stateOf(LoginResult.STATE_FAKE_ACTIVITY_ATTACH, currentTarget));
             fakeActivity = new WeakReference<>(activity);
             Intent intent = activity.getIntent();
             int actionType = intent.getIntExtra(GlobalPlatform.KEY_ACTION_TYPE, GlobalPlatform.INVALID_PARAM);
@@ -187,10 +192,20 @@ public class LoginManager {
             this.listener = listener;
         }
 
+
+        private Activity getAct() {
+            if (sMgr != null && sMgr.originActivity != null) {
+                return sMgr.originActivity.get();
+            }
+            return null;
+        }
+
+
+
         @Override
         public void onStart() {
             if (listener != null) {
-                listener.onState(LoginResult.startOf(sMgr.currentTarget));
+                listener.onState(getAct(), LoginResult.startOf(sMgr.currentTarget));
             }
         }
 
@@ -198,8 +213,8 @@ public class LoginManager {
         @Override
         public void onSuccess(LoginResult result) {
             if (listener != null) {
-                listener.onState(result);
-                listener.onState(LoginResult.completeOf(sMgr.currentTarget));
+                listener.onState(getAct(), result);
+                listener.onState(getAct(), LoginResult.completeOf(sMgr.currentTarget));
             }
             clear();
             sMgr.onProcessFinished();
@@ -208,8 +223,8 @@ public class LoginManager {
         @Override
         public void onCancel() {
             if (listener != null) {
-                listener.onState(LoginResult.cancelOf(sMgr.currentTarget));
-                listener.onState(LoginResult.completeOf(sMgr.currentTarget));
+                listener.onState(getAct(), LoginResult.cancelOf(sMgr.currentTarget));
+                listener.onState(getAct(), LoginResult.completeOf(sMgr.currentTarget));
             }
             clear();
             sMgr.onProcessFinished();
@@ -219,8 +234,8 @@ public class LoginManager {
         @Override
         public void onFailure(SocialError e) {
             if (listener != null) {
-                listener.onState(LoginResult.failOf(sMgr.currentTarget, e));
-                listener.onState(LoginResult.completeOf(sMgr.currentTarget));
+                listener.onState(getAct(), LoginResult.failOf(sMgr.currentTarget, e));
+                listener.onState(getAct(), LoginResult.completeOf(sMgr.currentTarget));
             }
             clear();
             sMgr.onProcessFinished();
