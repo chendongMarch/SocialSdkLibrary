@@ -35,4 +35,12 @@ public class ShareResult extends Result {
         return new ShareResult(STATE_CANCEL, obj, target);
     }
 
+    public static ShareResult completeOf(int target, ShareObj obj) {
+        return new ShareResult(STATE_COMPLETE, obj, target);
+    }
+
+    public static ShareResult stateOf(int state, int target, ShareObj obj) {
+        return new ShareResult(state, obj, target);
+    }
+
 }

@@ -433,11 +433,11 @@ ShareManager.share(mActivity, Target.SHARE_QQ_FRIENDS, imageObj, mOnShareListene
 SocialOptions options = new SocialOptions.Builder(this)
         // ... 其他初始化代码
         // 添加分享拦截器
-        .addShareInterceptor((context, obj) -> {
+        .addShareInterceptor((context, target, obj) -> {
             obj.setSummary("描述加前缀" + obj.getSummary());
             return obj;
         })
-        .addShareInterceptor((context, obj) -> {
+        .addShareInterceptor((context, target, obj) -> {
             obj.setTargetUrl(obj.getTargetUrl()+"?id=100");
             return obj;
         })

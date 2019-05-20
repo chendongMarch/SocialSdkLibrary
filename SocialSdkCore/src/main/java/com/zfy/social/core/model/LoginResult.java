@@ -52,6 +52,14 @@ public class LoginResult extends Result {
         return new LoginResult(STATE_CANCEL, target);
     }
 
+    public static LoginResult completeOf(int target) {
+        return new LoginResult(STATE_COMPLETE, target);
+    }
+
+    public static LoginResult stateOf(int state, int target) {
+        return new LoginResult(state, target);
+    }
+
 
     @Override
     public String toString() {
