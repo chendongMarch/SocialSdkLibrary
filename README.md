@@ -426,6 +426,9 @@ ShareManager.share(mActivity, Target.SHARE_QQ_FRIENDS, imageObj, mOnShareListene
 
 重写分享对象，我们使用拦截器来实现，拦截器在 `SDK` 初始化时注入，支持多个，可以将不同业务分为不同的拦截器，所有拦截器会被顺序调用；
 
+⚠️ 拦截器会在子线程执行，也就意味着你可以做耗时操作（图片处理，网络请求），需要更改 `UI` 需要到主线程执行；
+
+
 ```java
 SocialOptions options = new SocialOptions.Builder(this)
         // ... 其他初始化代码
@@ -524,6 +527,16 @@ listener = new OnShareListener() {
 ```java
 SocialSdk.addPlatform(new HuaweiPlatform.Factory());
 ```
+
+
+## 其他
+
+- 生命周期绑定避免内存泄漏
+
+`SocialSdk` 内部对生命周期有自动的管理，每次登录分享结束了都会回收掉所有的资源；
+发起登录分享的 `Activity` 建议实现 `LifecycleOwner` 接口，可以直接使用 `AppCompatActivity`，内部会做生命周期的绑定，避免内存泄漏的发生；
+
+
 
 
 ## 相关文档
