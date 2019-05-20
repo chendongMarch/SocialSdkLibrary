@@ -1,18 +1,23 @@
 package com.zfy.social.core.manager;
 
 import android.app.Activity;
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleObserver;
+import android.arch.lifecycle.OnLifecycleEvent;
 import android.content.Context;
 import android.content.Intent;
 
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.exception.SocialError;
 import com.zfy.social.core.listener.OnLoginListener;
+import com.zfy.social.core.listener.OnLoginStateListener;
 import com.zfy.social.core.model.LoginResult;
 import com.zfy.social.core.model.token.AccessToken;
 import com.zfy.social.core.platform.IPlatform;
 import com.zfy.social.core.util.SocialUtil;
 
 import java.lang.ref.WeakReference;
+
 /**
  * CreateAt : 2017/5/19
  * Describe : 登陆管理类，使用该类进行登陆操作
@@ -23,118 +28,196 @@ public class LoginManager {
 
     public static final String TAG = LoginManager.class.getSimpleName();
 
-    private static OnLoginListener sListener;
+    private static _InternalMgr sMgr;
 
     /**
-     * 开始登陆，供外面使用
+     * 发起登录
      *
-     * @param activity       context
-     * @param loginTarget   登陆类型
-     * @param loginListener 登陆监听
+     * @param activity 发起登录的 activity
+     * @param target   目标平台
+     * @param listener 回调
      */
-    public static void login(Activity activity, int loginTarget, OnLoginListener loginListener) {
-        loginListener.onStart();
-        sListener = loginListener;
-        IPlatform platform = GlobalPlatform.makePlatform(activity, loginTarget);
-        if (!platform.isInstall(activity)) {
-            loginListener.onFailure(SocialError.make(SocialError.CODE_NOT_INSTALL));
-            return;
+    public static void login(
+            final Activity activity,
+            int target,
+            final OnLoginStateListener listener
+    ) {
+        if (sMgr != null) {
+            sMgr.onHostActivityDestroy();
         }
-        if (platform.getUIKitClazz() == null) {
-            GlobalPlatform.getPlatform().login(activity, loginListener);
-        } else {
-            Intent intent = new Intent(activity, platform.getUIKitClazz());
-            intent.putExtra(GlobalPlatform.KEY_ACTION_TYPE, GlobalPlatform.ACTION_TYPE_LOGIN);
-            intent.putExtra(GlobalPlatform.KEY_LOGIN_TARGET, loginTarget);
-            activity.startActivity(intent);
-            activity.overridePendingTransition(0, 0);
-        }
+        sMgr = new _InternalMgr();
+        sMgr.preLogin(activity, target, listener);
     }
-
 
     /**
-     * 激活登陆
-     *
-     * @param activity activity
+     * 清理全部 token
+     * @param context 上下文
      */
-    static void _actionLogin(final Activity activity) {
-        Intent intent = activity.getIntent();
-        int actionType = intent.getIntExtra(GlobalPlatform.KEY_ACTION_TYPE, GlobalPlatform.INVALID_PARAM);
-        int loginTarget = intent.getIntExtra(GlobalPlatform.KEY_LOGIN_TARGET, GlobalPlatform.INVALID_PARAM);
-        if (actionType == GlobalPlatform.INVALID_PARAM) {
-            SocialUtil.e(TAG, "_actionLogin actionType无效");
-            return;
-        }
-        if (actionType != GlobalPlatform.ACTION_TYPE_LOGIN) {
-            return;
-        }
-        if (loginTarget == GlobalPlatform.INVALID_PARAM) {
-            SocialUtil.e(TAG, "shareTargetType无效");
-            return;
-        }
-        if (sListener == null) {
-            SocialUtil.e(TAG, "请设置 OnLoginListener");
-            return;
-        }
-        if (GlobalPlatform.getPlatform() == null) {
-            return;
-        }
-        GlobalPlatform.getPlatform().login(activity, new OnLoginListenerWrap(activity));
-    }
-
-
-    static class OnLoginListenerWrap implements OnLoginListener {
-
-        private WeakReference<Activity> mActivityWeakRef;
-
-        OnLoginListenerWrap(Activity activity) {
-            mActivityWeakRef = new WeakReference<>(activity);
-        }
-
-        @Override
-        public void onStart() {
-            if (sListener != null) {
-                sListener.onStart();
-            }
-        }
-
-        private void finish() {
-            GlobalPlatform.release(mActivityWeakRef.get());
-            sListener = null;
-        }
-
-        @Override
-        public void onSuccess(LoginResult result) {
-            if (sListener != null) {
-                sListener.onSuccess(result);
-            }
-            finish();
-        }
-
-        @Override
-        public void onCancel() {
-            if (sListener != null) {
-                sListener.onCancel();
-            }
-            finish();
-        }
-
-        @Override
-        public void onFailure(SocialError e) {
-            if (sListener != null) {
-                sListener.onFailure(e);
-            }
-            finish();
-        }
-    }
-
     public static void clearAllToken(Context context) {
         AccessToken.clearToken(context, Target.LOGIN_QQ);
         AccessToken.clearToken(context, Target.LOGIN_WX);
         AccessToken.clearToken(context, Target.LOGIN_WB);
     }
 
+    /**
+     * 清理指定平台的 token
+     * @param context 上下文
+     * @param loginTarget 目标平台
+     */
     public static void clearToken(Context context, int loginTarget) {
         AccessToken.clearToken(context, loginTarget);
     }
+
+    // 开始分享
+    static void actionLogin(Activity activity) {
+        if (sMgr != null) {
+            sMgr.postLogin(activity);
+        }
+    }
+
+
+    private static class _InternalMgr implements LifecycleObserver {
+
+        private OnLoginStateListener stateListener;
+        private LoginManager.OnLoginListenerWrap wrapListener;
+
+        private int currentTarget;
+
+        private WeakReference<Activity> fakeActivity;
+
+        @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+        public void onHostActivityDestroy() {
+            onProcessFinished();
+            SocialUtil.e("chendong", "页面销毁，回收资源");
+        }
+
+        // 流程结束，回收资源
+        private void onProcessFinished() {
+            if (wrapListener != null) {
+                wrapListener.clear();
+            }
+            if (fakeActivity != null) {
+                GlobalPlatform.release(fakeActivity.get());
+                fakeActivity.clear();
+            }
+            currentTarget = -1;
+            stateListener = null;
+            wrapListener = null;
+            fakeActivity = null;
+            sMgr = null;
+            SocialUtil.e("chendong", "分享过程结束，回收资源");
+        }
+
+
+        /**
+         * 开始登录分享，供外面调用
+         *
+         * @param activity 发起登录的 activity
+         * @param listener 分享监听
+         */
+        private void preLogin(
+                final Activity activity,
+                final @Target.LoginTarget int target,
+                final OnLoginStateListener listener
+        ) {
+
+            stateListener = listener;
+            currentTarget = target;
+            IPlatform platform = GlobalPlatform.newPlatformByTarget(activity, target);
+            if (!platform.isInstall(activity)) {
+                stateListener.onState(LoginResult.failOf(target, SocialError.make(SocialError.CODE_NOT_INSTALL)));
+                return;
+            }
+            Intent intent = new Intent(activity, platform.getUIKitClazz());
+            intent.putExtra(GlobalPlatform.KEY_ACTION_TYPE, GlobalPlatform.ACTION_TYPE_LOGIN);
+            intent.putExtra(GlobalPlatform.KEY_LOGIN_TARGET, target);
+            activity.startActivity(intent);
+            activity.overridePendingTransition(0, 0);
+        }
+
+        /**
+         * 激活登录，由透明 Activity 真正的激活登录
+         *
+         * @param activity 透明 activity
+         */
+        private void postLogin(Activity activity) {
+            fakeActivity = new WeakReference<>(activity);
+            Intent intent = activity.getIntent();
+            int actionType = intent.getIntExtra(GlobalPlatform.KEY_ACTION_TYPE, GlobalPlatform.INVALID_PARAM);
+            int loginTarget = intent.getIntExtra(GlobalPlatform.KEY_LOGIN_TARGET, GlobalPlatform.INVALID_PARAM);
+            if (actionType == GlobalPlatform.INVALID_PARAM) {
+                SocialUtil.e(TAG, "_actionLogin actionType无效");
+                return;
+            }
+            if (actionType != GlobalPlatform.ACTION_TYPE_LOGIN) {
+                return;
+            }
+            if (loginTarget == GlobalPlatform.INVALID_PARAM) {
+                SocialUtil.e(TAG, "shareTargetType无效");
+                return;
+            }
+            if (stateListener == null) {
+                SocialUtil.e(TAG, "请设置 OnLoginListener");
+                return;
+            }
+            if (GlobalPlatform.getCurrentPlatform() == null) {
+                return;
+            }
+            wrapListener = new OnLoginListenerWrap(stateListener);
+            GlobalPlatform.getCurrentPlatform().login(activity, wrapListener);
+        }
+    }
+
+
+    // 用于分享结束后，回收资源
+    private static class OnLoginListenerWrap implements OnLoginListener {
+
+        private OnLoginStateListener listener;
+
+        OnLoginListenerWrap(OnLoginStateListener listener) {
+            this.listener = listener;
+        }
+
+        @Override
+        public void onStart() {
+            if (listener != null) {
+                listener.onState(LoginResult.startOf(sMgr.currentTarget));
+            }
+        }
+
+
+        @Override
+        public void onSuccess(LoginResult result) {
+            if (listener != null) {
+                listener.onState(result);
+            }
+            clear();
+            sMgr.onProcessFinished();
+        }
+
+        @Override
+        public void onCancel() {
+            if (listener != null) {
+                listener.onState(LoginResult.cancelOf(sMgr.currentTarget));
+            }
+            clear();
+            sMgr.onProcessFinished();
+        }
+
+
+        @Override
+        public void onFailure(SocialError e) {
+            if (listener != null) {
+                listener.onState(LoginResult.failOf(sMgr.currentTarget, e));
+            }
+            clear();
+            sMgr.onProcessFinished();
+        }
+
+        private void clear() {
+            listener = null;
+        }
+    }
+
+
 }

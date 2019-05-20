@@ -67,7 +67,7 @@ public class HuaweiPlatform extends AbsPlatform {
     @Override
     public void login(Activity activity, OnLoginListener onLoginListener) {
         Toast.makeText(activity, "模拟扩展新平台，华为登录成功", Toast.LENGTH_LONG).show();
-        onLoginListener.onSuccess(new LoginResult(LOGIN_HUAWEI, null, null));
+        onLoginListener.onSuccess(LoginResult.successOf(LOGIN_HUAWEI, null, null));
     }
 
     @Override

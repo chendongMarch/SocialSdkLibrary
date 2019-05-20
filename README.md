@@ -509,7 +509,7 @@ QQ：
 钉钉：
 
 - `com.alibaba.android:ddsharesdk:1.1.0`
-- [钉钉分享文档](https://open-doc.dingtalk.com/docs/doc.htm?spm=a219a.7629140.0.0.15nVTL&treeId=178&articleId=104986&docType=1)-
+- [钉钉分享文档](https://open-doc.dingtalk.com/docs/doc.htm?spm=a219a.7629140.0.0.15nVTL&treeId=178&articleId=104986&docType=1)
 - [钉钉设计资源](https://open-doc.dingtalk.com/microapp/kn6zg7/tnrhmb)
 
 

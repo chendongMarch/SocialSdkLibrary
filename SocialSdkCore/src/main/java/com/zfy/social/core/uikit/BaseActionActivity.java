@@ -35,7 +35,7 @@ public class BaseActionActivity extends Activity {
         if (getPlatform() != null) {
             getPlatform().handleIntent(this);
         }
-        GlobalPlatform.action(this, getIntent().getIntExtra(GlobalPlatform.KEY_ACTION_TYPE, -1));
+        GlobalPlatform.dispatchAction(this, getIntent().getIntExtra(GlobalPlatform.KEY_ACTION_TYPE, -1));
     }
 
     @Override
@@ -82,7 +82,7 @@ public class BaseActionActivity extends Activity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             if (!isFinishing() && !isDestroyed()) {
                 if (postFinish) {
-                    GlobalPlatform.onUIFinished();
+                    GlobalPlatform.dispatchUIDestroy();
                 }
                 finish();
                 overridePendingTransition(0, 0);
@@ -91,7 +91,7 @@ public class BaseActionActivity extends Activity {
         } else {
             if (!isFinishing()) {
                 if (postFinish) {
-                    GlobalPlatform.onUIFinished();
+                    GlobalPlatform.dispatchUIDestroy();
                 }
                 finish();
                 overridePendingTransition(0, 0);
@@ -100,7 +100,7 @@ public class BaseActionActivity extends Activity {
     }
 
     private IPlatform getPlatform() {
-        IPlatform platform = GlobalPlatform.getPlatform();
+        IPlatform platform = GlobalPlatform.getCurrentPlatform();
         if (platform == null) {
             checkFinish(false);
             return null;

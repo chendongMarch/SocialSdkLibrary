@@ -22,12 +22,13 @@ import com.zfy.social.core.SocialSdk;
 import com.zfy.social.core.common.SocialValues;
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.exception.SocialError;
-import com.zfy.social.core.listener.OnLoginListener;
-import com.zfy.social.core.listener.OnShareListener;
+import com.zfy.social.core.listener.OnLoginStateListener;
+import com.zfy.social.core.listener.OnShareStateListener;
 import com.zfy.social.core.manager.LoginManager;
 import com.zfy.social.core.manager.ShareManager;
 import com.zfy.social.core.model.LoginResult;
 import com.zfy.social.core.model.ShareObj;
+import com.zfy.social.core.model.ShareResult;
 import com.zfy.social.core.util.SocialUtil;
 
 import java.io.File;
@@ -61,8 +62,8 @@ public class TestActivity extends AppCompatActivity {
     private ShareObj musicObj;
     private ShareObj webObj;
     private ShareObj appObj;
-    private OnShareListener mOnShareListener;
-    private OnLoginListener mOnLoginListener;
+    private OnShareStateListener mOnShareListener;
+    private OnLoginStateListener mOnLoginListener;
     private String[] mPlatform;
 
     private boolean isInit;
@@ -96,61 +97,45 @@ public class TestActivity extends AppCompatActivity {
         localVideoPath = new File(Environment.getExternalStorageDirectory(), "4.mp4").getAbsolutePath();
 
         initObj();
-        mOnShareListener = new OnShareListener() {
-            @Override
-            public void onStart(int shareTarget, ShareObj obj) {
-
-            }
-
-            @Override
-            public ShareObj onPrepareInBackground(int shareTarget, ShareObj obj) throws Exception {
-                return null;
-            }
-
-            @Override
-            public void onSuccess(int target) {
-                showMsg("分享成功");
-            }
-
-            @Override
-            public void onFailure(SocialError e) {
-                showMsg("分享失败  " + e.toString());
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (e.getCode() == SocialError.CODE_STORAGE_READ_ERROR) {
-                        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
-                    } else if (e.getCode() == SocialError.CODE_STORAGE_WRITE_ERROR) {
-                        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 100);
+        mOnShareListener = result -> {
+            switch (result.state) {
+                case ShareResult.STATE_SUCCESS:
+                    showMsg("分享成功");
+                    break;
+                case ShareResult.STATE_FAIL:
+                    SocialError e = result.error;
+                    showMsg("分享失败  " + e.toString());
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (e.getCode() == SocialError.CODE_STORAGE_READ_ERROR) {
+                            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
+                        } else if (e.getCode() == SocialError.CODE_STORAGE_WRITE_ERROR) {
+                            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 100);
+                        }
                     }
-                }
-            }
-
-            @Override
-            public void onCancel() {
-                showMsg("分享取消");
+                    break;
+                case ShareResult.STATE_CANCEL:
+                    showMsg("分享取消");
+                    break;
             }
         };
 
-        mOnLoginListener = new OnLoginListener() {
+        mOnLoginListener = new OnLoginStateListener() {
             @Override
-            public void onStart() {
-
+            public void onState(LoginResult result) {
+                switch (result.state) {
+                    case LoginResult.STATE_SUCCESS:
+                        Log.e(TAG, result.toString());
+                        updateDisplay(result.toString());
+                        break;
+                    case LoginResult.STATE_FAIL:
+                        showMsg("登录失败 " + result.error.toString());
+                        break;
+                    case LoginResult.STATE_CANCEL:
+                        showMsg("登录取消");
+                        break;
+                }
             }
 
-            @Override
-            public void onSuccess(LoginResult result) {
-                Log.e(TAG, result.toString());
-                updateDisplay(result.toString());
-            }
-
-            @Override
-            public void onCancel() {
-                showMsg("登录取消");
-            }
-
-            @Override
-            public void onFailure(SocialError e) {
-                showMsg("登录失败 " + e.toString());
-            }
         };
     }
 
@@ -365,7 +350,10 @@ public class TestActivity extends AppCompatActivity {
                 .jsonAdapter(new GsonJsonAdapter())
                 // 请求处理类，如果使用了微博的 openApi 分享，这个是必须的
                 .requestAdapter(new OkHttpRequestAdapter())
-
+                .addShareInterceptor((context, obj) -> {
+                    obj.setSummary("被重新组装" + obj.getSummary());
+                    return null;
+                })
                 // 构建
                 .build();
         // 初始化

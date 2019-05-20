@@ -179,8 +179,8 @@ class WxLoginHelper {
             public void onSuccess(@NonNull WxUser wxUserInfo) {
                 SocialUtil.e(TAG, "获取到用户信息" + wxUserInfo.toString());
                 if (wxUserInfo.isNoError()) {
-                    LoginResult result = new LoginResult(mLoginTarget, wxUserInfo, token);
-                    result.setWxAuthCode(mAuthCode);
+                    LoginResult result = LoginResult.successOf(mLoginTarget, wxUserInfo, token);
+                    result.wxAuthCode = mAuthCode;
                     mOnLoginListener.onSuccess(result);
                 } else {
                     mOnLoginListener.onFailure(SocialError.make(SocialError.CODE_REQUEST_ERROR, TAG + "#getUserInfoByValidToken#login code = " + wxUserInfo.getErrcode() + " ,msg = " + wxUserInfo.getErrmsg()));

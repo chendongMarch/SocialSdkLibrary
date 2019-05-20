@@ -6,10 +6,13 @@ import android.text.TextUtils;
 import com.zfy.social.core.adapter.IJsonAdapter;
 import com.zfy.social.core.adapter.IRequestAdapter;
 import com.zfy.social.core.common.SocialValues;
+import com.zfy.social.core.listener.ShareInterceptor;
 import com.zfy.social.core.model.SocialBuildConfig;
 import com.zfy.social.core.util.SocialUtil;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * CreateAt : 2017/5/20
@@ -43,11 +46,16 @@ public class SocialOptions {
     private long tokenExpiresHours;
     private boolean shareSuccessIfStay;
 
-
     private boolean wxEnable;
     private boolean qqEnable;
     private boolean wbEnable;
     private boolean ddEnable;
+
+    private List<ShareInterceptor> shareInterceptors;
+
+    public List<ShareInterceptor> getShareInterceptors() {
+        return shareInterceptors;
+    }
 
     public long getTokenExpiresHoursMs() {
         if (tokenExpiresHours <= 0) {
@@ -231,6 +239,7 @@ public class SocialOptions {
         this.qqEnable = builder.qqEnable;
         this.wbEnable = builder.wbEnable;
         this.ddEnable = builder.ddEnable;
+        this.shareInterceptors = builder.shareInterceptors;
     }
 
     public static class Builder {
@@ -262,6 +271,8 @@ public class SocialOptions {
         // 网络请求框架注入
         private IRequestAdapter requestAdapter;
 
+        private List<ShareInterceptor> shareInterceptors;
+
         private boolean wxEnable;
         private boolean qqEnable;
         private boolean wbEnable;
@@ -271,6 +282,7 @@ public class SocialOptions {
 
         public Builder(Context context) {
             this.context = context;
+            this.shareInterceptors = new ArrayList<>();
         }
 
         public Builder dd(String ddAppId) {
@@ -351,6 +363,13 @@ public class SocialOptions {
 
         public Builder jsonAdapter(IJsonAdapter jsonAdapter) {
             this.jsonAdapter = jsonAdapter;
+            return this;
+        }
+
+        public Builder addShareInterceptor(ShareInterceptor interceptor) {
+            if (!shareInterceptors.contains(interceptor)) {
+                shareInterceptors.add(interceptor);
+            }
             return this;
         }
 

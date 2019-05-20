@@ -126,7 +126,7 @@ class QQLoginHelper {
                 } else {
                     qqUserInfo.setOpenId(mTencentApi.getOpenId());
                     if (mOnLoginListener != null) {
-                        mOnLoginListener.onSuccess(new LoginResult(mLoginTarget, qqUserInfo, qqToken));
+                        mOnLoginListener.onSuccess(LoginResult.successOf(mLoginTarget, qqUserInfo, qqToken));
                     }
                 }
             }
