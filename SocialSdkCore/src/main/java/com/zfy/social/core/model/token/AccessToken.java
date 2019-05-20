@@ -8,6 +8,7 @@ import com.zfy.social.core.common.Target;
 import com.zfy.social.core.util.JsonUtil;
 import com.zfy.social.core.util.SocialUtil;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
@@ -110,11 +111,17 @@ public abstract class AccessToken {
         }
     }
 
+
+    private static ExecutorService sService;
+
     public static void saveToken(final Context context, final int target, final Object token) {
         if (SocialSdk.opts().getTokenExpiresHoursMs() <= 0) {
             return;
         }
-        Executors.newSingleThreadExecutor().execute(() -> {
+        if (sService == null) {
+            sService = Executors.newSingleThreadExecutor();
+        }
+        sService.execute(() -> {
             try {
                 int platformTarget = SocialUtil.mapPlatformTarget(target);
                 SharedPreferences sp = getSp(context);
@@ -124,7 +131,6 @@ public abstract class AccessToken {
                     return;
                 }
                 String tokenJson = JsonUtil.getObject2Json(token);
-
                 sp.edit().putString(platformTarget + KEY_TOKEN, tokenJson).apply();
                 sp.edit().putLong(platformTarget + KEY_TIME, System.currentTimeMillis()).apply();
             } catch (Exception e) {
