@@ -229,7 +229,7 @@ public class ShareManager {
          * @param activity 透明 activity
          */
         private void postShare(Activity activity) {
-            stateListener.onState(originActivity.get(), ShareResult.stateOf(LoginResult.STATE_FAKE_ACTIVITY_ATTACH, currentTarget, currentObj));
+            stateListener.onState(originActivity.get(), ShareResult.stateOf(LoginResult.STATE_ACTIVE, currentTarget, currentObj));
             fakeActivity = new WeakReference<>(activity);
             Intent intent = activity.getIntent();
             int actionType = intent.getIntExtra(KEY_ACTION_TYPE, GlobalPlatform.INVALID_PARAM);

@@ -15,7 +15,7 @@ public class Result {
     public static final int STATE_FAIL = 3;
     public static final int STATE_CANCEL = 4;
     public static final int STATE_COMPLETE = 5;
-    public static final int STATE_FAKE_ACTIVITY_ATTACH = 6;
+    public static final int STATE_ACTIVE = 6;
 
     public int state;
     public int target;
