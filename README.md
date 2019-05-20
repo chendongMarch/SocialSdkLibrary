@@ -57,7 +57,7 @@
 🔥 面向需求设计：
 
 - Q：微信登录本地只获取 `code`，服务端获取 `token`？
-    - A：配置 `wxOnlyAuthCode` 参数；
+	- A：配置 `wxOnlyAuthCode` 参数;
 - Q：又有新平台？华为、OV 联运？
     - A：支持扩展新平台实现，例如华为联运登录接入等；
 - Q：每个平台支持的类型不一致，你支持音乐，我支持视频，接入迁移困难？
@@ -164,7 +164,7 @@ SocialOptions options = new SocialOptions.Builder(this)
         .debug(true)
         // 加载缩略图失败时，降级使用资源图
         .failImgRes(R.mipmap.ic_launcher_new)
-        // token 保留时间，单位小时，默认不保留
+        // token 保留时间，但是小时，默认不保留
         .tokenExpiresHours(24)
         // 分享如果停留在第三放将会返回成功，默认返回失败
         .shareSuccessIfStay(true)
@@ -174,8 +174,17 @@ SocialOptions options = new SocialOptions.Builder(this)
         .jsonAdapter(new GsonJsonAdapter())
         // 请求处理类，如果使用了微博的 openApi 分享，这个是必须的
         .requestAdapter(new OkHttpRequestAdapter())
+        // 添加分享拦截器，重新处理分享的数据
+        .addShareInterceptor((context, obj) -> {
+            obj.setSummary("被重新组装" + obj.getSummary());
+            return obj;
+        })
         // 构建
         .build();
+// 初始化
+SocialSdk.init(options);
+// 添加一个自定义平台
+SocialSdk.addPlatform(new HuaweiPlatform.Factory());
 ```
 
 说一下 `Adapter`，项目内使用了 `JSON` 解析，网络请求等功能，但是又不想引入多余的框架，所以才用了宿主项目注入的方式，保证和宿主项目统一。
@@ -198,38 +207,38 @@ Target.LOGIN_WB;
 登录将会返回 `LoginResult`， 其中主要包括登录类型，基本用户信息，令牌信息 3 部分；
 
 ```java
-public class LoginResult {
-    // 登陆的类型，对应 Target.LOGIN_QQ 等。。。
-    private int target;
-    // 返回的基本用户信息
+LoginResult {
+    // 状态，成功，失败，取消等
+    public int state;
+    // 目标平台
+    public int target;
+    // 发生错误时使用
+    public SocialError error;
     // 针对登录类型可强转为 WbUser,WxUser,QQUser 来获取更加丰富的信息
-    private SocialUser socialUser;
+    public SocialUser socialUser;
     // 本次登陆的 token 信息，openId, unionId,token,expires_in
-    private AccessToken accessToken;
+    public AccessToken accessToken;
     // 授权码，如果 onlyAuthCode 为 true, 将会返回它
-    private String wxAuthCode;
+    public String wxAuthCode;
 }
 ```
 登录时需要设置登录回调：
 
 ```java
-OnLoginListener listener = new OnLoginListener() {
+new OnLoginStateListener() {
     @Override
-    public void onStart() {
-        // 当登录开始时触发
-    }
-    @Override
-    public void onSuccess(LoginResult result) {
-        // 登录成功，获取用户信息
-        SocialUser socialUser = result.getSocialUser();
-    }
-    @Override
-    public void onCancel() {
-        // 登录取消
-    }
-    @Override
-    public void onFailure(SocialError e) {
-        // 登录失败
+    public void onState(LoginResult result) {
+        switch (result.state) {
+            case LoginResult.STATE_SUCCESS:
+                // 登录成功
+                break;
+            case LoginResult.STATE_FAIL:
+                // 登录失败
+                break;
+            case LoginResult.STATE_CANCEL:
+                // 登录取消
+                break;
+        }
     }
 };
 ```
@@ -237,7 +246,7 @@ OnLoginListener listener = new OnLoginListener() {
 获取更多用户信息：
 
 ```java
-SocialUser socialUser = loginResult.getSocialUser();
+SocialUser socialUser = loginResult.socialUser;
 // 基本信息可以从 SocialUser 在获取到
 String userNickName = socialUser.getUserNickName();
 // 获取 openId
@@ -370,30 +379,32 @@ webObj.setWxMiniParams("51299u9**q31",SocialValues.WX_MINI_TYPE_RELEASE,"/page/p
 
 ### 分享监听
 
-使用 `OnShareListener` 作为监听分享回调；
+使用 `OnShareStateListener ` 作为监听分享回调；
 
-```
-OnShareListener listener = new OnShareListener() {
+```java
+new OnShareStateListener() {
     @Override
-    public void onStart(int shareTarget, ShareObj obj) {
-        // 分享开始
-    }
-    @Override
-    public ShareObj onPrepareInBackground(int shareTarget, ShareObj obj) throws Except
-        // 重写分享对象，例如给分享出去的图片加水印等
-        return null;
-    }
-    @Override
-    public void onSuccess(int target) {
-        // 分享成功
-    }
-    @Override
-    public void onFailure(SocialError e) {
-        // 分享失败
-    }
-    @Override
-    public void onCancel() {
-        // 分享被取消
+    public void onState(ShareResult result) {
+        switch (result.state) {
+            case ShareResult.STATE_SUCCESS:
+                showMsg("分享成功");
+                break;
+            case ShareResult.STATE_FAIL:
+                SocialError e = result.error;
+                showMsg("分享失败  " + e.toString());
+                // 如下因为没有存储权限导致失败，请求权限
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (e.getCode() == SocialError.CODE_STORAGE_READ_ERROR) {
+                        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
+                    } else if (e.getCode() == SocialError.CODE_STORAGE_WRITE_ERROR) {
+                        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 100);
+                    }
+                }
+                break;
+            case ShareResult.STATE_CANCEL:
+                showMsg("分享取消");
+                break;
+        }
     }
 };
 ```
@@ -407,20 +418,60 @@ ShareManager.share(mActivity, Target.SHARE_QQ_FRIENDS, imageObj, mOnShareListene
 
 ### 重写分享对象
 
-关于重写分享对象，其实提供一种能在分享之前对需要分享的 `ShareObj` 进行统一处理的机会，类似分享功能的一个切面，比如可以用来解决网络图片无法分享，我们需要将它下载到本地，在进行分享，又比如图片分享出去之前加上 app 水印等操作。
+关于重写分享对象，其实提供一种能在分享之前对需要分享的 `ShareObj` 进行统一处理的机会，类似分享功能的一个切面，比如如下场景：
 
-主要是重写 `OnShareListener` 的 `onPrepareInBackground` 方法，这个方法会在分享之前首先执行，如果返回不是 `null`，将会使用新创建的 `ShareObj` 进行分享，另外由于考虑到可能进行耗时操作，这个方法是在子线程执行的。
+- 自动下载网络图片到本地，再进行分享，支持网络图分享（已内置）；
+- 图片分享出去之前需要加上 `app` 水印；
+- 分享的 `url` 带上公共参数 `shareId` 等，在 `H5` 做访问统计；
+
+重写分享对象，我们使用拦截器来实现，拦截器在 `SDK` 初始化时注入，支持多个，可以将不同业务分为不同的拦截器，所有拦截器会被顺序调用；
 
 ```java
-@Override
-public ShareObj onPrepareInBackground(int shareTarget,ShareObj obj) {
-    // 重构分享对象，不需要时返回 null 即可
-    obj.setTitle(obj.getTitle() + "/哈哈哈");
-    return obj;
-}
+SocialOptions options = new SocialOptions.Builder(this)
+        // ... 其他初始化代码
+        // 添加分享拦截器
+        .addShareInterceptor((context, obj) -> {
+            obj.setSummary("描述加前缀" + obj.getSummary());
+            return obj;
+        })
+        .addShareInterceptor((context, obj) -> {
+            obj.setTargetUrl(obj.getTargetUrl()+"?id=100");
+            return obj;
+        })
+        // 构建
+        .build();
+// 初始化
+SocialSdk.init(options);
 ```
 
+### 系统平台
 
+我们在做分享时通常会遇到需求，复制到粘贴板/支持短信分享/支持邮件分享等等，`SocialSdk` 内置了这些功能，需要在创建 `ShareObj` 之后添加额外参数来实现；
+
+- 短信分享
+
+```java
+shareObj.setSmsParams("13611301719", "说啥呢");
+```
+
+- 邮件分享
+
+```java
+shareObj.setEMailParams("1101873740@qq.com", "主题", "内容");
+```
+- 复制链接
+
+```java
+shareObj.setClipboardParams("复制的内容");
+```
+
+### 微信小程序分享
+
+支持微信小程序分享，也同样使用额外参数的形式
+
+```java
+shareObj.setWxMiniParams("51299u9**q31",SocialValues.WX_MINI_TYPE_RELEASE,"/page/path");
+```
 ## 错误码
 
 为了更好的统一分享失败时返回的异常，返回的所有异常都会有一个 `code`，可以根据不同的 `code` 定位问题和给出更友好的提示。

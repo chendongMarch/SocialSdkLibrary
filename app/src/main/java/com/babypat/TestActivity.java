@@ -97,25 +97,28 @@ public class TestActivity extends AppCompatActivity {
         localVideoPath = new File(Environment.getExternalStorageDirectory(), "4.mp4").getAbsolutePath();
 
         initObj();
-        mOnShareListener = result -> {
-            switch (result.state) {
-                case ShareResult.STATE_SUCCESS:
-                    showMsg("分享成功");
-                    break;
-                case ShareResult.STATE_FAIL:
-                    SocialError e = result.error;
-                    showMsg("分享失败  " + e.toString());
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        if (e.getCode() == SocialError.CODE_STORAGE_READ_ERROR) {
-                            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
-                        } else if (e.getCode() == SocialError.CODE_STORAGE_WRITE_ERROR) {
-                            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 100);
+        mOnShareListener = new OnShareStateListener() {
+            @Override
+            public void onState(ShareResult result) {
+                switch (result.state) {
+                    case ShareResult.STATE_SUCCESS:
+                        showMsg("分享成功");
+                        break;
+                    case ShareResult.STATE_FAIL:
+                        SocialError e = result.error;
+                        showMsg("分享失败  " + e.toString());
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            if (e.getCode() == SocialError.CODE_STORAGE_READ_ERROR) {
+                                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
+                            } else if (e.getCode() == SocialError.CODE_STORAGE_WRITE_ERROR) {
+                                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 100);
+                            }
                         }
-                    }
-                    break;
-                case ShareResult.STATE_CANCEL:
-                    showMsg("分享取消");
-                    break;
+                        break;
+                    case ShareResult.STATE_CANCEL:
+                        showMsg("分享取消");
+                        break;
+                }
             }
         };
 
@@ -350,6 +353,7 @@ public class TestActivity extends AppCompatActivity {
                 .jsonAdapter(new GsonJsonAdapter())
                 // 请求处理类，如果使用了微博的 openApi 分享，这个是必须的
                 .requestAdapter(new OkHttpRequestAdapter())
+                // 添加分享拦截器
                 .addShareInterceptor((context, obj) -> {
                     obj.setSummary("被重新组装" + obj.getSummary());
                     return null;
@@ -358,6 +362,7 @@ public class TestActivity extends AppCompatActivity {
                 .build();
         // 初始化
         SocialSdk.init(options);
+        // 添加一个自定义平台
         SocialSdk.addPlatform(new HuaweiPlatform.Factory());
         Toast.makeText(this,"初始化成功",Toast.LENGTH_SHORT).show();
     }
