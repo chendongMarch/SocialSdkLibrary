@@ -1,5 +1,6 @@
 package com.zfy.social.core.model;
 
+import com.zfy.social.core.exception.SocialError;
 import com.zfy.social.core.model.token.AccessToken;
 import com.zfy.social.core.model.user.SocialUser;
 
@@ -10,64 +11,51 @@ import com.zfy.social.core.model.user.SocialUser;
  * @author chendong
  */
 
-public class LoginResult {
+public class LoginResult extends Result {
 
-    // 登陆的类型，对应 Target.LOGIN_QQ 等。。。
-    private int target;
     // 返回的基本用户信息
     // 针对登录类型可强转为 WbUser,WxUser,QQUser 来获取更加丰富的信息
-    private SocialUser socialUser;
+    public SocialUser socialUser;
     // 本次登陆的 token 信息，openId, unionId,token,expires_in
-    private AccessToken accessToken;
+    public AccessToken accessToken;
     // 授权码，如果 onlyAuthCode 为 true, 将会返回它
-    private String wxAuthCode;
+    public String wxAuthCode;
 
-    public LoginResult(int target, SocialUser baseUser, AccessToken baseToken) {
-        this.target = target;
-        socialUser = baseUser;
-        accessToken = baseToken;
+    public LoginResult(int state, int target) {
+        super(state, target);
     }
 
-    public LoginResult(int target, String wxAuthCode) {
-        this.target = target;
-        this.wxAuthCode = wxAuthCode;
+    public static LoginResult startOf(int target) {
+        return new LoginResult(STATE_START, target);
     }
 
-    public int getTarget() {
-        return target;
+    public static LoginResult successOf(int target, SocialUser baseUser, AccessToken baseToken) {
+        LoginResult result = new LoginResult(STATE_SUCCESS, target);
+        result.socialUser = baseUser;
+        result.accessToken = baseToken;
+        return result;
     }
 
-    public SocialUser getSocialUser() {
-        return socialUser;
+    public static LoginResult successOf(int target, String wxAuthCode) {
+        LoginResult result = new LoginResult(STATE_SUCCESS, target);
+        result.wxAuthCode = wxAuthCode;
+        return result;
     }
 
-    public void setTarget(int target) {
-        this.target = target;
+    public static LoginResult failOf(int target, SocialError error) {
+        LoginResult result = new LoginResult(STATE_FAIL, target);
+        result.error = error;
+        return result;
     }
 
-    public void setSocialUser(SocialUser socialUser) {
-        this.socialUser = socialUser;
+    public static LoginResult cancelOf(int target) {
+        return new LoginResult(STATE_CANCEL, target);
     }
 
-    public AccessToken getAccessToken() {
-        return accessToken;
-    }
-
-    public void setAccessToken(AccessToken accessToken) {
-        this.accessToken = accessToken;
-    }
-
-    public String getWxAuthCode() {
-        return wxAuthCode;
-    }
-
-    public void setWxAuthCode(String wxAuthCode) {
-        this.wxAuthCode = wxAuthCode;
-    }
 
     @Override
     public String toString() {
-        return "LoginResult{" +
+        return "LoginResult2{" +
                 "target=" + target +
                 ", socialUser=" + socialUser +
                 ", accessToken=" + accessToken +

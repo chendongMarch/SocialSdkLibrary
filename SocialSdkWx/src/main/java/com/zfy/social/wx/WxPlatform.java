@@ -2,7 +2,6 @@ package com.zfy.social.wx;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.tencent.mm.opensdk.constants.ConstantsAPI;
@@ -137,7 +136,7 @@ public class WxPlatform extends AbsPlatform {
                     SendAuth.Resp authResp = (SendAuth.Resp) resp;
                     String authCode = authResp.code;
                     if (SocialSdk.opts().isWxOnlyAuthCode()) {
-                        listener.onSuccess(new LoginResult(Target.LOGIN_WX, authCode));
+                        listener.onSuccess(LoginResult.successOf(Target.LOGIN_WX, authCode));
                     } else {
                         mWeChatLoginHelper.getAccessTokenByCode(authCode);
                     }
@@ -392,18 +391,13 @@ public class WxPlatform extends AbsPlatform {
 
     // 分享小程序
     private void shareMiniProgram(final int shareTarget, Activity activity, final ShareObj obj) {
-        Bundle extra = obj.getExtra();
-        if (extra == null) {
-            mOnShareListener.onFailure(SocialError.make(SocialError.CODE_PARAM_ERROR, "shareMiniProgram extra is null"));
-            return;
-        }
         int wxMiniType = obj.getWxMiniType();
         String originId = obj.getWxMiniOriginId();
         String pagePath = obj.getWxMiniPagePath();
 
         if (wxMiniType < 0 || SocialUtil.isAnyEmpty(originId, pagePath)) {
             mOnShareListener.onFailure(SocialError.make(SocialError.CODE_PARAM_ERROR,
-                    "shareMiniProgram extra = " + extra.toString()));
+                    "shareMiniProgram extra = " + obj.toString()));
             return;
         }
 

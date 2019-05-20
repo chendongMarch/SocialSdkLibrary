@@ -17,11 +17,11 @@ public class PlatformManager {
     @CheckResult
     public static @NonNull
     IPlatform getPlatform(Context context, int target) {
-        return GlobalPlatform.makePlatform(context, target);
+        return GlobalPlatform.newPlatformByTarget(context, target);
     }
 
     public static boolean isInstall(Context context, int target) {
-        IPlatform iPlatform = GlobalPlatform.makePlatform(context, target);
+        IPlatform iPlatform = GlobalPlatform.newPlatformByTarget(context, target);
         boolean install = iPlatform.isInstall(context);
         iPlatform.recycle();
         return install;

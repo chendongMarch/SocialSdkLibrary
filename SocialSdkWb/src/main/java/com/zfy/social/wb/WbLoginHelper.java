@@ -49,7 +49,7 @@ class WbLoginHelper implements Recyclable {
             @Override
             public void onSuccess(@NonNull WbUser user) {
                 SocialUtil.e(TAG, JsonUtil.getObject2Json(user));
-                mOnLoginListener.onSuccess(new LoginResult(mLoginTarget, user, new SinaAccessToken(token)));
+                mOnLoginListener.onSuccess(LoginResult.successOf(mLoginTarget, user, new SinaAccessToken(token)));
             }
 
             @Override
