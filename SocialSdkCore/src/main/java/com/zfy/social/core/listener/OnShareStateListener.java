@@ -1,5 +1,7 @@
 package com.zfy.social.core.listener;
 
+import android.app.Activity;
+
 import com.zfy.social.core.model.ShareResult;
 
 /**
@@ -9,5 +11,5 @@ import com.zfy.social.core.model.ShareResult;
  * @author chendong
  */
 public interface OnShareStateListener {
-    void onState(ShareResult result);
+    void onState(Activity activity, ShareResult result);
 }

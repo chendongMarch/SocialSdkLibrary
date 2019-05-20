@@ -92,6 +92,7 @@ public class ShareManager {
         private CancellationTokenSource cts;
 
         private WeakReference<Activity> fakeActivity;
+        private WeakReference<Activity> originActivity;
 
         @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         public void onHostActivityDestroy() {
@@ -110,6 +111,9 @@ public class ShareManager {
             if (fakeActivity != null) {
                 GlobalPlatform.release(fakeActivity.get());
                 fakeActivity.clear();
+            }
+            if (originActivity != null) {
+                originActivity.clear();
             }
             currentTarget = -1;
             cts = null;
@@ -142,9 +146,10 @@ public class ShareManager {
             if (activity instanceof LifecycleOwner) {
                 ((LifecycleOwner) activity).getLifecycle().addObserver(this);
             }
+            originActivity = new WeakReference<>(activity);
             currentObj = shareObj;
             currentTarget = -1;
-            listener.onState(ShareResult.startOf(shareTarget, currentObj));
+            listener.onState(originActivity.get(), ShareResult.startOf(shareTarget, currentObj));
             Task.callInBackground(() -> {
                 currentObj = execInterceptors(activity, currentTarget, currentObj);
                 return currentObj;
@@ -166,7 +171,7 @@ public class ShareManager {
                     } else {
                         error = SocialError.make(SocialError.CODE_COMMON_ERROR, "ShareManager#preShare() error", exception);
                     }
-                    listener.onState(ShareResult.failOf(shareTarget, currentObj, error));
+                    listener.onState(originActivity.get(), ShareResult.failOf(shareTarget, currentObj, error));
                 }
                 return true;
             });
@@ -194,13 +199,13 @@ public class ShareManager {
                 SocialError error = (e instanceof SocialError)
                         ? (SocialError) e
                         : SocialError.make(SocialError.CODE_COMMON_ERROR, "ShareManager#preDoShare check obj", e);
-                stateListener.onState(ShareResult.failOf(shareTarget, shareObj, error));
+                stateListener.onState(originActivity.get(), ShareResult.failOf(shareTarget, shareObj, error));
                 return;
             }
 
             IPlatform platform = GlobalPlatform.newPlatformByTarget(activity, shareTarget);
             if (!platform.isInstall(activity)) {
-                stateListener.onState(ShareResult.failOf(shareTarget, shareObj, SocialError.make(SocialError.CODE_NOT_INSTALL)));
+                stateListener.onState(originActivity.get(), ShareResult.failOf(shareTarget, shareObj, SocialError.make(SocialError.CODE_NOT_INSTALL)));
                 return;
             }
             if (platform.getUIKitClazz() == null) {
@@ -224,7 +229,7 @@ public class ShareManager {
          * @param activity 透明 activity
          */
         private void postShare(Activity activity) {
-            stateListener.onState(ShareResult.stateOf(LoginResult.STATE_FAKE_ACTIVITY_ATTACH, currentTarget, currentObj));
+            stateListener.onState(originActivity.get(), ShareResult.stateOf(LoginResult.STATE_FAKE_ACTIVITY_ATTACH, currentTarget, currentObj));
             fakeActivity = new WeakReference<>(activity);
             Intent intent = activity.getIntent();
             int actionType = intent.getIntExtra(KEY_ACTION_TYPE, GlobalPlatform.INVALID_PARAM);
@@ -257,9 +262,9 @@ public class ShareManager {
         private void onUIDestroy() {
             if (currentTarget != -1 && stateListener != null) {
                 if (SocialSdk.opts().isShareSuccessIfStay()) {
-                    stateListener.onState(ShareResult.successOf(currentTarget, currentObj));
+                    stateListener.onState(originActivity.get(), ShareResult.successOf(currentTarget, currentObj));
                 } else {
-                    stateListener.onState(ShareResult.failOf(currentTarget, currentObj, SocialError.make(SocialError.CODE_STAY_OTHER_APP)));
+                    stateListener.onState(originActivity.get(), ShareResult.failOf(currentTarget, currentObj, SocialError.make(SocialError.CODE_STAY_OTHER_APP)));
                 }
             }
         }
@@ -312,18 +317,25 @@ public class ShareManager {
             this.listener = listener;
         }
 
+        private Activity getAct() {
+            if (sMgr != null && sMgr.originActivity != null) {
+                return sMgr.originActivity.get();
+            }
+            return null;
+        }
+
         @Override
         public void onStart(int shareTarget, ShareObj obj) {
             if (listener != null) {
-                listener.onState(ShareResult.startOf(shareTarget, obj));
+                listener.onState(getAct(), ShareResult.startOf(shareTarget, obj));
             }
         }
 
         @Override
         public void onSuccess(int target) {
             if (listener != null) {
-                listener.onState(ShareResult.successOf(target, sMgr.currentObj));
-                listener.onState(ShareResult.completeOf(sMgr.currentTarget, sMgr.currentObj));
+                listener.onState(getAct(), ShareResult.successOf(target, sMgr.currentObj));
+                listener.onState(getAct(), ShareResult.completeOf(sMgr.currentTarget, sMgr.currentObj));
             }
             clear();
             sMgr.onProcessFinished();
@@ -332,8 +344,8 @@ public class ShareManager {
         @Override
         public void onCancel() {
             if (listener != null) {
-                listener.onState(ShareResult.cancelOf(sMgr.currentTarget, sMgr.currentObj));
-                listener.onState(ShareResult.completeOf(sMgr.currentTarget, sMgr.currentObj));
+                listener.onState(getAct(), ShareResult.cancelOf(sMgr.currentTarget, sMgr.currentObj));
+                listener.onState(getAct(), ShareResult.completeOf(sMgr.currentTarget, sMgr.currentObj));
             }
             clear();
             sMgr.onProcessFinished();
@@ -343,8 +355,8 @@ public class ShareManager {
         @Override
         public void onFailure(SocialError e) {
             if (listener != null) {
-                listener.onState(ShareResult.failOf(sMgr.currentTarget, sMgr.currentObj, e));
-                listener.onState(ShareResult.completeOf(sMgr.currentTarget, sMgr.currentObj));
+                listener.onState(getAct(), ShareResult.failOf(sMgr.currentTarget, sMgr.currentObj, e));
+                listener.onState(getAct(), ShareResult.completeOf(sMgr.currentTarget, sMgr.currentObj));
             }
             clear();
             sMgr.onProcessFinished();
