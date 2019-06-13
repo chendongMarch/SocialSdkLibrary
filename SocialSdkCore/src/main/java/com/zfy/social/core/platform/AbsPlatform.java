@@ -8,8 +8,11 @@ import android.text.TextUtils;
 
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.exception.SocialError;
-import com.zfy.social.core.listener.OnShareListener;
+import com.zfy.social.core.listener.OnLoginStateListener;
+import com.zfy.social.core.listener.OnShareStateListener;
+import com.zfy.social.core.model.LoginObj;
 import com.zfy.social.core.model.ShareObj;
+import com.zfy.social.core.model.ShareResult;
 import com.zfy.social.core.uikit.BaseActionActivity;
 
 /**
@@ -25,7 +28,8 @@ public abstract class AbsPlatform implements IPlatform {
     protected static final int THUMB_IMAGE_SIZE_32 = 32 * 1024;
     protected static final int THUMB_IMAGE_SIZE_128 = 128 * 1024;
 
-    protected OnShareListener mOnShareListener;
+    protected OnShareStateListener mOnShareListener;
+
     protected String mAppId;
     protected String mAppName;
     protected int mTarget;
@@ -36,23 +40,30 @@ public abstract class AbsPlatform implements IPlatform {
         mTarget = target;
     }
 
-    public boolean checkPlatformConfig() {
-        return !TextUtils.isEmpty(mAppId) && !TextUtils.isEmpty(mAppName);
-    }
 
     @Override
-    public void initOnShareListener(OnShareListener listener) {
+    public void initOnShareListener(OnShareStateListener listener) {
         this.mOnShareListener = listener;
     }
 
     @Override
     public void share(Activity activity, int shareTarget, ShareObj shareObj) {
         if (shareObj == null) {
-            mOnShareListener.onFailure(SocialError.make(SocialError.CODE_PARAM_ERROR, "obj is null"));
+            onShareFail(SocialError.make(SocialError.CODE_PARAM_ERROR, "obj is null"));
             return;
         }
         mTarget = shareTarget;
         dispatchShare(activity, shareTarget, shareObj);
+    }
+
+    @Override
+    public void login(Activity act, int target, LoginObj obj, OnLoginStateListener listener) {
+        throw new UnsupportedOperationException("该平台不支持登录操作～");
+    }
+
+    @Override
+    public void recycle() {
+
     }
 
     /**
@@ -82,5 +93,26 @@ public abstract class AbsPlatform implements IPlatform {
 
     @Override
     public void onActivityResult(BaseActionActivity activity, int requestCode, int resultCode, Intent data) {
+    }
+
+    public boolean checkPlatformConfig() {
+        return !TextUtils.isEmpty(mAppId) && !TextUtils.isEmpty(mAppName);
+    }
+
+
+    public void onShareFail(SocialError error) {
+        ShareResult result = ShareResult.stateOf(ShareResult.STATE_FAIL);
+        result.error = error;
+        mOnShareListener.onState(null, result);
+    }
+
+    public void onShareSuccess() {
+        ShareResult result = ShareResult.stateOf(ShareResult.STATE_SUCCESS);
+        mOnShareListener.onState(null, result);
+    }
+
+    public void onShareCancel() {
+        ShareResult result = ShareResult.stateOf(ShareResult.STATE_CANCEL);
+        mOnShareListener.onState(null, result);
     }
 }

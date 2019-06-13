@@ -10,6 +10,7 @@ import com.zfy.social.core.SocialSdk;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * CreateAt : 2016/12/22
@@ -159,6 +160,16 @@ public class FileUtil {
         }
         return saveFile.getAbsolutePath();
     }
+
+    public static File saveWxCode2File(byte[] buffer) throws IOException {
+        File saveFile = new File(SocialSdk.opts().getCacheDir(), "code.jpg");
+        Bitmap bitmap = BitmapFactory.decodeByteArray(buffer, 0, buffer.length);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(saveFile));
+        BitmapUtil.recyclerBitmaps(bitmap);
+        buffer = null;
+        return saveFile;
+    }
+
 
 }
 

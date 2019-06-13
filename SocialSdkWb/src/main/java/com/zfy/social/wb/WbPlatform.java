@@ -22,7 +22,8 @@ import com.zfy.social.core.common.SocialValues;
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.common.ThumbTask;
 import com.zfy.social.core.exception.SocialError;
-import com.zfy.social.core.listener.OnLoginListener;
+import com.zfy.social.core.listener.OnLoginStateListener;
+import com.zfy.social.core.model.LoginObj;
 import com.zfy.social.core.model.ShareObj;
 import com.zfy.social.core.platform.AbsPlatform;
 import com.zfy.social.core.platform.IPlatform;
@@ -127,7 +128,7 @@ public class WbPlatform extends AbsPlatform {
     // 延迟创建 openApi 辅助
     private OpenApiShareHelper makeOpenApiShareHelper(Activity activity) {
         if (mOpenApiShareHelper == null) {
-            mOpenApiShareHelper = new OpenApiShareHelper(makeLoginHelper(activity), mOnShareListener, mTarget);
+            mOpenApiShareHelper = new OpenApiShareHelper(makeLoginHelper(activity), this);
         }
         return mOpenApiShareHelper;
     }
@@ -155,23 +156,23 @@ public class WbPlatform extends AbsPlatform {
             switch ((int) resp) {
                 case WBConstants.ErrorCode.ERR_OK:
                     // 分享成功
-                    mOnShareListener.onSuccess(mTarget);
+                    onShareSuccess();
                     break;
                 case WBConstants.ErrorCode.ERR_CANCEL:
                     // 分享取消
-                    mOnShareListener.onCancel();
+                    onShareCancel();
                     break;
                 case WBConstants.ErrorCode.ERR_FAIL:
                     // 分享失败
-                    mOnShareListener.onFailure(SocialError.make(SocialError.CODE_SDK_ERROR, TAG + "#微博分享失败"));
+                    onShareFail(SocialError.make(SocialError.CODE_SDK_ERROR, TAG + "#微博分享失败"));
                     break;
             }
         }
     }
 
     @Override
-    public void login(Activity activity, OnLoginListener loginListener) {
-        makeLoginHelper(activity).login(activity, loginListener);
+    public void login(Activity act, int target, LoginObj obj, OnLoginStateListener listener) {
+        makeLoginHelper(act).login(act, listener);
     }
 
     @Override
@@ -211,9 +212,9 @@ public class WbPlatform extends AbsPlatform {
     private void shareOpenApp(int shareTarget, Activity activity, ShareObj obj) {
         boolean rst = SocialUtil.openApp(activity, SocialValues.SINA_PKG);
         if (rst) {
-            mOnShareListener.onSuccess(mTarget);
+            onShareSuccess();
         } else {
-            mOnShareListener.onFailure(SocialError.make(SocialError.CODE_CANNOT_OPEN_ERROR, "open app error"));
+            onShareFail(SocialError.make(SocialError.CODE_CANNOT_OPEN_ERROR, "open app error"));
         }
     }
 
@@ -230,13 +231,18 @@ public class WbPlatform extends AbsPlatform {
             makeOpenApiShareHelper(activity).post(activity, obj);
         } else {
             BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE_32)
-                    .continueWith(new ThumbTask(TAG, "shareImage", mOnShareListener) {
+                    .continueWith(new ThumbTask(TAG, "shareImage") {
                         @Override
                         public void onSuccess(byte[] thumbData) {
                             WeiboMultiMessage multiMessage = new WeiboMultiMessage();
                             multiMessage.imageObject = getImageObj(obj.getThumbImagePath(), thumbData);
                             multiMessage.textObject = getTextObj(obj.getSummary());
                             mShareHandler.shareMessage(multiMessage, false);
+                        }
+
+                        @Override
+                        public void onFail(SocialError error) {
+                            onShareFail(error);
                         }
                     }, Task.UI_THREAD_EXECUTOR);
         }
@@ -246,13 +252,18 @@ public class WbPlatform extends AbsPlatform {
     // 分享网页
     private void shareWeb(int shareTarget, final Activity activity, final ShareObj obj) {
         BitmapUtil.getStaticSizeBitmapByteByPathTask(obj.getThumbImagePath(), THUMB_IMAGE_SIZE_32)
-                .continueWith(new ThumbTask(TAG, "shareWeb", mOnShareListener) {
+                .continueWith(new ThumbTask(TAG, "shareWeb") {
                     @Override
                     public void onSuccess(byte[] thumbData) {
                         WeiboMultiMessage multiMessage = new WeiboMultiMessage();
                         checkAddTextAndImageObj(multiMessage, obj, thumbData);
                         multiMessage.mediaObject = getWebObj(obj, thumbData);
                         mShareHandler.shareMessage(multiMessage, false);
+                    }
+
+                    @Override
+                    public void onFail(SocialError error) {
+                        onShareFail(error);
                     }
                 }, Task.UI_THREAD_EXECUTOR);
     }

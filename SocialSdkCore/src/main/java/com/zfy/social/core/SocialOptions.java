@@ -380,7 +380,7 @@ public class SocialOptions {
             File storageDir = new File(context.getExternalCacheDir(), SHARE_CACHE_DIR_NAME);
             storageDir.mkdirs();
             this.cacheDir = storageDir.getAbsolutePath();
-            wbScope = SocialValues.SCOPE;
+            wbScope = SocialValues.WB_SCOPE;
             return new SocialOptions(this);
         }
     }

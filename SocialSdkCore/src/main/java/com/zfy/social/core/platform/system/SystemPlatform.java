@@ -1,9 +1,7 @@
 package com.zfy.social.core.platform.system;
 
-import android.app.Activity;
 import android.content.Context;
 
-import com.zfy.social.core.listener.OnLoginListener;
 import com.zfy.social.core.platform.AbsPlatform;
 
 /**
@@ -29,10 +27,6 @@ public abstract class SystemPlatform extends AbsPlatform {
         return true;
     }
 
-    @Override
-    public void login(Activity activity, OnLoginListener onLoginListener) {
-
-    }
 
     @Override
     public void recycle() {

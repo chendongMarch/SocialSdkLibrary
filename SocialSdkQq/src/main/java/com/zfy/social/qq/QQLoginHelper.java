@@ -10,7 +10,7 @@ import com.tencent.tauth.Tencent;
 import com.tencent.tauth.UiError;
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.exception.SocialError;
-import com.zfy.social.core.listener.OnLoginListener;
+import com.zfy.social.core.listener.OnLoginStateListener;
 import com.zfy.social.core.model.LoginResult;
 import com.zfy.social.core.model.token.AccessToken;
 import com.zfy.social.core.util.JsonUtil;
@@ -36,14 +36,14 @@ class QQLoginHelper {
     private int mLoginTarget;
     private Tencent mTencentApi;
     private WeakReference<Activity> mActivityRef;
-    private OnLoginListener mOnLoginListener;
+    private OnLoginStateListener mListener;
     private LoginUiListener mUiListener;
 
 
-    QQLoginHelper(Activity activity, Tencent mTencentApi, OnLoginListener onQQLoginListener) {
+    QQLoginHelper(Activity activity, Tencent mTencentApi, OnLoginStateListener listener) {
         this.mActivityRef = new WeakReference<>(activity);
         this.mTencentApi = mTencentApi;
-        this.mOnLoginListener = onQQLoginListener;
+        this.mListener = listener;
         this.mLoginTarget = Target.LOGIN_QQ;
     }
 
@@ -86,7 +86,8 @@ class QQLoginHelper {
             QQAccessToken qqToken = JsonUtil.getObject(jsonResponse.toString(), QQAccessToken.class);
             SocialUtil.e(TAG, "获取到 qq token = " + qqToken);
             if (qqToken == null) {
-                mOnLoginListener.onFailure(SocialError.make(SocialError.CODE_PARSE_ERROR, TAG + "#LoginUiListener#qq token is null, data = " + qqToken));
+                SocialError error = SocialError.make(SocialError.CODE_PARSE_ERROR, TAG + "#LoginUiListener#qq token is null, data = " + qqToken);
+                mListener.onState(null, LoginResult.failOf(error));
                 return;
             }
             if (qqToken.getRet() == 100030) {
@@ -103,12 +104,13 @@ class QQLoginHelper {
 
         @Override
         public void onError(UiError e) {
-            mOnLoginListener.onFailure(SocialError.make(SocialError.CODE_SDK_ERROR, TAG + "#LoginUiListener#获取用户信息失败 " + QQPlatform.parseUiError(e)));
+            SocialError error = SocialError.make(SocialError.CODE_SDK_ERROR, TAG + "#LoginUiListener#获取用户信息失败 " + QQPlatform.parseUiError(e));
+            mListener.onState(null, LoginResult.failOf(error));
         }
 
         @Override
         public void onCancel() {
-            mOnLoginListener.onCancel();
+            mListener.onState(null, LoginResult.cancelOf());
         }
     }
 
@@ -120,27 +122,28 @@ class QQLoginHelper {
             public void onComplete(Object object) {
                 QQUser qqUserInfo = JsonUtil.getObject(object.toString(), QQUser.class);
                 if (qqUserInfo == null) {
-                    if (mOnLoginListener != null) {
-                        mOnLoginListener.onFailure(SocialError.make(SocialError.CODE_PARSE_ERROR, TAG + "#getUserInfo#解析 qq user 错误, data = " + object.toString()));
+                    if (mListener != null) {
+                        SocialError error = SocialError.make(SocialError.CODE_PARSE_ERROR, TAG + "#getUserInfo#解析 qq user 错误, data = " + object.toString());
+                        mListener.onState(null, LoginResult.failOf(error));
                     }
                 } else {
                     qqUserInfo.setOpenId(mTencentApi.getOpenId());
-                    if (mOnLoginListener != null) {
-                        mOnLoginListener.onSuccess(LoginResult.successOf(mLoginTarget, qqUserInfo, qqToken));
+                    if (mListener != null) {
+                        mListener.onState(null, LoginResult.successOf(mLoginTarget, qqUserInfo, qqToken));
                     }
                 }
             }
 
             @Override
             public void onError(UiError e) {
-                mOnLoginListener.onFailure(SocialError.make(SocialError.CODE_SDK_ERROR, TAG + "#getUserInfo#qq获取用户信息失败  " + QQPlatform.parseUiError(e)));
+                SocialError error = SocialError.make(SocialError.CODE_SDK_ERROR, TAG + "#getUserInfo#qq获取用户信息失败  " + QQPlatform.parseUiError(e));
+                mListener.onState(null, LoginResult.failOf(error));
             }
 
             @Override
             public void onCancel() {
-                mOnLoginListener.onCancel();
+                mListener.onState(null, LoginResult.cancelOf());
             }
-
         });
     }
 }

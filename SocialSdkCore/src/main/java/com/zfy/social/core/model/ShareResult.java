@@ -17,6 +17,10 @@ public class ShareResult extends Result {
         this.shareObj = shareObj;
     }
 
+    public ShareResult(int state) {
+        super(state);
+    }
+
     public static ShareResult startOf(int target, ShareObj obj) {
         return new ShareResult(STATE_START, obj, target);
     }
@@ -31,9 +35,16 @@ public class ShareResult extends Result {
         return result;
     }
 
+    public static ShareResult failOf(SocialError error) {
+        ShareResult result = new ShareResult(STATE_FAIL);
+        result.error = error;
+        return result;
+    }
+
     public static ShareResult cancelOf(int target, ShareObj obj) {
         return new ShareResult(STATE_CANCEL, obj, target);
     }
+
 
     public static ShareResult completeOf(int target, ShareObj obj) {
         return new ShareResult(STATE_COMPLETE, obj, target);
@@ -41,6 +52,10 @@ public class ShareResult extends Result {
 
     public static ShareResult stateOf(int state, int target, ShareObj obj) {
         return new ShareResult(state, obj, target);
+    }
+
+    public static ShareResult stateOf(int state) {
+        return new ShareResult(state);
     }
 
 }

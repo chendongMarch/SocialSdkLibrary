@@ -17,7 +17,6 @@ import com.zfy.social.core.SocialSdk;
 import com.zfy.social.core.common.SocialValues;
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.exception.SocialError;
-import com.zfy.social.core.listener.OnLoginListener;
 import com.zfy.social.core.model.ShareObj;
 import com.zfy.social.core.platform.AbsPlatform;
 import com.zfy.social.core.platform.IPlatform;
@@ -92,16 +91,16 @@ public class DDPlatform extends AbsPlatform {
         int errCode = baseResp.mErrCode;
         switch (errCode) {
             case BaseResp.ErrCode.ERR_OK:
-                mOnShareListener.onSuccess(mTarget);
+                onShareSuccess();
                 break;
             case BaseResp.ErrCode.ERR_AUTH_DENIED:
             case BaseResp.ErrCode.ERR_SENT_FAILED:
             case BaseResp.ErrCode.ERR_UNSUPPORT:
-                mOnShareListener.onFailure(SocialError.make(SocialError.CODE_SDK_ERROR,
+                onShareFail(SocialError.make(SocialError.CODE_SDK_ERROR,
                         "钉钉分享失败, code = " + baseResp.mErrCode + "，msg =" + baseResp.mErrStr));
                 break;
             case BaseResp.ErrCode.ERR_USER_CANCEL:
-                mOnShareListener.onCancel();
+                onShareCancel();
                 break;
         }
     }
@@ -111,10 +110,6 @@ public class DDPlatform extends AbsPlatform {
         return mDdShareApi != null && mDdShareApi.isDDAppInstalled() && mDdShareApi.isDDSupportAPI();
     }
 
-    @Override
-    public void login(Activity activity, OnLoginListener onLoginListener) {
-        throw new UnsupportedOperationException("钉钉不支持登录操作");
-    }
 
     @Override
     protected void dispatchShare(Activity activity, int shareTarget, ShareObj obj) {
@@ -204,9 +199,14 @@ public class DDPlatform extends AbsPlatform {
         if (FileUtil.isHttpPath(obj.getMediaPath())) {
             shareWeb(shareTarget, activity, obj);
         } else if (FileUtil.isExist(obj.getMediaPath())) {
-            IntentShareUtil.shareVideo(activity, obj, SocialValues.DD_PKG, SocialValues.DD_FRIEND_PAGE, mOnShareListener,mTarget);
+            try {
+                IntentShareUtil.shareVideo(activity, obj, SocialValues.DD_PKG, SocialValues.DD_FRIEND_PAGE);
+            } catch (SocialError e) {
+                e.printStackTrace();
+                onShareFail(e);
+            }
         } else {
-            mOnShareListener.onFailure(SocialError.make(SocialError.CODE_FILE_NOT_FOUND));
+            onShareFail(SocialError.make(SocialError.CODE_FILE_NOT_FOUND));
         }
     }
 

@@ -1,21 +1,29 @@
 package com.zfy.social.wx;
 
-import android.content.Context;
+import android.app.Activity;
 import android.support.annotation.NonNull;
 
+import com.tencent.mm.opensdk.diffdev.DiffDevOAuthFactory;
+import com.tencent.mm.opensdk.diffdev.IDiffDevOAuth;
+import com.tencent.mm.opensdk.diffdev.OAuthErrCode;
+import com.tencent.mm.opensdk.diffdev.OAuthListener;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.zfy.social.core.SocialSdk;
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.exception.SocialError;
-import com.zfy.social.core.listener.OnLoginListener;
+import com.zfy.social.core.listener.OnLoginStateListener;
+import com.zfy.social.core.model.LoginObj;
 import com.zfy.social.core.model.LoginResult;
 import com.zfy.social.core.model.token.AccessToken;
+import com.zfy.social.core.util.FileUtil;
 import com.zfy.social.core.util.JsonUtil;
 import com.zfy.social.core.util.SocialUtil;
 import com.zfy.social.wx.model.WeChatAccessToken;
 import com.zfy.social.wx.model.WxUser;
 
-import java.lang.ref.WeakReference;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * CreateAt : 2016/12/3
@@ -31,38 +39,128 @@ class WxLoginHelper {
     private static final String BASE_URL = "https://api.weixin.qq.com/sns";
 
     private int mLoginTarget;
-    private WeakReference<Context> mContextRef;
     private IWXAPI mIWXAPI;
     private String mAppId;
     private String mSecretKey;
     private String mAuthCode;
-    private OnLoginListener mOnLoginListener;
+    private Activity mAct;
+    private LoginObj mLoginObj;
 
-    WxLoginHelper(Context context, IWXAPI iwxapi, String appId) {
-        this.mContextRef = new WeakReference<>(context.getApplicationContext());
-        this.mIWXAPI = iwxapi;
-        this.mAppId = appId;
-        this.mLoginTarget = Target.LOGIN_WX;
+    private OnLoginStateListener mListener;
+    private IDiffDevOAuth mDiffDevOAuth;
+
+    WxLoginHelper(Activity act, IWXAPI iwxapi, int target, String appId, String appSecret, LoginObj loginObj) {
+        mAct = act;
+        mLoginObj = loginObj;
+        mIWXAPI = iwxapi;
+        mAppId = appId;
+        mSecretKey = appSecret;
+        mLoginTarget = target;
     }
 
     private WeChatAccessToken getToken() {
-        return AccessToken.getToken(mContextRef.get(), mLoginTarget, WeChatAccessToken.class);
-
+        return AccessToken.getToken(mAct, mLoginTarget, WeChatAccessToken.class);
     }
+
     /**
      * 开始登录
      */
-    public void login(String secretKey, OnLoginListener loginListener) {
-        this.mOnLoginListener = loginListener;
-        this.mSecretKey = secretKey;
+    void requestAuthCode(OnLoginStateListener listener) {
+        mListener = listener;
+
         // 检测本地token的机制
         WeChatAccessToken storeToken = getToken();
         if (storeToken != null && storeToken.isValid()) {
             checkAccessTokenValid(storeToken);
         } else {
             // 本地没有token, 发起请求，wxEntry将会获得code，接着获取access_token
-            sendAuthReq();
+            if (mLoginTarget == Target.LOGIN_WX_SCAN) {
+                sendWxCodeAuthReq();
+            } else if (mLoginTarget == Target.LOGIN_WX) {
+                sendAuthReq();
+            } else {
+                mListener.onState(null, LoginResult.failOf(SocialError.make(SocialError.CODE_PARAM_ERROR, "target 错误")));
+            }
         }
+    }
+
+    private void sendWxCodeAuthReq() {
+        if (mLoginObj == null) {
+            mListener.onState(null,
+                    LoginResult.failOf(SocialError.make(SocialError.CODE_PARAM_ERROR, "login scan code param")));
+            return;
+        }
+        LoginObj obj = mLoginObj;
+        if (mDiffDevOAuth != null) {
+            mDiffDevOAuth.stopAuth();
+            mDiffDevOAuth.removeAllListeners();
+            mDiffDevOAuth.detach();
+            mDiffDevOAuth = null;
+        }
+        mDiffDevOAuth = DiffDevOAuthFactory.getDiffDevOAuth();
+        mDiffDevOAuth.auth(mAppId, obj.getScope(), obj.getNoncestr(), obj.getTimestamp(), obj.getSignature(), new OAuthListener() {
+            @Override
+            public void onAuthGotQrcode(String s, byte[] bytes) {
+                try {
+                    File file = FileUtil.saveWxCode2File(bytes);
+                    if (FileUtil.isExist(file)) {
+                        LoginResult result = LoginResult.stateOf(LoginResult.STATE_WX_CODE_RECEIVE);
+                        result.wxCodePath = file.getAbsolutePath();
+                        mListener.onState(null, result);
+                    }
+                    bytes = null;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    mListener.onState(null,
+                            LoginResult.failOf(
+                                    SocialError.make(SocialError.CODE_PARAM_ERROR, "login scan code param", e)));
+                }
+            }
+
+            @Override
+            public void onQrcodeScanned() {
+                LoginResult result = LoginResult.stateOf(LoginResult.STATE_WX_CODE_SCANNED);
+                mListener.onState(null, result);
+            }
+
+            @Override
+            public void onAuthFinish(OAuthErrCode oAuthErrCode, String authCode) {
+                switch (oAuthErrCode) {
+                    case WechatAuth_Err_OK:
+                        if (SocialSdk.opts().isWxOnlyAuthCode()) {
+                            mListener.onState(null, LoginResult.successOf(Target.LOGIN_WX, authCode));
+                        } else {
+                            getAccessTokenByCode(authCode);
+                        }
+                        break;
+                    case WechatAuth_Err_Cancel:
+                        mListener.onState(null,
+                                LoginResult.cancelOf());
+                        break;
+                    case WechatAuth_Err_NormalErr:
+                        mListener.onState(null,
+                                LoginResult.failOf(SocialError.make(SocialError.CODE_COMMON_ERROR, "微信代码登录错误[NORMAL]")));
+                        break;
+                    case WechatAuth_Err_NetworkErr:
+                        mListener.onState(null,
+                                LoginResult.failOf(SocialError.make(SocialError.CODE_COMMON_ERROR, "微信代码登录错误[NETWORK]")));
+                        break;
+                    case WechatAuth_Err_JsonDecodeErr:
+                        mListener.onState(null,
+                                LoginResult.failOf(SocialError.make(SocialError.CODE_COMMON_ERROR, "微信代码登录错误[JSON]")));
+                        break;
+
+                    case WechatAuth_Err_Timeout:
+                        mListener.onState(null,
+                                LoginResult.failOf(SocialError.make(SocialError.CODE_COMMON_ERROR, "微信代码登录错误[TIMEOUT]")));
+                        break;
+                    case WechatAuth_Err_Auth_Stopped:
+                        mListener.onState(null,
+                                LoginResult.failOf(SocialError.make(SocialError.CODE_COMMON_ERROR, "微信代码登录错误[STOP]")));
+                        break;
+                }
+            }
+        });
     }
 
     /**
@@ -89,7 +187,7 @@ class WxLoginHelper {
                 // 获取到access_token
                 if (newToken.isNoError()) {
                     SocialUtil.e(TAG, "刷新token成功 token = " + newToken);
-                    AccessToken.saveToken(mContextRef.get(), mLoginTarget, newToken);
+                    AccessToken.saveToken(mAct, mLoginTarget, newToken);
                     // 刷新完成，获取用户信息
                     getUserInfoByValidToken(newToken);
                 } else {
@@ -101,7 +199,7 @@ class WxLoginHelper {
             @Override
             public void onFailure(SocialError e) {
                 // 刷新token失败
-                mOnLoginListener.onFailure(e.append("refreshToken fail"));
+                mListener.onState(mAct, LoginResult.failOf(mLoginTarget, e.append("refreshToken fail")));
             }
         });
     }
@@ -120,18 +218,18 @@ class WxLoginHelper {
             public void onSuccess(@NonNull WeChatAccessToken token) {
                 // 获取到access_token
                 if (token.isNoError()) {
-                    AccessToken.saveToken(mContextRef.get(), mLoginTarget, token);
+                    AccessToken.saveToken(mAct, mLoginTarget, token);
                     getUserInfoByValidToken(token);
                 } else {
                     SocialError exception = SocialError.make(SocialError.CODE_REQUEST_ERROR, TAG + "#getAccessTokenByCode#获取access_token失败 code = " + token.getErrcode() + "  msg = " + token.getErrmsg());
-                    mOnLoginListener.onFailure(exception);
+                    mListener.onState(mAct, LoginResult.failOf(mLoginTarget, exception));
                 }
             }
 
             @Override
             public void onFailure(SocialError e) {
                 // 获取access_token失败
-                mOnLoginListener.onFailure(e.append("getAccessTokenByCode fail"));
+                mListener.onState(mAct, LoginResult.failOf(mLoginTarget, e.append("getAccessTokenByCode fail")));
             }
         });
     }
@@ -161,8 +259,8 @@ class WxLoginHelper {
             @Override
             public void onFailure(SocialError e) {
                 // 检测access_token有效性失败
-                SocialUtil.e(TAG, "检测access_token失败");
-                mOnLoginListener.onFailure(e.append("checkAccessTokenValid fail"));
+                mListener.onState(mAct, LoginResult.failOf(mLoginTarget, e.append("checkAccessTokenValid fail")));
+
             }
         });
     }
@@ -181,16 +279,18 @@ class WxLoginHelper {
                 if (wxUserInfo.isNoError()) {
                     LoginResult result = LoginResult.successOf(mLoginTarget, wxUserInfo, token);
                     result.wxAuthCode = mAuthCode;
-                    mOnLoginListener.onSuccess(result);
+                    mListener.onState(mAct, result);
                 } else {
-                    mOnLoginListener.onFailure(SocialError.make(SocialError.CODE_REQUEST_ERROR, TAG + "#getUserInfoByValidToken#login code = " + wxUserInfo.getErrcode() + " ,msg = " + wxUserInfo.getErrmsg()));
+                    mListener.onState(mAct, LoginResult.failOf(mLoginTarget,
+                            SocialError.make(SocialError.CODE_REQUEST_ERROR, TAG + "#getUserInfoByValidToken#requestAuthCode code = " + wxUserInfo.getErrcode() + " ,msg = " + wxUserInfo.getErrmsg())));
                 }
             }
 
             @Override
             public void onFailure(SocialError e) {
                 // 获取用户信息失败
-                mOnLoginListener.onFailure(e.append("getUserInfoByValidToken fail"));
+                mListener.onState(mAct, LoginResult.failOf(mLoginTarget, e.append("getUserInfoByValidToken fail")));
+
             }
         });
     }
@@ -227,14 +327,15 @@ class WxLoginHelper {
     }
 
 
-    public OnLoginListener getOnLoginListener() {
-        return mOnLoginListener;
+    OnLoginStateListener getListener() {
+        return mListener;
     }
 
     /**
      * 检测token有效性的resp
      */
     private static class TokenValidResp {
+
         private int errcode;
         private String errmsg;
 
@@ -264,6 +365,14 @@ class WxLoginHelper {
                     "errcode=" + errcode +
                     ", errmsg='" + errmsg + '\'' +
                     '}';
+        }
+    }
+
+    public void recycle() {
+        if (mDiffDevOAuth != null) {
+            mDiffDevOAuth.removeAllListeners();
+            mDiffDevOAuth.stopAuth();
+            mDiffDevOAuth.detach();
         }
     }
 
