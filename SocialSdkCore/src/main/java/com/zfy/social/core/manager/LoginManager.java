@@ -12,9 +12,9 @@ import com.zfy.social.core.exception.SocialError;
 import com.zfy.social.core.listener.OnLoginStateListener;
 import com.zfy.social.core.model.LoginObj;
 import com.zfy.social.core.model.LoginResult;
+import com.zfy.social.core.model.Result;
 import com.zfy.social.core.model.token.AccessToken;
 import com.zfy.social.core.platform.IPlatform;
-import com.zfy.social.core.util.SocialUtil;
 
 import java.lang.ref.WeakReference;
 
@@ -143,6 +143,8 @@ public class LoginManager {
                 final @Target.LoginTarget int target,
                 final LoginObj obj,
                 final OnLoginStateListener listener) {
+
+            listener.onState(activity, LoginResult.stateOf(Result.STATE_START));
 
             currentObj = obj;
             stateListener = listener;

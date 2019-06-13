@@ -98,7 +98,7 @@ class WxLoginHelper {
             mDiffDevOAuth = null;
         }
         mDiffDevOAuth = DiffDevOAuthFactory.getDiffDevOAuth();
-        mDiffDevOAuth.auth(mAppId, obj.getScope(), obj.getNoncestr(), obj.getTimestamp(), obj.getSignature(), new OAuthListener() {
+        mDiffDevOAuth.auth(mAppId, obj.getScope(), obj.getNonceStr(), obj.getTimestamp(), obj.getSignature(), new OAuthListener() {
             @Override
             public void onAuthGotQrcode(String s, byte[] bytes) {
                 try {

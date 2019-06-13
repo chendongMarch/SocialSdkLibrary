@@ -12,7 +12,7 @@ public class LoginObj {
 
     private String appSecret; // 授权域
     private String scope = SocialValues.WX_SCOPE; // 授权域
-    private String noncestr; // 随机字符串
+    private String nonceStr; // 随机字符串
     private String timestamp; // 时间戳
     private String signature; // 签名
 
@@ -25,12 +25,12 @@ public class LoginObj {
         this.scope = scope;
     }
 
-    public String getNoncestr() {
-        return noncestr;
+    public String getNonceStr() {
+        return nonceStr;
     }
 
-    public void setNoncestr(String noncestr) {
-        this.noncestr = noncestr;
+    public void setNonceStr(String nonceStr) {
+        this.nonceStr = nonceStr;
     }
 
     public String getTimestamp() {

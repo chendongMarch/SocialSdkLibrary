@@ -27,6 +27,8 @@
 
 <br/>
 
+🎉  2019.6.13 支持微信扫码登录
+
 🎉  2019.5.28 项目获得了第329颗 🌟, 对生命周期做自动管理，统一回调参数，发布 [稳定版本 1.0.1](https://github.com/chendongMarch/SocialSdkLibrary/releases/tag/1.0.1) ❤️,
 
 🎉  2019.3.28 使用 `gradle plugin` 自动管理依赖，重新设计版本号 [稳定版本 0.1.1](https://github.com/chendongMarch/SocialSdkLibrary/releases/tag/0.1.1) ❤️
@@ -250,6 +252,12 @@ new OnLoginStateListener() {
             case LoginResult.STATE_CANCEL:
                 // 登录取消
                 break;
+            case LoginResult.STATE_WX_CODE_RECEIVE:
+                 // 获取到微信登录二维码
+                 break;
+            case LoginResult.STATE_WX_CODE_SCANNED:
+                 // 微信登录二维码被扫描
+                 break;
         }
     }
 };
@@ -286,6 +294,21 @@ switch (target) {
 
 ```java
 LoginManager.login(mActivity, Target.LOGIN_QQ, listener);
+```
+
+带参数登录，如微信二维码扫码登录：
+
+```java
+LoginObj obj = new LoginObj();
+// 根据文档要求，以下数据应在服务端缓存获取
+// 如果不设置，将会使用配置时设置的 secret
+obj.setAppSecret("0a3cb00******ee3654f499171");
+obj.setNonceStr("3611cdc33b******a49ca45bdfab2d");
+obj.setTimestamp("15604******6904");
+obj.setSignature("b28f69426******18c8ba792caa4a0a1bcc");
+// 如果不设置，将会使用 SocialValues.WX_SCOPE
+obj.setScope(SocialValues.WX_SCOPE);
+LoginManager.login(mActivity, Target.LOGIN_WX_SCAN, obj, listener);
 ```
 
 关于 `token` 时效，可以在初始化时设置 `tokenExpiresHours` 来控制，也同样提供清除授权 `token` 的方法。

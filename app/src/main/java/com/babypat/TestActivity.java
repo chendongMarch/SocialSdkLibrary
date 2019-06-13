@@ -289,14 +289,15 @@ public class TestActivity extends AppCompatActivity {
         switch (view.getId()) {
             case R.id.btn_login_scan:
                 LoginObj obj = new LoginObj();
-
+                // 如果不设置，将会使用配置时设置的 secret
                 obj.setAppSecret("0a3cb007291d0e59834ee3654f499171");
-                obj.setNoncestr("3611cdc33b794c7c92a49ca45bdfab2d");
+                obj.setNonceStr("3611cdc33b794c7c92a49ca45bdfab2d");
                 obj.setTimestamp("1560416904");
                 obj.setSignature("b28f69426f3b3874d89718c8ba792caa4a0a1bcc");
+                // 如果不设置，将会使用 SocialValues.WX_SCOPE
                 obj.setScope(SocialValues.WX_SCOPE);
-
                 LoginManager.login(mActivity, Target.LOGIN_WX_SCAN, obj, mOnLoginListener);
+
                 break;
             case R.id.huawei_btn:
                 LoginManager.login(mActivity, HuaweiPlatform.LOGIN_HUAWEI, mOnLoginListener);
