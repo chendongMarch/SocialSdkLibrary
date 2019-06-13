@@ -20,7 +20,7 @@ public class LoginResult extends Result {
     public AccessToken accessToken;
     // 授权码，如果 onlyAuthCode 为 true, 将会返回它
     public String wxAuthCode;
-
+    // 扫码登录二维码文件路径
     public String wxCodePath;
 
     public LoginResult(int state, int target) {
