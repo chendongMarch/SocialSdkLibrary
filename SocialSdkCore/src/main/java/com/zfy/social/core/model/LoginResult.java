@@ -21,8 +21,14 @@ public class LoginResult extends Result {
     // 授权码，如果 onlyAuthCode 为 true, 将会返回它
     public String wxAuthCode;
 
+    public String wxCodePath;
+
     public LoginResult(int state, int target) {
         super(state, target);
+    }
+
+    public LoginResult(int state) {
+        super(state, -1);
     }
 
     public static LoginResult startOf(int target) {
@@ -48,8 +54,18 @@ public class LoginResult extends Result {
         return result;
     }
 
+    public static LoginResult failOf(SocialError error) {
+        LoginResult result = new LoginResult(STATE_FAIL);
+        result.error = error;
+        return result;
+    }
+
     public static LoginResult cancelOf(int target) {
         return new LoginResult(STATE_CANCEL, target);
+    }
+
+    public static LoginResult cancelOf() {
+        return new LoginResult(STATE_CANCEL);
     }
 
     public static LoginResult completeOf(int target) {
@@ -58,6 +74,11 @@ public class LoginResult extends Result {
 
     public static LoginResult stateOf(int state, int target) {
         return new LoginResult(state, target);
+    }
+
+
+    public static LoginResult stateOf(int state) {
+        return new LoginResult(state);
     }
 
 

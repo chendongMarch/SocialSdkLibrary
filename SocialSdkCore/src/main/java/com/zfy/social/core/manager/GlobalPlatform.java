@@ -41,8 +41,11 @@ public class GlobalPlatform {
         if (platform == null) {
             throw new IllegalArgumentException(Target.toDesc(target) + "  创建platform失败，请检查参数 " + SocialSdk.opts().toString());
         }
-        sIPlatform = platform;
         return platform;
+    }
+
+    public static void savePlatform(IPlatform platform) {
+        sIPlatform = platform;
     }
 
     // 使用配置的工厂创建 platform

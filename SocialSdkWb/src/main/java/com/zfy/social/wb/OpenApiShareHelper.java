@@ -8,8 +8,8 @@ import com.sina.weibo.sdk.auth.WbAuthListener;
 import com.sina.weibo.sdk.auth.WbConnectErrorMessage;
 import com.zfy.social.core.SocialSdk;
 import com.zfy.social.core.exception.SocialError;
-import com.zfy.social.core.listener.OnShareListener;
 import com.zfy.social.core.model.ShareObj;
+import com.zfy.social.core.platform.AbsPlatform;
 
 import org.json.JSONObject;
 
@@ -26,14 +26,15 @@ import bolts.Task;
  */
 class OpenApiShareHelper {
 
-    private WbLoginHelper mWbLoginHelper;
-    private OnShareListener mOnShareListener;
-    private int mTarget;
+    public static final String TAG = OpenApiShareHelper.class.getSimpleName();
 
-    OpenApiShareHelper(WbLoginHelper wbLoginHelper, OnShareListener onShareListener, int target) {
+
+    private WbLoginHelper mWbLoginHelper;
+    private AbsPlatform mPlatform;
+
+    OpenApiShareHelper(WbLoginHelper wbLoginHelper, AbsPlatform platform) {
         mWbLoginHelper = wbLoginHelper;
-        mOnShareListener = onShareListener;
-        mTarget = target;
+        mPlatform = platform;
     }
 
     void post(Activity activity, final ShareObj obj) {
@@ -51,7 +52,7 @@ class OpenApiShareHelper {
                     } else {
                         JSONObject jsonObject = new JSONObject(task.getResult());
                         if (jsonObject.has("id") && jsonObject.get("id") != null) {
-                            mOnShareListener.onSuccess(mTarget);
+                            mPlatform.onShareSuccess();
                             return true;
                         } else {
                             throw SocialError.make(SocialError.CODE_PARSE_ERROR, "open api 分享失败 " + task.getResult());
@@ -61,18 +62,17 @@ class OpenApiShareHelper {
                     if (task != null && task.isFaulted()) {
                         Exception error = task.getError();
                         if (error instanceof SocialError) {
-                            mOnShareListener.onFailure((SocialError) error);
+                            mPlatform.onShareFail((SocialError) error);
                         } else {
-                            mOnShareListener.onFailure(SocialError.make(SocialError.CODE_REQUEST_ERROR, "open api 分享失败", error));
+                            mPlatform.onShareFail(SocialError.make(SocialError.CODE_REQUEST_ERROR, "open api 分享失败", error));
                         }
+
                     }
                     return true;
                 }, Task.UI_THREAD_EXECUTOR);
             }
         });
     }
-
-    public static final String TAG = OpenApiShareHelper.class.getSimpleName();
 
 
     class WbAuthListenerImpl implements WbAuthListener {
@@ -82,12 +82,12 @@ class OpenApiShareHelper {
 
         @Override
         public void cancel() {
-            mOnShareListener.onCancel();
+            mPlatform.onShareCancel();
         }
 
         @Override
         public void onFailure(WbConnectErrorMessage msg) {
-            mOnShareListener.onFailure(SocialError.make(SocialError.CODE_SDK_ERROR, TAG + "#WbAuthListenerImpl#wb auth fail," + msg.getErrorCode() + " " + msg.getErrorMessage()));
+            mPlatform.onShareFail(SocialError.make(SocialError.CODE_SDK_ERROR, TAG + "#WbAuthListenerImpl#wb auth fail," + msg.getErrorCode() + " " + msg.getErrorMessage()));
         }
     }
 }

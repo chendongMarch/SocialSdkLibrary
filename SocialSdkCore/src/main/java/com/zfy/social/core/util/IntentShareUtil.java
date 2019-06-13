@@ -1,7 +1,6 @@
 package com.zfy.social.core.util;
 
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,7 +12,6 @@ import com.zfy.social.core.common.SocialValues;
 import com.zfy.social.core.common._Consumer;
 import com.zfy.social.core.common._Predicate;
 import com.zfy.social.core.exception.SocialError;
-import com.zfy.social.core.listener.OnShareListener;
 import com.zfy.social.core.model.ShareObj;
 
 import java.io.File;
@@ -160,12 +158,12 @@ public class IntentShareUtil {
         }
     }
 
-    public static void shareVideo(Context context, ShareObj obj, String pkg, String page, OnShareListener listener,int target) {
+    public static boolean shareVideo(Context context, ShareObj obj, String pkg, String page) throws SocialError {
         boolean result = IntentShareUtil.shareVideo(context, obj.getMediaPath(), pkg, page);
         if (result) {
-            listener.onSuccess(target);
+            return true;
         } else {
-            listener.onFailure(SocialError.make(SocialError.CODE_SHARE_BY_INTENT_FAIL, "shareVideo by intent" + pkg + "  " + page + " failure"));
+            throw SocialError.make(SocialError.CODE_SHARE_BY_INTENT_FAIL, "shareVideo by intent" + pkg + "  " + page + " failure");
         }
     }
 
@@ -174,10 +172,8 @@ public class IntentShareUtil {
      *
      * @param context  context
      * @param obj      ShareObj
-     * @param target   target
-     * @param listener lis
      */
-    public static void shareQQVideo(Context context, ShareObj obj, int target, OnShareListener listener) {
+    public static void shareQQVideo(Context context, ShareObj obj) throws SocialError {
         Intent sendIntent = new Intent(Intent.ACTION_SEND);
         sendIntent.setType("video/*");
         Uri videoUri = SocialUtil.fromFile(context, new File(obj.getMediaPath()));
@@ -187,10 +183,8 @@ public class IntentShareUtil {
             intent.setType("video/*");
             intent.putExtra(Intent.EXTRA_STREAM, videoUri);
         });
-        if (result) {
-            listener.onSuccess(target);
-        } else {
-            listener.onFailure(SocialError.make(SocialError.CODE_SHARE_BY_INTENT_FAIL, "shareText by intent failure"));
+        if(!result) {
+            throw SocialError.make(SocialError.CODE_SHARE_BY_INTENT_FAIL, "shareText by intent failure");
         }
     }
 
@@ -200,10 +194,8 @@ public class IntentShareUtil {
      *
      * @param context  context
      * @param obj      ShareObj
-     * @param target   target
-     * @param listener lis
      */
-    public static void shareQQText(Activity context, ShareObj obj, int target, OnShareListener listener) {
+    public static void shareQQText(Activity context, ShareObj obj) throws SocialError {
         Intent sendIntent = new Intent(Intent.ACTION_SEND);
         sendIntent.setType("text/plain");
 //        boolean result = activeMultiFilterShare(context, sendIntent, info -> {
@@ -221,10 +213,8 @@ public class IntentShareUtil {
             intent.putExtra(Intent.EXTRA_TITLE, obj.getSummary());
             intent.setType("text/plain");
         });
-        if (result) {
-            listener.onSuccess(target);
-        } else {
-            listener.onFailure(SocialError.make(SocialError.CODE_SHARE_BY_INTENT_FAIL, "shareText by intent failure"));
+        if (!result) {
+            throw SocialError.make(SocialError.CODE_SHARE_BY_INTENT_FAIL, "shareText by intent failure");
         }
     }
 

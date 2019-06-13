@@ -13,3 +13,4 @@ import com.zfy.social.core.model.LoginResult;
 public interface OnLoginStateListener {
     void onState(Activity activity, LoginResult result);
 }
+

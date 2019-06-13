@@ -24,6 +24,8 @@ public class Target {
     public static final int LOGIN_QQ = 200; // qq 登录
     public static final int LOGIN_WX = 201; // 微信登录
     public static final int LOGIN_WB = 202; // 微博登录
+    public static final int LOGIN_WX_SCAN = 203; // 微信扫码登录
+
 
     public static final int SHARE_QQ_FRIENDS = 300; // qq好友
     public static final int SHARE_QQ_ZONE = 301; // qq空间

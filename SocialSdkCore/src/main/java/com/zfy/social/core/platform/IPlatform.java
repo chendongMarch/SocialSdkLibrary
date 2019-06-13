@@ -4,9 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
-import com.zfy.social.core.listener.OnLoginListener;
-import com.zfy.social.core.listener.OnShareListener;
+import com.zfy.social.core.listener.OnLoginStateListener;
+import com.zfy.social.core.listener.OnShareStateListener;
 import com.zfy.social.core.listener.Recyclable;
+import com.zfy.social.core.model.LoginObj;
 import com.zfy.social.core.model.ShareObj;
 import com.zfy.social.core.uikit.BaseActionActivity;
 
@@ -46,7 +47,7 @@ public interface IPlatform extends Recyclable {
      *
      * @param listener 分享回调
      */
-    void initOnShareListener(OnShareListener listener);
+    void initOnShareListener(OnShareStateListener listener);
 
     /**
      * @param context 上下文
@@ -54,13 +55,14 @@ public interface IPlatform extends Recyclable {
      */
     boolean isInstall(Context context);
 
+
     /**
      * 发起登录
      *
-     * @param activity        act
-     * @param onLoginListener 登录回调
+     * @param act        act
+     * @param listener 登录回调
      */
-    void login(Activity activity, OnLoginListener onLoginListener);
+    void login(Activity act, int target, LoginObj obj, OnLoginStateListener listener);
 
     /**
      * 发起分享

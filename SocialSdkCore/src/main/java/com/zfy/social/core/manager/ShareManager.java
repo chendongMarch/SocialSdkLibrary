@@ -12,7 +12,6 @@ import android.text.TextUtils;
 import com.zfy.social.core.SocialSdk;
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.exception.SocialError;
-import com.zfy.social.core.listener.OnShareListener;
 import com.zfy.social.core.listener.OnShareStateListener;
 import com.zfy.social.core.listener.ShareInterceptor;
 import com.zfy.social.core.model.LoginResult;
@@ -29,8 +28,6 @@ import java.util.List;
 
 import bolts.CancellationTokenSource;
 import bolts.Task;
-
-import static com.zfy.social.core.manager.GlobalPlatform.KEY_ACTION_TYPE;
 
 /**
  * CreateAt : 2017/5/19
@@ -61,7 +58,7 @@ public class ShareManager {
         sMgr.preShare(activity, shareTarget, shareObj, listener);
     }
 
-    public static void clear() {
+    private static void clear() {
         if (sMgr != null) {
             sMgr.onHostActivityDestroy();
         }
@@ -105,12 +102,12 @@ public class ShareManager {
             if (cts != null) {
                 cts.cancel();
             }
-            if (shareListener != null) {
-                shareListener.clear();
-            }
+
             if (fakeActivity != null) {
                 GlobalPlatform.release(fakeActivity.get());
                 fakeActivity.clear();
+            } else {
+                GlobalPlatform.release(null);
             }
             if (originActivity != null) {
                 originActivity.clear();
@@ -119,6 +116,9 @@ public class ShareManager {
             cts = null;
             currentObj = null;
             stateListener = null;
+            if (shareListener != null) {
+                shareListener.listener = null;
+            }
             shareListener = null;
             fakeActivity = null;
             SocialUtil.e("chendong", "分享过程结束，回收资源");
@@ -213,11 +213,10 @@ public class ShareManager {
                 platform.initOnShareListener(shareListener);
                 platform.share(activity, shareTarget, shareObj);
             } else {
+                GlobalPlatform.savePlatform(platform);
                 currentTarget = shareTarget;
                 Intent intent = new Intent(activity, platform.getUIKitClazz());
                 intent.putExtra(GlobalPlatform.KEY_ACTION_TYPE, GlobalPlatform.ACTION_TYPE_SHARE);
-                intent.putExtra(GlobalPlatform.KEY_SHARE_MEDIA_OBJ, shareObj);
-                intent.putExtra(GlobalPlatform.KEY_SHARE_TARGET, shareTarget);
                 activity.startActivity(intent);
                 activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
@@ -226,37 +225,43 @@ public class ShareManager {
         /**
          * 激活分享，由透明 Activity 真正的激活分享
          *
-         * @param activity 透明 activity
+         * @param act 透明 activity
          */
-        private void postShare(Activity activity) {
+        private void postShare(Activity act) {
             stateListener.onState(originActivity.get(), ShareResult.stateOf(LoginResult.STATE_ACTIVE, currentTarget, currentObj));
-            fakeActivity = new WeakReference<>(activity);
-            Intent intent = activity.getIntent();
-            int actionType = intent.getIntExtra(KEY_ACTION_TYPE, GlobalPlatform.INVALID_PARAM);
-            int shareTarget = intent.getIntExtra(GlobalPlatform.KEY_SHARE_TARGET, GlobalPlatform.INVALID_PARAM);
-            ShareObj shareObj = intent.getParcelableExtra(GlobalPlatform.KEY_SHARE_MEDIA_OBJ);
-            if (actionType != GlobalPlatform.ACTION_TYPE_SHARE) {
-                SocialUtil.e(TAG, "actionType 错误");
-                return;
-            }
-            if (shareTarget == GlobalPlatform.INVALID_PARAM) {
+            fakeActivity = new WeakReference<>(act);
+            if (currentTarget == -1) {
                 SocialUtil.e(TAG, "shareTarget Type 无效");
+                stateListener.onState(act,
+                        ShareResult.failOf(currentTarget,
+                                currentObj,
+                                SocialError.make(SocialError.CODE_COMMON_ERROR, "share target error")));
                 return;
             }
-            if (shareObj == null) {
-                SocialUtil.e(TAG, "shareObj == null");
+            if (currentObj == null) {
+                stateListener.onState(act,
+                        ShareResult.failOf(currentTarget,
+                                null,
+                                SocialError.make(SocialError.CODE_COMMON_ERROR, "share object error")));
                 return;
             }
             if (stateListener == null) {
-                SocialUtil.e(TAG, "请设置 OnShareListener");
+                stateListener.onState(act,
+                        ShareResult.failOf(currentTarget,
+                                currentObj,
+                                SocialError.make(SocialError.CODE_COMMON_ERROR, "没有设置 share listener")));
                 return;
             }
             if (GlobalPlatform.getCurrentPlatform() == null) {
+                stateListener.onState(act,
+                        ShareResult.failOf(currentTarget,
+                                currentObj,
+                                SocialError.make(SocialError.CODE_COMMON_ERROR, "创建的 platform 失效")));
                 return;
             }
             shareListener = new OnShareListenerWrap(stateListener);
             GlobalPlatform.getCurrentPlatform().initOnShareListener(shareListener);
-            GlobalPlatform.getCurrentPlatform().share(activity, shareTarget, shareObj);
+            GlobalPlatform.getCurrentPlatform().share(act, currentTarget, currentObj);
         }
 
         private void onUIDestroy() {
@@ -309,7 +314,7 @@ public class ShareManager {
 
 
     // 用于分享结束后，回收资源
-    private static class OnShareListenerWrap implements OnShareListener {
+    private static class OnShareListenerWrap implements OnShareStateListener {
 
         private OnShareStateListener listener;
 
@@ -324,48 +329,24 @@ public class ShareManager {
             return null;
         }
 
-        @Override
-        public void onStart(int shareTarget, ShareObj obj) {
-            if (listener != null) {
-                listener.onState(getAct(), ShareResult.startOf(shareTarget, obj));
-            }
-        }
 
         @Override
-        public void onSuccess(int target) {
+        public void onState(Activity activity, ShareResult result) {
             if (listener != null) {
-                listener.onState(getAct(), ShareResult.successOf(target, sMgr.currentObj));
-                listener.onState(getAct(), ShareResult.completeOf(sMgr.currentTarget, sMgr.currentObj));
+                result.target = sMgr.currentTarget;
+                result.shareObj = sMgr.currentObj;
+                listener.onState(getAct(), result);
             }
-            clear();
-            sMgr.onProcessFinished();
-        }
-
-        @Override
-        public void onCancel() {
-            if (listener != null) {
-                listener.onState(getAct(), ShareResult.cancelOf(sMgr.currentTarget, sMgr.currentObj));
-                listener.onState(getAct(), ShareResult.completeOf(sMgr.currentTarget, sMgr.currentObj));
+            if (result.state == LoginResult.STATE_SUCCESS
+                    || result.state == LoginResult.STATE_FAIL
+                    || result.state == LoginResult.STATE_CANCEL) {
+                if (listener != null) {
+                    listener.onState(getAct(), ShareResult.completeOf(sMgr.currentTarget, sMgr.currentObj));
+                }
+                listener = null;
+                clear();
             }
-            clear();
-            sMgr.onProcessFinished();
-        }
-
-
-        @Override
-        public void onFailure(SocialError e) {
-            if (listener != null) {
-                listener.onState(getAct(), ShareResult.failOf(sMgr.currentTarget, sMgr.currentObj, e));
-                listener.onState(getAct(), ShareResult.completeOf(sMgr.currentTarget, sMgr.currentObj));
-            }
-            clear();
-            sMgr.onProcessFinished();
-        }
-
-        private void clear() {
-            listener = null;
         }
     }
-
 
 }

@@ -4,7 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.widget.Toast;
 
-import com.zfy.social.core.listener.OnLoginListener;
+import com.zfy.social.core.listener.OnLoginStateListener;
+import com.zfy.social.core.model.LoginObj;
 import com.zfy.social.core.model.LoginResult;
 import com.zfy.social.core.model.ShareObj;
 import com.zfy.social.core.platform.AbsPlatform;
@@ -65,13 +66,10 @@ public class HuaweiPlatform extends AbsPlatform {
     }
 
     @Override
-    public void login(Activity activity, OnLoginListener onLoginListener) {
-        Toast.makeText(activity, "模拟扩展新平台，华为登录成功", Toast.LENGTH_LONG).show();
-        onLoginListener.onSuccess(LoginResult.successOf(LOGIN_HUAWEI, null, null));
+    public void login(Activity act, int target, LoginObj obj, OnLoginStateListener listener) {
+        Toast.makeText(act, "模拟扩展新平台，华为登录成功", Toast.LENGTH_LONG).show();
+        listener.onState(act, LoginResult.successOf(LOGIN_HUAWEI, null, null));
     }
 
-    @Override
-    public void recycle() {
 
-    }
 }

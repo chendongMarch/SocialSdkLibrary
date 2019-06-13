@@ -20,8 +20,9 @@ import com.zfy.social.core.SocialSdk;
 import com.zfy.social.core.common.SocialValues;
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.exception.SocialError;
-import com.zfy.social.core.listener.OnLoginListener;
-import com.zfy.social.core.listener.OnShareListener;
+import com.zfy.social.core.listener.OnLoginStateListener;
+import com.zfy.social.core.model.LoginObj;
+import com.zfy.social.core.model.LoginResult;
 import com.zfy.social.core.model.ShareObj;
 import com.zfy.social.core.platform.AbsPlatform;
 import com.zfy.social.core.platform.IPlatform;
@@ -85,13 +86,9 @@ public class QQPlatform extends AbsPlatform {
     private QQPlatform(Context context, String appId, String appName, int target) {
         super(context, appId, appName, target);
         mTencentApi = Tencent.createInstance(appId, context);
+        mIUiListenerWrap = new IUiListenerWrap();
     }
 
-    @Override
-    public void initOnShareListener(OnShareListener listener) {
-        super.initOnShareListener(listener);
-        this.mIUiListenerWrap = new IUiListenerWrap(listener);
-    }
 
     @Override
     public Class getUIKitClazz() {
@@ -137,13 +134,13 @@ public class QQPlatform extends AbsPlatform {
     }
 
     @Override
-    public void login(Activity activity, OnLoginListener loginListener) {
-        if (!mTencentApi.isSupportSSOLogin(activity)) {
+    public void login(Activity act, int target, LoginObj obj, OnLoginStateListener listener) {
+        if (!mTencentApi.isSupportSSOLogin(act)) {
             // 下载最新版
-            loginListener.onFailure(SocialError.make(SocialError.CODE_VERSION_LOW));
+            listener.onState(null, LoginResult.failOf(target, SocialError.make(SocialError.CODE_VERSION_LOW)));
             return;
         }
-        mQQLoginHelper = new QQLoginHelper(activity, mTencentApi, loginListener);
+        mQQLoginHelper = new QQLoginHelper(act, mTencentApi, listener);
         mQQLoginHelper.login();
     }
 
@@ -197,9 +194,9 @@ public class QQPlatform extends AbsPlatform {
     private void shareOpenApp(int shareTarget, Activity activity, ShareObj obj) {
         boolean rst = SocialUtil.openApp(activity, SocialValues.QQ_PKG);
         if (rst) {
-            mOnShareListener.onSuccess(shareTarget);
+            onShareSuccess();
         } else {
-            mOnShareListener.onFailure(SocialError.make(SocialError.CODE_CANNOT_OPEN_ERROR, TAG + "#shareOpenApp#open app error"));
+            onShareFail(SocialError.make(SocialError.CODE_CANNOT_OPEN_ERROR, TAG + "#shareOpenApp#open app error"));
         }
     }
 
@@ -207,7 +204,12 @@ public class QQPlatform extends AbsPlatform {
     // 分享文字
     private void shareText(int shareTarget, Activity activity, ShareObj shareMediaObj) {
         if (shareTarget == Target.SHARE_QQ_FRIENDS) {
-            IntentShareUtil.shareQQText(activity, shareMediaObj, mTarget, mOnShareListener);
+            try {
+                IntentShareUtil.shareQQText(activity, shareMediaObj);
+            } catch (SocialError e) {
+                e.printStackTrace();
+                onShareFail(e);
+            }
         } else if (shareTarget == Target.SHARE_QQ_ZONE) {
             final Bundle params = new Bundle();
             params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzonePublish.PUBLISH_TO_QZONE_TYPE_PUBLISHMOOD);
@@ -294,9 +296,14 @@ public class QQPlatform extends AbsPlatform {
                 obj.setTargetUrl(obj.getMediaPath());
                 shareWeb(shareTarget, activity, obj);
             } else if (FileUtil.isExist(obj.getMediaPath())){
-                IntentShareUtil.shareQQVideo(activity, obj, mTarget, mOnShareListener);
+                try {
+                    IntentShareUtil.shareQQVideo(activity, obj);
+                } catch (SocialError e) {
+                    e.printStackTrace();
+                    onShareFail(e);
+                }
             } else{
-                this.mIUiListenerWrap.onError(SocialError.make(SocialError.CODE_FILE_NOT_FOUND));
+                onShareFail(SocialError.make(SocialError.CODE_FILE_NOT_FOUND));
             }
         } else if (shareTarget == Target.SHARE_QQ_ZONE) {
             // qq 空间支持本地文件发布
@@ -310,40 +317,26 @@ public class QQPlatform extends AbsPlatform {
                 params.putString(QzonePublish.PUBLISH_TO_QZONE_VIDEO_PATH, obj.getMediaPath());
                 mTencentApi.publishToQzone(activity, params, mIUiListenerWrap);
             } else {
-                this.mIUiListenerWrap.onError(SocialError.make(SocialError.CODE_FILE_NOT_FOUND));
+                onShareFail(SocialError.make(SocialError.CODE_FILE_NOT_FOUND));
             }
         }
     }
 
     private class IUiListenerWrap implements IUiListener {
 
-        private OnShareListener listener;
-
-        IUiListenerWrap(OnShareListener listener) {
-            this.listener = listener;
-        }
-
         @Override
         public void onComplete(Object o) {
-            if (listener != null)
-                listener.onSuccess(mTarget);
+            onShareSuccess();
         }
 
         @Override
         public void onError(UiError uiError) {
-            if (listener != null)
-                listener.onFailure(SocialError.make(SocialError.CODE_SDK_ERROR, TAG + "#IUiListenerWrap#分享失败 " + parseUiError(uiError)));
-        }
-
-        public void onError(SocialError e) {
-            if (listener != null)
-                listener.onFailure(e);
+            onShareFail(SocialError.make(SocialError.CODE_SDK_ERROR, TAG + "#IUiListenerWrap#分享失败 " + parseUiError(uiError)));
         }
 
         @Override
         public void onCancel() {
-            if (listener != null)
-                listener.onCancel();
+            onShareCancel();
         }
     }
 

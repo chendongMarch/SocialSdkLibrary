@@ -2,6 +2,8 @@ package com.babypat;
 
 import android.Manifest;
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,6 +12,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +29,7 @@ import com.zfy.social.core.listener.OnLoginStateListener;
 import com.zfy.social.core.listener.OnShareStateListener;
 import com.zfy.social.core.manager.LoginManager;
 import com.zfy.social.core.manager.ShareManager;
+import com.zfy.social.core.model.LoginObj;
 import com.zfy.social.core.model.LoginResult;
 import com.zfy.social.core.model.ShareObj;
 import com.zfy.social.core.model.ShareResult;
@@ -44,6 +48,7 @@ public class TestActivity extends AppCompatActivity {
     @BindView(R.id.switch_btn) Switch mSwitchBtn;
     @BindView(R.id.tv_info_display) TextView mInfoTv;
     @BindView(R.id.tab_ly) TabLayout mTabLayout;
+    @BindView(R.id.code_iv) ImageView mCodeIv;
 
     private String localImagePath;
     private String netVideoPath;
@@ -135,6 +140,15 @@ public class TestActivity extends AppCompatActivity {
                         break;
                     case LoginResult.STATE_CANCEL:
                         showMsg("登录取消");
+                        break;
+                    case LoginResult.STATE_WX_CODE_RECEIVE:
+                        String wxCodePath = result.wxCodePath;
+                        Bitmap bitmap = BitmapFactory.decodeFile(wxCodePath);
+                        mCodeIv.setImageBitmap(bitmap);
+                        showMsg("二维码已更新");
+                        break;
+                    case LoginResult.STATE_WX_CODE_SCANNED:
+                        showMsg("用户已扫码");
                         break;
                 }
             }
@@ -264,6 +278,7 @@ public class TestActivity extends AppCompatActivity {
             R.id.btn_share_email,
             R.id.btn_share_net_img,
             R.id.huawei_btn,
+            R.id.btn_login_scan,
     })
     public void clickBtn(View view) {
         if (!isInit) {
@@ -272,6 +287,17 @@ public class TestActivity extends AppCompatActivity {
         }
         initObj();
         switch (view.getId()) {
+            case R.id.btn_login_scan:
+                LoginObj obj = new LoginObj();
+
+                obj.setAppSecret("0a3cb007291d0e59834ee3654f499171");
+                obj.setNoncestr("3611cdc33b794c7c92a49ca45bdfab2d");
+                obj.setTimestamp("1560416904");
+                obj.setSignature("b28f69426f3b3874d89718c8ba792caa4a0a1bcc");
+                obj.setScope(SocialValues.WX_SCOPE);
+
+                LoginManager.login(mActivity, Target.LOGIN_WX_SCAN, obj, mOnLoginListener);
+                break;
             case R.id.huawei_btn:
                 LoginManager.login(mActivity, HuaweiPlatform.LOGIN_HUAWEI, mOnLoginListener);
                 break;

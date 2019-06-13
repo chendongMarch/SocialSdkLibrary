@@ -10,7 +10,7 @@ import com.sina.weibo.sdk.auth.WbConnectErrorMessage;
 import com.sina.weibo.sdk.auth.sso.SsoHandler;
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.exception.SocialError;
-import com.zfy.social.core.listener.OnLoginListener;
+import com.zfy.social.core.listener.OnLoginStateListener;
 import com.zfy.social.core.listener.Recyclable;
 import com.zfy.social.core.model.LoginResult;
 import com.zfy.social.core.model.token.AccessToken;
@@ -31,7 +31,7 @@ class WbLoginHelper implements Recyclable {
     public static final String TAG = WbLoginHelper.class.getSimpleName();
 
     private int mLoginTarget;
-    private OnLoginListener mOnLoginListener;
+    private OnLoginStateListener mOnLoginListener;
     private SsoHandler      mSsoHandler;
 
     WbLoginHelper(Activity context) {
@@ -49,20 +49,20 @@ class WbLoginHelper implements Recyclable {
             @Override
             public void onSuccess(@NonNull WbUser user) {
                 SocialUtil.e(TAG, JsonUtil.getObject2Json(user));
-                mOnLoginListener.onSuccess(LoginResult.successOf(mLoginTarget, user, new SinaAccessToken(token)));
+                mOnLoginListener.onState(null, LoginResult.successOf(mLoginTarget, user, new SinaAccessToken(token)));
             }
 
             @Override
             public void onFailure(SocialError e) {
-                mOnLoginListener.onFailure(e);
+                mOnLoginListener.onState(null, LoginResult.failOf(e));
             }
         });
     }
 
-    public void login(Activity activity, final OnLoginListener loginListener) {
-        if (loginListener == null)
+    public void login(Activity activity, final OnLoginStateListener listener) {
+        if (listener == null)
             return;
-        this.mOnLoginListener = loginListener;
+        mOnLoginListener = listener;
         justAuth(activity, new WbAuthListener() {
             @Override
             public void onSuccess(Oauth2AccessToken oauth2AccessToken) {
@@ -71,12 +71,12 @@ class WbLoginHelper implements Recyclable {
 
             @Override
             public void cancel() {
-                loginListener.onCancel();
+                listener.onState(null, LoginResult.cancelOf());
             }
 
             @Override
             public void onFailure(WbConnectErrorMessage msg) {
-                loginListener.onFailure(SocialError.make(SocialError.CODE_SDK_ERROR, TAG + "#login#connect error," + msg.getErrorCode() + " " + msg.getErrorMessage()));
+                listener.onState(null, LoginResult.failOf(SocialError.make(SocialError.CODE_SDK_ERROR, TAG + "#login#connect error," + msg.getErrorCode() + " " + msg.getErrorMessage())));
             }
         });
     }

@@ -9,8 +9,8 @@ import android.content.Intent;
 
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.exception.SocialError;
-import com.zfy.social.core.listener.OnLoginListener;
 import com.zfy.social.core.listener.OnLoginStateListener;
+import com.zfy.social.core.model.LoginObj;
 import com.zfy.social.core.model.LoginResult;
 import com.zfy.social.core.model.token.AccessToken;
 import com.zfy.social.core.platform.IPlatform;
@@ -33,28 +33,38 @@ public class LoginManager {
     /**
      * 发起登录
      *
-     * @param activity 发起登录的 activity
+     * @param act 发起登录的 activity
      * @param target   目标平台
      * @param listener 回调
      */
-    public static void login(
-            final Activity activity,
-            int target,
-            final OnLoginStateListener listener
-    ) {
+    public static void login(Activity act, int target, OnLoginStateListener listener) {
+        login(act, target, null, listener);
+    }
+
+    /**
+     * 发起登录
+     *
+     * @param act      发起登录的 activity
+     * @param target   目标平台
+     * @param listener 回调
+     */
+    public static void login(Activity act, int target, LoginObj obj, OnLoginStateListener listener) {
         if (sMgr != null) {
             sMgr.onHostActivityDestroy();
         }
+
         if (sMgr == null) {
             sMgr = new _InternalMgr();
         }
-        sMgr.preLogin(activity, target, listener);
+        sMgr.preLogin(act, target, obj, listener);
     }
+
 
     public static void clear() {
         if (sMgr != null) {
             sMgr.onHostActivityDestroy();
         }
+        GlobalPlatform.release(null);
     }
 
     /**
@@ -90,6 +100,7 @@ public class LoginManager {
         private LoginManager.OnLoginListenerWrap wrapListener;
 
         private int currentTarget;
+        private LoginObj currentObj;
 
         private WeakReference<Activity> fakeActivity;
         private WeakReference<Activity> originActivity;
@@ -97,26 +108,27 @@ public class LoginManager {
         @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         public void onHostActivityDestroy() {
             onProcessFinished();
-            SocialUtil.e(TAG, "页面销毁，回收资源");
         }
 
         // 流程结束，回收资源
         private void onProcessFinished() {
             if (wrapListener != null) {
-                wrapListener.clear();
+                wrapListener.listener = null;
             }
             if (fakeActivity != null) {
                 GlobalPlatform.release(fakeActivity.get());
                 fakeActivity.clear();
+            } else {
+                GlobalPlatform.release(null);
             }
             if (originActivity != null) {
                 originActivity.clear();
             }
             currentTarget = -1;
+            currentObj = null;
             stateListener = null;
             wrapListener = null;
             fakeActivity = null;
-            SocialUtil.e(TAG, "分享过程结束，回收资源");
         }
 
 
@@ -129,20 +141,30 @@ public class LoginManager {
         private void preLogin(
                 final Activity activity,
                 final @Target.LoginTarget int target,
-                final OnLoginStateListener listener
-        ) {
+                final LoginObj obj,
+                final OnLoginStateListener listener) {
 
+            currentObj = obj;
             stateListener = listener;
             currentTarget = target;
             originActivity = new WeakReference<>(activity);
             IPlatform platform = GlobalPlatform.newPlatformByTarget(activity, target);
+            GlobalPlatform.savePlatform(platform);
+
+
+            if (target == Target.LOGIN_WX_SCAN) {
+                wrapListener = new OnLoginListenerWrap(stateListener);
+                GlobalPlatform.getCurrentPlatform().login(activity, target, obj, wrapListener);
+                return;
+            }
+
             if (!platform.isInstall(activity)) {
                 stateListener.onState(originActivity.get(), LoginResult.failOf(target, SocialError.make(SocialError.CODE_NOT_INSTALL)));
                 return;
             }
+
             Intent intent = new Intent(activity, platform.getUIKitClazz());
             intent.putExtra(GlobalPlatform.KEY_ACTION_TYPE, GlobalPlatform.ACTION_TYPE_LOGIN);
-            intent.putExtra(GlobalPlatform.KEY_LOGIN_TARGET, target);
             activity.startActivity(intent);
             activity.overridePendingTransition(0, 0);
 
@@ -151,47 +173,46 @@ public class LoginManager {
         /**
          * 激活登录，由透明 Activity 真正的激活登录
          *
-         * @param activity 透明 activity
+         * @param act 透明 activity
          */
-        private void postLogin(Activity activity) {
+        private void postLogin(Activity act) {
             stateListener.onState(originActivity.get(), LoginResult.stateOf(LoginResult.STATE_ACTIVE, currentTarget));
-            fakeActivity = new WeakReference<>(activity);
-            Intent intent = activity.getIntent();
-            int actionType = intent.getIntExtra(GlobalPlatform.KEY_ACTION_TYPE, GlobalPlatform.INVALID_PARAM);
-            int loginTarget = intent.getIntExtra(GlobalPlatform.KEY_LOGIN_TARGET, GlobalPlatform.INVALID_PARAM);
-            if (actionType == GlobalPlatform.INVALID_PARAM) {
-                SocialUtil.e(TAG, "_actionLogin actionType无效");
+            fakeActivity = new WeakReference<>(act);
+
+            if (currentTarget == -1) {
+                stateListener.onState(act,
+                        LoginResult.failOf(currentTarget,
+                                SocialError.make(SocialError.CODE_COMMON_ERROR, "login target error")));
                 return;
             }
-            if (actionType != GlobalPlatform.ACTION_TYPE_LOGIN) {
-                return;
-            }
-            if (loginTarget == GlobalPlatform.INVALID_PARAM) {
-                SocialUtil.e(TAG, "shareTargetType无效");
-                return;
-            }
+
             if (stateListener == null) {
-                SocialUtil.e(TAG, "请设置 OnLoginListener");
+                stateListener.onState(act,
+                        LoginResult.failOf(currentTarget,
+                                SocialError.make(SocialError.CODE_COMMON_ERROR, "没有设置 login listener")));
                 return;
             }
             if (GlobalPlatform.getCurrentPlatform() == null) {
+                stateListener.onState(act,
+                        LoginResult.failOf(currentTarget,
+                                SocialError.make(SocialError.CODE_COMMON_ERROR, "创建的 platform 失效")));
                 return;
             }
+
             wrapListener = new OnLoginListenerWrap(stateListener);
-            GlobalPlatform.getCurrentPlatform().login(activity, wrapListener);
+            GlobalPlatform.getCurrentPlatform().login(act, currentTarget, currentObj, wrapListener);
         }
     }
 
 
     // 用于分享结束后，回收资源
-    private static class OnLoginListenerWrap implements OnLoginListener {
+    private static class OnLoginListenerWrap implements OnLoginStateListener {
 
         private OnLoginStateListener listener;
 
         OnLoginListenerWrap(OnLoginStateListener listener) {
             this.listener = listener;
         }
-
 
         private Activity getAct() {
             if (sMgr != null && sMgr.originActivity != null) {
@@ -200,51 +221,23 @@ public class LoginManager {
             return null;
         }
 
-
-
         @Override
-        public void onStart() {
+        public void onState(Activity activity, LoginResult result) {
             if (listener != null) {
-                listener.onState(getAct(), LoginResult.startOf(sMgr.currentTarget));
-            }
-        }
-
-
-        @Override
-        public void onSuccess(LoginResult result) {
-            if (listener != null) {
+                result.target = sMgr.currentTarget;
                 listener.onState(getAct(), result);
-                listener.onState(getAct(), LoginResult.completeOf(sMgr.currentTarget));
             }
-            clear();
-            sMgr.onProcessFinished();
-        }
 
-        @Override
-        public void onCancel() {
-            if (listener != null) {
-                listener.onState(getAct(), LoginResult.cancelOf(sMgr.currentTarget));
-                listener.onState(getAct(), LoginResult.completeOf(sMgr.currentTarget));
+            if (result.state == LoginResult.STATE_SUCCESS
+                    || result.state == LoginResult.STATE_FAIL
+                    || result.state == LoginResult.STATE_CANCEL) {
+                if (listener != null) {
+                    listener.onState(getAct(), LoginResult.completeOf(sMgr.currentTarget));
+                }
+                listener = null;
+                clear();
             }
-            clear();
-            sMgr.onProcessFinished();
-        }
-
-
-        @Override
-        public void onFailure(SocialError e) {
-            if (listener != null) {
-                listener.onState(getAct(), LoginResult.failOf(sMgr.currentTarget, e));
-                listener.onState(getAct(), LoginResult.completeOf(sMgr.currentTarget));
-            }
-            clear();
-            sMgr.onProcessFinished();
-        }
-
-        private void clear() {
-            listener = null;
         }
     }
-
 
 }

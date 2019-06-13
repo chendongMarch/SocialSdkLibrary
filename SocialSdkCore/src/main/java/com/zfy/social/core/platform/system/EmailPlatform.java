@@ -58,7 +58,7 @@ public class EmailPlatform extends SystemPlatform {
             intent.putExtra(Intent.EXTRA_TEXT, mailBody);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             activity.startActivity(intent);
-            mOnShareListener.onSuccess(mTarget);
+            onShareSuccess();
         }
     }
 }

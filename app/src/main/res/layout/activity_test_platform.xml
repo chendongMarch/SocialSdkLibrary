@@ -89,6 +89,14 @@
                 android:layout_height="wrap_content"
                 android:text="登录"/>
 
+
+            <Button
+                android:id="@+id/btn_login_scan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="扫码登录"/>
+
+
             <Button
                 android:id="@+id/btn_share_text"
                 android:layout_width="wrap_content"
@@ -159,5 +167,12 @@
                 android:text="粘贴板"/>
 
         </com.google.android.flexbox.FlexboxLayout>
+
+
+        <ImageView
+            android:id="@+id/code_iv"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:background="@color/colorPrimary"/>
     </LinearLayout>
 </ScrollView>

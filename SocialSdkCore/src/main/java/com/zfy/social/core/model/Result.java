@@ -17,6 +17,9 @@ public class Result {
     public static final int STATE_COMPLETE = 5;
     public static final int STATE_ACTIVE = 6;
 
+    public static final int STATE_WX_CODE_RECEIVE = 7;
+    public static final int STATE_WX_CODE_SCANNED = 8;
+
     public int state;
     public int target;
     public SocialError error;
@@ -24,6 +27,10 @@ public class Result {
     public Result(int state, int target) {
         this.state = state;
         this.target = target;
+    }
+
+    public Result(int state) {
+        this.state = state;
     }
 
 }

@@ -53,14 +53,14 @@ public class SmsPlatform extends SystemPlatform {
             String smsPhone = SocialUtil.notNull(obj.getSmsPhone());
             String smsBody = SocialUtil.notNull(obj.getSmsBody());
             if (TextUtils.isEmpty(smsPhone)) {
-                mOnShareListener.onFailure(SocialError.make("手机号为空"));
+                onShareFail(SocialError.make("手机号为空"));
                 return;
             }
             Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + smsPhone));
             intent.putExtra("sms_body", smsBody);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             activity.startActivity(intent);
-            mOnShareListener.onSuccess(shareTarget);
+            onShareSuccess();
         }
     }
 }
