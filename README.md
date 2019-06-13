@@ -21,8 +21,6 @@
 
 <img  style="margin-right:20px;height:20px"  src="https://img.shields.io/github/forks/chendongMarch/SocialSdkLibrary.svg"/>
 
-<img style="margin-right:20px;height:20px" src="https://badge.juejin.im/entry/5a793a405188257a82111092/likes.svg?style=flat-square"/>
-
 </div>
 
 <br/>
@@ -106,7 +104,7 @@ allprojects {
 }
 ```
 
-**STEP2**: 配置参数，注意与 `android` 同级
+**STEP2**: 配置参数
 
 > project / local.properties
 
@@ -164,6 +162,12 @@ socialsdk {
 
 ```java
 SocialOptions options = new SocialOptions.Builder(this)
+        // 之前在 gradle 配置过了，也同样支持代码设置，代码设置优先级更高
+        .qq("qqAppId")
+        .wx("wxAppId","wxAppSecret")
+        .wb("wbAppId")
+        .dd("ddAppId")
+
         // 调试模式，开启 log 输出
         .debug(true)
         // 加载缩略图失败时，降级使用资源图
@@ -203,9 +207,10 @@ SocialSdk.addPlatform(new HuaweiPlatform.Factory());
 
 ```java
 // 3个平台
-Target.LOGIN_QQ;
-Target.LOGIN_WX;
-Target.LOGIN_WB;
+Target.LOGIN_QQ; // QQ 登录
+Target.LOGIN_WX; // 微信 登录
+Target.LOGIN_WX_SCAN; // 微信扫码 登录
+Target.LOGIN_WB;  // 微博 登录
 ```
 
 登录将会返回 `LoginResult`， 其中主要包括登录类型，基本用户信息，令牌信息 3 部分；
@@ -224,6 +229,8 @@ LoginResult {
     public AccessToken accessToken;
     // 授权码，如果 onlyAuthCode 为 true, 将会返回它
     public String wxAuthCode;
+    // 扫码登录二维码文件路径
+    public String wxCodePath;
 }
 ```
 登录时需要设置登录回调：

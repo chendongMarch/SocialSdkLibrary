@@ -139,24 +139,24 @@ class WxLoginHelper {
                         break;
                     case WechatAuth_Err_NormalErr:
                         mListener.onState(null,
-                                LoginResult.failOf(SocialError.make(SocialError.CODE_COMMON_ERROR, "微信代码登录错误[NORMAL]")));
+                                LoginResult.failOf(SocialError.make(SocialError.CODE_COMMON_ERROR, "微信扫码登录错误[NORMAL]")));
                         break;
                     case WechatAuth_Err_NetworkErr:
                         mListener.onState(null,
-                                LoginResult.failOf(SocialError.make(SocialError.CODE_COMMON_ERROR, "微信代码登录错误[NETWORK]")));
+                                LoginResult.failOf(SocialError.make(SocialError.CODE_COMMON_ERROR, "微信扫码登录错误[NETWORK]")));
                         break;
                     case WechatAuth_Err_JsonDecodeErr:
                         mListener.onState(null,
-                                LoginResult.failOf(SocialError.make(SocialError.CODE_COMMON_ERROR, "微信代码登录错误[JSON]")));
+                                LoginResult.failOf(SocialError.make(SocialError.CODE_COMMON_ERROR, "微信扫码登录错误[JSON]")));
                         break;
 
                     case WechatAuth_Err_Timeout:
                         mListener.onState(null,
-                                LoginResult.failOf(SocialError.make(SocialError.CODE_COMMON_ERROR, "微信代码登录错误[TIMEOUT]")));
+                                LoginResult.failOf(SocialError.make(SocialError.CODE_COMMON_ERROR, "微信扫码登录错误[TIMEOUT]")));
                         break;
                     case WechatAuth_Err_Auth_Stopped:
                         mListener.onState(null,
-                                LoginResult.failOf(SocialError.make(SocialError.CODE_COMMON_ERROR, "微信代码登录错误[STOP]")));
+                                LoginResult.failOf(SocialError.make(SocialError.CODE_COMMON_ERROR, "微信扫码登录错误[STOP]")));
                         break;
                 }
             }

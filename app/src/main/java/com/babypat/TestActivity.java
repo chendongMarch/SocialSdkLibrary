@@ -366,6 +366,12 @@ public class TestActivity extends AppCompatActivity {
 
     private void initSocialSDKSample() {
         SocialOptions options = new SocialOptions.Builder(this)
+
+                .qq("qqAppId")
+                .wx("wxAppId","wxAppSecret")
+                .wb("wbAppId")
+                .dd("ddAppId")
+
                 // 调试模式，开启 log 输出
                 .debug(true)
                 // 加载缩略图失败时，降级使用资源图
