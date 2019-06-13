@@ -89,7 +89,7 @@ public class ShareManager {
         private CancellationTokenSource cts;
 
         private WeakReference<Activity> fakeActivity;
-        private WeakReference<Activity> originActivity;
+        private WeakReference<Activity> oriAct;
 
         @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         public void onHostActivityDestroy() {
@@ -109,8 +109,8 @@ public class ShareManager {
             } else {
                 GlobalPlatform.release(null);
             }
-            if (originActivity != null) {
-                originActivity.clear();
+            if (oriAct != null) {
+                oriAct.clear();
             }
             currentTarget = -1;
             cts = null;
@@ -128,30 +128,32 @@ public class ShareManager {
         /**
          * 开始分享，供外面调用
          *
-         * @param activity    发起分享的 activity
+         * @param act    发起分享的 activity
          * @param shareTarget 分享目标
          * @param shareObj    分享对象
          * @param listener    分享监听
          */
         private void preShare(
-                final Activity activity,
+                final Activity act,
                 @Target.ShareTarget final int shareTarget,
                 final ShareObj shareObj,
                 final OnShareStateListener listener
         ) {
+
+            listener.onState(oriAct.get(), ShareResult.startOf(shareTarget, currentObj));
+
             if (cts != null) {
                 cts.cancel();
             }
             cts = new CancellationTokenSource();
-            if (activity instanceof LifecycleOwner) {
-                ((LifecycleOwner) activity).getLifecycle().addObserver(this);
+            if (act instanceof LifecycleOwner) {
+                ((LifecycleOwner) act).getLifecycle().addObserver(this);
             }
-            originActivity = new WeakReference<>(activity);
+            oriAct = new WeakReference<>(act);
             currentObj = shareObj;
             currentTarget = -1;
-            listener.onState(originActivity.get(), ShareResult.startOf(shareTarget, currentObj));
             Task.callInBackground(() -> {
-                currentObj = execInterceptors(activity, currentTarget, currentObj);
+                currentObj = execInterceptors(act, currentTarget, currentObj);
                 return currentObj;
             }, cts.getToken()).continueWith(task -> {
                 if (task.isFaulted()) {
@@ -160,7 +162,7 @@ public class ShareManager {
                 if (task.getResult() == null) {
                     throw SocialError.make(SocialError.CODE_COMMON_ERROR, "ShareManager#preShare Result is Null");
                 }
-                preDoShare(activity, shareTarget, task.getResult(), listener);
+                preDoShare(act, shareTarget, task.getResult(), listener);
                 return true;
             }, Task.UI_THREAD_EXECUTOR).continueWith(task -> {
                 if (task.isFaulted()) {
@@ -171,7 +173,7 @@ public class ShareManager {
                     } else {
                         error = SocialError.make(SocialError.CODE_COMMON_ERROR, "ShareManager#preShare() error", exception);
                     }
-                    listener.onState(originActivity.get(), ShareResult.failOf(shareTarget, currentObj, error));
+                    listener.onState(oriAct.get(), ShareResult.failOf(shareTarget, currentObj, error));
                 }
                 return true;
             });
@@ -199,13 +201,13 @@ public class ShareManager {
                 SocialError error = (e instanceof SocialError)
                         ? (SocialError) e
                         : SocialError.make(SocialError.CODE_COMMON_ERROR, "ShareManager#preDoShare check obj", e);
-                stateListener.onState(originActivity.get(), ShareResult.failOf(shareTarget, shareObj, error));
+                stateListener.onState(oriAct.get(), ShareResult.failOf(shareTarget, shareObj, error));
                 return;
             }
 
             IPlatform platform = GlobalPlatform.newPlatformByTarget(activity, shareTarget);
             if (!platform.isInstall(activity)) {
-                stateListener.onState(originActivity.get(), ShareResult.failOf(shareTarget, shareObj, SocialError.make(SocialError.CODE_NOT_INSTALL)));
+                stateListener.onState(oriAct.get(), ShareResult.failOf(shareTarget, shareObj, SocialError.make(SocialError.CODE_NOT_INSTALL)));
                 return;
             }
             if (platform.getUIKitClazz() == null) {
@@ -228,7 +230,7 @@ public class ShareManager {
          * @param act 透明 activity
          */
         private void postShare(Activity act) {
-            stateListener.onState(originActivity.get(), ShareResult.stateOf(LoginResult.STATE_ACTIVE, currentTarget, currentObj));
+            stateListener.onState(oriAct.get(), ShareResult.stateOf(LoginResult.STATE_ACTIVE, currentTarget, currentObj));
             fakeActivity = new WeakReference<>(act);
             if (currentTarget == -1) {
                 SocialUtil.e(TAG, "shareTarget Type 无效");
@@ -267,9 +269,9 @@ public class ShareManager {
         private void onUIDestroy() {
             if (currentTarget != -1 && stateListener != null) {
                 if (SocialSdk.opts().isShareSuccessIfStay()) {
-                    stateListener.onState(originActivity.get(), ShareResult.successOf(currentTarget, currentObj));
+                    stateListener.onState(oriAct.get(), ShareResult.successOf(currentTarget, currentObj));
                 } else {
-                    stateListener.onState(originActivity.get(), ShareResult.failOf(currentTarget, currentObj, SocialError.make(SocialError.CODE_STAY_OTHER_APP)));
+                    stateListener.onState(oriAct.get(), ShareResult.failOf(currentTarget, currentObj, SocialError.make(SocialError.CODE_STAY_OTHER_APP)));
                 }
             }
         }
@@ -323,8 +325,8 @@ public class ShareManager {
         }
 
         private Activity getAct() {
-            if (sMgr != null && sMgr.originActivity != null) {
-                return sMgr.originActivity.get();
+            if (sMgr != null && sMgr.oriAct != null) {
+                return sMgr.oriAct.get();
             }
             return null;
         }

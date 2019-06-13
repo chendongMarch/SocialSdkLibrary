@@ -31,9 +31,6 @@ public class LoginResult extends Result {
         super(state, -1);
     }
 
-    public static LoginResult startOf(int target) {
-        return new LoginResult(STATE_START, target);
-    }
 
     public static LoginResult successOf(int target, SocialUser baseUser, AccessToken baseToken) {
         LoginResult result = new LoginResult(STATE_SUCCESS, target);
