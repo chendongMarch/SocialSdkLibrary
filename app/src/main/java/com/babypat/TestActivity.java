@@ -367,10 +367,6 @@ public class TestActivity extends AppCompatActivity {
     private void initSocialSDKSample() {
         SocialOptions options = new SocialOptions.Builder(this)
 
-                .qq("qqAppId")
-                .wx("wxAppId","wxAppSecret")
-                .wb("wbAppId")
-                .dd("ddAppId")
 
                 // 调试模式，开启 log 输出
                 .debug(true)

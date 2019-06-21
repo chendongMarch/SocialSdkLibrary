@@ -140,7 +140,7 @@ public class ShareManager {
                 final OnShareStateListener listener
         ) {
 
-            listener.onState(oriAct.get(), ShareResult.startOf(shareTarget, currentObj));
+            listener.onState(act, ShareResult.startOf(shareTarget, currentObj));
 
             if (cts != null) {
                 cts.cancel();

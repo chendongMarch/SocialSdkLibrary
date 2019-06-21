@@ -135,40 +135,41 @@ public class LoginManager {
         /**
          * 开始登录分享，供外面调用
          *
-         * @param activity 发起登录的 activity
+         * @param act 发起登录的 activity
          * @param listener 分享监听
+         * @param obj 登录参数
          */
         private void preLogin(
-                final Activity activity,
+                final Activity act,
                 final @Target.LoginTarget int target,
                 final LoginObj obj,
                 final OnLoginStateListener listener) {
 
-            listener.onState(activity, LoginResult.stateOf(Result.STATE_START));
+            listener.onState(act, LoginResult.stateOf(Result.STATE_START));
 
             currentObj = obj;
             stateListener = listener;
             currentTarget = target;
-            originActivity = new WeakReference<>(activity);
-            IPlatform platform = GlobalPlatform.newPlatformByTarget(activity, target);
+            originActivity = new WeakReference<>(act);
+            IPlatform platform = GlobalPlatform.newPlatformByTarget(act, target);
             GlobalPlatform.savePlatform(platform);
 
 
             if (target == Target.LOGIN_WX_SCAN) {
                 wrapListener = new OnLoginListenerWrap(stateListener);
-                GlobalPlatform.getCurrentPlatform().login(activity, target, obj, wrapListener);
+                GlobalPlatform.getCurrentPlatform().login(act, target, obj, wrapListener);
                 return;
             }
 
-            if (!platform.isInstall(activity)) {
+            if (!platform.isInstall(act)) {
                 stateListener.onState(originActivity.get(), LoginResult.failOf(target, SocialError.make(SocialError.CODE_NOT_INSTALL)));
                 return;
             }
 
-            Intent intent = new Intent(activity, platform.getUIKitClazz());
+            Intent intent = new Intent(act, platform.getUIKitClazz());
             intent.putExtra(GlobalPlatform.KEY_ACTION_TYPE, GlobalPlatform.ACTION_TYPE_LOGIN);
-            activity.startActivity(intent);
-            activity.overridePendingTransition(0, 0);
+            act.startActivity(intent);
+            act.overridePendingTransition(0, 0);
 
         }
 

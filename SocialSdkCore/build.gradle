@@ -10,7 +10,7 @@ publish {
     userOrg = 'zfy'
     groupId = 'com.zfy'
     artifactId = 'social-sdk-core'
-    publishVersion = '1.0.1'
+    publishVersion = '1.0.3'
     desc = 'SocialSdkCore'
     website = 'https://github.com/chendongMarch/SocialSdkLibrary'
 }
