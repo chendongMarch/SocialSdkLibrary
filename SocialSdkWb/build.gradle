@@ -4,7 +4,7 @@ dependencies {
     // compileOnly libs.social_core
     compileOnly project(':SocialSdkCore')
     compileOnly libs.appcompat_v7
-    implementation 'com.sina.weibo.sdk:core:4.3.7:openDefaultRelease@aar' // 微博
+    implementation 'com.sina.weibo.sdk:core:4.3.9:openDefaultRelease@aar' // 微博
 }
 
 apply plugin: 'bintray-release'
