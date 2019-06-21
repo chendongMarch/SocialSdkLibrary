@@ -61,6 +61,8 @@ public interface IPlatform extends Recyclable {
      *
      * @param act        act
      * @param listener 登录回调
+     * @param obj 登录数据
+     * @param target target
      */
     void login(Activity act, int target, LoginObj obj, OnLoginStateListener listener);
 
