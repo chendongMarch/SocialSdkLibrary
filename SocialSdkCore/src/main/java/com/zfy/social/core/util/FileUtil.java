@@ -162,7 +162,7 @@ public class FileUtil {
     }
 
     public static File saveWxCode2File(byte[] buffer) throws IOException {
-        File saveFile = new File(SocialSdk.opts().getCacheDir(), "code.jpg");
+        File saveFile = new File(SocialSdk.opts().getCacheDir(), System.currentTimeMillis() + "_code.jpg");
         Bitmap bitmap = BitmapFactory.decodeByteArray(buffer, 0, buffer.length);
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(saveFile));
         BitmapUtil.recyclerBitmaps(bitmap);

@@ -3,7 +3,7 @@
 
 ![](http://cdn1.showjoy.com/shop/images/20180828/MLI1YQGFQLZBRO3VKH6U1535432744013.png)
 
-> 最新版本(1.0.1)   Easier 、Lighter 、 More Business-Oriented
+> 最新版本(1.0.5)   Easier 、Lighter 、 More Business-Oriented
 
 以更简单、更轻量、更加面向业务需求为设计目标，提供 **微博**、**微信**、**QQ**、**Tim**、**QQ 轻聊版**、**钉钉** 的登陆分享功能支持；
 
@@ -15,7 +15,7 @@
 
 <img  style="margin-right:20px;height:20px"  src="https://img.shields.io/circleci/project/github/badges/shields/master.svg"/>
 
-<img  style="margin-right:20px;height:20px"  src="https://img.shields.io/badge/version-1.0.1-blue.svg?maxAge=2592000"/>
+<img  style="margin-right:20px;height:20px"  src="https://img.shields.io/badge/version-1.0.5-blue.svg?maxAge=2592000"/>
 
 <img style="margin-right:20px;height:20px"  src="https://img.shields.io/github/stars/chendongMarch/SocialSdkLibrary.svg"/>
 

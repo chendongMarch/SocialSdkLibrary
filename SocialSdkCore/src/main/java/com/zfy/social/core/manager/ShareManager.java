@@ -140,6 +140,13 @@ public class ShareManager {
                 final OnShareStateListener listener
         ) {
 
+            if (act instanceof LifecycleOwner) {
+                Lifecycle lifecycle = ((LifecycleOwner) act).getLifecycle();
+                if (lifecycle != null) {
+                    lifecycle.addObserver(this);
+                }
+            }
+
             listener.onState(act, ShareResult.startOf(shareTarget, currentObj));
 
             if (cts != null) {
@@ -193,6 +200,7 @@ public class ShareManager {
                 ShareObj shareObj,
                 OnShareStateListener onShareListener
         ) {
+
             stateListener = onShareListener;
             try {
                 ShareObjCheckUtil.checkShareObjParams(activity, shareTarget, shareObj);

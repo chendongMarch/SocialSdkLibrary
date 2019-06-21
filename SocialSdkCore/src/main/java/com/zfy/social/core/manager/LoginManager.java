@@ -3,6 +3,7 @@ package com.zfy.social.core.manager;
 import android.app.Activity;
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
+import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.OnLifecycleEvent;
 import android.content.Context;
 import android.content.Intent;
@@ -46,6 +47,7 @@ public class LoginManager {
      *
      * @param act      发起登录的 activity
      * @param target   目标平台
+     * @param obj 登录对象
      * @param listener 回调
      */
     public static void login(Activity act, int target, LoginObj obj, OnLoginStateListener listener) {
@@ -145,6 +147,12 @@ public class LoginManager {
                 final LoginObj obj,
                 final OnLoginStateListener listener) {
 
+            if (act instanceof LifecycleOwner) {
+                Lifecycle lifecycle = ((LifecycleOwner) act).getLifecycle();
+                if (lifecycle != null) {
+                    lifecycle.addObserver(this);
+                }
+            }
             listener.onState(act, LoginResult.stateOf(Result.STATE_START));
 
             currentObj = obj;
@@ -153,7 +161,6 @@ public class LoginManager {
             originActivity = new WeakReference<>(act);
             IPlatform platform = GlobalPlatform.newPlatformByTarget(act, target);
             GlobalPlatform.savePlatform(platform);
-
 
             if (target == Target.LOGIN_WX_SCAN) {
                 wrapListener = new OnLoginListenerWrap(stateListener);
