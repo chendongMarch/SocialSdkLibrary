@@ -93,7 +93,7 @@ buildscript {
     }
     dependencies {
         // 请查看文初最新版本，这边可能忘记更新！！！
-        classpath 'com.zfy.social:social-sdk-plugin:1.0.1'
+        classpath 'com.zfy.social:social-sdk-plugin:1.0.6'
     }
 }
 
