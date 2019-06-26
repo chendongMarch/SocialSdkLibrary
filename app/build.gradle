@@ -49,7 +49,7 @@ def getLocalProperties() {
 Properties prop = getLocalProperties()
 socialsdk {
     debug true
-    local false // 使用本地依赖
+    local true // 使用本地依赖
     wx {
         appId = prop.get('wxAppId')
         appSecret = prop.get('wxAppSecret')
@@ -73,11 +73,11 @@ dependencies {
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-//     implementation project(':SocialSdkCore')
-//     implementation project(':SocialSdkWx')
-//     implementation project(':SocialSdkWb')
-//     implementation project(':SocialSdkQq')
-//     implementation project(':SocialSdkDd')
+     implementation project(':SocialSdkCore')
+     implementation project(':SocialSdkWx')
+     implementation project(':SocialSdkWb')
+     implementation project(':SocialSdkQq')
+     implementation project(':SocialSdkDd')
 
 
     implementation libs.flexbox

@@ -165,10 +165,10 @@ public class TestActivity extends AppCompatActivity {
 
         textObj = ShareObj.buildTextObj("分享文字", "summary");
         imageObj = ShareObj.buildImageObj(localImagePath);
-        netImageObj = ShareObj.buildImageObj(netImagePath);
+        netImageObj = ShareObj.buildImageObj("");
         imageGifObj = ShareObj.buildImageObj(localGifPath);
         appObj = ShareObj.buildAppObj("分享app", "summary", localImagePath, targetUrl);
-        webObj = ShareObj.buildWebObj("分享web", "summary", netImagePath, targetUrl);
+        webObj = ShareObj.buildWebObj("分享web", "summary", "", targetUrl);
 //        webObj = ShareObj.buildWebObj(title, desc, share_img, share_url);
         videoObj = ShareObj.buildVideoObj("分享视频", "summary", localImagePath, targetUrl, netVideoPath, 10);
         videoLocalObj = ShareObj.buildVideoObj("分享本地视频", "summary", localImagePath, targetUrl, localVideoPath, 0);

@@ -41,7 +41,6 @@ public class ShareManager {
 
     private static _InternalMgr sMgr;
 
-
     // 分享
     public static void share(
             final Activity activity,
@@ -306,16 +305,25 @@ public class ShareManager {
                 return obj;
             }
             String thumbImagePath = obj.getThumbImagePath();
-            // 图片路径为网络路径，下载为本地图片
-            if (!TextUtils.isEmpty(thumbImagePath) && FileUtil.isHttpPath(thumbImagePath)) {
+            boolean imgFail = false;
+            if (TextUtils.isEmpty(obj.getThumbImagePath())) {
+                // 路径为空
+                imgFail = true;
+            } else if (FileUtil.isHttpPath(obj.getThumbImagePath())) {
+                // 路径不为空并且是网络路径
                 File file = SocialSdk.getRequestAdapter().getFile(thumbImagePath);
                 if (FileUtil.isExist(file)) {
                     obj.setThumbImagePath(file.getAbsolutePath());
-                } else if (SocialSdk.opts().getFailImgRes() > 0) {
-                    String localPath = FileUtil.mapResId2LocalPath(context, SocialSdk.opts().getFailImgRes());
-                    if (FileUtil.isExist(localPath)) {
-                        obj.setThumbImagePath(localPath);
-                    }
+                }
+            }
+            // 再次校验路径合法
+            if (TextUtils.isEmpty(obj.getThumbImagePath())) {
+                imgFail = true;
+            }
+            if (imgFail && SocialSdk.opts().getFailImgRes() > 0) {
+                String localPath = FileUtil.mapResId2LocalPath(context, SocialSdk.opts().getFailImgRes());
+                if (FileUtil.isExist(localPath)) {
+                    obj.setThumbImagePath(localPath);
                 }
             }
             return obj;
