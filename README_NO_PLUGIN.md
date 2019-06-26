@@ -9,7 +9,7 @@
 
 ```gradle
 // 依赖核心库
-implementation "com.zfy:social-sdk-core:1.0.4"
+implementation "com.zfy:social-sdk-core:1.0.5"
 // 依赖不同的平台库
 implementation "com.zfy:social-sdk-wx:1.0.2"
 implementation "com.zfy:social-sdk-dd:1.0.2"
