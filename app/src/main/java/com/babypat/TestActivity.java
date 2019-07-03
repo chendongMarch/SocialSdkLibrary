@@ -162,7 +162,6 @@ public class TestActivity extends AppCompatActivity {
         String desc = "超级火爆的真人视频交友平台，微信登录更有好礼相送";
         String share_img = "http://t1img.oss-cn-shenzhen.aliyuncs.com/Application/Meiku/Static/image/default_faceuser.png";
 
-
         textObj = ShareObj.buildTextObj("分享文字", "summary");
         imageObj = ShareObj.buildImageObj(localImagePath);
         netImageObj = ShareObj.buildImageObj("");

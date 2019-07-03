@@ -121,7 +121,6 @@ public class _SocialSdk {
     public Activity getTopActivity() {
         Activity topActivity = appLifecycle.getTopActivity();
         if (topActivity != null) {
-            Toast.makeText(topActivity, topActivity.getClass().getSimpleName(), Toast.LENGTH_SHORT).show();
         } else {
             throw new IllegalStateException("无法获取 Activity");
         }
