@@ -9,7 +9,7 @@ import com.tencent.mm.opensdk.diffdev.OAuthErrCode;
 import com.tencent.mm.opensdk.diffdev.OAuthListener;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
-import com.zfy.social.core.SocialSdk;
+import com.zfy.social.core._SocialSdk;
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.exception.SocialError;
 import com.zfy.social.core.listener.OnLoginStateListener;
@@ -127,7 +127,7 @@ class WxLoginHelper {
             public void onAuthFinish(OAuthErrCode oAuthErrCode, String authCode) {
                 switch (oAuthErrCode) {
                     case WechatAuth_Err_OK:
-                        if (SocialSdk.opts().isWxOnlyAuthCode()) {
+                        if (_SocialSdk.getInst().opts().isWxOnlyAuthCode()) {
                             mListener.onState(null, LoginResult.successOf(Target.LOGIN_WX, authCode));
                         } else {
                             getAccessTokenByCode(authCode);

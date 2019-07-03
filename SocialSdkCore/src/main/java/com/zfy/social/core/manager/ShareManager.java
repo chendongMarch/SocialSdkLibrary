@@ -9,7 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import com.zfy.social.core.SocialSdk;
+import com.zfy.social.core._SocialSdk;
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.exception.SocialError;
 import com.zfy.social.core.listener.OnShareStateListener;
@@ -41,26 +41,34 @@ public class ShareManager {
 
     private static _InternalMgr sMgr;
 
-    // 分享
+    /**
+     * 发起分享
+     *
+     * @param shareTarget 分享目标
+     * @param shareObj    分享的对象
+     * @param listener    分享监听
+     */
     public static void share(
-            final Activity activity,
-            @Target.ShareTarget final int shareTarget,
+            final int shareTarget,
             final ShareObj shareObj,
-            final OnShareStateListener listener
-    ) {
+            final OnShareStateListener listener) {
         if (sMgr != null) {
             sMgr.onHostActivityDestroy();
         }
         if (sMgr == null) {
             sMgr = new _InternalMgr();
         }
-        sMgr.preShare(activity, shareTarget, shareObj, listener);
+        sMgr.preShare(_SocialSdk.getInst().getTopActivity(), shareTarget, shareObj, listener);
     }
 
-    private static void clear() {
+    /**
+     * 手动清理引用，避免内存泄漏
+     */
+    public static void clear() {
         if (sMgr != null) {
             sMgr.onHostActivityDestroy();
         }
+        GlobalPlatform.release(null);
     }
 
     // 开始分享
@@ -101,7 +109,6 @@ public class ShareManager {
             if (cts != null) {
                 cts.cancel();
             }
-
             if (fakeActivity != null) {
                 GlobalPlatform.release(fakeActivity.get());
                 fakeActivity.clear();
@@ -120,7 +127,6 @@ public class ShareManager {
             }
             shareListener = null;
             fakeActivity = null;
-            SocialUtil.e("chendong", "分享过程结束，回收资源");
         }
 
 
@@ -134,11 +140,9 @@ public class ShareManager {
          */
         private void preShare(
                 final Activity act,
-                @Target.ShareTarget final int shareTarget,
+                final @Target.ShareTarget int shareTarget,
                 final ShareObj shareObj,
-                final OnShareStateListener listener
-        ) {
-
+                final OnShareStateListener listener) {
             if (act instanceof LifecycleOwner) {
                 Lifecycle lifecycle = ((LifecycleOwner) act).getLifecycle();
                 if (lifecycle != null) {
@@ -213,6 +217,8 @@ public class ShareManager {
             }
 
             IPlatform platform = GlobalPlatform.newPlatformByTarget(activity, shareTarget);
+            GlobalPlatform.savePlatform(platform);
+
             if (!platform.isInstall(activity)) {
                 stateListener.onState(oriAct.get(), ShareResult.failOf(shareTarget, shareObj, SocialError.make(SocialError.CODE_NOT_INSTALL)));
                 return;
@@ -222,7 +228,6 @@ public class ShareManager {
                 platform.initOnShareListener(shareListener);
                 platform.share(activity, shareTarget, shareObj);
             } else {
-                GlobalPlatform.savePlatform(platform);
                 currentTarget = shareTarget;
                 Intent intent = new Intent(activity, platform.getUIKitClazz());
                 intent.putExtra(GlobalPlatform.KEY_ACTION_TYPE, GlobalPlatform.ACTION_TYPE_SHARE);
@@ -275,7 +280,7 @@ public class ShareManager {
 
         private void onUIDestroy() {
             if (currentTarget != -1 && stateListener != null) {
-                if (SocialSdk.opts().isShareSuccessIfStay()) {
+                if (_SocialSdk.getInst().opts().isShareSuccessIfStay()) {
                     stateListener.onState(oriAct.get(), ShareResult.successOf(currentTarget, currentObj));
                 } else {
                     stateListener.onState(oriAct.get(), ShareResult.failOf(currentTarget, currentObj, SocialError.make(SocialError.CODE_STAY_OTHER_APP)));
@@ -285,7 +290,7 @@ public class ShareManager {
 
         private ShareObj execInterceptors(Context context, int target, ShareObj obj) {
             ShareObj result = obj;
-            List<ShareInterceptor> interceptors = SocialSdk.getShareInterceptors();
+            List<ShareInterceptor> interceptors = _SocialSdk.getInst().getShareInterceptors();
             if (interceptors != null && interceptors.size() > 0) {
                 for (ShareInterceptor interceptor : interceptors) {
                     ShareObj temp = interceptor.intercept(context, target, result);
@@ -311,7 +316,7 @@ public class ShareManager {
                 imgFail = true;
             } else if (FileUtil.isHttpPath(obj.getThumbImagePath())) {
                 // 路径不为空并且是网络路径
-                File file = SocialSdk.getRequestAdapter().getFile(thumbImagePath);
+                File file = _SocialSdk.getInst().getRequestAdapter().getFile(thumbImagePath);
                 if (FileUtil.isExist(file)) {
                     obj.setThumbImagePath(file.getAbsolutePath());
                 }
@@ -320,8 +325,8 @@ public class ShareManager {
             if (TextUtils.isEmpty(obj.getThumbImagePath())) {
                 imgFail = true;
             }
-            if (imgFail && SocialSdk.opts().getFailImgRes() > 0) {
-                String localPath = FileUtil.mapResId2LocalPath(context, SocialSdk.opts().getFailImgRes());
+            if (imgFail && _SocialSdk.getInst().opts().getFailImgRes() > 0) {
+                String localPath = FileUtil.mapResId2LocalPath(context, _SocialSdk.getInst().opts().getFailImgRes());
                 if (FileUtil.isExist(localPath)) {
                     obj.setThumbImagePath(localPath);
                 }

@@ -6,7 +6,7 @@ import android.text.TextUtils;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.sina.weibo.sdk.auth.WbAuthListener;
 import com.sina.weibo.sdk.auth.WbConnectErrorMessage;
-import com.zfy.social.core.SocialSdk;
+import com.zfy.social.core._SocialSdk;
 import com.zfy.social.core.exception.SocialError;
 import com.zfy.social.core.model.ShareObj;
 import com.zfy.social.core.platform.AbsPlatform;
@@ -45,7 +45,7 @@ class OpenApiShareHelper {
                     Map<String, String> params = new HashMap<>();
                     params.put("access_token", token.getToken());
                     params.put("status", obj.getSummary());
-                    return SocialSdk.getRequestAdapter().postData("https://api.weibo.com/2/statuses/share.json", params, "pic", obj.getThumbImagePath());
+                    return _SocialSdk.getInst().getRequestAdapter().postData("https://api.weibo.com/2/statuses/share.json", params, "pic", obj.getThumbImagePath());
                 }).continueWith(task -> {
                     if (task.isFaulted() || TextUtils.isEmpty(task.getResult())) {
                         throw SocialError.make(SocialError.CODE_PARSE_ERROR, "open api 分享失败 " + task.getResult(), task.getError());

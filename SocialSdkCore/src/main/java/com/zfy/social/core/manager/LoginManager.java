@@ -8,6 +8,7 @@ import android.arch.lifecycle.OnLifecycleEvent;
 import android.content.Context;
 import android.content.Intent;
 
+import com.zfy.social.core._SocialSdk;
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.exception.SocialError;
 import com.zfy.social.core.listener.OnLoginStateListener;
@@ -34,23 +35,26 @@ public class LoginManager {
     /**
      * 发起登录
      *
-     * @param act 发起登录的 activity
      * @param target   目标平台
      * @param listener 回调
      */
-    public static void login(Activity act, int target, OnLoginStateListener listener) {
-        login(act, target, null, listener);
+    public static void login(
+            final int target,
+            final OnLoginStateListener listener) {
+        login(target, null, listener);
     }
 
     /**
      * 发起登录
      *
-     * @param act      发起登录的 activity
      * @param target   目标平台
      * @param obj 登录对象
      * @param listener 回调
      */
-    public static void login(Activity act, int target, LoginObj obj, OnLoginStateListener listener) {
+    public static void login(
+            final int target,
+            final LoginObj obj,
+            final OnLoginStateListener listener) {
         if (sMgr != null) {
             sMgr.onHostActivityDestroy();
         }
@@ -58,10 +62,13 @@ public class LoginManager {
         if (sMgr == null) {
             sMgr = new _InternalMgr();
         }
-        sMgr.preLogin(act, target, obj, listener);
+        sMgr.preLogin(_SocialSdk.getInst().getTopActivity(), target, obj, listener);
     }
 
 
+    /**
+     * 清除相关引用，如果出现了不可避免的内存泄漏，可以手动调用此方法，释放内存
+     */
     public static void clear() {
         if (sMgr != null) {
             sMgr.onHostActivityDestroy();
@@ -87,6 +94,7 @@ public class LoginManager {
     public static void clearToken(Context context, int loginTarget) {
         AccessToken.clearToken(context, loginTarget);
     }
+
 
     // 开始分享
     static void actionLogin(Activity activity) {
@@ -168,16 +176,15 @@ public class LoginManager {
                 return;
             }
 
-            if (!platform.isInstall(act)) {
-                stateListener.onState(originActivity.get(), LoginResult.failOf(target, SocialError.make(SocialError.CODE_NOT_INSTALL)));
-                return;
+            if (platform.getUIKitClazz() == null) {
+                wrapListener = new OnLoginListenerWrap(stateListener);
+                GlobalPlatform.getCurrentPlatform().login(act, target, obj, wrapListener);
+            } else {
+                Intent intent = new Intent(act, platform.getUIKitClazz());
+                intent.putExtra(GlobalPlatform.KEY_ACTION_TYPE, GlobalPlatform.ACTION_TYPE_LOGIN);
+                act.startActivity(intent);
+                act.overridePendingTransition(0, 0);
             }
-
-            Intent intent = new Intent(act, platform.getUIKitClazz());
-            intent.putExtra(GlobalPlatform.KEY_ACTION_TYPE, GlobalPlatform.ACTION_TYPE_LOGIN);
-            act.startActivity(intent);
-            act.overridePendingTransition(0, 0);
-
         }
 
         /**

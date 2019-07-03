@@ -71,7 +71,7 @@ public class TestActivity extends AppCompatActivity {
     private OnLoginStateListener mOnLoginListener;
     private String[] mPlatform;
 
-    private boolean isInit;
+    private boolean isInit = true;
 
     Activity mActivity;
 
@@ -186,7 +186,7 @@ public class TestActivity extends AppCompatActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 if (!isInit) {
-                    Toast.makeText(mActivity,"请先初始化",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mActivity, "请先初始化", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 clickPos = tab.getPosition();
@@ -282,7 +282,7 @@ public class TestActivity extends AppCompatActivity {
     })
     public void clickBtn(View view) {
         if (!isInit) {
-            Toast.makeText(mActivity,"请先初始化",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "请先初始化", Toast.LENGTH_SHORT).show();
             return;
         }
         initObj();
@@ -296,11 +296,10 @@ public class TestActivity extends AppCompatActivity {
                 obj.setSignature("b28f69426f3b3874d89718c8ba792caa4a0a1bcc");
                 // 如果不设置，将会使用 SocialValues.WX_SCOPE
                 obj.setScope(SocialValues.WX_SCOPE);
-                LoginManager.login(mActivity, Target.LOGIN_WX_SCAN, obj, mOnLoginListener);
-
+                LoginManager.login(Target.LOGIN_WX_SCAN, obj, mOnLoginListener);
                 break;
             case R.id.huawei_btn:
-                LoginManager.login(mActivity, HuaweiPlatform.LOGIN_HUAWEI, mOnLoginListener);
+                LoginManager.login(HuaweiPlatform.LOGIN_HUAWEI, mOnLoginListener);
                 break;
             case R.id.clear_btn:
                 mInfoTv.setText("");
@@ -309,56 +308,56 @@ public class TestActivity extends AppCompatActivity {
                 LoginManager.clearAllToken(mActivity);
                 break;
             case R.id.btn_login:
-                LoginManager.login(mActivity, getLoginTargetTo(), mOnLoginListener);
+                LoginManager.login(getLoginTargetTo(), mOnLoginListener);
                 break;
             case R.id.btn_share_text:
                 textObj.setSummary(System.currentTimeMillis() + " [http://www.ibbpp.com]");
-                ShareManager.share(mActivity, getShareTargetTo(), textObj, mOnShareListener);
+                ShareManager.share(getShareTargetTo(), textObj, mOnShareListener);
                 break;
             case R.id.btn_share_img:
                 imageObj.setSummary(System.currentTimeMillis() + " [http://www.ibbpp.com]");
-                ShareManager.share(mActivity, getShareTargetTo(), imageObj, mOnShareListener);
+                ShareManager.share(getShareTargetTo(), imageObj, mOnShareListener);
                 break;
             case R.id.btn_share_net_img:
                 netImageObj.setSummary(System.currentTimeMillis() + " [http://www.ibbpp.com]");
-                ShareManager.share(mActivity, getShareTargetTo(), netImageObj, mOnShareListener);
+                ShareManager.share(getShareTargetTo(), netImageObj, mOnShareListener);
                 break;
             case R.id.btn_share_gif:
                 imageGifObj.setSummary(System.currentTimeMillis() + " [http://www.ibbpp.com]");
-                ShareManager.share(mActivity, getShareTargetTo(), imageGifObj, mOnShareListener);
+                ShareManager.share(getShareTargetTo(), imageGifObj, mOnShareListener);
                 break;
             case R.id.btn_share_app:
                 appObj.setSummary(System.currentTimeMillis() + " [http://www.ibbpp.com]");
-                ShareManager.share(mActivity, getShareTargetTo(), appObj, mOnShareListener);
+                ShareManager.share(getShareTargetTo(), appObj, mOnShareListener);
                 break;
             case R.id.btn_share_web:
                 webObj.setSummary(System.currentTimeMillis() + " [http://www.ibbpp.com]");
-                ShareManager.share(mActivity, getShareTargetTo(), webObj, mOnShareListener);
+                ShareManager.share(getShareTargetTo(), webObj, mOnShareListener);
                 break;
             case R.id.btn_share_music:
                 musicObj.setSummary(System.currentTimeMillis() + " [http://www.ibbpp.com]");
-                ShareManager.share(mActivity, getShareTargetTo(), musicObj, mOnShareListener);
+                ShareManager.share(getShareTargetTo(), musicObj, mOnShareListener);
                 break;
             case R.id.btn_share_video:
                 videoObj.setSummary(System.currentTimeMillis() + " [http://www.ibbpp.com]");
-                ShareManager.share(mActivity, getShareTargetTo(), videoObj, mOnShareListener);
+                ShareManager.share(getShareTargetTo(), videoObj, mOnShareListener);
                 break;
             case R.id.btn_share_video_local:
                 videoLocalObj.setSummary(System.currentTimeMillis() + " [http://www.ibbpp.com]");
-                ShareManager.share(mActivity, getShareTargetTo(), videoLocalObj, mOnShareListener);
+                ShareManager.share(getShareTargetTo(), videoLocalObj, mOnShareListener);
                 break;
             case R.id.btn_share_sms:
                 webObj.setSmsParams("13611301719", "说啥呢");
-                ShareManager.share(mActivity, Target.SHARE_SMS, webObj, mOnShareListener);
+                ShareManager.share(Target.SHARE_SMS, webObj, mOnShareListener);
                 break;
             case R.id.btn_share_clipboard:
                 webObj.setClipboardParams("复制的内容");
-                ShareManager.share(mActivity, Target.SHARE_CLIPBOARD, webObj, mOnShareListener);
+                ShareManager.share(Target.SHARE_CLIPBOARD, webObj, mOnShareListener);
                 break;
             case R.id.btn_share_email:
                 webObj.setEMailParams("1101873740@qq.com", "主题", "内容");
                 webObj.setWxMiniParams("51299u9**q31",SocialValues.WX_MINI_TYPE_RELEASE,"/page/path");
-                ShareManager.share(mActivity, Target.SHARE_EMAIL, webObj, mOnShareListener);
+                ShareManager.share(Target.SHARE_EMAIL, webObj, mOnShareListener);
                 break;
         }
     }
@@ -390,9 +389,9 @@ public class TestActivity extends AppCompatActivity {
                 // 构建
                 .build();
         // 初始化
-        SocialSdk.init(options);
+        SocialSdk.init(getApplication(), options);
         // 添加一个自定义平台
-        SocialSdk.addPlatform(new HuaweiPlatform.Factory());
+//        SocialSdk.addPlatform(new HuaweiPlatform.Factory());
         Toast.makeText(this,"初始化成功",Toast.LENGTH_SHORT).show();
     }
 
@@ -428,7 +427,7 @@ public class TestActivity extends AppCompatActivity {
                 .wb(wbAppId, "http://open.manfenmm.com/bbpp/app/weibo/common.php")
                 .build();
         // 👮 添加 config 数据，必须
-        SocialSdk.init(options);
+//        SocialSdk.init(options);
     }
 
 
