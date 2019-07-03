@@ -22,7 +22,7 @@ public class HuaweiPlatform extends AbsPlatform {
 
     public static final int PLATFORM_HUAWEI = 107;
 
-    public static final int LOGIN_HUAWEI = 203;
+    public static final int LOGIN_HUAWEI = 401;
 
     public static class Factory implements PlatformFactory {
         @Override

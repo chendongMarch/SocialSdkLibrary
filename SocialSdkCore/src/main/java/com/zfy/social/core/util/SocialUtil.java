@@ -11,7 +11,9 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.zfy.social.core.SocialSdk;
+import com.zfy.social.core.SocialOptions;
+import com.zfy.social.core._SocialSdk;
+import com.zfy.social.core.adapter.IJsonAdapter;
 import com.zfy.social.core.model.SocialBuildConfig;
 import com.zfy.social.core.platform.PlatformFactory;
 
@@ -128,7 +130,8 @@ public class SocialUtil {
     }
 
     public static void e(String tag, String msg) {
-        if (SocialSdk.opts().isDebug()) {
+        SocialOptions opts = _SocialSdk.getInst().opts();
+        if (opts.isDebug()) {
             Log.e(TAG + "|" + tag, msg);
         }
     }
@@ -138,7 +141,8 @@ public class SocialUtil {
     }
 
     public static void json(String tag, String json) {
-        if (!SocialSdk.opts().isDebug()) {
+        SocialOptions opts = _SocialSdk.getInst().opts();
+        if (!opts.isDebug()) {
             return;
         }
         StringBuilder sb = new StringBuilder();
@@ -164,12 +168,21 @@ public class SocialUtil {
         e(tag, sb.toString());
     }
 
-    public static SocialBuildConfig parseBuildConfig() {
+
+    private static SocialBuildConfig toObj(String json, IJsonAdapter adapter) {
+        try {
+            return adapter.toObj(json, SocialBuildConfig.class);
+        } catch (Exception e) {
+            SocialUtil.t(TAG, e);
+        }
+        return null;
+    }
+
+    public static SocialBuildConfig parseBuildConfig(IJsonAdapter adapter) {
         try {
             Object inst = Class.forName("com.zfy.social.config.SocialBuildConfig").newInstance();
-            String object2Json = JsonUtil.getObject2Json(inst);
-            SocialBuildConfig buildConfig = JsonUtil.getObject(object2Json, SocialBuildConfig.class);
-            return buildConfig;
+            String object2Json = adapter.toJson(inst);
+            return toObj(object2Json, adapter);
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -189,7 +202,7 @@ public class SocialUtil {
 
 
     public static int mapPlatformTarget(int target) {
-        SparseArray<PlatformFactory> factories = SocialSdk.getPlatformFactories();
+        SparseArray<PlatformFactory> factories = _SocialSdk.getInst().getPlatformFactories();
         for (int i = 0; i < factories.size(); i++) {
             PlatformFactory factory = factories.valueAt(i);
             if (isPlatform(factory, target)) {

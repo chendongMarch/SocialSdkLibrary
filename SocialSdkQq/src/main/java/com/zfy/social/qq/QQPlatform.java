@@ -16,7 +16,7 @@ import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
 import com.tencent.tauth.UiError;
 import com.zfy.social.core.SocialOptions;
-import com.zfy.social.core.SocialSdk;
+import com.zfy.social.core._SocialSdk;
 import com.zfy.social.core.common.SocialValues;
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.exception.SocialError;
@@ -58,7 +58,7 @@ public class QQPlatform extends AbsPlatform {
         @Override
         public IPlatform create(Context context, int target) {
             IPlatform platform = null;
-            SocialOptions config = SocialSdk.opts();
+            SocialOptions config = _SocialSdk.getInst().opts();
             if (!SocialUtil.isAnyEmpty(config.getQqAppId(), config.getAppName())) {
                 platform = new QQPlatform(context, config.getQqAppId(), config.getAppName(), target);
             }

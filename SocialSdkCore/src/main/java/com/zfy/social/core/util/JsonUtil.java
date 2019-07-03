@@ -3,7 +3,7 @@ package com.zfy.social.core.util;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.zfy.social.core.SocialSdk;
+import com.zfy.social.core._SocialSdk;
 import com.zfy.social.core.adapter.IJsonAdapter;
 import com.zfy.social.core.exception.SocialError;
 
@@ -31,7 +31,7 @@ public class JsonUtil {
  
 
     public static <T> T getObject(String jsonString, Class<T> cls) {
-        IJsonAdapter jsonAdapter = SocialSdk.getJsonAdapter();
+        IJsonAdapter jsonAdapter = _SocialSdk.getInst().getJsonAdapter();
         if (jsonAdapter == null) {
             return null;
         }
@@ -44,7 +44,7 @@ public class JsonUtil {
     }
 
     public static String getObject2Json(Object object) {
-        IJsonAdapter jsonAdapter = SocialSdk.getJsonAdapter();
+        IJsonAdapter jsonAdapter = _SocialSdk.getInst().getJsonAdapter();
         if (jsonAdapter == null) {
             return null;
         }
@@ -62,7 +62,7 @@ public class JsonUtil {
             @Override
             public T call() {
                 T object = null;
-                String json = SocialSdk.getRequestAdapter().getJson(url);
+                String json = _SocialSdk.getInst().getRequestAdapter().getJson(url);
                 if (!TextUtils.isEmpty(json)) {
                     object = getObject(json, clz);
                 }

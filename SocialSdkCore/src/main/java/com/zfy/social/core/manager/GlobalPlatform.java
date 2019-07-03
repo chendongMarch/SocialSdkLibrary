@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.SparseArray;
 
-import com.zfy.social.core.SocialSdk;
+import com.zfy.social.core._SocialSdk;
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.platform.IPlatform;
 import com.zfy.social.core.platform.PlatformFactory;
@@ -34,12 +34,12 @@ public class GlobalPlatform {
 
     // 使用 target 创建对应的 platform
     static IPlatform newPlatformByTarget(Context context, int target) {
-        if (SocialSdk.opts() == null) {
+        if (_SocialSdk.getInst().opts() == null) {
             throw new IllegalArgumentException(Target.toDesc(target) + " SocialSdk.init() request");
         }
         IPlatform platform = newPlatformByTargetUseFactory(context, target);
         if (platform == null) {
-            throw new IllegalArgumentException(Target.toDesc(target) + "  创建platform失败，请检查参数 " + SocialSdk.opts().toString());
+            throw new IllegalArgumentException(Target.toDesc(target) + "  创建platform失败，请检查参数 " + _SocialSdk.getInst().opts().toString());
         }
         return platform;
     }
@@ -51,7 +51,7 @@ public class GlobalPlatform {
     // 使用配置的工厂创建 platform
     private static IPlatform newPlatformByTargetUseFactory(Context context, int target) {
         PlatformFactory platformFactory = null;
-        SparseArray<PlatformFactory> factories = SocialSdk.getPlatformFactories();
+        SparseArray<PlatformFactory> factories = _SocialSdk.getInst().getPlatformFactories();
         for (int i = 0; i < factories.size(); i++) {
             PlatformFactory factory = factories.valueAt(i);
             if (SocialUtil.isPlatform(factory, target)) {

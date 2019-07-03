@@ -17,7 +17,7 @@ import com.sina.weibo.sdk.share.WbShareCallback;
 import com.sina.weibo.sdk.share.WbShareHandler;
 import com.sina.weibo.sdk.utils.Utility;
 import com.zfy.social.core.SocialOptions;
-import com.zfy.social.core.SocialSdk;
+import com.zfy.social.core._SocialSdk;
 import com.zfy.social.core.common.SocialValues;
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.common.ThumbTask;
@@ -59,11 +59,11 @@ public class WbPlatform extends AbsPlatform {
         @Override
         public IPlatform create(Context context, int target) {
             WbPlatform platform = null;
-            SocialOptions config = SocialSdk.opts();
-            String appId = config.getWbAppId();
-            String appName = config.getAppName();
-            String redirectUrl = config.getWbRedirectUrl();
-            String scope = config.getWbScope();
+            SocialOptions opts = _SocialSdk.getInst().opts();
+            String appId = opts.getWbAppId();
+            String appName = opts.getAppName();
+            String redirectUrl = opts.getWbRedirectUrl();
+            String scope = opts.getWbScope();
             if (!SocialUtil.isAnyEmpty(appId, appName, redirectUrl, scope)) {
                 platform = new WbPlatform(context, appId, appName, target, redirectUrl, scope);
             }
@@ -178,8 +178,8 @@ public class WbPlatform extends AbsPlatform {
     @Override
     protected void dispatchShare(Activity activity, int shareTarget, ShareObj obj) {
         mShareHandler = new WbShareHandler(activity);
-        if (SocialSdk.opts().getWbProgressColor() > 0) {
-            mShareHandler.setProgressColor(SocialSdk.opts().getWbProgressColor());
+        if (_SocialSdk.getInst().opts().getWbProgressColor() > 0) {
+            mShareHandler.setProgressColor(_SocialSdk.getInst().opts().getWbProgressColor());
         }
         mShareHandler.registerApp();
         

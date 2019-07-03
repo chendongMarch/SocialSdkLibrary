@@ -2,12 +2,14 @@ package com.zfy.social.core;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.SparseArray;
 
 import com.zfy.social.core.adapter.IJsonAdapter;
 import com.zfy.social.core.adapter.IRequestAdapter;
 import com.zfy.social.core.common.SocialValues;
 import com.zfy.social.core.listener.ShareInterceptor;
 import com.zfy.social.core.model.SocialBuildConfig;
+import com.zfy.social.core.platform.PlatformFactory;
 import com.zfy.social.core.util.SocialUtil;
 
 import java.io.File;
@@ -51,11 +53,10 @@ public class SocialOptions {
     private boolean wbEnable;
     private boolean ddEnable;
 
-    private List<ShareInterceptor> shareInterceptors;
-
-    public List<ShareInterceptor> getShareInterceptors() {
-        return shareInterceptors;
-    }
+    IJsonAdapter jsonAdapter;
+    IRequestAdapter reqAdapter;
+    SparseArray<PlatformFactory> factories;
+    List<ShareInterceptor> shareInterceptors;
 
     public long getTokenExpiresHoursMs() {
         if (tokenExpiresHours <= 0) {
@@ -161,11 +162,13 @@ public class SocialOptions {
 
 
     private SocialOptions(Builder builder) {
-        // adapter
-        SocialSdk.sJsonAdapter = builder.jsonAdapter;
-        SocialSdk.sRequestAdapter = builder.requestAdapter;
 
-        SocialBuildConfig buildConfig = SocialUtil.parseBuildConfig();
+        jsonAdapter = builder.jsonAdapter;
+        reqAdapter = builder.requestAdapter;
+        factories = builder.factories;
+        shareInterceptors = builder.shareInterceptors;
+
+        SocialBuildConfig buildConfig = SocialUtil.parseBuildConfig(jsonAdapter);
         if (buildConfig != null) {
             if (builder.tokenExpiresHours < 0) {
                 builder.tokenExpiresHours = buildConfig.tokenExpireHour;
@@ -239,8 +242,8 @@ public class SocialOptions {
         this.qqEnable = builder.qqEnable;
         this.wbEnable = builder.wbEnable;
         this.ddEnable = builder.ddEnable;
-        this.shareInterceptors = builder.shareInterceptors;
     }
+
 
     public static class Builder {
         // 调试配置
@@ -273,6 +276,8 @@ public class SocialOptions {
 
         private List<ShareInterceptor> shareInterceptors;
 
+        private SparseArray<PlatformFactory> factories;
+
         private boolean wxEnable;
         private boolean qqEnable;
         private boolean wbEnable;
@@ -283,6 +288,7 @@ public class SocialOptions {
         public Builder(Context context) {
             this.context = context;
             this.shareInterceptors = new ArrayList<>();
+            this.factories = new SparseArray<>();
         }
 
         public Builder dd(String ddAppId) {
@@ -294,6 +300,11 @@ public class SocialOptions {
         public Builder qq(String qqAppId) {
             this.qqAppId = qqAppId;
             this.qqEnable = true;
+            return this;
+        }
+
+        public Builder addPlatform(PlatformFactory factory) {
+            this.factories.append(factory.getPlatformTarget(), factory);
             return this;
         }
 

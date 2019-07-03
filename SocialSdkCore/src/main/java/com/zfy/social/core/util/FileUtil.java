@@ -5,7 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.TextUtils;
 
-import com.zfy.social.core.SocialSdk;
+import com.zfy.social.core.SocialOptions;
+import com.zfy.social.core._SocialSdk;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -129,7 +130,8 @@ public class FileUtil {
      */
     public static String mapUrl2LocalPath(String url) {
         String fileName = SocialUtil.getMD5(url);
-        File saveFile = new File(SocialSdk.opts().getCacheDir(), fileName);
+        SocialOptions opts = _SocialSdk.getInst().opts();
+        File saveFile = new File(opts.getCacheDir(), fileName);
         return saveFile.getAbsolutePath();
     }
 
@@ -143,7 +145,8 @@ public class FileUtil {
      */
     public static String mapResId2LocalPath(Context context, int resId) {
         String fileName = SocialUtil.getMD5(resId + "") + FileUtil.POINT_PNG;
-        File saveFile = new File(SocialSdk.opts().getCacheDir(), fileName);
+        SocialOptions opts = _SocialSdk.getInst().opts();
+        File saveFile = new File(opts.getCacheDir(), fileName);
         if (saveFile.exists())
             return saveFile.getAbsolutePath();
         Bitmap bitmap = null;
@@ -162,7 +165,8 @@ public class FileUtil {
     }
 
     public static File saveWxCode2File(byte[] buffer) throws IOException {
-        File saveFile = new File(SocialSdk.opts().getCacheDir(), System.currentTimeMillis() + "_code.jpg");
+        SocialOptions opts = _SocialSdk.getInst().opts();
+        File saveFile = new File(opts.getCacheDir(), System.currentTimeMillis() + "_code.jpg");
         Bitmap bitmap = BitmapFactory.decodeByteArray(buffer, 0, buffer.length);
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(saveFile));
         BitmapUtil.recyclerBitmaps(bitmap);

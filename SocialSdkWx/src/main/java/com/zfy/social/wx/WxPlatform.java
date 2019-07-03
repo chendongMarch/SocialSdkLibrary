@@ -21,7 +21,7 @@ import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.zfy.social.core.SocialOptions;
-import com.zfy.social.core.SocialSdk;
+import com.zfy.social.core._SocialSdk;
 import com.zfy.social.core.common.SocialValues;
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.common.ThumbTask;
@@ -30,7 +30,6 @@ import com.zfy.social.core.listener.OnLoginStateListener;
 import com.zfy.social.core.model.LoginObj;
 import com.zfy.social.core.model.LoginResult;
 import com.zfy.social.core.model.ShareObj;
-import com.zfy.social.core.model.ShareResult;
 import com.zfy.social.core.platform.AbsPlatform;
 import com.zfy.social.core.platform.IPlatform;
 import com.zfy.social.core.platform.PlatformFactory;
@@ -62,9 +61,9 @@ public class WxPlatform extends AbsPlatform {
         @Override
         public IPlatform create(Context context, int target) {
             IPlatform platform = null;
-            SocialOptions config = SocialSdk.opts();
-            if (!SocialUtil.isAnyEmpty(config.getWxAppId(), config.getWxSecretKey())) {
-                platform = new WxPlatform(context, config.getWxAppId(), config.getAppName(), target, config.getWxSecretKey());
+            SocialOptions opts = _SocialSdk.getInst().opts();
+            if (!SocialUtil.isAnyEmpty(opts.getWxAppId(), opts.getWxSecretKey())) {
+                platform = new WxPlatform(context, opts.getWxAppId(), opts.getAppName(), target, opts.getWxSecretKey());
             }
             return platform;
         }
@@ -140,7 +139,7 @@ public class WxPlatform extends AbsPlatform {
                     // 用户同意  authResp.country;  authResp.lang;  authResp.state;
                     SendAuth.Resp authResp = (SendAuth.Resp) resp;
                     String authCode = authResp.code;
-                    if (SocialSdk.opts().isWxOnlyAuthCode()) {
+                    if (_SocialSdk.getInst().opts().isWxOnlyAuthCode()) {
                         listener.onState(null, LoginResult.successOf(Target.LOGIN_WX, authCode));
                     } else {
                         mWeChatLoginHelper.getAccessTokenByCode(authCode);

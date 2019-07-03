@@ -13,7 +13,7 @@ import com.android.dingtalk.share.ddsharemodule.message.DDTextMessage;
 import com.android.dingtalk.share.ddsharemodule.message.DDWebpageMessage;
 import com.android.dingtalk.share.ddsharemodule.message.SendMessageToDD;
 import com.zfy.social.core.SocialOptions;
-import com.zfy.social.core.SocialSdk;
+import com.zfy.social.core._SocialSdk;
 import com.zfy.social.core.common.SocialValues;
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.exception.SocialError;
@@ -37,9 +37,9 @@ public class DDPlatform extends AbsPlatform {
         @Override
         public IPlatform create(Context context, int target) {
             IPlatform platform = null;
-            SocialOptions config = SocialSdk.opts();
-            if (!SocialUtil.isAnyEmpty(config.getDdAppId())) {
-                platform = new DDPlatform(context, config.getDdAppId(), config.getAppName(), target);
+            SocialOptions opts = _SocialSdk.getInst().opts();
+            if (!SocialUtil.isAnyEmpty(opts.getDdAppId())) {
+                platform = new DDPlatform(context, opts.getDdAppId(), opts.getAppName(), target);
             }
             return platform;
         }

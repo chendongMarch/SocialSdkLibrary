@@ -3,7 +3,8 @@ package com.zfy.social.core.model.token;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.zfy.social.core.SocialSdk;
+import com.zfy.social.core.SocialOptions;
+import com.zfy.social.core._SocialSdk;
 import com.zfy.social.core.common.Target;
 import com.zfy.social.core.util.JsonUtil;
 import com.zfy.social.core.util.SocialUtil;
@@ -96,14 +97,15 @@ public abstract class AccessToken {
     }
 
     public static <T> T getToken(final Context context, final int target, final Class<T> tokenClazz) {
-        if (SocialSdk.opts().getTokenExpiresHoursMs() <= 0) {
+        SocialOptions opts = _SocialSdk.getInst().opts();
+        if (opts.getTokenExpiresHoursMs() <= 0) {
             return null;
         }
         int platformTarget = SocialUtil.mapPlatformTarget(target);
         SharedPreferences sp = getSp(context);
         long time = sp.getLong(platformTarget + KEY_TIME, -1);
         long currentTimeMillis = System.currentTimeMillis();
-        if (currentTimeMillis - time < SocialSdk.opts().getTokenExpiresHoursMs()) {
+        if (currentTimeMillis - time < opts.getTokenExpiresHoursMs()) {
             T object = JsonUtil.getObject(sp.getString(platformTarget + KEY_TOKEN, null), tokenClazz);
             return object;
         } else {
@@ -115,7 +117,8 @@ public abstract class AccessToken {
     private static ExecutorService sService;
 
     public static void saveToken(final Context context, final int target, final Object token) {
-        if (SocialSdk.opts().getTokenExpiresHoursMs() <= 0) {
+        SocialOptions opts = _SocialSdk.getInst().opts();
+        if (opts.getTokenExpiresHoursMs() <= 0) {
             return;
         }
         if (sService == null) {
