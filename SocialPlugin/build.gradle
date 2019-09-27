@@ -7,7 +7,7 @@ sourceCompatibility = JavaVersion.VERSION_1_7
 dependencies {
     implementation gradleApi()
     implementation localGroovy()
-    implementation 'com.android.tools.build:gradle:3.1.4'
+    implementation 'com.android.tools.build:gradle:3.5.0'
 }
 
 repositories {
@@ -23,12 +23,12 @@ uploadArchives {
     }
 }
 
-apply plugin: 'bintray-release'
+apply plugin: 'com.novoda.bintray-release'
 publish {
     userOrg = 'zfy'
     groupId = 'com.zfy.social'
     artifactId = 'social-sdk-plugin'
-    publishVersion = '1.1.1'
+    publishVersion = '1.1.2'
     desc = 'SocialSdkPlugin'
     website = 'https://github.com/chendongMarch/SocialSdkLibrary'
 }

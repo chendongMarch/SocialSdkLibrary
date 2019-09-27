@@ -53,7 +53,6 @@ public class ShareObj implements Parcelable {
     private String wxMiniOriginId;
     private int wxMiniType;
     private String wxMiniPagePath;
-    private boolean isWxMini;
     // 短信专属参数
     private String smsPhone;
     private String smsBody;
@@ -66,6 +65,9 @@ public class ShareObj implements Parcelable {
     // 复制内容
     private String copyContent;
     private boolean isClipboard;
+
+    private boolean shareWxMini;
+    private boolean openWxMini;
 
     /**
      * 直接打开对应app
@@ -202,7 +204,6 @@ public class ShareObj implements Parcelable {
         this.wxMiniOriginId = wxMiniOriginId;
         this.wxMiniType = wxMiniType;
         this.wxMiniPagePath = wxMiniPagePath;
-        this.isWxMini = true;
     }
 
     /**
@@ -357,10 +358,17 @@ public class ShareObj implements Parcelable {
     }
 
 
-    public boolean isWxMini() {
-        return isWxMini;
+    public boolean isShareWxMini() {
+        return shareWxMini;
     }
 
+    public boolean isOpenWxMini() {
+        return openWxMini;
+    }
+
+    public void setOpenWxMini(boolean openWxMini) {
+        this.openWxMini = openWxMini;
+    }
 
     public String getSmsPhone() {
         return smsPhone;
@@ -435,7 +443,6 @@ public class ShareObj implements Parcelable {
         dest.writeString(this.wxMiniOriginId);
         dest.writeInt(this.wxMiniType);
         dest.writeString(this.wxMiniPagePath);
-        dest.writeByte(this.isWxMini ? (byte) 1 : (byte) 0);
         dest.writeString(this.smsPhone);
         dest.writeString(this.smsBody);
         dest.writeByte(this.isSms ? (byte) 1 : (byte) 0);
@@ -445,6 +452,8 @@ public class ShareObj implements Parcelable {
         dest.writeByte(this.isEMail ? (byte) 1 : (byte) 0);
         dest.writeString(this.copyContent);
         dest.writeByte(this.isClipboard ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.shareWxMini ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.openWxMini ? (byte) 1 : (byte) 0);
     }
 
     protected ShareObj(Parcel in) {
@@ -462,7 +471,6 @@ public class ShareObj implements Parcelable {
         this.wxMiniOriginId = in.readString();
         this.wxMiniType = in.readInt();
         this.wxMiniPagePath = in.readString();
-        this.isWxMini = in.readByte() != 0;
         this.smsPhone = in.readString();
         this.smsBody = in.readString();
         this.isSms = in.readByte() != 0;
@@ -472,6 +480,8 @@ public class ShareObj implements Parcelable {
         this.isEMail = in.readByte() != 0;
         this.copyContent = in.readString();
         this.isClipboard = in.readByte() != 0;
+        this.shareWxMini = in.readByte() != 0;
+        this.openWxMini = in.readByte() != 0;
     }
 
     public static final Creator<ShareObj> CREATOR = new Creator<ShareObj>() {

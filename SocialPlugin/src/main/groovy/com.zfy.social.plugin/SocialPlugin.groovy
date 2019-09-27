@@ -99,13 +99,12 @@ class SocialPlugin implements Plugin<Project> {
         }
         try {
             // 设置 task 依赖于生成BuildConfig 的 task，然后在生成 BuildConfig 后生成我们的类
-            String generateBuildConfigTaskName = variant.getVariantData().getScope().getGenerateBuildConfigTask().name
+            String generateBuildConfigTaskName = variant.getVariantData().getTaskContainer().getGenerateBuildConfigTask().name
             def generateBuildConfigTask = project.tasks.getByName(generateBuildConfigTaskName)
             if (generateBuildConfigTask) {
                 generateSocialConfigTask.dependsOn generateBuildConfigTask
                 generateBuildConfigTask.finalizedBy generateSocialConfigTask
             }
-
         } catch (e) {
             e.printStackTrace()
             def taskNames = project.tasks.getNames()
