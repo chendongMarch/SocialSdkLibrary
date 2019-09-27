@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import com.tencent.mm.opensdk.constants.ConstantsAPI;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelbiz.SubscribeMiniProgramMsg;
+import com.tencent.mm.opensdk.modelbiz.WXLaunchMiniProgram;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.opensdk.modelmsg.WXEmojiObject;
@@ -30,6 +31,7 @@ import com.zfy.social.core.listener.OnLoginStateListener;
 import com.zfy.social.core.model.LoginObj;
 import com.zfy.social.core.model.LoginResult;
 import com.zfy.social.core.model.ShareObj;
+import com.zfy.social.core.model.ShareResult;
 import com.zfy.social.core.platform.AbsPlatform;
 import com.zfy.social.core.platform.IPlatform;
 import com.zfy.social.core.platform.PlatformFactory;
@@ -131,7 +133,14 @@ public class WxPlatform extends AbsPlatform {
             return;
         }
         BaseResp baseResp = (BaseResp) resp;
-        if (baseResp.getType() == ConstantsAPI.COMMAND_SENDAUTH) {
+        if (baseResp.getType() == ConstantsAPI.COMMAND_LAUNCH_WX_MINIPROGRAM) {
+            // 对应小程序组件 <button open-type="launchApp"> 中的 app-parameter 属性
+            WXLaunchMiniProgram.Resp launchMiniProResp = (WXLaunchMiniProgram.Resp) resp;
+            String extraData = launchMiniProResp.extMsg;
+            ShareResult result = ShareResult.stateOf(ShareResult.STATE_SUCCESS);
+            result.result = extraData;
+            mOnShareListener.onState(null, result);
+        } else if (baseResp.getType() == ConstantsAPI.COMMAND_SENDAUTH) {
             // 登录
             OnLoginStateListener listener = mWeChatLoginHelper.getListener();
             switch (baseResp.errCode) {
@@ -222,8 +231,8 @@ public class WxPlatform extends AbsPlatform {
 
     @Override
     protected void dispatchShare(Activity activity, int shareTarget, ShareObj obj) {
-        if (obj.isWxMini()) {
-            shareMiniProgram(shareTarget, activity, obj);
+        if (obj.isShareWxMini()) {
+            dispatchMini(activity, shareTarget, obj);
             return;
         }
         switch (obj.getType()) {
@@ -248,6 +257,14 @@ public class WxPlatform extends AbsPlatform {
             case ShareObj.SHARE_TYPE_VIDEO:
                 shareVideo(shareTarget, activity, obj);
                 break;
+        }
+    }
+
+    private void dispatchMini(Activity activity, int shareTarget, ShareObj obj) {
+        if (obj.isShareWxMini()) {
+            shareMiniProgram(shareTarget, activity, obj);
+        } else if (obj.isOpenWxMini()) {
+            openMiniProgram(shareTarget, activity, obj);
         }
     }
 
@@ -421,6 +438,24 @@ public class WxPlatform extends AbsPlatform {
     private void subscribeMiniProgram(final int shareTarget, Activity activity, final ShareObj obj) {
         SubscribeMiniProgramMsg.Req req = new SubscribeMiniProgramMsg.Req();
         req.miniProgramAppId = obj.getWxMiniOriginId();
+        mWxApi.sendReq(req);
+    }
+
+
+    private void openMiniProgram(final int shareTarget, Activity activity, final ShareObj obj) {
+        int wxMiniType = obj.getWxMiniType();
+        String originId = obj.getWxMiniOriginId();
+        String pagePath = obj.getWxMiniPagePath();
+
+        if (wxMiniType < 0 || SocialUtil.isAnyEmpty(originId, pagePath)) {
+            onShareFail(SocialError.make(SocialError.CODE_PARAM_ERROR, "openMiniProgram extra = " + obj.toString()));
+            return;
+        }
+
+        WXLaunchMiniProgram.Req req = new WXLaunchMiniProgram.Req();
+        req.userName = originId; // 填小程序原始id
+        req.path = pagePath; //拉起小程序页面的可带参路径，不填默认拉起小程序首页，对于小游戏，可以只传入 query 部分，来实现传参效果，如：传入 "?foo=bar"。
+        req.miniprogramType = wxMiniType; // 可选打开 开发版，体验版和正式版
         mWxApi.sendReq(req);
     }
 

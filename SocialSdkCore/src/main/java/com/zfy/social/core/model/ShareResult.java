@@ -11,6 +11,8 @@ import com.zfy.social.core.exception.SocialError;
 public class ShareResult extends Result {
 
     public ShareObj shareObj;
+    public String result;
+
 
     private ShareResult(int state, ShareObj shareObj, int target) {
         super(state, target);

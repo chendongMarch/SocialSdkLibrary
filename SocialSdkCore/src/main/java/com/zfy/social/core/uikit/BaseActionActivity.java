@@ -86,7 +86,6 @@ public class BaseActionActivity extends Activity {
                 }
                 finish();
                 overridePendingTransition(0, 0);
-
             }
         } else {
             if (!isFinishing()) {
