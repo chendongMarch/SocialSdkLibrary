@@ -56,3 +56,5 @@ captures/
 node_modules/
 
 *.jks
+
+*.hprof
