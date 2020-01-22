@@ -3,7 +3,7 @@ apply from: '../scripts/library.gradle'
 dependencies {
     compileOnly project(':SocialSdkCore')
     compileOnly libs.appcompat_v7
-    implementation files('libs/open_sdk_r6019_lite.jar') // QQ
+    implementation files('libs/open_sdk_r2973327_lite.jar') // QQ
 }
 
 apply plugin: 'bintray-release'

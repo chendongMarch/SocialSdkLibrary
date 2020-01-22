@@ -1,0 +1,16 @@
+apply from: '../scripts/library.gradle'
+
+dependencies {
+    implementation libs.okhttp3
+    compileOnly 'com.zfy:social-sdk-core:1.1.2'
+}
+
+apply plugin: 'bintray-release'
+publish {
+    userOrg = 'zfy'
+    groupId = 'com.zfy'
+    artifactId = 'social-sdk-x-http'
+    publishVersion = '1.0.1'
+    desc = 'SocialSdkHttp'
+    website = 'https://github.com/chendongMarch/SocialSdkLibrary'
+}

@@ -1,0 +1,17 @@
+apply from: '../scripts/library.gradle'
+
+dependencies {
+    implementation libs.gson
+    compileOnly 'com.zfy:social-sdk-core:1.1.2'
+}
+
+apply plugin: 'bintray-release'
+publish {
+    userOrg = 'zfy'
+    groupId = 'com.zfy'
+    artifactId = 'social-sdk-x-json'
+    publishVersion = '1.0.1'
+    desc = 'SocialSdkJson'
+    website = 'https://github.com/chendongMarch/SocialSdkLibrary'
+}
+

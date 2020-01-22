@@ -193,6 +193,9 @@ public class LoginManager {
          * @param act 透明 activity
          */
         private void postLogin(Activity act) {
+            if (stateListener == null) {
+                return;
+            }
             stateListener.onState(originActivity.get(), LoginResult.stateOf(LoginResult.STATE_ACTIVE, currentTarget));
             fakeActivity = new WeakReference<>(act);
 
@@ -203,19 +206,12 @@ public class LoginManager {
                 return;
             }
 
-            if (stateListener == null) {
-                stateListener.onState(act,
-                        LoginResult.failOf(currentTarget,
-                                SocialError.make(SocialError.CODE_COMMON_ERROR, "没有设置 login listener")));
-                return;
-            }
             if (GlobalPlatform.getCurrentPlatform() == null) {
                 stateListener.onState(act,
                         LoginResult.failOf(currentTarget,
                                 SocialError.make(SocialError.CODE_COMMON_ERROR, "创建的 platform 失效")));
                 return;
             }
-
             wrapListener = new OnLoginListenerWrap(stateListener);
             GlobalPlatform.getCurrentPlatform().login(act, currentTarget, currentObj, wrapListener);
         }

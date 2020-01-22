@@ -7,7 +7,7 @@ sourceCompatibility = JavaVersion.VERSION_1_7
 dependencies {
     implementation gradleApi()
     implementation localGroovy()
-    implementation 'com.android.tools.build:gradle:3.5.0'
+    implementation 'com.android.tools.build:gradle:3.5.3'
 }
 
 repositories {
@@ -28,7 +28,7 @@ publish {
     userOrg = 'zfy'
     groupId = 'com.zfy.social'
     artifactId = 'social-sdk-plugin'
-    publishVersion = '1.1.2'
+    publishVersion = '1.2.0'
     desc = 'SocialSdkPlugin'
     website = 'https://github.com/chendongMarch/SocialSdkLibrary'
 }

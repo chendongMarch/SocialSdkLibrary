@@ -1,4 +1,4 @@
-package com.babypat;
+package com.zfy.social.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -36,11 +36,11 @@ public class GsonJsonAdapter implements IJsonAdapter {
     public String toJson(Object object) {
         GsonBuilder gsonBuilder = new GsonBuilder()
                 .registerTypeAdapter(Date.class, new JsonSerializer<Date>() {
-            @Override
-            public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {
-                return new JsonPrimitive(src.getTime());
-            }
-        }).setDateFormat(DateFormat.LONG);
+                    @Override
+                    public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {
+                        return new JsonPrimitive(src.getTime());
+                    }
+                }).setDateFormat(DateFormat.LONG);
         return gsonBuilder.create().toJson(object);
     }
 }

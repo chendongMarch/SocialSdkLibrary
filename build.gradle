@@ -9,8 +9,8 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.zfy.social:social-sdk-plugin:local'
-        classpath 'com.android.tools.build:gradle:3.5.0'
+        classpath 'com.zfy.social:social-sdk-plugin:1.2.0'
+        classpath 'com.android.tools.build:gradle:3.5.3'
         classpath 'com.novoda:bintray-release:0.9.1'
     }
 }

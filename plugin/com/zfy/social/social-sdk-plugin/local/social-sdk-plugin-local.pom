@@ -9,7 +9,7 @@
     <dependency>
       <groupId>com.android.tools.build</groupId>
       <artifactId>gradle</artifactId>
-      <version>3.5.0</version>
+      <version>3.5.3</version>
       <scope>runtime</scope>
     </dependency>
   </dependencies>

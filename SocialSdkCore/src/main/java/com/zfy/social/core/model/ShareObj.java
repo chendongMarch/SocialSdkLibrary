@@ -233,6 +233,13 @@ public class ShareObj implements Parcelable {
         this.isEMail = true;
     }
 
+    public void setShareWxMini(boolean shareWxMini) {
+        this.shareWxMini = shareWxMini;
+    }
+
+    public boolean isWxMini() {
+        return shareWxMini || openWxMini;
+    }
 
     /**
      * 设置粘贴板复制

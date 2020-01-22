@@ -17,8 +17,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.babypat.adapter.GsonJsonAdapter;
-import com.babypat.adapter.OkHttpRequestAdapter;
 import com.babypat.platform.HuaweiPlatform;
 import com.zfy.social.core.SocialOptions;
 import com.zfy.social.core.SocialSdk;
@@ -40,6 +38,8 @@ import java.io.File;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+;
 
 public class TestActivity extends AppCompatActivity {
 
@@ -164,7 +164,7 @@ public class TestActivity extends AppCompatActivity {
 
         textObj = ShareObj.buildTextObj("分享文字", "summary");
         imageObj = ShareObj.buildImageObj(localImagePath);
-        netImageObj = ShareObj.buildImageObj("");
+        netImageObj = ShareObj.buildImageObj(netImagePath);
         imageGifObj = ShareObj.buildImageObj(localGifPath);
         appObj = ShareObj.buildAppObj("分享app", "summary", localImagePath, targetUrl);
         webObj = ShareObj.buildWebObj("分享web", "summary", "", targetUrl);
@@ -284,6 +284,8 @@ public class TestActivity extends AppCompatActivity {
             Toast.makeText(this, "请先初始化", Toast.LENGTH_SHORT).show();
             return;
         }
+
+
         initObj();
         switch (view.getId()) {
             case R.id.btn_login_scan:
@@ -363,23 +365,24 @@ public class TestActivity extends AppCompatActivity {
 
 
     private void initSocialSDKSample() {
-        SocialOptions options = new SocialOptions.Builder(this)
 
-
+        SocialOptions options = new SocialOptions.Builder2(this)
                 // 调试模式，开启 log 输出
                 .debug(true)
                 // 加载缩略图失败时，降级使用资源图
                 .failImgRes(R.mipmap.ic_launcher_new)
-                // token 保留时间，但是小时，默认不保留
+                // token 保留时间，单位小时，默认不保留
                 .tokenExpiresHours(24)
                 // 分享如果停留在第三放将会返回成功，默认返回失败
                 .shareSuccessIfStay(true)
                 // 微博 loading 窗颜色
                 .wbProgressColor(Color.YELLOW)
                 // 添加自定义的 json 解析
-                .jsonAdapter(new GsonJsonAdapter())
-                // 请求处理类，如果使用了微博的 openApi 分享，这个是必须的
-                .requestAdapter(new OkHttpRequestAdapter())
+//                .jsonAdapter(new GsonJsonAdapter())
+//                // 请求处理类，如果使用了微博的 openApi 分享，这个是必须的
+//                .requestAdapter(new OkHttpRequestAdapter())
+                // 添加新平台
+                .addPlatform(new HuaweiPlatform.Factory())
                 // 添加分享拦截器
                 .addShareInterceptor((context, r, obj) -> {
                     obj.setSummary("被重新组装" + obj.getSummary());
@@ -387,46 +390,25 @@ public class TestActivity extends AppCompatActivity {
                 })
                 // 构建
                 .build();
-        // 初始化
-        SocialSdk.init(getApplication(), options);
-        // 添加一个自定义平台
-//        SocialSdk.addPlatform(new HuaweiPlatform.Factory());
-        Toast.makeText(this,"初始化成功",Toast.LENGTH_SHORT).show();
+
+
+        SocialSdk.init(getApplication(), new SocialOptions.Builder(this)
+                // 开启调试
+                .debug(true)
+                // 加载缩略图失败时，降级使用资源图
+                .failImgRes(R.mipmap.ic_launcher_new)
+                .build());
     }
 
 
     private void initSocialSDK() {
-
-        String qqAppId = getString(R.string.QQ_APP_ID);
-        String wxAppId = getString(R.string.WX_APP_ID);
-        String wxSecretKey = getString(R.string.WX_SECRET_KEY);
-        String wbAppId = getString(R.string.SINA_APP_ID);
-        String ddAppId = getString(R.string.DD_APP_ID);
-
         SocialOptions options = new SocialOptions.Builder(this)
                 // 开启调试
                 .debug(true)
-                // 添加自定义的 json 解析
-                .jsonAdapter(new GsonJsonAdapter())
-                // 请求处理类，如果使用了微博的 openApi 分享，这个是必须的
-                .requestAdapter(new OkHttpRequestAdapter())
                 // 加载缩略图失败时，降级使用资源图
                 .failImgRes(R.mipmap.ic_launcher_new)
-                // 设置 token 有效期，单位小时，默认 24
-                .tokenExpiresHours(12)
-                // 分享如果停留在第三放将会返回成功，默认返回失败
-                .shareSuccessIfStay(true)
-                // 配置钉钉
-                .dd(ddAppId)
-                // 配置qq
-                .qq(qqAppId)
-                // 配置wx, 第三个参数是是否只返回 code
-                .wx(wxAppId, wxSecretKey, false)
-                // 配置wb
-                .wb(wbAppId, "http://open.manfenmm.com/bbpp/app/weibo/common.php")
                 .build();
-        // 👮 添加 config 数据，必须
-//        SocialSdk.init(options);
+
     }
 
 

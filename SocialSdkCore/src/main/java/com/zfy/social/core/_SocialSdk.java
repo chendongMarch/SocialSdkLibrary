@@ -5,19 +5,14 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 import android.util.SparseArray;
-import android.widget.Toast;
 
 import com.zfy.social.core.adapter.IJsonAdapter;
 import com.zfy.social.core.adapter.IRequestAdapter;
 import com.zfy.social.core.adapter.impl.DefaultRequestAdapter;
-import com.zfy.social.core.common.Target;
 import com.zfy.social.core.exception.SocialError;
 import com.zfy.social.core.listener.ShareInterceptor;
 import com.zfy.social.core.manager.ShareManager;
 import com.zfy.social.core.platform.PlatformFactory;
-import com.zfy.social.core.platform.system.ClipboardPlatform;
-import com.zfy.social.core.platform.system.EmailPlatform;
-import com.zfy.social.core.platform.system.SmsPlatform;
 import com.zfy.social.core.util.SocialUtil;
 
 import java.lang.ref.WeakReference;
@@ -26,6 +21,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * CreateAt : 2017/5/19
@@ -53,39 +50,70 @@ public class _SocialSdk {
 
     void init(Application application, SocialOptions config) {
         opts = config;
-        // 系统平台
-        addPlatform(new EmailPlatform.Factory());
-        addPlatform(new SmsPlatform.Factory());
-        addPlatform(new ClipboardPlatform.Factory());
-        if (opts.isDdEnable()) {
-            addPlatform(Target.PLATFORM_DD, "com.zfy.social.dd.DDPlatform$Factory");
-        }
-        if (opts.isWxEnable()) {
-            addPlatform(Target.PLATFORM_WX, "com.zfy.social.wx.WxPlatform$Factory");
-        }
-        if (opts.isWbEnable()) {
-            addPlatform(Target.PLATFORM_WB, "com.zfy.social.wb.WbPlatform$Factory");
-        }
-        if (opts.isQqEnable()) {
-            addPlatform(Target.PLATFORM_QQ, "com.zfy.social.qq.QQPlatform$Factory");
-        }
         opts.shareInterceptors.add(0, new ShareManager.ImgInterceptor());
         appLifecycle = new ActivityLifecycleImpl();
         application.registerActivityLifecycleCallbacks(appLifecycle);
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.submit(() -> {
+            // register platform
+            for (String clazz : opts.factoryClassList) {
+                registerPlatform(clazz);
+            }
+            // add
+            if (opts.useOkHttp) {
+                try {
+                    Object instance = Class.forName("com.zfy.social.http.OkHttpRequestAdapter").newInstance();
+                    if (instance instanceof IRequestAdapter) {
+                        opts.reqAdapter = (IRequestAdapter) instance;
+                        SocialUtil.e(TAG, "自动注入 IRequestAdapter");
+                    }
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                } catch (ClassCastException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (opts.useGson) {
+                try {
+                    Object instance = Class.forName("com.zfy.social.json.GsonJsonAdapter").newInstance();
+                    if (instance instanceof IJsonAdapter) {
+                        opts.jsonAdapter = (IJsonAdapter) instance;
+                        SocialUtil.e(TAG, "自动注入 IJsonAdapter");
+                    }
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                } catch (ClassCastException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     // 添加 platform
-    private void addPlatform(PlatformFactory factory) {
+    private void registerPlatform(PlatformFactory factory) {
+        PlatformFactory platformFactory = opts.factories.get(factory.getPlatformTarget());
+        if (platformFactory != null) {
+            opts.factories.remove(factory.getPlatformTarget());
+        }
         opts.factories.append(factory.getPlatformTarget(), factory);
     }
 
     // 添加 platform
-    private void addPlatform(int target, String factoryClazz) {
+    public void registerPlatform(String factoryClazz) {
         try {
             Object instance = Class.forName(factoryClazz).newInstance();
             if (instance instanceof PlatformFactory) {
-                SocialUtil.e(TAG, "注册平台 " + target + " ," + instance.getClass().getName());
-                addPlatform((PlatformFactory) instance);
+                PlatformFactory factory = (PlatformFactory) instance;
+                registerPlatform(factory);
             }
         } catch (Exception e) {
             e.printStackTrace();

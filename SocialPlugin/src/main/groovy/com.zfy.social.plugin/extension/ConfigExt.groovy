@@ -1,6 +1,6 @@
 package com.zfy.social.plugin.extension
 
-class ConfigExtension  {
+class ConfigExt {
 
     public String  version      = null
     public String  appId        = ""
@@ -55,5 +55,18 @@ class ConfigExtension  {
 
     void setOnlyAuthCode(boolean onlyAuthCode) {
         this.onlyAuthCode = onlyAuthCode
+    }
+
+
+    @Override
+    public String toString() {
+        return "ConfigExt{" +
+                "version='" + version + '\'' +
+                ", appId='" + appId + '\'' +
+                ", enable=" + enable +
+                ", appSecret='" + appSecret + '\'' +
+                ", url='" + url + '\'' +
+                ", onlyAuthCode=" + onlyAuthCode +
+                '}';
     }
 }

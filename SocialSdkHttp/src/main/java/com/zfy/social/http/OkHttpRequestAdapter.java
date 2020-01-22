@@ -1,4 +1,4 @@
-package com.babypat.adapter;
+package com.zfy.social.http;
 
 import android.text.TextUtils;
 

@@ -13,8 +13,6 @@ import android.util.SparseArray;
 
 import com.zfy.social.core.SocialOptions;
 import com.zfy.social.core._SocialSdk;
-import com.zfy.social.core.adapter.IJsonAdapter;
-import com.zfy.social.core.model.SocialBuildConfig;
 import com.zfy.social.core.platform.PlatformFactory;
 
 import org.json.JSONArray;
@@ -168,30 +166,6 @@ public class SocialUtil {
         e(tag, sb.toString());
     }
 
-
-    private static SocialBuildConfig toObj(String json, IJsonAdapter adapter) {
-        try {
-            return adapter.toObj(json, SocialBuildConfig.class);
-        } catch (Exception e) {
-            SocialUtil.t(TAG, e);
-        }
-        return null;
-    }
-
-    public static SocialBuildConfig parseBuildConfig(IJsonAdapter adapter) {
-        try {
-            Object inst = Class.forName("com.zfy.social.config.SocialBuildConfig").newInstance();
-            String object2Json = adapter.toJson(inst);
-            return toObj(object2Json, adapter);
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     public static String notNull(String str) {
         if (str == null) {

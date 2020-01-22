@@ -4,7 +4,7 @@ dependencies {
     // compileOnly libs.social_core
     compileOnly project(':SocialSdkCore')
     compileOnly libs.appcompat_v7
-    implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:5.3.1' // 微信
+    implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:5.5.8' // 微信
 }
 
 apply plugin: 'bintray-release'
@@ -12,7 +12,7 @@ publish {
     userOrg = 'zfy'
     groupId = 'com.zfy'
     artifactId = 'social-sdk-wx'
-    publishVersion = '1.1.0'
+    publishVersion = '1.1.3'
     desc = 'SocialSdkWx'
     website = 'https://github.com/chendongMarch/SocialSdkLibrary'
 }

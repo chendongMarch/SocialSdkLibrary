@@ -143,6 +143,9 @@ public class WxPlatform extends AbsPlatform {
         } else if (baseResp.getType() == ConstantsAPI.COMMAND_SENDAUTH) {
             // 登录
             OnLoginStateListener listener = mWeChatLoginHelper.getListener();
+            if (listener == null) {
+                return;
+            }
             switch (baseResp.errCode) {
                 case BaseResp.ErrCode.ERR_OK:
                     // 用户同意  authResp.country;  authResp.lang;  authResp.state;
@@ -155,11 +158,9 @@ public class WxPlatform extends AbsPlatform {
                     }
                     break;
                 case BaseResp.ErrCode.ERR_USER_CANCEL:
-                    // 用户取消
-                    listener.onState(null, LoginResult.cancelOf(-1));
-                    break;
                 case BaseResp.ErrCode.ERR_AUTH_DENIED:
                     // 用户拒绝授权
+                    // 用户取消
                     listener.onState(null, LoginResult.cancelOf(-1));
                     break;
             }
@@ -231,7 +232,7 @@ public class WxPlatform extends AbsPlatform {
 
     @Override
     protected void dispatchShare(Activity activity, int shareTarget, ShareObj obj) {
-        if (obj.isShareWxMini()) {
+        if (obj.isWxMini()) {
             dispatchMini(activity, shareTarget, obj);
             return;
         }

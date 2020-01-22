@@ -11,7 +11,6 @@ import com.zfy.social.core.uikit.BaseActionActivity;
  */
 public class WxActionActivity extends BaseActionActivity implements IWXAPIEventHandler {
 
-
     @Override
     public void onResp(com.tencent.mm.opensdk.modelbase.BaseResp resp) {
         handleResp(resp);

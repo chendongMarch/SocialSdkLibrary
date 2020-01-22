@@ -85,7 +85,6 @@ public class ShareManager {
         }
     }
 
-
     private static class _InternalMgr implements LifecycleObserver {
 
         private OnShareStateListener stateListener;
@@ -101,7 +100,6 @@ public class ShareManager {
         @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         public void onHostActivityDestroy() {
             onProcessFinished();
-            SocialUtil.e("chendong", "页面销毁，回收资源");
         }
 
         // 流程结束，回收资源

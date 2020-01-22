@@ -5,6 +5,7 @@ android {
 
     defaultConfig {
         applicationId "com.babypat"
+        multiDexEnabled true
     }
 
     // 正式签名相关信息
@@ -48,8 +49,6 @@ def getLocalProperties() {
 // get Local Properties
 Properties prop = getLocalProperties()
 socialsdk {
-    debug true
-    local false // 使用本地依赖
     wx {
         appId = prop.get('wxAppId')
         appSecret = prop.get('wxAppSecret')
@@ -71,9 +70,13 @@ socialsdk {
 //库依赖
 dependencies {
 
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-//     implementation project(':SocialSdkCore')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+//    implementation('com.zfy:social-sdk-x-json:1.0.1')
+//    implementation('com.zfy:social-sdk-x-http:1.0.1')
+
+
+//    implementation project(':SocialSdkCore')
 //     implementation project(':SocialSdkWx')
 //     implementation project(':SocialSdkWb')
 //     implementation project(':SocialSdkQq')
@@ -90,7 +93,7 @@ dependencies {
     //
     implementation libs.butterknife
     //
-    implementation libs.gson
+    implementation  libs.gson
 
     debugImplementation libs.leakCanaryDebug
 

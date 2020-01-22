@@ -25,6 +25,10 @@
 
 <br/>
 
+🤔 微信\QQ\微博 SDK 版本可以进行升级了，下个版本升级，微博变动较大；
+
+🎉  2020.1.21 有362颗 🌟 啦, 发布版本 `1.2.0`, 插件更新，支持最新版本的 `Gradle`, 采用 `Gradle + APT + ASM` 自动发现 `Platform` 类，自动注册初始化代码，内置了 `json` 解析和 `http` 请求，初始化配置更简单；
+
 🎉  2019.6.13 支持微信扫码登录
 
 🎉  2019.5.28 项目获得了第329颗 🌟, 对生命周期做自动管理，统一回调参数，发布 [稳定版本 1.0.1](https://github.com/chendongMarch/SocialSdkLibrary/releases/tag/1.0.1) ❤️,
@@ -56,6 +60,8 @@
 
 🔥 轻量：仅包含三方 `SDK` 和一个简单的异步框架(38k)，网络请求、`JSON` 解析从外部注入，减少多余的依赖，保证与宿主项目高度统一；
 
+🔥 全面：小程序分享、复制链接、扫码登录、推广联运等；
+
 🔥 面向需求设计：
 
 - Q：微信登录本地只获取 `code`，服务端获取 `token`？
@@ -75,7 +81,7 @@
 - Q：分享增加了复制链接到粘贴板的类型，单独重新写这部分逻辑，那不是不统一了？
     - A：支持短信、邮件、粘贴板等系统分享平台；
 - Q：每次都需要打开三方 App 授权登录，能直接登录进去吗？
-    - A：持久化存储 `token` 避免多次授权，可选择有效时长；
+    - A：持久化存储 `token` 避免多次授权，可选择有效时长，存储 token 下次授权可以直接获取数据，但是用户换了微信账号就没办法切换账号啦，这个时长要仔细斟酌；
 - Q：我遇到的这些问题，你是不是也遇到了？
     - A：试试 `SocialSdk` 吧；
 
@@ -93,7 +99,7 @@ buildscript {
     }
     dependencies {
         // 请查看文初最新版本，这边可能忘记更新！！！
-        classpath 'com.zfy.social:social-sdk-plugin:1.1.1'
+        classpath 'com.zfy.social:social-sdk-plugin:1.2.0'
     }
 }
 
@@ -106,29 +112,12 @@ allprojects {
 
 **STEP2**: 配置参数
 
-> project / local.properties
-
-配置你的 `appId` 和 `appKey`;
-
-```
-wxAppId = wx4b8xxxb195c3
-wxAppSecret = 0a3cxxxxxx654f499171
-wxOnlyAuthCode = false
-
-qqAppId = 110xxx0200
-qqAppSecret = A6Aqxxx9yQ4N
-
-
-wbAppId = 2xxx5998
-wbUrl = http://open.manfenmm.com/bxx/common.php
-
-ddAppId = dingoxxxefwjeumuof
-```
-
 > app / build.gralde
 
+为了安全起见更建议在 `local.properties` 中配置，这样可以避免提交到远端；
+
 ```js
-// 引用插件
+// 在顶部引用插件
 apply plugin: 'socialsdk'
 
 // android 配置模块
@@ -137,24 +126,49 @@ android {
 }
 
 // socialsdk 配置模块
-Properties prop = getLocalProperties()
 socialsdk {
     wx {
-        appId = prop.get('wxAppId')
-        appSecret = prop.get('wxAppSecret')
-        onlyAuthCode = Boolean.parseBoolean(prop.get('wxOnlyAuthCode'))
+        appId = '111xxx2222'
+        appSecret = '111xxx2222'
+        // 微信授权是否只返回 code, 用于服务端授权的场景
+        onlyAuthCode = false
     }
     qq {
-        appId = prop.get('qqAppId')
-        appSecret = prop.get('qqAppSecret')
+        appId = '111xxx2222'
+        appSecret = '111xxx2222'
     }
     wb {
-        appId = prop.get('wbAppId')
-        url = prop.get('wbUrl')
+        appId = '111xxx2222'
+        url = '111xxx2222'
     }
     dd {
-        appId = prop.get('ddAppId')
+        appId = '111xxx2222'
     }
+}
+```
+
+以上是最简单的配置，更多配置参数参考，通常使用默认即可：
+
+```js
+socialsdk {
+	// 调试模式，默认 false, 可以在代码中开启
+    debug = true
+	// 分享：选择停留在微信时自动返回成功，默认返回失败
+    shareSuccessIfStay = true
+    // 登录：token 过期时间，单位小时，默认立即过期，有效期内可以不需要再次唤醒第三方 app，但是二次登录也没办法切换账号，这会引发问题，所以默认立即过期
+    tokenExpiresHours = 100
+    // 使用 gson 作为数据解析，默认 true，你如果不用 gson 就需要自己编写 JSONAdapter
+    useGson = true
+    // 使用 okHttp 发送请求，默认 true,你如果不用 okhttp 就需要自己编写 RequestAdapter
+    useOkHttp = true
+    // 配置 app 名称，默认使用 R.string.app_name
+    appName = "哈哈哈"
+    // 唤醒过程中的 loading 颜色
+    color = "#FF0000"
+    wx { }
+    qq { }
+    wb { }
+    dd { }
 }
 ```
 
@@ -162,26 +176,10 @@ socialsdk {
 
 ```java
 SocialOptions options = new SocialOptions.Builder(this)
-        // 之前在 gradle 配置过了，也同样支持代码设置，代码设置优先级更高
-        .qq("qqAppId")
-        .wx("wxAppId","wxAppSecret")
-        .wb("wbAppId")
-        .dd("ddAppId")
-
         // 调试模式，开启 log 输出
         .debug(true)
         // 加载缩略图失败时，降级使用资源图
-        .failImgRes(R.mipmap.ic_launcher_new)
-        // token 保留时间，但是小时，默认不保留
-        .tokenExpiresHours(24)
-        // 分享如果停留在第三放将会返回成功，默认返回失败
-        .shareSuccessIfStay(true)
-        // 微博 loading 窗颜色
-        .wbProgressColor(Color.YELLOW)
-        // 添加自定义的 json 解析
-        .jsonAdapter(new GsonJsonAdapter())
-        // 请求处理类，如果使用了微博的 openApi 分享，这个是必须的
-        .requestAdapter(new OkHttpRequestAdapter())
+        .failImgRes(R.drawable.share_default_img)
         // 添加分享拦截器，重新处理分享的数据
         .addShareInterceptor((context, obj) -> {
             obj.setSummary("被重新组装" + obj.getSummary());
@@ -191,15 +189,7 @@ SocialOptions options = new SocialOptions.Builder(this)
         .build();
 // 初始化
 SocialSdk.init(options);
-// 添加一个自定义平台
-SocialSdk.addPlatform(new HuaweiPlatform.Factory());
 ```
-
-说一下 `Adapter`，项目内使用了 `JSON` 解析，网络请求等功能，但是又不想引入多余的框架，所以才用了宿主项目注入的方式，保证和宿主项目统一。
-
-- `IJsonAdapter`，必须 ！负责完成 `Json` 解析和序列化，提供一个 `Gson` 下的实现仅供参考 - [GsonJsonAdapter.java](https://github.com/chendongMarch/SocialSdkLibrary/blob/master/temp/GsonJsonAdapter.java)；
-
-- `IRequestAdapter`，非必须！内部使用 `UrlConnection` 做了一个默认的实现，负责完成网络请求，也可以使用 `OkHttp` 重新实现，可以参考 - [OkHttpRequestAdapter.java](https://github.com/chendongMarch/SocialSdkLibrary/blob/b0b8559ff26136abbaaee9667bfc5c2bf54eedea/temp/OkHttpRequestAdapter.java)，目前微信的 `OAuth2` 授权和图片下载的相关请求都是使用 `IRequestAdapter` 代理；
 
 ## 登录功能
 
@@ -568,14 +558,40 @@ listener = new OnShareStateListener() {
 
 ## 扩展新的平台？
 
-参考这里 [HuaweiPlatform.java](https://github.com/chendongMarch/SocialSdkLibrary/blob/master/app/src/main/java/com/babypat/platform/HuaweiPlatform.java)
-
-向 `SocialSdk` 注册构建工厂：
 
 ```java
-SocialSdk.addPlatform(new HuaweiPlatform.Factory());
+public class HuaweiPlatform extends AbsPlatform {
+
+	// 工厂函数
+    public static class Factory implements PlatformFactory {
+        @Override
+        public IPlatform create(Context context, int target) {
+            return new HuaweiPlatform(context, null, null, target);
+        }
+
+        @Override
+        public int getPlatformTarget() {
+            return PLATFORM_HUAWEI;
+        }
+
+        @Override
+        public boolean checkShareTarget(int shareTarget) {
+            return false;
+        }
+
+        @Override
+        public boolean checkLoginTarget(int loginTarget) {
+            return loginTarget == LOGIN_HUAWEI;
+        }
+    }
+
+    public HuaweiPlatform(Context context, String appId, String appName, int target) {
+        super(context, appId, appName, target);
+    }
+}
 ```
 
+最重要的是编写平台的工厂函数，框架会自动发现 然后注册到系统中，不需要手动注册了；
 
 ## 其他
 
@@ -585,13 +601,11 @@ SocialSdk.addPlatform(new HuaweiPlatform.Factory());
 发起登录分享的 `Activity` 建议实现 `LifecycleOwner` 接口，可以直接使用 `AppCompatActivity`，内部会做生命周期的绑定，避免内存泄漏的发生；
 
 
-
-
 ## 相关文档
 
 QQ：
 
-- `libs/open_sdk_r6019_lite.jar`
+- `libs/open_sdk_r2973327_lite.jar` 更新与 2019.12
 - [QQ 登录分享文档](http://wiki.open.qq.com/wiki/QQ%E7%94%A8%E6%88%B7%E8%83%BD%E5%8A%9B)
 - [QQ SDK 下载](http://wiki.open.qq.com/wiki/mobile/SDK%E4%B8%8B%E8%BD%BD)
 - [QQ 设计资源](http://wiki.connect.qq.com/%E8%A7%86%E8%A7%89%E7%B4%A0%E6%9D%90%E4%B8%8B%E8%BD%BD)
@@ -599,7 +613,7 @@ QQ：
 
 微信：
 
-- `com.tencent.mm.opensdk:wechat-sdk-android-without-mta:5.3.1`
+- `com.tencent.mm.opensdk:wechat-sdk-android-without-mta:5.5.8` 更新与 2020.1.22
 - [分享与收藏文档](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419317340&token=&lang=zh_CN)
 - [微信登录文档](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419317851&token=&lang=zh_CN)
 - [微信SDK](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419319167&token=&lang=zh_CN)

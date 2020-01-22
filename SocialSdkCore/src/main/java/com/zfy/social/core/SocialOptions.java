@@ -1,6 +1,7 @@
 package com.zfy.social.core;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
@@ -8,13 +9,13 @@ import com.zfy.social.core.adapter.IJsonAdapter;
 import com.zfy.social.core.adapter.IRequestAdapter;
 import com.zfy.social.core.common.SocialValues;
 import com.zfy.social.core.listener.ShareInterceptor;
-import com.zfy.social.core.model.SocialBuildConfig;
 import com.zfy.social.core.platform.PlatformFactory;
-import com.zfy.social.core.util.SocialUtil;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * CreateAt : 2017/5/20
@@ -39,7 +40,7 @@ public class SocialOptions {
     private String wbAppId;
     private String wbRedirectUrl;
     private String wbScope;
-    private int wbProgressColor;
+    private int wbProgressColor = Color.YELLOW;
 
     private String ddAppId;
 
@@ -57,6 +58,11 @@ public class SocialOptions {
     IRequestAdapter reqAdapter;
     SparseArray<PlatformFactory> factories;
     List<ShareInterceptor> shareInterceptors;
+
+    Set<String> factoryClassList;
+
+    boolean useGson;
+    boolean useOkHttp;
 
     public long getTokenExpiresHoursMs() {
         if (tokenExpiresHours <= 0) {
@@ -160,7 +166,6 @@ public class SocialOptions {
                 '}';
     }
 
-
     private SocialOptions(Builder builder) {
 
         jsonAdapter = builder.jsonAdapter;
@@ -168,51 +173,12 @@ public class SocialOptions {
         factories = builder.factories;
         shareInterceptors = builder.shareInterceptors;
 
-        SocialBuildConfig buildConfig = SocialUtil.parseBuildConfig(jsonAdapter);
-        if (buildConfig != null) {
-            if (builder.tokenExpiresHours < 0) {
-                builder.tokenExpiresHours = buildConfig.tokenExpireHour;
-            }
-            // 读取微信参数
-            if (buildConfig.wxEnable) {
-                builder.wxEnable = true;
-                if (TextUtils.isEmpty(builder.wxAppId)) {
-                    builder.wxAppId = buildConfig.wxAppId;
-                }
-                if (TextUtils.isEmpty(builder.wxSecretKey)) {
-                    builder.wxSecretKey = buildConfig.wxAppSecret;
-                }
-                if (builder.wxOnlyAuthCode == null) {
-                    builder.wxOnlyAuthCode = buildConfig.wxOnlyAuthCode;
-                }
-            }
-            if (buildConfig.qqEnable) {
-                builder.qqEnable = true;
-                if (TextUtils.isEmpty(builder.qqAppId)) {
-                    builder.qqAppId = buildConfig.qqAppId;
-                }
-            }
-            if (buildConfig.ddEnable) {
-                builder.ddEnable = true;
-                if (TextUtils.isEmpty(builder.ddAppId)) {
-                    builder.ddAppId = buildConfig.ddAppId;
-                }
-            }
-            if (buildConfig.wbEnable) {
-                builder.wbEnable = true;
-                if (TextUtils.isEmpty(builder.wbAppId)) {
-                    builder.wbAppId = buildConfig.wbAppId;
-                }
-                if (TextUtils.isEmpty(builder.wbRedirectUrl)) {
-                    builder.wbRedirectUrl = buildConfig.wbRedirectUrl;
-                }
-            }
-        }
+        useGson = builder.useGson;
+        useOkHttp = builder.useOkHttp;
+        factoryClassList = builder.factoryClassList;
+
         if (TextUtils.isEmpty(builder.wbRedirectUrl)) {
             builder.wbRedirectUrl = SocialValues.REDIRECT_URL;
-        }
-        if (builder.wxOnlyAuthCode == null) {
-            builder.wxOnlyAuthCode = false;
         }
         if (builder.tokenExpiresHours < 0) {
             builder.tokenExpiresHours = 0;
@@ -253,14 +219,14 @@ public class SocialOptions {
         // 微信配置
         private String wxAppId;
         private String wxSecretKey;
-        private Boolean wxOnlyAuthCode;
+        private boolean wxOnlyAuthCode;
         // qq 配置
         private String qqAppId;
         // 微博配置
         private String wbAppId;
         private String wbRedirectUrl;
         private String wbScope;
-        private int wbProgressColor;
+        private int wbProgressColor = Color.YELLOW;
         // 钉钉配置
         private String ddAppId;
         // 图片默认资源
@@ -277,6 +243,7 @@ public class SocialOptions {
         private List<ShareInterceptor> shareInterceptors;
 
         private SparseArray<PlatformFactory> factories;
+        private Set<String> factoryClassList;
 
         private boolean wxEnable;
         private boolean qqEnable;
@@ -285,75 +252,20 @@ public class SocialOptions {
 
         private Context context;
 
+        private boolean useGson = true;
+        private boolean useOkHttp = true;
+
         public Builder(Context context) {
             this.context = context;
             this.shareInterceptors = new ArrayList<>();
             this.factories = new SparseArray<>();
+            this.factoryClassList = new HashSet<>();
+
+            initConfigByAsm();
         }
 
-        public Builder dd(String ddAppId) {
-            this.ddAppId = ddAppId;
-            this.ddEnable = true;
-            return this;
-        }
+        private void initConfigByAsm() {
 
-        public Builder qq(String qqAppId) {
-            this.qqAppId = qqAppId;
-            this.qqEnable = true;
-            return this;
-        }
-
-        public Builder addPlatform(PlatformFactory factory) {
-            this.factories.append(factory.getPlatformTarget(), factory);
-            return this;
-        }
-
-        public Builder wx(String wxAppId, String wxSecretKey) {
-            this.wxSecretKey = wxSecretKey;
-            this.wxAppId = wxAppId;
-            this.wxEnable = true;
-            return this;
-        }
-
-        public Builder wx(String wxAppId, String wxSecretKey, boolean wxOnlyAuthCode) {
-            this.wxOnlyAuthCode = wxOnlyAuthCode;
-            this.wxSecretKey = wxSecretKey;
-            this.wxAppId = wxAppId;
-            this.wxEnable = true;
-            return this;
-        }
-
-        public Builder wb(String wbAppId) {
-            this.wbAppId = wbAppId;
-            this.wbEnable = true;
-            return this;
-        }
-
-        public Builder wb(String wbAppId, String wbRedirectUrl) {
-            this.wbAppId = wbAppId;
-            this.wbRedirectUrl = wbRedirectUrl;
-            this.wbEnable = true;
-            return this;
-        }
-
-        public Builder appName(String appName) {
-            this.appName = appName;
-            return this;
-        }
-
-        public Builder tokenExpiresHours(int time) {
-            this.tokenExpiresHours = time;
-            return this;
-        }
-
-        public Builder shareSuccessIfStay(boolean shareSuccessIfStay) {
-            this.shareSuccessIfStay = shareSuccessIfStay;
-            return this;
-        }
-
-        public Builder wbProgressColor(int color) {
-            this.wbProgressColor = color;
-            return this;
         }
 
         public Builder failImgRes(int failImgRes) {
@@ -363,17 +275,6 @@ public class SocialOptions {
 
         public Builder debug(boolean debug) {
             this.debug = debug;
-            return this;
-        }
-
-
-        public Builder requestAdapter(IRequestAdapter requestAdapter) {
-            this.requestAdapter = requestAdapter;
-            return this;
-        }
-
-        public Builder jsonAdapter(IJsonAdapter jsonAdapter) {
-            this.jsonAdapter = jsonAdapter;
             return this;
         }
 
@@ -395,4 +296,109 @@ public class SocialOptions {
             return new SocialOptions(this);
         }
     }
+
+    public static class Builder2 {
+
+        private Builder builder;
+
+        public Builder2(Context context) {
+            builder = new Builder(context);
+        }
+
+        public Builder2 dd(String ddAppId) {
+            builder.ddAppId = ddAppId;
+            builder.ddEnable = true;
+            return this;
+        }
+
+        public Builder2 qq(String qqAppId) {
+            builder.qqAppId = qqAppId;
+            builder.qqEnable = true;
+            return this;
+        }
+
+        public Builder2 addPlatform(PlatformFactory factory) {
+            builder.factories.append(factory.getPlatformTarget(), factory);
+            return this;
+        }
+
+        public Builder2 wx(String wxAppId, String wxSecretKey) {
+            builder.wxSecretKey = wxSecretKey;
+            builder.wxAppId = wxAppId;
+            builder.wxEnable = true;
+            return this;
+        }
+
+        public Builder2 wx(String wxAppId, String wxSecretKey, boolean wxOnlyAuthCode) {
+            builder.wxOnlyAuthCode = wxOnlyAuthCode;
+            builder.wxSecretKey = wxSecretKey;
+            builder.wxAppId = wxAppId;
+            builder.wxEnable = true;
+            return this;
+        }
+
+        public Builder2 wb(String wbAppId) {
+            builder.wbAppId = wbAppId;
+            builder.wbEnable = true;
+            return this;
+        }
+
+        public Builder2 wb(String wbAppId, String wbRedirectUrl) {
+            builder.wbAppId = wbAppId;
+            builder.wbRedirectUrl = wbRedirectUrl;
+            builder.wbEnable = true;
+            return this;
+        }
+
+        public Builder2 appName(String appName) {
+            builder.appName = appName;
+            return this;
+        }
+
+        public Builder2 tokenExpiresHours(int time) {
+            builder.tokenExpiresHours = time;
+            return this;
+        }
+
+        public Builder2 shareSuccessIfStay(boolean shareSuccessIfStay) {
+            builder.shareSuccessIfStay = shareSuccessIfStay;
+            return this;
+        }
+
+        public Builder2 wbProgressColor(int color) {
+            builder.wbProgressColor = color;
+            return this;
+        }
+
+        public Builder2 failImgRes(int failImgRes) {
+            builder.failImgRes = failImgRes;
+            return this;
+        }
+
+        public Builder2 debug(boolean debug) {
+            builder.debug = debug;
+            return this;
+        }
+
+        public Builder2 requestAdapter(IRequestAdapter requestAdapter) {
+            builder.requestAdapter = requestAdapter;
+            return this;
+        }
+
+        public Builder2 jsonAdapter(IJsonAdapter jsonAdapter) {
+            builder.jsonAdapter = jsonAdapter;
+            return this;
+        }
+
+        public Builder2 addShareInterceptor(ShareInterceptor interceptor) {
+            builder.addShareInterceptor(interceptor);
+            return this;
+        }
+
+
+        public SocialOptions build() {
+            return builder.build();
+        }
+    }
+
 }
