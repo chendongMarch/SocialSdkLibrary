@@ -37,32 +37,6 @@ public class SocialClassVisitorImpl extends AbstractClassVisitor {
 
     @Override
     public MethodVisitor watch(MethodVisitor visitor, ClassInfo classInfo, MethodInfo methodInfo) {
-//        if ("com/zfy/social/core/util/AsmUtil".equals(classInfo.name)) {
-//            System.out.println("找到  AsmUtil");
-//            if ("updateSocialOptions".equals(methodInfo.name)) {
-//                System.out.println("找到  AsmUtil updateSocialOptions");
-//                return new SocialConfigMethodVisitorImpl(visitor);
-//            }
-//            if ("registerPlatform".equals(methodInfo.name)) {
-//                System.out.println("找到  AsmUtil registerPlatform");
-//                return new SocialPlatformMethodVisitorImpl(visitor);
-//            }
-//        }
-//        if (classInfo.name.endsWith("TestCode")) {
-//            System.out.println("找到  TestActivity");
-//            if ("test".equals(methodInfo.name)) {
-//                System.out.println("找到  TestCode test");
-//                return new SocialConfigMethodVisitorImpl(visitor);
-//            }
-//        }
-
-//        if (classInfo.name.endsWith("TestActivity")) {
-//            System.out.println("找到  TestActivity");
-//            if ("onCreate".equals(methodInfo.name)) {
-//                System.out.println("找到  TestActivity onCreate");
-//                return new SocialMethodVisitorImpl(visitor);
-//            }
-//        }
         if ("com/zfy/social/core/SocialOptions$Builder".equals(classInfo.name)) {
             if ("initConfigByAsm".equals(methodInfo.name)) {
                 UtilX.log("找到 SocialOptions$Builder initConfigByAsm");
@@ -193,91 +167,6 @@ public class SocialClassVisitorImpl extends AbstractClassVisitor {
             super.visitCode();
 
             UtilX.log("结束 visit code");
-        }
-    }
-
-    static class SocialPlatformMethodVisitorImpl extends MethodVisitor {
-
-        public SocialPlatformMethodVisitorImpl(MethodVisitor mv) {
-            super(Opcodes.ASM4, mv);
-        }
-
-        @Override
-        public void visitCode() {
-
-            for (String name : Settings.platformClassList) {
-                String pkgClassPath = TransformX.toPkgClassPath(name);
-
-                mv.visitLdcInsn("SocialSdk");
-                mv.visitLdcInsn("registerPlatform " + pkgClassPath);
-                mv.visitMethodInsn(Opcodes.INVOKESTATIC, "android/util/Log", "e", "(Ljava/lang/String;Ljava/lang/String;)I", false);
-                mv.visitInsn(Opcodes.POP);
-
-                mv.visitVarInsn(Opcodes.ALOAD, 0);
-                mv.visitLdcInsn(pkgClassPath);
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "com/zfy/social/core/_SocialSdk", "registerPlatform", "(Ljava/lang/String;)V", false);
-
-            }
-
-            super.visitCode();
-        }
-    }
-
-    static class SocialConfigMethodVisitorImpl extends MethodVisitor {
-
-        public SocialConfigMethodVisitorImpl(MethodVisitor mv) {
-            super(Opcodes.ASM4, mv);
-        }
-
-        @Override
-        public void visitCode() {
-            SocialExt socialExt = SocialPlugin.getSocialExt();
-
-            mv.visitLdcInsn("SocialSdk");
-            mv.visitLdcInsn("start init social sdk options " + socialExt.toString());
-            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "android/util/Log", "e", "(Ljava/lang/String;Ljava/lang/String;)I", false);
-            mv.visitInsn(Opcodes.POP);
-
-            if (socialExt.wx.enable) {
-                mv.visitVarInsn(Opcodes.ALOAD, 0);
-                mv.visitLdcInsn(socialExt.wx.appId);
-                mv.visitLdcInsn(socialExt.wx.appSecret);
-                mv.visitInsn(socialExt.wx.onlyAuthCode ? Opcodes.ICONST_1 : Opcodes.ICONST_0);
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "com/zfy/social/core/SocialOptions$Builder", "wx", "(Ljava/lang/String;Ljava/lang/String;Z)Lcom/zfy/social/core/SocialOptions$Builder;", false);
-                mv.visitInsn(Opcodes.POP);
-            }
-
-            if (socialExt.qq.enable) {
-                mv.visitVarInsn(Opcodes.ALOAD, 0);
-                mv.visitLdcInsn(socialExt.qq.appId);
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "com/zfy/social/core/SocialOptions$Builder", "qq", "(Ljava/lang/String;)Lcom/zfy/social/core/SocialOptions$Builder;", false);
-                mv.visitInsn(Opcodes.POP);
-            }
-
-            if (socialExt.wb.enable) {
-                mv.visitVarInsn(Opcodes.ALOAD, 0);
-                mv.visitLdcInsn(socialExt.wb.appId);
-                mv.visitLdcInsn(socialExt.wb.url);
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "com/zfy/social/core/SocialOptions$Builder", "wb", "(Ljava/lang/String;Ljava/lang/String;)Lcom/zfy/social/core/SocialOptions$Builder;", false);
-                mv.visitInsn(Opcodes.POP);
-            }
-            if (socialExt.dd.enable) {
-                mv.visitVarInsn(Opcodes.ALOAD, 0);
-                mv.visitLdcInsn(socialExt.dd.appId);
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "com/zfy/social/core/SocialOptions$Builder", "dd", "(Ljava/lang/String;)Lcom/zfy/social/core/SocialOptions$Builder;", false);
-                mv.visitInsn(Opcodes.POP);
-            }
-
-            super.visitCode();
-        }
-
-        @Override
-        public void visitInsn(int opcode) {
-            //判断RETURN
-            if (opcode == Opcodes.RETURN) {
-                //在这里插入代码
-            }
-            super.visitInsn(opcode);
         }
     }
 }
